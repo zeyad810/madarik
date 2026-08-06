@@ -1,4 +1,5 @@
 import Header from "@/components/layout/header/Header";
+import Button from "@/components/ui/Button";
 
 export default function HomePage() {
   return (
@@ -6,6 +7,17 @@ export default function HomePage() {
       <Header />
       <h1 className="text-4xl font-bold">Welcome to Madarik</h1>
       <p className="mt-4 text-zinc-500">Modular Next.js Application Architecture</p>
+
+     <Button
+      btnLink="/about"
+      btnText="About Us"
+      btnType="fit"
+      btnBackground="var(--primary-color)"
+      btnColor="var(--color-white)"
+      icon="have"
+      btnShadow="shadow-(--my-inset-shadow)"
+      // btnType=
+    />
     </main>
   );
 }
