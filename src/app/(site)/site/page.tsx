@@ -1,12 +1,11 @@
-import Header from "./../../../components/common/Header"
+import Hero from "@/features/site/components/Hero";
 
-const page = () => {
+const Page = () => {
   return (
-    <div>
+    <main>
+      <Hero />
+    </main>
+  );
+};
 
-      <Header />
-    </div>
-  )
-}
-
-export default page
+export default Page;

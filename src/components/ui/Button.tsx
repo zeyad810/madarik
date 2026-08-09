@@ -54,8 +54,8 @@ const Button = ({
         className,
       )}
     >
-      {iconElement ?? (hasIcon ? <ArrowLeft aria-hidden="true" size={18} /> : null)}
       {children ?? btnText}
+      {iconElement ?? (hasIcon ? <ArrowLeft aria-hidden="true" size={18} /> : null)}
     </Link>
   );
 };
