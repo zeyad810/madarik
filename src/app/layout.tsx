@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import QueryProvider from "@/providers/QueryProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const ibmPlexSansArabic = localFont({
+  src: [
+    { path: "../assets/fonts/IBMPlexSansArabic-Thin.woff2", weight: "100" },
+    {
+      path: "../assets/fonts/IBMPlexSansArabic-ExtraLight.woff2",
+      weight: "200",
+    },
+    { path: "../assets/fonts/IBMPlexSansArabic-Light.woff2", weight: "300" },
+    { path: "../assets/fonts/IBMPlexSansArabic-Regular.woff2", weight: "400" },
+    { path: "../assets/fonts/IBMPlexSansArabic-Medium.woff2", weight: "500" },
+    {
+      path: "../assets/fonts/IBMPlexSansArabic-SemiBold.woff2",
+      weight: "600",
+    },
+    { path: "../assets/fonts/IBMPlexSansArabic-Bold.woff2", weight: "700" },
+  ],
+  variable: "--font-ibm-plex-sans-arabic",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,8 +35,9 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="ar"
+      dir="rtl"
+      className={`${ibmPlexSansArabic.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col  ">
         <QueryProvider>{children}</QueryProvider>
@@ -34,4 +45,3 @@ export default function RootLayout({
     </html>
   );
 }
-

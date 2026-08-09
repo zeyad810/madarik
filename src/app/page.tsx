@@ -1,4 +1,5 @@
 import Header from "@/components/layout/header/Header";
+import Button from "@/components/ui/Button";
 
 export default function HomePage() {
   return (
