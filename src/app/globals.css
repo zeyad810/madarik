@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
-:root {
-  /* Semantic colors */
-  --primary-color: #6d28d9;
-  --lightmain: #8b5cf6;
-  --secondary: #14b8a6;
-  --third: #fbbf24;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-primary: #6d28d9;
+  --color-lightmain: #8b5cf6;
+  --color-secondary: #14b8a6;
+  --color-third: #fbbf24;
+
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+
   --color-danger: #ca0b00;
-  --light-red: rgba(202, 11, 0, 0.05);
-  --green: #007c6e;
-  --green-light: #e2fcf7;
-  --orange: #ea580c;
-  --light-orange: #fff7ed;
-  --gray: var(--white-500);
-  --gray-light: var(--white-100);
-  --white-color: #fff;
+  --color-light-red: rgba(202, 11, 0, 0.05);
 
-  --my-inset-shadow: inset 0 4px 4px 0 var(--lightmain);
-  /* --background: #ffffff;
-  --foreground: #171717; */
-}
+  --color-green: #007c6e;
+  --color-green-light: #e2fcf7;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary-color);
-  --color-lightmain: var(--lightmain);
-  --color-white: var(--white-color);
-  --shadow-my-inset: var(--my-inset-shadow);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-orange: #ea580c;
+  --color-light-orange: #fff7ed;
+
+  --color-gray: #737373;
+  --color-gray-light: #f8f8f8;
+
+  --color-white: #ffffff;
+
+  /* Shadows */
+  --shadow-my-inset: inset 0 4px 4px 0 #8b5cf6;
+
+  /* Fonts */
+  --font-sans: var(--font-ibm-plex-sans-arabic);
+  --font-mono: var(--font-ibm-plex-sans-arabic);
 }
 
 /* @media (prefers-color-scheme: dark) {
