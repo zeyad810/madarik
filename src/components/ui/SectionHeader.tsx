@@ -40,21 +40,21 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
       {subtitle && (
         <span
-          className={`text-sm md:text-base font-bold text-third ${subtitleClassName}`}
+          className={`mad-label-1 font-bold text-mad-third ${subtitleClassName}`}
         >
           {subtitle}
         </span>
       )}
 
       <h2
-        className={`text-2xl md:text-4xl font-bold  text-text-primary tracking-tight ${titleClassName}`}
+        className={`mad-h2 font-bold text-mad-text-primary ${titleClassName}`}
       >
         {title}
       </h2>
 
       {description && (
         <p
-          className={`text-sm md:text-base w-full md:w-[67%] text-text-secondary  leading-relaxed mt-1 ${descriptionClassName}`}
+          className={`mad-body-1 w-full md:w-[67%] text-mad-text-secondary mt-1 ${descriptionClassName}`}
         >
           {description}
         </p>

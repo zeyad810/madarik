@@ -1,48 +1,459 @@
 @import "tailwindcss";
 
-@import "tailwindcss";
+@utility container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 1600px;
+}
+/* =========================================================
+   MAD DESIGN SYSTEM
+   Tailwind CSS v4
+   ========================================================= */
 
 @theme {
-  /* Colors */
-  --color-primary: #6d28d9;
-  --color-lightmain: #8b5cf6;
-  --color-secondary: #14b8a6;
-  --color-third: #fbbf24;
+  /* -------------------------------------------------------
+     Breakpoints (Mobile from 600px, Tablet from 800px)
+     ------------------------------------------------------- */
 
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #64748b;
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 800px;
 
-  --color-danger: #ca0b00;
-  --color-light-red: rgba(202, 11, 0, 0.05);
+  /* -------------------------------------------------------
+     Font
+     ------------------------------------------------------- */
 
-  --color-green: #007c6e;
-  --color-green-light: #e2fcf7;
+  --font-sans: var(--font-ibm-plex-sans-arabic), "IBM Plex Sans Arabic", sans-serif;
+  --font-mad: var(--font-ibm-plex-sans-arabic), "IBM Plex Sans Arabic", sans-serif;
 
-  --color-orange: #ea580c;
-  --color-light-orange: #fff7ed;
+  /* -------------------------------------------------------
+     White / Gray Scale
+     ------------------------------------------------------- */
 
-  --color-gray: #737373;
-  --color-gray-light: #f8f8f8;
+  --color-mad-white-50: #ffffff;
+  --color-mad-white-100: #f8f8f8;
+  --color-mad-white-200: #e9e9e9;
+  --color-mad-white-300: #d6d6d6;
+  --color-mad-white-400: #969696;
+  --color-mad-white-500: #737373;
+  --color-mad-white-600: #545454;
+  --color-mad-white-700: #404040;
+  --color-mad-white-800: #272727;
+  --color-mad-white-900: #181818;
+  --color-mad-white-950: #090909;
 
-  --color-white: #ffffff;
+  /* -------------------------------------------------------
+     Purple Heart
+     ------------------------------------------------------- */
 
-  /* Shadows */
-  --shadow-my-inset: inset 0 4px 4px 0 #8b5cf6;
+  --color-mad-purple-50: #f7f6fe;
+  --color-mad-purple-100: #efecfd;
+  --color-mad-purple-200: #e0dbfb;
+  --color-mad-purple-300: #cac1f9;
+  --color-mad-purple-400: #b6a4ff;
+  --color-mad-purple-500: #9273f2;
+  --color-mad-purple-600: #7f48ef;
+  --color-mad-purple-700: #6d28d9;
+  --color-mad-purple-800: #5b20b5;
+  --color-mad-purple-900: #4c1999;
+  --color-mad-purple-950: #2d0b5e;
 
-  /* Fonts */
-  --font-sans: var(--font-ibm-plex-sans-arabic);
-  --font-mono: var(--font-ibm-plex-sans-arabic);
+  /* -------------------------------------------------------
+     Semantic Colors
+     ------------------------------------------------------- */
+
+  --color-mad-main: #6d28d9;
+  --color-mad-main-light: #8b5cf6;
+
+  --color-mad-secondary: #14b8a6;
+  --color-mad-third: #fbbf24;
+
+  --color-mad-text-primary: #1e293b;
+  --color-mad-text-secondary: #64748b;
+
+  --color-mad-danger: #ca0b00;
+  --color-mad-danger-light: rgba(202, 11, 0, 0.05);
+
+  --color-mad-green: #007c6e;
+  --color-mad-green-light: #e2fcf7;
+
+  --color-mad-orange: #ea580c;
+  --color-mad-orange-light: #fff7ed;
+
+  --color-mad-pink: #ec4899;
+  --color-mad-pink-light: #fce7f3;
+
+  --color-mad-gray: #737373;
+  --color-mad-gray-light: #f8f8f8;
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
+/* =========================================================
+   ROOT DESIGN TOKENS
+   ========================================================= */
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+:root {
+  /* -------------------------------------------------------
+     Colors
+     ------------------------------------------------------- */
+
+  --mad-white-50: #ffffff;
+  --mad-white-100: #f8f8f8;
+  --mad-white-200: #e9e9e9;
+  --mad-white-300: #d6d6d6;
+  --mad-white-400: #969696;
+  --mad-white-500: #737373;
+  --mad-white-600: #545454;
+  --mad-white-700: #404040;
+  --mad-white-800: #272727;
+  --mad-white-900: #181818;
+  --mad-white-950: #090909;
+
+  --mad-purple-50: #f7f6fe;
+  --mad-purple-100: #efecfd;
+  --mad-purple-200: #e0dbfb;
+  --mad-purple-300: #cac1f9;
+  --mad-purple-400: #b6a4ff;
+  --mad-purple-500: #9273f2;
+  --mad-purple-600: #7f48ef;
+  --mad-purple-700: #6d28d9;
+  --mad-purple-800: #5b20b5;
+  --mad-purple-900: #4c1999;
+  --mad-purple-950: #2d0b5e;
+
+  /* Semantic */
+
+  --mad-main: #6d28d9;
+  --mad-main-light: #8b5cf6;
+
+  --mad-secondary: #14b8a6;
+  --mad-third: #fbbf24;
+
+  --mad-text-primary: #1e293b;
+  --mad-text-secondary: #64748b;
+
+  --mad-danger: #ca0b00;
+  --mad-danger-light: rgba(202, 11, 0, 0.05);
+
+  --mad-green: #007c6e;
+  --mad-green-light: #e2fcf7;
+
+  --mad-orange: #ea580c;
+  --mad-orange-light: #fff7ed;
+
+  --mad-pink: #ec4899;
+  --mad-pink-light: #fce7f3;
+
+  --mad-gray: var(--mad-white-500);
+  --mad-gray-light: var(--mad-white-100);
+
+  /* -------------------------------------------------------
+     Font
+     ------------------------------------------------------- */
+
+  --mad-font-family: var(--font-ibm-plex-sans-arabic), "IBM Plex Sans Arabic", sans-serif;
+
+  --mad-font-thin: 100;
+  --mad-font-extralight: 200;
+  --mad-font-light: 300;
+  --mad-font-regular: 400;
+  --mad-font-medium: 500;
+  --mad-font-semibold: 600;
+  --mad-font-bold: 700;
+  --mad-font-extrabold: 800;
+  --mad-font-black: 900;
+
+  /* -------------------------------------------------------
+     Typography
+     IBM Plex Sans Arabic type system specifications
+     ------------------------------------------------------- */
+
+  --mad-title-1-size: 72px;
+  --mad-title-1-line: 80px;
+  --mad-title-1-spacing: -0.02em;
+
+  --mad-title-2-size: 64px;
+  --mad-title-2-line: 72px;
+  --mad-title-2-spacing: -0.02em;
+
+  --mad-title-3-size: 50px;
+  --mad-title-3-line: 56px;
+  --mad-title-3-spacing: -0.02em;
+
+  --mad-h1-size: 50px;
+  --mad-h1-line: 56px;
+  --mad-h1-spacing: -0.02em;
+
+  --mad-h2-size: 38px;
+  --mad-h2-line: 44px;
+  --mad-h2-spacing: -0.01em;
+
+  --mad-h3-size: 32px;
+  --mad-h3-line: 38px;
+  --mad-h3-spacing: -0.01em;
+
+  --mad-h4-size: 26px;
+  --mad-h4-line: 32px;
+  --mad-h4-spacing: -0.01em;
+
+  --mad-h5-size: 22px;
+  --mad-h5-line: 28px;
+  --mad-h5-spacing: -0.005em;
+
+  --mad-h6-size: 18px;
+  --mad-h6-line: 24px;
+  --mad-h6-spacing: -0.005em;
+
+  --mad-label-1-size: 16px;
+  --mad-label-1-line: 20px;
+  --mad-label-1-spacing: -0.005em;
+
+  --mad-label-2-size: 14px;
+  --mad-label-2-line: 18px;
+  --mad-label-2-spacing: -0.005em;
+
+  --mad-label-3-size: 12px;
+  --mad-label-3-line: 16px;
+  --mad-label-3-spacing: -0.005em;
+
+  --mad-body-1-size: 18px;
+  --mad-body-1-line: 26px;
+  --mad-body-1-spacing: 0em;
+
+  --mad-body-2-size: 16px;
+  --mad-body-2-line: 24px;
+  --mad-body-2-spacing: 0em;
+
+  --mad-body-3-size: 14px;
+  --mad-body-3-line: 20px;
+  --mad-body-3-spacing: 0em;
+
+  --mad-body-4-size: 12px;
+  --mad-body-4-line: 16px;
+  --mad-body-4-spacing: 0em;
+
+  --mad-caption-1-size: 10px;
+  --mad-caption-1-line: 14px;
+  --mad-caption-1-spacing: 0em;
+
+  --mad-caption-2-size: 8px;
+  --mad-caption-2-line: 12px;
+  --mad-caption-2-spacing: 0em;
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+@layer base {
+  html {
+    font-family: var(--mad-font-family);
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--mad-white-50);
+    color: var(--mad-text-primary);
+    font-family: var(--mad-font-family);
+    font-weight: var(--mad-font-regular);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--mad-white-200);
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+
+/* =========================================================
+   MAD TYPOGRAPHY UTILITIES
+   ========================================================= */
+
+@utility mad-title-1 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-title-1-size);
+  line-height: var(--mad-title-1-line);
+  letter-spacing: var(--mad-title-1-spacing);
+}
+
+@utility mad-title-2 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-title-2-size);
+  line-height: var(--mad-title-2-line);
+  letter-spacing: var(--mad-title-2-spacing);
+}
+
+@utility mad-title-3 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-title-3-size);
+  line-height: var(--mad-title-3-line);
+  letter-spacing: var(--mad-title-3-spacing);
+}
+
+@utility mad-h1 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-h1-size);
+  line-height: var(--mad-h1-line);
+  letter-spacing: var(--mad-h1-spacing);
+}
+
+@utility mad-h2 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-h2-size);
+  line-height: var(--mad-h2-line);
+  letter-spacing: var(--mad-h2-spacing);
+}
+
+@utility mad-h3 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-h3-size);
+  line-height: var(--mad-h3-line);
+  letter-spacing: var(--mad-h3-spacing);
+}
+
+@utility mad-h4 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-h4-size);
+  line-height: var(--mad-h4-line);
+  letter-spacing: var(--mad-h4-spacing);
+}
+
+@utility mad-h5 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-h5-size);
+  line-height: var(--mad-h5-line);
+  letter-spacing: var(--mad-h5-spacing);
+}
+
+@utility mad-h6 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-h6-size);
+  line-height: var(--mad-h6-line);
+  letter-spacing: var(--mad-h6-spacing);
+}
+
+@utility mad-body-1 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-body-1-size);
+  line-height: var(--mad-body-1-line);
+  letter-spacing: var(--mad-body-1-spacing);
+}
+
+@utility mad-body-2 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-body-2-size);
+  line-height: var(--mad-body-2-line);
+  letter-spacing: var(--mad-body-2-spacing);
+}
+
+@utility mad-body-3 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-body-3-size);
+  line-height: var(--mad-body-3-line);
+  letter-spacing: var(--mad-body-3-spacing);
+}
+
+@utility mad-body-4 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-body-4-size);
+  line-height: var(--mad-body-4-line);
+  letter-spacing: var(--mad-body-4-spacing);
+}
+
+@utility mad-label-1 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-label-1-size);
+  line-height: var(--mad-label-1-line);
+  letter-spacing: var(--mad-label-1-spacing);
+}
+
+@utility mad-label-2 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-label-2-size);
+  line-height: var(--mad-label-2-line);
+  letter-spacing: var(--mad-label-2-spacing);
+}
+
+@utility mad-label-3 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-label-3-size);
+  line-height: var(--mad-label-3-line);
+  letter-spacing: var(--mad-label-3-spacing);
+}
+
+@utility mad-caption-1 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-caption-1-size);
+  line-height: var(--mad-caption-1-line);
+  letter-spacing: var(--mad-caption-1-spacing);
+}
+
+@utility mad-caption-2 {
+  font-family: var(--mad-font-family);
+  font-size: var(--mad-caption-2-size);
+  line-height: var(--mad-caption-2-line);
+  letter-spacing: var(--mad-caption-2-spacing);
+}
+
+/* =========================================================
+   RESPONSIVE TYPOGRAPHY
+   ========================================================= */
+
+@media (max-width: 800px) {
+  :root {
+    --mad-title-1-size: 52px;
+    --mad-title-1-line: 60px;
+
+    --mad-title-2-size: 44px;
+    --mad-title-2-line: 50px;
+
+    --mad-title-3-size: 36px;
+    --mad-title-3-line: 42px;
+
+    --mad-h1-size: 36px;
+    --mad-h1-line: 42px;
+
+    --mad-h2-size: 30px;
+    --mad-h2-line: 36px;
+
+    --mad-h3-size: 24px;
+    --mad-h3-line: 30px;
+
+    --mad-h4-size: 22px;
+    --mad-h4-line: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --mad-title-1-size: 36px;
+    --mad-title-1-line: 44px;
+
+    --mad-title-2-size: 32px;
+    --mad-title-2-line: 38px;
+
+    --mad-title-3-size: 28px;
+    --mad-title-3-line: 34px;
+
+    --mad-h1-size: 28px;
+    --mad-h1-line: 34px;
+
+    --mad-h2-size: 24px;
+    --mad-h2-line: 30px;
+
+    --mad-h3-size: 20px;
+    --mad-h3-line: 26px;
+
+    --mad-h4-size: 18px;
+    --mad-h4-line: 22px;
+  }
 }

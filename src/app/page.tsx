@@ -1,20 +1,19 @@
 import Header from "@/components/layout/header/Header";
-import Button from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import CustomerReviews from "@/features/site/components/CustomerReviews";
+import Features from "@/features/site/components/Features";
+import HowItWorks from "@/features/site/components/HowItWorks";
 
 export default function HomePage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center ">
       <Header />
-      <h1 className="text-4xl font-bold">Welcome to Madarik</h1>
-      <p className="mt-4 text-zinc-500">
-        Modular Next.js Application Architecture
-      </p>
-      <div className="flex w-full flex-col gap-16 px-4 py-12 md:px-8 mx-auto">
+      <Features />
+      <HowItWorks />
+      <div className="flex w-full flex-col gap-16 px-4 py-12 md:px-8 container mx-auto">
         <CustomerReviews />
       </div>
-      <div className="flex flex-col gap-16 py-12 px-4 md:px-8 max-w-6xl mx-auto">
+      <div className="flex flex-col gap-16 py-12 px-4 md:px-8 container mx-auto">
         <SectionHeader
           align="center"
           subtitle="آراء العملاء"
@@ -29,3 +28,4 @@ export default function HomePage() {
     </main>
   );
 }
+
