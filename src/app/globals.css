@@ -13,6 +13,13 @@
 
 @theme {
   /* -------------------------------------------------------
+     Breakpoints (Mobile from 600px, Tablet from 800px)
+     ------------------------------------------------------- */
+
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 800px;
+
+  /* -------------------------------------------------------
      Font
      ------------------------------------------------------- */
 
@@ -401,49 +408,52 @@
    RESPONSIVE TYPOGRAPHY
    ========================================================= */
 
-@media (max-width: 1024px) {
+@media (max-width: 800px) {
   :root {
-    --mad-title-1-size: 56px;
-    --mad-title-1-line: 64px;
+    --mad-title-1-size: 52px;
+    --mad-title-1-line: 60px;
 
-    --mad-title-2-size: 48px;
-    --mad-title-2-line: 54px;
+    --mad-title-2-size: 44px;
+    --mad-title-2-line: 50px;
 
-    --mad-title-3-size: 40px;
-    --mad-title-3-line: 46px;
+    --mad-title-3-size: 36px;
+    --mad-title-3-line: 42px;
 
-    --mad-h1-size: 40px;
-    --mad-h1-line: 46px;
+    --mad-h1-size: 36px;
+    --mad-h1-line: 42px;
 
-    --mad-h2-size: 32px;
-    --mad-h2-line: 38px;
+    --mad-h2-size: 30px;
+    --mad-h2-line: 36px;
 
-    --mad-h3-size: 26px;
-    --mad-h3-line: 32px;
+    --mad-h3-size: 24px;
+    --mad-h3-line: 30px;
+
+    --mad-h4-size: 22px;
+    --mad-h4-line: 28px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   :root {
-    --mad-title-1-size: 40px;
-    --mad-title-1-line: 48px;
+    --mad-title-1-size: 36px;
+    --mad-title-1-line: 44px;
 
-    --mad-title-2-size: 34px;
-    --mad-title-2-line: 40px;
+    --mad-title-2-size: 32px;
+    --mad-title-2-line: 38px;
 
-    --mad-title-3-size: 30px;
-    --mad-title-3-line: 36px;
+    --mad-title-3-size: 28px;
+    --mad-title-3-line: 34px;
 
-    --mad-h1-size: 30px;
-    --mad-h1-line: 36px;
+    --mad-h1-size: 28px;
+    --mad-h1-line: 34px;
 
-    --mad-h2-size: 26px;
-    --mad-h2-line: 32px;
+    --mad-h2-size: 24px;
+    --mad-h2-line: 30px;
 
-    --mad-h3-size: 22px;
-    --mad-h3-line: 28px;
+    --mad-h3-size: 20px;
+    --mad-h3-line: 26px;
 
-    --mad-h4-size: 20px;
-    --mad-h4-line: 24px;
+    --mad-h4-size: 18px;
+    --mad-h4-line: 22px;
   }
 }

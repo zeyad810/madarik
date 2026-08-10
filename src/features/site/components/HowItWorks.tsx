@@ -53,14 +53,14 @@ const DEFAULT_STEPS: StepItem[] = [
 
 const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
   return (
-    <div className="relative flex items-center w-full min-h-[155px] sm:min-h-[165px] md:min-h-[175px] group transition-all duration-300 hover:-translate-y-1">
+    <div className="relative flex items-center w-full min-h-[140px] sm:min-h-[165px] md:min-h-[175px] group transition-all duration-300 hover:-translate-y-1">
       {/* Capsule Frame Body */}
       <div
-        className="relative flex-1 flex items-center min-h-[140px] sm:min-h-[150px] md:min-h-[160px] rounded-l-[80px] sm:rounded-l-[90px] border-[3px] border-solid border-r-0 bg-white pr-36 sm:pr-40 md:pr-48 pl-6 sm:pl-8 md:pl-10 py-4 transition-colors duration-300"
+        className="relative flex-1 flex items-center min-h-[125px] sm:min-h-[150px] md:min-h-[160px] rounded-l-[50px] sm:rounded-l-[80px] md:rounded-l-[90px] border-[3px] border-solid border-r-0 bg-white pr-[120px] sm:pr-40 md:pr-48 pl-5 sm:pl-8 md:pl-10 py-3 sm:py-4 transition-colors duration-300"
         style={{ borderColor: step.color }}
       >
         {/* Top Border Gap & Dot */}
-        <div className="absolute -top-[5px] right-[32%] sm:right-[38%] bg-white px-2 flex items-center justify-center z-10">
+        <div className="absolute -top-[5px] right-[28%] sm:right-[38%] bg-white px-2 flex items-center justify-center z-10">
           <span
             className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-transform duration-300 group-hover:scale-125"
             style={{ backgroundColor: step.color }}
@@ -68,7 +68,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
         </div>
 
         {/* Bottom Border Gap & Dot */}
-        <div className="absolute -bottom-[5px] right-[32%] sm:right-[38%] bg-white px-2 flex items-center justify-center z-10">
+        <div className="absolute -bottom-[5px] right-[28%] sm:right-[38%] bg-white px-2 flex items-center justify-center z-10">
           <span
             className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-transform duration-300 group-hover:scale-125"
             style={{ backgroundColor: step.color }}
@@ -82,10 +82,10 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
       </div>
 
       {/* Right Circle Badge Overlay */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center z-20 bg-white">
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center z-20 bg-white rounded-full">
         {/* Crescent Ring Arc around circle */}
         <svg
-          className="absolute -top-2.5 -right-2.5 w-42 h-42 sm:w-44 sm:h-44 md:w-46 md:h-46 pointer-events-none z-0 transition-transform duration-300 group-hover:scale-105"
+          className="absolute -top-2 -right-2 w-32.5 h-32.5 sm:w-41 sm:h-41 md:w-46 md:h-46 pointer-events-none z-0 transition-transform duration-300 group-hover:scale-105 bg-white"
           viewBox="0 0 180 180"
           fill="none"
           style={{ color: step.color }}
@@ -99,11 +99,11 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
         </svg>
 
         {/* White Main Circle */}
-        <div className="relative z-10 w-[132px] h-[132px] sm:w-[146px] sm:h-[146px] md:w-[160px] md:h-[160px] rounded-full bg-white flex flex-col items-center justify-center text-center p-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-100 transition-transform duration-300 group-hover:scale-[1.02]">
-          <span className="mad-h3 font-extrabold text-mad-text-primary mb-1 md:mb-1.5 font-sans">
+        <div className="relative z-10 w-[112px] h-[112px] sm:w-[144px] sm:h-[144px] md:w-[160px] md:h-[160px] rounded-full bg-white flex flex-col items-center justify-center text-center p-2.5 sm:p-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-100 transition-transform duration-300 group-hover:scale-[1.02]">
+          <span className="mad-h3 font-extrabold text-mad-text-primary mb-0.5 sm:mb-1 md:mb-1.5 font-sans">
             {step.number}
           </span>
-          <span className="mad-label-1 font-bold text-mad-text-primary max-w-[110px]">
+          <span className="mad-label-1 font-bold text-mad-text-primary max-w-[95px] sm:max-w-[110px]">
             {step.title}
           </span>
         </div>
@@ -118,10 +118,8 @@ const HowItWorks: React.FC<HowItWorksProps> = ({
   steps = DEFAULT_STEPS,
 }) => {
   return (
-    <section dir="rtl" className="w-full bg-white py-8 px-4 md:px-8">
+    <section dir="rtl" className="w-full bg-white py-8 px-4 sm:px-6 md:px-8">
       <div className="container mx-auto flex flex-col items-center">
-        {/* Top Horizontal Dotted Border Line */}
-        <div className="w-full border-t-2 border-dotted border-sky-300/80 mb-8 md:mb-10" />
 
         {/* Header Section */}
         <div className="text-center max-w-3xl px-4">
@@ -133,18 +131,15 @@ const HowItWorks: React.FC<HowItWorksProps> = ({
           </p>
         </div>
 
-        {/* Bottom Header Dotted Border Line */}
-        <div className="w-full border-t-2 border-dotted border-sky-300/80 mt-8 md:mt-10 mb-12 md:mb-16" />
 
-        {/* 2x2 Steps Grid */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 lg:gap-12 xl:gap-16">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16 py-6 md:py-8">
           {steps.map((step) => (
             <StepCard key={step.id} step={step} />
           ))}
         </div>
 
         {/* Bottom Section Dotted Border Line */}
-        <div className="w-full border-t-2 border-dotted border-sky-300/80 mt-16 md:mt-20" />
+        <div className="w-full border-t-2 border-dotted border-sky-300/80 mt-12 sm:mt-16 md:mt-20" />
       </div>
     </section>
   );

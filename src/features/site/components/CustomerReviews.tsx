@@ -64,7 +64,7 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
 // 3. Render Helper
 // ==========================================
 const renderReviewCard = (review: ReviewItem) => (
-  <div className="w-full bg-(--mad-purple-50) rounded-[32px] p-6 md:p-8 flex flex-col items-start text-right shadow-[0_10px_30px_rgba(109,40,217,0.05)] border border-(--mad-purple-100) h-full justify-between transition-all duration-300">
+  <div className="w-full bg-(--mad-purple-50) rounded-4xl p-6 md:p-8 flex flex-col items-start text-right shadow-[0_10px_30px_rgba(109,40,217,0.05)] border border-(--mad-purple-100) h-full justify-between transition-all duration-300">
     {/* أيقونة الاقتباس - اتجاه اليمين */}
     <div className="w-11 h-11 bg-(--mad-purple-100) rounded-full flex items-center justify-center text-mad-main-light font-bold text-xl mb-4 shrink-0">
       <svg className="w-5 h-5 fill-mad-main-light" viewBox="0 0 24 24">
@@ -122,11 +122,11 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
         observer
         observeParents
         breakpoints={{
-          640: {
+          600: {
             slidesPerView: 1.5,
             spaceBetween: 16,
           },
-          768: {
+          800: {
             slidesPerView: 2,
             spaceBetween: 20,
           },
@@ -138,7 +138,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
         className="w-full !pb-12"
       >
         {reviews.map((review) => (
-          <SwiperSlide key={review.id} className="!h-auto flex">
+          <SwiperSlide key={review.id} className="h-auto! flex">
             {renderReviewCard(review)}
           </SwiperSlide>
         ))}
