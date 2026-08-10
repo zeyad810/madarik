@@ -25,25 +25,25 @@ const Hero = () => {
 
           <div className="flex items-start justify-start gap-[72px]">
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
 
               <p className="text-white font-medium text-xl">الفئة العمرية</p>
             </div>
 
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
 
               <p className="text-white font-medium text-xl">الفئة العمرية</p>
             </div>
 
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
 
               <p className="text-white font-medium text-xl">الفئة العمرية</p>
             </div>
 
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
 
               <p className="text-white font-medium text-xl">الفئة العمرية</p>
             </div>
@@ -55,8 +55,8 @@ const Hero = () => {
               btnText="إشترك الآن"
               btnType="fit"
               btnBorder=""
-              btnBackground="var(--primary-color)"
-              btnColor="var(--color-white)"
+              btnBackground="var(--mad-main)"
+              btnColor="var(--mad-white-50)"
               icon="have"
               btnShadow="shadow-(--my-inset-shadow)"
               // btnType=

@@ -8,10 +8,10 @@ export default function HomePage() {
     <main className="flex min-h-screen flex-col items-center justify-center ">
       <Header />
       <Features />
-      <div className="flex w-full flex-col gap-16 px-4 py-12 md:px-8 mx-auto">
+      <div className="flex w-full flex-col gap-16 px-4 py-12 md:px-8 container mx-auto">
         <CustomerReviews />
       </div>
-      <div className="flex flex-col gap-16 py-12 px-4 md:px-8 max-w-6xl mx-auto">
+      <div className="flex flex-col gap-16 py-12 px-4 md:px-8 container mx-auto">
         <SectionHeader
           align="center"
           subtitle="آراء العملاء"

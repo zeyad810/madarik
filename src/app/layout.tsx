@@ -37,9 +37,9 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
-      className={`${ibmPlexSansArabic.variable} h-full antialiased`}
+      className={`${ibmPlexSansArabic.variable} ${ibmPlexSansArabic.className} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col  ">
+      <body className={`${ibmPlexSansArabic.className} min-h-full flex flex-col font-sans`}>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

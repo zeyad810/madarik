@@ -66,8 +66,8 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
 const renderReviewCard = (review: ReviewItem) => (
   <div className="w-full bg-[#f9f6ff] rounded-[32px] p-6 md:p-8 flex flex-col items-start text-right shadow-[0_10px_30px_rgba(109,40,217,0.05)] border border-[#f0e8ff] h-full justify-between transition-all duration-300">
     {/* أيقونة الاقتباس - اتجاه اليمين */}
-    <div className="w-11 h-11 bg-[#efe5ff] rounded-full flex items-center justify-center text-lightmain font-bold text-xl mb-4 shrink-0">
-      <svg className="w-5 h-5 fill-lightmain" viewBox="0 0 24 24">
+    <div className="w-11 h-11 bg-[#efe5ff] rounded-full flex items-center justify-center text-mad-main-light font-bold text-xl mb-4 shrink-0">
+      <svg className="w-5 h-5 fill-mad-main-light" viewBox="0 0 24 24">
         <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
       </svg>
     </div>
@@ -78,7 +78,7 @@ const renderReviewCard = (review: ReviewItem) => (
         <svg
           key={index}
           className={`w-4 h-4 md:w-5 md:h-5 ${
-            index < review.rating ? "text-third fill-third" : "text-gray-200"
+            index < review.rating ? "text-mad-third fill-mad-third" : "text-gray-200"
           }`}
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -89,16 +89,16 @@ const renderReviewCard = (review: ReviewItem) => (
     </div>
 
     {/* نص التقييم */}
-    <p className="text-text-primary text-xs md:text-sm leading-relaxed mb-6 font-medium">
+    <p className="text-mad-text-primary text-xs md:text-sm leading-relaxed mb-6 font-medium">
       &quot;{review.comment}&quot;
     </p>
 
     {/* معلومات العميل */}
     <div className="mt-auto">
-      <h4 className="text-lightmain font-bold text-base md:text-lg mb-0.5">
+      <h4 className="text-mad-main-light font-bold text-base md:text-lg mb-0.5">
         {review.author}
       </h4>
-      <span className="text-text-secondary text-xs font-normal">
+      <span className="text-mad-text-secondary text-xs font-normal">
         {review.role}
       </span>
     </div>
@@ -112,7 +112,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
   reviews = DEFAULT_REVIEWS,
 }) => {
   return (
-    <div dir="rtl" className="w-full max-w-7xl mx-auto">
+    <div dir="rtl" className="w-full container mx-auto">
       <Swiper
         modules={[Autoplay]}
         dir="rtl"
