@@ -111,7 +111,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
   reviews = DEFAULT_REVIEWS,
 }) => {
   return (
-    <div dir="rtl" className="w-full container mx-auto">
+    <section dir="rtl" className="w-full container mx-auto section-spacing px-4 md:px-8">
       <Swiper
         modules={[Autoplay]}
         dir="rtl"
@@ -142,7 +142,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
           </SwiperSlide>
         ))}
       </Swiper>
-    </div>
+    </section>
   );
 };
 

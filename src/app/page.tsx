@@ -6,14 +6,12 @@ import HowItWorks from "@/features/site/components/HowItWorks";
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center ">
+    <main className="flex min-h-screen flex-col items-center justify-center">
       <Header />
       <Features />
       <HowItWorks />
-      <div className="flex w-full flex-col gap-16 px-4 py-12 md:px-8 container mx-auto">
-        <CustomerReviews />
-      </div>
-      <div className="flex flex-col gap-16 py-12 px-4 md:px-8 container mx-auto">
+      <CustomerReviews />
+      <section className="flex w-full flex-col gap-16 section-spacing px-4 md:px-8 container mx-auto">
         <SectionHeader
           align="center"
           subtitle="آراء العملاء"
@@ -24,7 +22,7 @@ export default function HomePage() {
           title=" رحلتنا نحو صناعة جيل قارئ"
           description="نؤمن بأن بناء شخصية الطفل يبدأ من ترسيخ القيم وتنمية الفضول وتحويل المهارات إلى أدوات يعيشها بحب وسعادة ومعنى."
         />
-      </div>
+      </section>
     </main>
   );
 }

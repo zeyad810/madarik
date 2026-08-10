@@ -125,7 +125,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({
   steps = DEFAULT_STEPS,
 }) => {
   return (
-    <section dir="rtl" className="w-full bg-white py-8 px-4 sm:px-6 md:px-8">
+    <section dir="rtl" className="w-full bg-white section-spacing px-4 sm:px-6 md:px-8">
       <div className="container mx-auto flex flex-col items-center">
 
         {/* Header Section */}
