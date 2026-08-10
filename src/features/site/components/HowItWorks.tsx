@@ -60,7 +60,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
         style={{ borderColor: step.color }}
       >
         {/* Top Border Gap & Dot */}
-        <div className="absolute -top-[5px] right-[28%] sm:right-[38%] bg-white px-2 flex items-center justify-center z-10">
+        <div className="absolute -top-[5px] right-[28%] sm:right-[26%] bg-white ps-2 flex items-center justify-center z-10 -translate-y-0.5">
           <span
             className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-transform duration-300 group-hover:scale-125"
             style={{ backgroundColor: step.color }}
@@ -68,7 +68,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
         </div>
 
         {/* Bottom Border Gap & Dot */}
-        <div className="absolute -bottom-[5px] right-[28%] sm:right-[38%] bg-white px-2 flex items-center justify-center z-10">
+        <div className="absolute -bottom-[5px] right-[28%] sm:right-[26%] bg-white ps-2 flex items-center justify-center z-10 translate-y-0.5">
           <span
             className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-transform duration-300 group-hover:scale-125"
             style={{ backgroundColor: step.color }}
