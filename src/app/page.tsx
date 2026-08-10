@@ -1,6 +1,7 @@
 import Header from "@/components/layout/header/Header";
 import Button from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import CustomerReviews from "@/features/site/components/CustomerReviews";
 
 export default function HomePage() {
   return (
@@ -10,7 +11,9 @@ export default function HomePage() {
       <p className="mt-4 text-zinc-500">
         Modular Next.js Application Architecture
       </p>
-
+      <div className="flex w-full flex-col gap-16 px-4 py-12 md:px-8 mx-auto">
+        <CustomerReviews />
+      </div>
       <div className="flex flex-col gap-16 py-12 px-4 md:px-8 max-w-6xl mx-auto">
         <SectionHeader
           align="center"
