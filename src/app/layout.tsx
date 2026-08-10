@@ -26,6 +26,9 @@ const ibmPlexSansArabic = localFont({
 export const metadata: Metadata = {
   title: "Madarik App",
   description: "Modular Next.js Application Architecture",
+  icons: {
+    icon: "/logo.png?v=1",
+  },
 };
 
 export default function RootLayout({
