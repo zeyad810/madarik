@@ -6,6 +6,7 @@ import { Autoplay } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import Image from "next/image";
 
 // ==========================================
 // 1. TypeScript Types
@@ -31,8 +32,8 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
     author: "أ. سارة القحطاني",
     role: "ولي أمر",
     comment:
-      "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 3,
+      "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
+    rating: 0,
   },
   {
     id: 2,
@@ -40,7 +41,7 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
     role: "ولي أمر",
     comment:
       "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 5,
+    rating: 0,
   },
   {
     id: 3,
@@ -72,7 +73,6 @@ const renderReviewCard = (review: ReviewItem) => (
       </svg>
     </div>
 
-    {/* تقييم النجوم */}
     <div className="flex items-center gap-1 mb-4">
       {Array.from({ length: 5 }).map((_, index) => (
         <svg
@@ -93,7 +93,6 @@ const renderReviewCard = (review: ReviewItem) => (
       &quot;{review.comment}&quot;
     </p>
 
-    {/* معلومات العميل */}
     <div className="mt-auto">
       <h4 className="mad-label-1 text-mad-main-light font-bold mb-0.5">
         {review.author}
@@ -117,7 +116,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
         modules={[Autoplay]}
         dir="rtl"
         spaceBetween={12}
-        slidesPerView={1.5}
+        slidesPerView={1.2}
         watchOverflow
         observer
         observeParents
