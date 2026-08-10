@@ -1,12 +1,12 @@
 import Image from "next/image";
-import background from "../../../../public/iamges/Header/header_background.png";
-import side from "../../../../public/iamges/Header/side_image.png"
+import background from "../../../../public/iamges/header_background.png";
+import side from "../../../../public/iamges/side_image.png";
 import Button from "@/components/ui/Button";
 
 const Hero = () => {
   return (
     <section
-      className="min-h-screen py-16 md:py-0 bg-cover bg-center bg-no-repeat flex items-center justify-center"
+      className="w-full min-h-screen py-16 md:py-0 bg-cover bg-center bg-no-repeat flex items-center justify-center"
       style={{
         backgroundImage: `url(${background.src})`,
       }}
@@ -18,7 +18,7 @@ const Hero = () => {
           </h1>
 
           <p className="mad-h5 font-normal text-white">
-            منصة "مدارك القراءة" التعليمية تقدم لأطفالكم مكتبة رقمية متكاملة تضم
+            منصة"مدارك القراءة" التعليمية تقدم لأطفالكم مكتبة رقمية متكاملة تضم
             مئات القصص التفاعلية المصممة بإشراف خبراء لغويين لتطوير مهارات
             القراءة والكتابة بمتعة وأمان.
           </p>
