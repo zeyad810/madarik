@@ -6,7 +6,15 @@ const Logo = () => {
   return (
     <div>
       <Link href={"/"}>
-        <Image src="/logo.png?v=1" alt="Logo" width={100} height={100} quality={100} unoptimized />
+        <Image
+          src="/logo.png?v=1"
+          alt="Logo"
+          width={100}
+          height={100}
+          quality={100}
+          style={{ width: "auto", height: "auto" }}
+          unoptimized
+        />
       </Link>
     </div>
   )

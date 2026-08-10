@@ -34,6 +34,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
             width={imageWidth}
             height={imageHeight}
             className="object-contain"
+            style={{ width: "auto", height: "auto" }}
           />
         </div>
       )}

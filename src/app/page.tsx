@@ -3,6 +3,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import CustomerReviews from "@/features/site/components/CustomerReviews";
 import Features from "@/features/site/components/Features";
 import HowItWorks from "@/features/site/components/HowItWorks";
+import sectionHeading from "../../public/iamges/sectionHeading.png";
 
 export default function HomePage() {
   return (
@@ -15,7 +16,7 @@ export default function HomePage() {
         <SectionHeader
           align="center"
           subtitle="آراء العملاء"
-          imageSrc="/iamges/Header/header_background.png"
+          imageSrc={sectionHeading.src}
           imageAlt="أيقونة كتاب ونجمة"
           imageWidth={100}
           imageHeight={100}
@@ -26,4 +27,3 @@ export default function HomePage() {
     </main>
   );
 }
-
