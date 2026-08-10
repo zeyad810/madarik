@@ -64,9 +64,9 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
 // 3. Render Helper
 // ==========================================
 const renderReviewCard = (review: ReviewItem) => (
-  <div className="w-full bg-[#f9f6ff] rounded-[32px] p-6 md:p-8 flex flex-col items-start text-right shadow-[0_10px_30px_rgba(109,40,217,0.05)] border border-[#f0e8ff] h-full justify-between transition-all duration-300">
+  <div className="w-full bg-(--mad-purple-50) rounded-[32px] p-6 md:p-8 flex flex-col items-start text-right shadow-[0_10px_30px_rgba(109,40,217,0.05)] border border-(--mad-purple-100) h-full justify-between transition-all duration-300">
     {/* أيقونة الاقتباس - اتجاه اليمين */}
-    <div className="w-11 h-11 bg-[#efe5ff] rounded-full flex items-center justify-center text-mad-main-light font-bold text-xl mb-4 shrink-0">
+    <div className="w-11 h-11 bg-(--mad-purple-100) rounded-full flex items-center justify-center text-mad-main-light font-bold text-xl mb-4 shrink-0">
       <svg className="w-5 h-5 fill-mad-main-light" viewBox="0 0 24 24">
         <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
       </svg>
@@ -89,16 +89,16 @@ const renderReviewCard = (review: ReviewItem) => (
     </div>
 
     {/* نص التقييم */}
-    <p className="text-mad-text-primary text-xs md:text-sm leading-relaxed mb-6 font-medium">
+    <p className="mad-body-3 text-mad-text-primary mb-6 font-medium">
       &quot;{review.comment}&quot;
     </p>
 
     {/* معلومات العميل */}
     <div className="mt-auto">
-      <h4 className="text-mad-main-light font-bold text-base md:text-lg mb-0.5">
+      <h4 className="mad-label-1 text-mad-main-light font-bold mb-0.5">
         {review.author}
       </h4>
-      <span className="text-mad-text-secondary text-xs font-normal">
+      <span className="mad-label-3 text-mad-text-secondary font-normal">
         {review.role}
       </span>
     </div>

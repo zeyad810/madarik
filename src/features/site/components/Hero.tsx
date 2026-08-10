@@ -13,11 +13,11 @@ const Hero = () => {
     >
       <div className="container flex items-center">
         <div className="w-2/3 flex items-start justify-start flex-col gap-5">
-          <h1 className=" text-white text-7xl font-bold ">
+          <h1 className="mad-title-1 font-bold text-white">
             نصنع شغف القراءة ونبني عقول المستقبل بلغة الضاد
           </h1>
 
-          <p className="text-white font-normal text-2xl">
+          <p className="mad-h5 font-normal text-white">
             منصة "مدارك القراءة" التعليمية تقدم لأطفالكم مكتبة رقمية متكاملة تضم
             مئات القصص التفاعلية المصممة بإشراف خبراء لغويين لتطوير مهارات
             القراءة والكتابة بمتعة وأمان.
@@ -25,27 +25,27 @@ const Hero = () => {
 
           <div className="flex items-start justify-start gap-[72px]">
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="mad-h3 font-bold text-mad-third">5 - 15 سنة</p>
 
-              <p className="text-white font-medium text-xl">الفئة العمرية</p>
+              <p className="mad-h6 font-medium text-white">الفئة العمرية</p>
             </div>
 
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="mad-h3 font-bold text-mad-third">5 - 15 سنة</p>
 
-              <p className="text-white font-medium text-xl">الفئة العمرية</p>
+              <p className="mad-h6 font-medium text-white">الفئة العمرية</p>
             </div>
 
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="mad-h3 font-bold text-mad-third">5 - 15 سنة</p>
 
-              <p className="text-white font-medium text-xl">الفئة العمرية</p>
+              <p className="mad-h6 font-medium text-white">الفئة العمرية</p>
             </div>
 
             <div className="flex items-start justify-start flex-col gap-1">
-              <p className="text-mad-third font-bold text-3xl">5 - 15 سنة</p>
+              <p className="mad-h3 font-bold text-mad-third">5 - 15 سنة</p>
 
-              <p className="text-white font-medium text-xl">الفئة العمرية</p>
+              <p className="mad-h6 font-medium text-white">الفئة العمرية</p>
             </div>
           </div>
           

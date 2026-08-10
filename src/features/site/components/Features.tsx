@@ -121,12 +121,12 @@ const Features: React.FC<FeaturesProps> = ({
               </div>
 
               {/* Title */}
-              <h3 className="text-lg text-mad-text-primary font-semibold mb-3 tracking-tight">
+              <h3 className="mad-h6 text-mad-text-primary font-semibold mb-3">
                 {feature.title}
               </h3>
 
               {/* Description */}
-              <p className="text-mad-text-secondary  mad-label-1 leading-relaxed font-normal">
+              <p className="mad-body-3 text-mad-text-secondary font-normal">
                 {feature.description}
               </p>
             </div>
