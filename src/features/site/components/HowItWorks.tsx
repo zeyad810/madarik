@@ -82,21 +82,19 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
       </div>
 
       {/* Right Circle Badge Overlay */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center z-20 bg-white rounded-full">
-        {/* Crescent Ring Arc around circle */}
-        <svg
-          className="absolute -top-2 -right-2 w-32.5 h-32.5 sm:w-41 sm:h-41 md:w-46 md:h-46 pointer-events-none z-0 transition-transform duration-300 group-hover:scale-105 bg-white"
-          viewBox="0 0 180 180"
-          fill="none"
-          style={{ color: step.color }}
-        >
-          <path
-            d="M 32 46 A 74 74 0 1 1 168 124"
-            stroke="currentColor"
-            strokeWidth="7.5"
-            strokeLinecap="round"
-          />
-        </svg>
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center z-20 bg-white">
+        {/* Crescent Shape Element */}
+        <div
+          className="absolute -top-2.5 -right-2.5 w-[132px] h-[132px] sm:w-[164px] sm:h-[164px] md:w-[180px] md:h-[180px] pointer-events-none z-0 transition-transform duration-300 group-hover:scale-105"
+          style={{
+            borderRadius: "100%",
+            // @ts-expect-error - CSS draft corner-shape property
+            cornerShape: "scoop round round scoop",
+            color: step.color,
+            background: step.color,
+            transform: "translate(10px, -5px) rotate(-33deg)",
+          }}
+        />
 
         {/* White Main Circle */}
         <div className="relative z-10 w-[112px] h-[112px] sm:w-[144px] sm:h-[144px] md:w-[160px] md:h-[160px] rounded-full bg-white flex flex-col items-center justify-center text-center p-2.5 sm:p-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-100 transition-transform duration-300 group-hover:scale-[1.02]">
