@@ -67,6 +67,7 @@ const Hero = () => {
           src={side}
           alt="صورة مدارك"
           className="w-full md:w-1/2 max-h-[350px] md:max-h-none object-contain"
+          style={{ width: "auto", height: "auto" }}
           priority
         />
       </div>
