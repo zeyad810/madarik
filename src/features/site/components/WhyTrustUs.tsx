@@ -8,7 +8,7 @@ export const whyTrustUsData: WhyTrustUsProps = {
   description:
     "نساعد طفلك على تنمية مهارات القراءة والتفكير من خلال تجربة تعليمية آمنة وممتعة، مع متابعة مستمرة لتقدمه ومحتوى مصمم على يد متخصصين.",
 
-  image: "/images/whyTrustUs.png",
+  image: "/iamges/whyTrustUs.svg",
 
   imageAlt: "معلم يستخدم جهازًا لوحيًا",
 
@@ -37,44 +37,18 @@ export const whyTrustUsData: WhyTrustUsProps = {
 };
 
 /**
- * Decorative 4-point sparkle/star SVG (matches the reference design).
- * Pass a unique `id` whenever you render more than one on the same page
- * so the gradient defs don't collide.
+ * Highlights "آلاف الآباء والمعلمين" with the primary brand colour.
+ * The rest of the title keeps the default dark colour.
  */
-const SparkleStar = ({ id, className }: { id: string; className?: string }) => (
-  <svg viewBox="0 0 51 51" fill="none" aria-hidden="true" className={className}>
-    <path
-      d="M25.5 0C25.5 0 27 18 33 24C39 30 51 25.5 51 25.5C51 25.5 39 27 33 33C27 39 25.5 51 25.5 51C25.5 51 24 33 18 27C12 21 0 25.5 0 25.5C0 25.5 12 24 18 18C24 12 25.5 0 25.5 0Z"
-      fill={`url(#${id})`}
-    />
-    <defs>
-      <linearGradient
-        id={id}
-        x1="0"
-        y1="0"
-        x2="51"
-        y2="51"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop stopColor="#FFD84D" />
-        <stop offset="1" stopColor="#FF9F1C" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-/** Highlights the word "آلاف" inside the title with a gradient color. */
 const renderTitle = (title: string) => {
-  const highlight = "آلاف";
+  const highlight = "آلاف الآباء والمعلمين";
   if (!title.includes(highlight)) return title;
 
   const [before, after] = title.split(highlight);
   return (
     <>
       {before}
-      <span className="bg-linear-to-l from-mad-main to-purple-400 bg-clip-text text-transparent">
-        {highlight}
-      </span>
+      <span className="text-mad-main">{highlight}</span>
       {after}
     </>
   );
@@ -93,114 +67,86 @@ const WhyTrustUs = ({
       className="relative w-full overflow-hidden bg-white py-16 sm:py-20 lg:py-24"
     >
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Decorative sparkles */}
-        <SparkleStar
-          id="sparkle-title"
-          className="absolute -top-2 right-6 size-7 sm:size-9 lg:right-10"
-        />
-        <SparkleStar
-          id="sparkle-image"
-          className="absolute bottom-10 left-4 size-6 sm:size-8 lg:left-10"
-        />
-
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* ==================== Content (right side) ==================== */}
-          <div className="order-1 flex w-full flex-col items-start text-right lg:order-1">
-            {/* Title */}
-            <h2 className="mad-title-2 max-w-2xl font-bold text-mad-main">
-              {renderTitle(title)}
-            </h2>
+          <div className="order-2 flex w-full flex-col items-start text-right lg:order-1">
+            {/* Title block */}
+            <div className="relative flex w-full flex-col items-start">
+              {/* Decorative splash — absolute, above the first letter on the right */}
+              <Image
+                src="/iamges/trustUs1svg.svg"
+                alt=""
+                aria-hidden="true"
+                width={47}
+                height={51}
+                className="absolute -top-6 right-0 select-none"
+              />
+              <h2 className="mad-title-2 max-w-2xl font-bold text-gray-800">
+                {renderTitle(title)}
+              </h2>
+              {/* Wavy underline — aligned to the right start */}
+              <Image
+                src="/iamges/trustUs2svg.svg"
+                alt=""
+                aria-hidden="true"
+                width={126}
+                height={15}
+                className="mt-2 select-none self-start"
+              />
+            </div>
 
             {/* Description */}
-            <p className="mad-h6 mt-4 max-w-2xl leading-7 text-mad-main/70">
+            <p className="mad-h6 mt-6 max-w-2xl leading-7 text-mad-main/70">
               {description}
             </p>
 
             {/* Features */}
             <div className="mt-8 w-full max-w-2xl">
-              <div className="relative">
-                {/* Timeline Line */}
+              {/*
+                RTL flex: first DOM child = visually on the RIGHT.
+                Layout per row:
+                  [card: icon(right) | text(left)]   [dot]
+                                                      [line]
+                pr-10 creates space for the timeline on the right.
+              */}
+              <div className="relative pr-10 sm:pr-12">
+                {/* Timeline vertical line */}
                 <div
                   aria-hidden="true"
-                  className="
-                    absolute
-                    right-5
-                    top-5
-                    bottom-5
-                    hidden
-                    w-px
-                    bg-mad-main/20
-                    sm:block
-                  "
+                  className="absolute right-3.5 top-6 bottom-6 hidden w-px bg-mad-main/20 sm:block"
                 />
 
-                <div className="flex flex-col gap-5">
-                  {features.map((feature, index) => (
+                <div className="flex flex-col gap-4">
+                  {features.map((feature) => (
                     <div
                       key={feature.id}
-                      className="relative flex items-center"
+                      className="relative flex items-stretch"
                     >
-                      {/* Feature Card */}
-                      <div
-                        className="
-                          flex
-                          w-full
-                          min-w-0
-                          items-center
-                          justify-between
-                          rounded-2xl
-                          bg-[#F8F7FD]
-                          px-4
-                          py-4
-                          sm:px-5
-                        "
-                      >
-                        {/* Text */}
-                        <div className="min-w-0 text-right">
+                      {/* Timeline Dot — centred vertically on the card */}
+                      <span
+                        aria-hidden="true"
+                        className="absolute -right-6 top-1/2 -translate-y-1/2 hidden size-2.5 rounded-full bg-mad-main ring-2 ring-white sm:block"
+                      />
+
+                      {/* Feature Card — full width, icon + text BOTH inside */}
+                      <div className="flex w-full items-center rounded-2xl bg-[#F8F7FD] px-4 py-4 sm:px-5">
+                        {/* Icon — FIRST in DOM → appears on RIGHT in RTL */}
+                        <div className="shrink-0 flex size-10 items-center justify-center rounded-full bg-mad-main text-white shadow-sm">
+                          {feature.icon ?? (
+                            <span className="text-sm font-bold">●</span>
+                          )}
+                        </div>
+
+                        {/* Text — after icon → appears on LEFT in RTL */}
+                        <div className="mr-4 min-w-0 flex-1 text-right">
                           <h3 className="mad-h6 font-bold text-mad-main">
                             {feature.title}
                           </h3>
-
                           <p className="mt-1 text-xs leading-5 text-mad-main/50 sm:text-sm">
                             {feature.description}
                           </p>
                         </div>
-
-                        {/* Icon */}
-                        <div
-                          className="
-                            mr-4
-                            flex
-                            size-10
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-full
-                            bg-mad-main
-                            text-white
-                          "
-                        >
-                          {feature.icon ?? (
-                            <span className="text-sm font-bold">
-                              {index + 1}
-                            </span>
-                          )}
-                        </div>
                       </div>
-
-                      {/* Timeline Dot */}
-                      <span
-                        aria-hidden="true"
-                        className="
-                          absolute
-                          right-4.5
-                          hidden
-                          size-2.5
-                          rounded-full
-                          bg-mad-main
-                          sm:block
-                        "
-                      />
                     </div>
                   ))}
                 </div>
@@ -209,14 +155,15 @@ const WhyTrustUs = ({
           </div>
 
           {/* ==================== Image (left side) ==================== */}
-          <div className="order-2 flex w-full items-center justify-center lg:order-2">
-            <div className="relative aspect-831/440 w-full max-w-150">
+          <div className="order-1 flex w-full items-center justify-center lg:order-2">
+            {/* Portrait aspect ratio matching the reference (758 × 907) */}
+            <div className="relative aspect-758/907 w-full max-w-md lg:max-w-lg">
               <Image
                 src={image}
                 alt={imageAlt}
                 fill
                 priority
-                sizes="(max-width: 1024px) 90vw, 50vw"
+                sizes="(max-width: 1024px) 90vw, 45vw"
                 className="object-contain"
               />
             </div>
