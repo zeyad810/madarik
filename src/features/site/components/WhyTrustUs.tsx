@@ -102,40 +102,50 @@ const WhyTrustUs = ({
 
             {/* Features */}
             <div className="mt-8 w-full max-w-2xl">
-              <div className="relative">
-                {/* Timeline vertical line — sits to the right of the icon column */}
+              {/*
+                RTL flex: first DOM child = visually on the RIGHT.
+                Layout per row:
+                  [card: icon(right) | text(left)]   [dot]
+                                                      [line]
+                pr-10 creates space for the timeline on the right.
+              */}
+              <div className="relative pr-10 sm:pr-12">
+                {/* Timeline vertical line */}
                 <div
                   aria-hidden="true"
-                  className="absolute right-[18px] top-8 bottom-8 hidden w-px bg-mad-main/20 sm:block"
+                  className="absolute right-[14px] top-6 bottom-6 hidden w-px bg-mad-main/20 sm:block"
                 />
 
                 <div className="flex flex-col gap-4">
                   {features.map((feature) => (
                     <div
                       key={feature.id}
-                      className="relative flex items-center gap-4"
+                      className="relative flex items-stretch"
                     >
-                      {/* Timeline Dot — overlays the line */}
+                      {/* Timeline Dot — centred vertically on the card */}
                       <span
                         aria-hidden="true"
-                        className="absolute right-[13px] hidden size-2.5 rounded-full bg-mad-main ring-2 ring-white sm:block"
+                        className="absolute right-[-24px] top-1/2 -translate-y-1/2 hidden size-2.5 rounded-full bg-mad-main ring-2 ring-white sm:block"
                       />
 
-                      {/* Icon — rightmost, outside the card */}
-                      <div className="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full bg-mad-main text-white shadow-sm">
-                        {feature.icon ?? (
-                          <span className="text-sm font-bold">●</span>
-                        )}
-                      </div>
+                      {/* Feature Card — full width, icon + text BOTH inside */}
+                      <div className="flex w-full items-center rounded-2xl bg-[#F8F7FD] px-4 py-4 sm:px-5">
+                        {/* Icon — FIRST in DOM → appears on RIGHT in RTL */}
+                        <div className="shrink-0 flex size-10 items-center justify-center rounded-full bg-mad-main text-white shadow-sm">
+                          {feature.icon ?? (
+                            <span className="text-sm font-bold">●</span>
+                          )}
+                        </div>
 
-                      {/* Feature Card */}
-                      <div className="flex min-w-0 flex-1 flex-col rounded-2xl bg-[#F8F7FD] px-4 py-4 text-right sm:px-5">
-                        <h3 className="mad-h6 font-bold text-mad-main">
-                          {feature.title}
-                        </h3>
-                        <p className="mt-1 text-xs leading-5 text-mad-main/50 sm:text-sm">
-                          {feature.description}
-                        </p>
+                        {/* Text — after icon → appears on LEFT in RTL */}
+                        <div className="mr-4 min-w-0 flex-1 text-right">
+                          <h3 className="mad-h6 font-bold text-mad-main">
+                            {feature.title}
+                          </h3>
+                          <p className="mt-1 text-xs leading-5 text-mad-main/50 sm:text-sm">
+                            {feature.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   ))}
