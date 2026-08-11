@@ -87,7 +87,8 @@ const InstantReport = ({
                 height={520}
                 priority
                 sizes="(max-width: 1024px) 90vw, 45vw"
-                className="h-auto w-full object-contain"
+                style={{ width: "100%", height: "auto" }}
+                className="object-contain"
               />
             </div>
           </div>

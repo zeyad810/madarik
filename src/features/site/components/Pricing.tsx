@@ -99,6 +99,7 @@ const PlanCard = ({
             src={plan.icon}
             alt={plan.name}
             fill
+            sizes="100px"
             className="object-contain"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";

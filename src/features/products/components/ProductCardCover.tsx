@@ -22,6 +22,7 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
         src={imageSrc}
         alt={imageAlt}
         fill
+        sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
         className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
         priority
       />
