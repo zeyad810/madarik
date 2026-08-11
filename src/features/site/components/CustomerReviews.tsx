@@ -6,22 +6,10 @@ import { Autoplay } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/pagination";
-import Image from "next/image";
 
-// ==========================================
-// 1. TypeScript Types
-// ==========================================
-export interface ReviewItem {
-  id: string | number;
-  author: string;
-  role: string;
-  comment: string;
-  rating: number;
-}
 
-interface CustomerReviewsProps {
-  reviews?: ReviewItem[];
-}
+import { ReviewItem, CustomerReviewsProps } from "../types";
+
 
 // ==========================================
 // 2. Mock Data
@@ -67,7 +55,7 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
 const renderReviewCard = (review: ReviewItem) => (
   <div className="w-full bg-(--mad-purple-50) rounded-4xl p-6 md:p-8 flex flex-col items-start text-right shadow-[0_10px_30px_rgba(109,40,217,0.05)] border border-(--mad-purple-100) h-full justify-between transition-all duration-300">
     {/* أيقونة الاقتباس - اتجاه اليمين */}
-    <div className="w-11 h-11 bg-(--mad-purple-100) rounded-full flex items-center justify-center text-mad-main-light font-bold text-xl mb-4 shrink-0">
+    <div className="w-11 h-11 bg-(--mad-purple-100) rounded-full flex items-center justify-center text-mad-main-light font-bold mad-h6 mb-4 shrink-0">
       <svg className="w-5 h-5 fill-mad-main-light" viewBox="0 0 24 24">
         <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
       </svg>
