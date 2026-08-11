@@ -418,7 +418,44 @@
    RESPONSIVE TYPOGRAPHY
    ========================================================= */
 
-@media (max-width: 800px) {
+@media (max-width: 1200px) {
+  :root {
+    --mad-title-1-size: 56px;
+    --mad-title-1-line: 66px;
+
+    --mad-title-2-size: 48px;
+    --mad-title-2-line: 56px;
+
+    --mad-title-3-size: 40px;
+    --mad-title-3-line: 48px;
+
+    --mad-h1-size: 40px;
+    --mad-h1-line: 48px;
+
+    --mad-h2-size: 36px;
+    --mad-h2-line: 44px;
+
+    --mad-h3-size: 28px;
+    --mad-h3-line: 34px;
+
+    --mad-h4-size: 24px;
+    --mad-h4-line: 30px;
+
+    --mad-h5-size: 20px;
+    --mad-h5-line: 26px;
+
+    --mad-h6-size: 18px;
+    --mad-h6-line: 22px;
+
+    --mad-body-1-size: 16px;
+    --mad-body-1-line: 24px;
+
+    --mad-body-2-size: 15px;
+    --mad-body-2-line: 22px;
+  }
+}
+
+@media (max-width: 768px) {
   :root {
     --mad-title-1-size: 52px;
     --mad-title-1-line: 60px;

@@ -107,15 +107,16 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
   reviews = DEFAULT_REVIEWS,
 }) => {
   return (
-    <section dir="rtl" className="w-full container mx-auto section-spacing px-4 md:px-8">
-      <SectionHeader
-        title={title}
-        subtitle={subtitle}
-        description={description}
-        align="center"
-        className="mb-12 md:mb-16 max-w-3xl mx-auto"
-      />
-      <Swiper
+    <section dir="rtl" className="w-full section-spacing px-4 md:px-8 bg-white overflow-hidden">
+      <div className="container mx-auto flex flex-col items-center">
+        <SectionHeader
+          title={title}
+          subtitle={subtitle}
+          description={description}
+          align="center"
+          className="mb-12 md:mb-16 max-w-3xl mx-auto"
+        />
+        <Swiper
         modules={[Autoplay]}
         dir="rtl"
         spaceBetween={12}
@@ -145,6 +146,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
           </SwiperSlide>
         ))}
       </Swiper>
+      </div>
     </section>
   );
 };

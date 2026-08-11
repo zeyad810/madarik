@@ -115,3 +115,21 @@ export interface FqaProps {
   imageSrc?: string;
   imageAlt?: string;
 }
+
+// ==========================================
+// ChildWin Types
+// ==========================================
+export interface ChildWinCardItem {
+  id: string | number;
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface ChildWinProps {
+  title?: string;
+  description?: string;
+  bgImageSrc?: string;
+  cards?: ChildWinCardItem[];
+}
+

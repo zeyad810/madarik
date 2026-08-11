@@ -41,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({
           backgroundImage: `url(${mobileBgImageSrc})`,
         }}
       >
-        <div className="container flex flex-col items-start px-4 sm:px-6 z-10 relative">
+        <div className="container mx-auto flex flex-col items-start px-4 sm:px-6 z-10 relative">
           {/* Mobile Content Side (70% width) */}
           <div className="w-[68%] flex items-start justify-start flex-col gap-3">
             <h1 className="text-[16px] font-bold text-white leading-tight">
@@ -103,7 +103,7 @@ const Hero: React.FC<HeroProps> = ({
         backgroundImage: `url(${bgImageSrc})`,
       }}
     >
-      <div className="container flex flex-col md:flex-row items-center gap-8 md:gap-12 px-4 sm:px-6 md:px-8 z-10">
+      <div className="container mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 px-4 sm:px-6 md:px-8 z-10">
         {/* Content Side */}
         <div className="w-full md:w-2/3 flex items-start justify-start flex-col gap-6">
           <h1 className="mad-title-1 font-bold text-white leading-tight">
