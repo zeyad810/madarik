@@ -38,7 +38,7 @@ const Hero: React.FC<HeroProps> = ({
     return (
       <section
         dir="rtl"
-        className="w-full h-144.25 bg-cover bg-center bg-no-repeat flex items-start pt-16 sm:pt-16 justify-center relative overflow-hidden"
+        className="w-full h-144.25 bg-cover bg-center bg-no-repeat flex items-start pt-20 sm:pt-24 justify-center relative overflow-hidden"
         style={{
           backgroundImage: `url(${mobileBgImageSrc})`,
         }}
@@ -100,7 +100,7 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <section
       dir="rtl"
-      className="w-full min-h-screen py-16 md:py-0 bg-cover bg-center bg-no-repeat flex items-center justify-center relative overflow-hidden"
+      className="w-full min-h-screen pt-28 lg:pt-36 pb-16 bg-cover bg-center bg-no-repeat flex items-center justify-center relative overflow-hidden"
       style={{
         backgroundImage: `url(${bgImageSrc})`,
       }}
