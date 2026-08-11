@@ -12,7 +12,7 @@ const Logo = () => {
           width={100}
           height={100}
           quality={100}
-          style={{ width: "auto", height: "auto" }}
+          className="w-auto h-auto object-contain"
           unoptimized
         />
       </Link>
