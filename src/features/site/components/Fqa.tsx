@@ -51,8 +51,12 @@ const Fqa: React.FC<FqaProps> = ({
   };
 
   return (
-    <section dir="rtl" className="w-full bg-white section-spacing px-4 md:px-8 overflow-hidden">
-      <div className="container mx-auto flex flex-col items-center">
+    <section dir="rtl" className="relative w-full bg-linear-to-b from-[#fbfaff] via-white to-white section-spacing px-4 md:px-8 overflow-hidden">
+      {/* Background Ambient Glows for Glassmorphism Effect */}
+      <div className="absolute top-1/4 right-10 w-96 h-96 bg-purple-200/35 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 left-10 w-96 h-96 bg-purple-300/25 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="container mx-auto flex flex-col items-center relative z-10">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mb-12 md:mb-16">
@@ -69,20 +73,20 @@ const Fqa: React.FC<FqaProps> = ({
           
           {/* Illustration Image Column (Right in RTL layout) */}
           <div className="lg:col-span-5 flex justify-center items-center order-2 lg:order-1">
-            <div className="relative w-full max-w-[380px] sm:max-w-[420px] lg:max-w-[460px]">
+            <div className="relative w-[291px] h-[291px] lg:w-[596px] lg:h-[596px] aspect-square shrink-0">
               <Image
                 src={imageSrc}
                 alt={imageAlt}
-                width={500}
-                height={500}
-                className="w-full h-auto object-contain drop-shadow-xl"
+                width={596}
+                height={596}
+                className="w-full h-full object-contain drop-shadow-2xl"
                 priority
               />
             </div>
           </div>
 
           {/* Accordion List Column (Left in RTL layout) */}
-          <div className="lg:col-span-7 flex flex-col items-center gap-4 order-1 lg:order-2">
+          <div className="lg:col-span-7 flex flex-col items-start gap-4 order-1 lg:order-2">
             <div className="w-full flex flex-col gap-4">
               {items.map((item) => {
                 const isOpen = openId === item.id;
@@ -91,8 +95,8 @@ const Fqa: React.FC<FqaProps> = ({
                     key={item.id}
                     className={`group w-full rounded-2xl md:rounded-3xl p-5 md:p-6 transition-all duration-300 cursor-pointer select-none ${
                       isOpen
-                        ? "bg-linear-to-r from-[#f4f0ff] via-[#f7f4ff] to-white border-r-4 border-r-mad-main border-y border-l border-[#e4dafc] shadow-[0_10px_30px_rgba(109,40,217,0.07)]"
-                        : "bg-white border border-slate-100/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:border-purple-200 hover:shadow-[0_8px_25px_rgba(109,40,217,0.06)] hover:-translate-y-0.5"
+                        ? "bg-white/80 backdrop-blur-md border-r-4 border-r-mad-main border-y border-l border-white/90 shadow-[0_12px_32px_rgba(109,40,217,0.08)]"
+                        : "bg-white/60 backdrop-blur-md border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:bg-white/85 hover:border-purple-200/80 hover:shadow-[0_10px_30px_rgba(109,40,217,0.08)] hover:-translate-y-0.5"
                     }`}
                     onClick={() => toggleItem(item.id)}
                   >
@@ -111,7 +115,7 @@ const Fqa: React.FC<FqaProps> = ({
                         className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
                           isOpen
                             ? "bg-mad-main text-white shadow-md"
-                            : "bg-[#f4f0ff] text-mad-main-light group-hover:bg-purple-100 group-hover:scale-105"
+                            : "bg-[#f4f0ff]/80 backdrop-blur-xs text-mad-main-light group-hover:bg-purple-100 group-hover:scale-105"
                         }`}
                       >
                         <svg
@@ -148,11 +152,11 @@ const Fqa: React.FC<FqaProps> = ({
               })}
             </div>
 
-            {/* View More Button */}
-            <div className="mt-6">
+            {/* View More Button (Aligned to Start with Deep Purple Shadow & Glass Touch) */}
+            <div className="w-full flex justify-start mt-6">
               <button
                 type="button"
-                className="px-8 py-3 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer"
+                className="px-9 py-3.5 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-[0_12px_30px_rgba(109,40,217,0.35)] hover:shadow-[0_18px_40px_rgba(109,40,217,0.45)] transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer backdrop-blur-xs"
               >
                 عرض المزيد
               </button>

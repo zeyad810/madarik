@@ -1,6 +1,28 @@
 import type { ReactNode } from "react";
 
 // ==========================================
+// Hero Types
+// ==========================================
+export interface HeroStatItem {
+  id: string | number;
+  value: string;
+  label: string;
+}
+
+export interface HeroProps {
+  title?: string;
+  description?: string;
+  stats?: HeroStatItem[];
+  ctaText?: string;
+  ctaLink?: string;
+  bgImageSrc?: string;
+  mobileBgImageSrc?: string;
+  sideImageSrc?: string;
+  mobileSideImageSrc?: string;
+  sideImageAlt?: string;
+}
+
+// ==========================================
 // Customer Reviews Types
 // ==========================================
 export interface ReviewItem {
