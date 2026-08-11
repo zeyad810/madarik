@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useSyncExternalStore } from "react";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
@@ -25,18 +25,20 @@ const Hero: React.FC<HeroProps> = ({
   sideImageAlt = "صورة منصة مدارك",
 }) => {
   const { isMobile } = useBreakpoint();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // useSyncExternalStore is the React-recommended way to detect the client
+  // without triggering cascading renders from useEffect+setState.
+  const isClient = useSyncExternalStore(
+    () => () => {},   // subscribe: no external store to subscribe to
+    () => true,       // getSnapshot: always true on the client
+    () => false,      // getServerSnapshot: false on the server (SSR)
+  );
 
   // Dedicated Mobile UI layout
   if (isClient && isMobile) {
     return (
       <section
         dir="rtl"
-        className="w-full h-[577px] bg-cover bg-center bg-no-repeat flex items-start pt-16 sm:pt-16 justify-center relative overflow-hidden"
+        className="w-full h-144.25 bg-cover bg-center bg-no-repeat flex items-start pt-16 sm:pt-16 justify-center relative overflow-hidden"
         style={{
           backgroundImage: `url(${mobileBgImageSrc})`,
         }}
@@ -79,13 +81,13 @@ const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Mobile Side Image (Absolute on the Left, w: 140px, h: 165px) */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[140px] h-[165px] flex items-center justify-center">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-35 h-41.25 flex items-center justify-center">
             <Image
               src={sideImageSrc}
               alt={sideImageAlt}
               width={140}
               height={165}
-              className="w-[140px] h-[165px] object-contain drop-shadow-xl"
+              className="w-35 h-41.25 object-contain drop-shadow-xl"
               priority
             />
           </div>
@@ -140,14 +142,14 @@ const Hero: React.FC<HeroProps> = ({
           </div>
         </div>
 
-        {/* Desktop Side Image (w: 821px, h: 648px in lg) */}
+        {/* Desktop Side Image */}
         <div className="w-full md:w-1/2 flex items-center justify-center">
           <Image
             src={sideImageSrc}
             alt={sideImageAlt}
             width={821}
             height={648}
-            className="w-full max-h-[380px] md:max-h-none lg:w-[821px] lg:h-[648px] object-contain drop-shadow-xl"
+            className="h-auto w-full object-contain drop-shadow-xl lg:max-w-205.25"
             priority
           />
         </div>

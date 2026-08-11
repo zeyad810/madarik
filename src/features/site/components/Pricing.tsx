@@ -1,19 +1,37 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { Check } from "lucide-react";
-import type { PricingPlan, PricingProps, AgeGroup } from "../types";
+import type { PricingPlan, PricingProps } from "../types";
 
 // ==========================================
 // Mock Data  (replace with API data later)
 // ==========================================
 const DEFAULT_PLANS: PricingPlan[] = [
   {
+    id: "family",
+    name: "الباقة العائلية",
+    description: "الباقة المثالية للعائلات التي تضم أكثر من طفل",
+    icon: "/iamges/family-icon.svg",
+    ageGroups: ["5-9", "10-12", "13-15"],
+    price: 149,
+    currency: "ر.س",
+    billingPeriod: "شهريًا",
+    badge: "لمدة سنة كاملة شاملة",
+    ctaLabel: "اشترك الآن",
+    featured: true,
+    features: [
+      "كل مميزات الباقة المقدمة",
+      "تفعيل حتى 5 حسابات للأطفال",
+      "تقارير نمو دورية وشهرية للوالدين",
+      "دعم أولوية 24/7 واستشارات تربوية",
+    ],
+  },
+  {
     id: "schools",
     name: "باقة المدارس",
     description: "حل متكامل للمدارس والمعلمين",
-    icon: "/iamges/school-icon.svg", // swap with your real asset
+    icon: "/iamges/school-icon.svg",
     ageGroups: ["5-9", "10-12", "13-15"],
     price: null,
     ctaLabel: "اشترك عبر الواتساب",
@@ -26,81 +44,32 @@ const DEFAULT_PLANS: PricingPlan[] = [
       "اختبارات تكيفية",
     ],
   },
-  {
-    id: "family",
-    name: "الباقة العائلية",
-    description: "اشتراك للعائلات التي تضم أكثر من طفل",
-    icon: "/iamges/family-icon.svg", // swap with your real asset
-    ageGroups: ["5-9", "10-12", "13-15"],
-    price: 149,
-    currency: "ريال",
-    billingPeriod: "شهريًا",
-    badge: "لمدة سنة كاملة شاملة",
-    ctaLabel: "اشترك الآن",
-    featured: true,
-    features: [
-      "كل مميزات الباقة المقدمة",
-      "تفعيل حتى 5 حسابات للأطفال",
-      "تقارير نمو دورية وتشريبية للوالدين",
-      "دعم أولوية 24/7 واستشارات تربوية",
-    ],
-  },
 ];
 
 // ==========================================
 // Sub-components
 // ==========================================
 
-/** Age-group pill tabs */
-const AgeGroupTabs = ({
-  groups,
-  active,
-  onSelect,
-  featured,
-}: {
-  groups: AgeGroup[];
-  active: AgeGroup;
-  onSelect: (g: AgeGroup) => void;
-  featured: boolean;
-}) => (
-  <div className="mt-4 flex flex-wrap gap-2 justify-center">
+/** Static age-group pills — display only, not interactive */
+const AgeGroupPills = ({ groups }: { groups: string[] }) => (
+  <div className="mt-3 flex flex-wrap justify-center gap-2">
     {groups.map((g) => (
-      <button
+      <span
         key={g}
-        onClick={() => onSelect(g)}
-        className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-          active === g
-            ? featured
-              ? "bg-mad-main text-white"
-              : "bg-mad-main/10 text-mad-main"
-            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-        }`}
+        className="rounded-full bg-mad-main/10 px-3 py-1 text-sm font-medium text-mad-main"
       >
         {g}
-      </button>
+      </span>
     ))}
   </div>
 );
 
-/** Single feature bullet row */
-const FeatureRow = ({
-  text,
-  featured,
-}: {
-  text: string;
-  featured: boolean;
-}) => (
-  <li className="flex items-center gap-3 text-right">
-    <span className="text-sm leading-relaxed text-gray-700 flex-1">{text}</span>
-    <span
-      className={`flex size-5 shrink-0 items-center justify-center rounded-full ${
-        featured ? "bg-mad-main" : "bg-mad-main/10"
-      }`}
-    >
-      <Check
-        className={`size-3 ${featured ? "text-white" : "text-mad-main"}`}
-        strokeWidth={3}
-      />
+/** Single feature bullet row — checkmark matches age-group pill colour */
+const FeatureRow = ({ text }: { text: string }) => (
+  <li className="flex items-center gap-3 text-right" dir="rtl">
+    <span className="flex-1 text-sm leading-relaxed text-gray-700">{text}</span>
+    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-mad-main/10">
+      <Check className="size-3 text-mad-main" strokeWidth={3} />
     </span>
   </li>
 );
@@ -113,9 +82,6 @@ const PlanCard = ({
   plan: PricingPlan;
   onCtaClick?: (id: string) => void;
 }) => {
-  const [activeAge, setActiveAge] = useState<AgeGroup>(plan.ageGroups[0]);
-  const { featured } = plan;
-
   const handleCta = () => {
     if (plan.ctaHref) {
       window.open(plan.ctaHref, "_blank", "noopener,noreferrer");
@@ -125,28 +91,16 @@ const PlanCard = ({
   };
 
   return (
-    <div
-      className={`relative flex flex-col rounded-3xl p-6 sm:p-8 transition-shadow ${
-        featured
-          ? "border-2 border-mad-main bg-white shadow-[0_8px_40px_rgba(109,40,217,0.15)]"
-          : "border border-gray-200 bg-white shadow-sm"
-      }`}
-    >
+    <div className="relative flex flex-col rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
       {/* Icon */}
       <div className="flex justify-center">
-        <div
-          className={`flex size-20 items-center justify-center rounded-2xl ${
-            featured ? "bg-mad-main/10" : "bg-gray-50"
-          }`}
-        >
+        <div className="relative" style={{ width: 100, height: 70 }}>
           <Image
             src={plan.icon}
             alt={plan.name}
-            width={52}
-            height={52}
+            fill
             className="object-contain"
             onError={(e) => {
-              // graceful fallback if icon file is missing
               (e.currentTarget as HTMLImageElement).style.display = "none";
             }}
           />
@@ -163,24 +117,16 @@ const PlanCard = ({
         </p>
       )}
 
-      {/* Age group filter label */}
-      <p className="mt-5 text-center text-xs font-semibold tracking-wide text-gray-400">
+      {/* Age group label + pills */}
+      <p className="mt-5 text-center text-xs font-semibold tracking-wide text-mad-main">
         الفئات العمرية
       </p>
-      <AgeGroupTabs
-        groups={plan.ageGroups}
-        active={activeAge}
-        onSelect={setActiveAge}
-        featured={!!featured}
-      />
+      <AgeGroupPills groups={plan.ageGroups} />
 
-      {/* Divider */}
-      <hr className="my-5 border-gray-100" />
-
-      {/* Price block */}
+      {/* Price block — above the divider */}
       {plan.price !== null ? (
-        <div className="text-center">
-          <div className="flex items-baseline justify-center gap-1 rtl:flex-row-reverse">
+        <div className="mt-5 text-center" dir="rtl">
+          <div className="flex items-baseline justify-center gap-1">
             <span className="text-4xl font-extrabold text-mad-main">
               {plan.price}
             </span>
@@ -194,31 +140,22 @@ const PlanCard = ({
             </p>
           )}
         </div>
-      ) : (
-        // Schools plan — no fixed price
-        <div className="text-center">
-          <span className="text-sm text-gray-400">تواصل معنا للحصول على السعر</span>
-        </div>
-      )}
+      ) : null}
+
+      {/* Divider */}
+      <hr className="my-5 border-gray-100" />
 
       {/* Features */}
-      <ul
-        dir="rtl"
-        className="mt-6 flex flex-col gap-3"
-      >
+      <ul className="flex flex-col gap-4">
         {plan.features.map((f) => (
-          <FeatureRow key={f} text={f} featured={!!featured} />
+          <FeatureRow key={f} text={f} />
         ))}
       </ul>
 
       {/* CTA */}
       <button
         onClick={handleCta}
-        className={`mt-8 flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-bold transition-all active:scale-95 ${
-          featured
-            ? "bg-mad-main text-white hover:bg-mad-main/90 shadow-md"
-            : "border-2 border-mad-main text-mad-main hover:bg-mad-main/5"
-        }`}
+        className="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-mad-main px-6 py-3 text-sm font-bold text-mad-main transition-all hover:bg-mad-main/5 active:scale-95"
       >
         {/* WhatsApp icon for schools plan */}
         {plan.id === "schools" && (
@@ -246,10 +183,7 @@ const Pricing = ({
   onCtaClick,
 }: PricingProps) => {
   return (
-    <section
-      dir="rtl"
-      className="w-full bg-white py-16 sm:py-20 lg:py-24"
-    >
+    <section dir="rtl" className="w-full bg-white py-16 sm:py-20 lg:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center">
@@ -260,7 +194,7 @@ const Pricing = ({
         </div>
 
         {/* Cards grid */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:gap-8 max-w-3xl mx-auto">
+        <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2 lg:gap-8">
           {plans.map((plan) => (
             <PlanCard key={plan.id} plan={plan} onCtaClick={onCtaClick} />
           ))}
