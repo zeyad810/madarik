@@ -8,6 +8,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ReviewItem, CustomerReviewsProps } from "../types";
 
 
@@ -96,10 +97,20 @@ const renderReviewCard = (review: ReviewItem) => (
 // 4. Main Component
 // ==========================================
 const CustomerReviews: React.FC<CustomerReviewsProps> = ({
+  title = "ماذا يقول أولياء الأمور؟",
+  subtitle = "آراء العملاء",
+  description = "تجارب حقيقية من آباء وأمهات شهدوا تحسناً ملحوظاً في مهارات القراءة والتفكير النقدي لأطفالهم.",
   reviews = DEFAULT_REVIEWS,
 }) => {
   return (
     <section dir="rtl" className="w-full container mx-auto section-spacing px-4 md:px-8">
+      <SectionHeader
+        title={title}
+        subtitle={subtitle}
+        description={description}
+        align="center"
+        className="mb-12 md:mb-16 max-w-3xl mx-auto"
+      />
       <Swiper
         modules={[Autoplay]}
         dir="rtl"

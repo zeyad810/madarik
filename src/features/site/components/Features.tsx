@@ -38,7 +38,7 @@ const DEFAULT_FEATURES: FeatureItem[] = [
     title: "حساب ولي الأمر",
     description:
       "إدارة جميع حسابات الأطفال من مكان واحد مع متابعة تقدم كل طفل بشكل مستقل.",
-    accentColor: "var(--mad-orange)",
+    accentColor: "var(--mad-pink)",
     bgCircleColor: "rgba(234, 88, 12, 0.12)",
     imageSrc: "/assets/parent.svg",
   },

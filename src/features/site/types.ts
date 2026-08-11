@@ -12,6 +12,11 @@ export interface ReviewItem {
 }
 
 export interface CustomerReviewsProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  imageSrc?: string;
+  imageAlt?: string;
   reviews?: ReviewItem[];
 }
 
