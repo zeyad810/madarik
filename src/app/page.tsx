@@ -5,6 +5,8 @@ import Features from "@/features/site/components/Features";
 import HowItWorks from "@/features/site/components/HowItWorks";
 import Skills from "@/features/site/components/Skills";
 import WhyTrustUs, { whyTrustUsData } from "@/features/site/components/WhyTrustUs";
+import Pricing from "@/features/site/components/Pricing";
+import InstantReport from "@/features/site/components/InstantReport";
 
 export default function HomePage() {
   return (
@@ -15,7 +17,9 @@ export default function HomePage() {
       <HowItWorks />
       <Skills />
       <CustomerReviews />
-      <WhyTrustUs {...whyTrustUsData} />  
+      <WhyTrustUs {...whyTrustUsData} />
+      <InstantReport />
+      <Pricing />
     </main>
   );
 }
