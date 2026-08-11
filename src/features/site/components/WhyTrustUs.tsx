@@ -36,12 +36,8 @@ export const whyTrustUsData: WhyTrustUsProps = {
   ],
 };
 
-/**
- * Highlights "آلاف الآباء والمعلمين" with the primary brand colour.
- * The rest of the title keeps the default dark colour.
- */
 const renderTitle = (title: string) => {
-  const highlight = "آلاف الآباء والمعلمين";
+  const highlight = "آلاف الآباء والمعلمين؟";
   if (!title.includes(highlight)) return title;
 
   const [before, after] = title.split(highlight);
@@ -79,7 +75,7 @@ const WhyTrustUs = ({
                 aria-hidden="true"
                 width={47}
                 height={51}
-                className="absolute -top-6 right-0 select-none"
+                className="absolute -top-7 -right-9 select-none"
               />
               <h2 className="mad-title-2 max-w-2xl font-bold text-gray-800">
                 {renderTitle(title)}
@@ -102,18 +98,11 @@ const WhyTrustUs = ({
 
             {/* Features */}
             <div className="mt-8 w-full max-w-2xl">
-              {/*
-                RTL flex: first DOM child = visually on the RIGHT.
-                Layout per row:
-                  [card: icon(right) | text(left)]   [dot]
-                                                      [line]
-                pr-10 creates space for the timeline on the right.
-              */}
               <div className="relative pr-10 sm:pr-12">
-                {/* Timeline vertical line */}
+                {/* Timeline vertical line — always visible */}
                 <div
                   aria-hidden="true"
-                  className="absolute right-3.5 top-6 bottom-6 hidden w-px bg-mad-main/20 sm:block"
+                  className="absolute right-3.5 top-11.25 bottom-11.25 w-px bg-mad-main/20"
                 />
 
                 <div className="flex flex-col gap-4">
@@ -122,10 +111,10 @@ const WhyTrustUs = ({
                       key={feature.id}
                       className="relative flex items-stretch"
                     >
-                      {/* Timeline Dot — centred vertically on the card */}
+                      {/* Timeline Dot — centred on the line, visible on all sizes */}
                       <span
                         aria-hidden="true"
-                        className="absolute -right-6 top-1/2 -translate-y-1/2 hidden size-2.5 rounded-full bg-mad-main ring-2 ring-white sm:block"
+                        className="absolute -right-8 sm:-right-9.75 top-1/2 -translate-y-1/2 size-2.5 rounded-full bg-mad-main ring-4 ring-mad-main/20"
                       />
 
                       {/* Feature Card — full width, icon + text BOTH inside */}
