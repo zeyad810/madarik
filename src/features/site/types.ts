@@ -76,3 +76,20 @@ export interface SkillsProps {
   rightCards?: SkillCardItem[];
   leftCards?: SkillCardItem[];
 }
+
+// ==========================================
+// FAQ Types
+// ==========================================
+export interface FaqItem {
+  id: number | string;
+  question: string;
+  answer: string;
+}
+
+export interface FqaProps {
+  subtitle?: string;
+  title?: string;
+  items?: FaqItem[];
+  imageSrc?: string;
+  imageAlt?: string;
+}

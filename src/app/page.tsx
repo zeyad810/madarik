@@ -4,6 +4,7 @@ import CustomerReviews from "@/features/site/components/CustomerReviews";
 import Features from "@/features/site/components/Features";
 import HowItWorks from "@/features/site/components/HowItWorks";
 import Skills from "@/features/site/components/Skills";
+import Fqa from "@/features/site/components/Fqa";
 import sectionHeading from "../../public/iamges/sectionHeading.png";
 
 export default function HomePage() {
@@ -15,6 +16,7 @@ export default function HomePage() {
       <HowItWorks />
       <Skills />
       <CustomerReviews imageSrc={sectionHeading.src} />
+      <Fqa />
     </main>
   );
 }
