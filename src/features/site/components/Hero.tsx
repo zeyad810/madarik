@@ -23,7 +23,7 @@ const Hero = () => {
             القراءة والكتابة بمتعة وأمان.
           </p>
 
-          <div className="flex flex-wrap items-start justify-start gap-6 sm:gap-10 md:gap-[72px]">
+          <div className="flex flex-wrap items-start justify-start gap-6 sm:gap-10 md:gap-18">
             <div className="flex items-start justify-start flex-col gap-1">
               <p className="mad-h3 font-bold text-mad-third">5 - 15 سنة</p>
 
@@ -49,7 +49,7 @@ const Hero = () => {
             </div>
           </div>
           
-          <div className="">
+          <div className="flex items-start justify-start gap-6">
             <Button
               btnLink="/about"
               btnText="إشترك الآن"
@@ -60,13 +60,18 @@ const Hero = () => {
               icon="have"
               btnShadow="shadow-(--my-inset-shadow)"
             />
+            <Button
+              btnLink="/about"
+              btnText="تعرف علينا"
+              btnType="fit"
+            />
           </div>
         </div>
 
         <Image
           src={side}
           alt="صورة مدارك"
-          className="w-full md:w-1/2 max-h-[350px] md:max-h-none object-contain"
+          className="w-full md:w-1/2 max-h-87.5 md:max-h-none object-contain"
           priority
         />
       </div>
