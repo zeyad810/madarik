@@ -12,7 +12,7 @@ export const ProductCardTags: React.FC<ProductCardTagsProps> = ({
   if (!storyCodeTag && !levelTag) return null;
 
   return (
-    <div className="flex items-center justify-between gap-2 mb-4">
+    <div className="flex items-center justify-between gap-2 mb-4 flex-row-reverse">
       {/* Story Code Tag (Left in RTL) */}
       {storyCodeTag && (
         <span className="bg-[#EBF7F5] text-[#0D9488] text-xs font-semibold px-3.5 py-1.5 rounded-full select-none">

@@ -120,27 +120,31 @@ const ProductSection: React.FC<ProductSectionProps> = ({
           dir="rtl"
           spaceBetween={16}
           slidesPerView={1.2}
-          autoplay={{
-            delay: 4000,
-            disableOnInteraction: false,
-          }}
-          pagination={{ clickable: true }}
+          // autoplay={{
+          //   delay: 4000,
+          //   disableOnInteraction: false,
+          // }}
           watchOverflow
           observer
           observeParents
           breakpoints={{
-            // 2 slides on sm/mobile (600px+)
+            375: {
+              slidesPerView: 1.2,
+              spaceBetween: 12,
+            },
             600: {
+              slidesPerView: 2,
+              spaceBetween: 12,
+            },
+            768: {
               slidesPerView: 2,
               spaceBetween: 16,
             },
-            // 3 slides on md (768px+)
-            768: {
+            1024: {
               slidesPerView: 3,
               spaceBetween: 20,
             },
-            // 4 slides on lg (1024px+)
-            1024: {
+            1360: {
               slidesPerView: 4,
               spaceBetween: 24,
             },

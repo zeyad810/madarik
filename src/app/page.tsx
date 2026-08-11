@@ -10,6 +10,7 @@ import sectionHeading from "../../public/iamges/sectionHeading.png";
 import WhyTrustUs, { whyTrustUsData } from "@/features/site/components/WhyTrustUs";
 import Pricing from "@/features/site/components/Pricing";
 import InstantReport from "@/features/site/components/InstantReport";
+import ProductSection from "@/features/site/components/ProductSection";
 
 export default function HomePage() {
   return (
@@ -25,6 +26,7 @@ export default function HomePage() {
       <WhyTrustUs {...whyTrustUsData} />
       <InstantReport />
       <Pricing />
+      <ProductSection />
 
     </main>
   );
