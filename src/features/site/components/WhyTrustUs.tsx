@@ -113,7 +113,7 @@ const WhyTrustUs = ({
                 {/* Timeline vertical line */}
                 <div
                   aria-hidden="true"
-                  className="absolute right-[14px] top-6 bottom-6 hidden w-px bg-mad-main/20 sm:block"
+                  className="absolute right-3.5 top-6 bottom-6 hidden w-px bg-mad-main/20 sm:block"
                 />
 
                 <div className="flex flex-col gap-4">
@@ -125,7 +125,7 @@ const WhyTrustUs = ({
                       {/* Timeline Dot — centred vertically on the card */}
                       <span
                         aria-hidden="true"
-                        className="absolute right-[-24px] top-1/2 -translate-y-1/2 hidden size-2.5 rounded-full bg-mad-main ring-2 ring-white sm:block"
+                        className="absolute -right-6 top-1/2 -translate-y-1/2 hidden size-2.5 rounded-full bg-mad-main ring-2 ring-white sm:block"
                       />
 
                       {/* Feature Card — full width, icon + text BOTH inside */}
@@ -157,7 +157,7 @@ const WhyTrustUs = ({
           {/* ==================== Image (left side) ==================== */}
           <div className="order-1 flex w-full items-center justify-center lg:order-2">
             {/* Portrait aspect ratio matching the reference (758 × 907) */}
-            <div className="relative aspect-[758/907] w-full max-w-md lg:max-w-lg">
+            <div className="relative aspect-758/907 w-full max-w-md lg:max-w-lg">
               <Image
                 src={image}
                 alt={imageAlt}
