@@ -7,6 +7,9 @@ import ChildWin from "@/features/site/components/ChildWin";
 import Skills from "@/features/site/components/Skills";
 import Fqa from "@/features/site/components/Fqa";
 import sectionHeading from "../../public/iamges/sectionHeading.png";
+import WhyTrustUs, { whyTrustUsData } from "@/features/site/components/WhyTrustUs";
+import Pricing from "@/features/site/components/Pricing";
+import InstantReport from "@/features/site/components/InstantReport";
 
 export default function HomePage() {
   return (
@@ -19,6 +22,10 @@ export default function HomePage() {
       <Skills />
       <CustomerReviews imageSrc={sectionHeading.src} />
       <Fqa />
+      <WhyTrustUs {...whyTrustUsData} />
+      <InstantReport />
+      <Pricing />
+
     </main>
   );
 }
