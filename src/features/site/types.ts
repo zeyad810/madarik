@@ -71,3 +71,21 @@ export interface SkillsProps {
   rightCards?: SkillCardItem[];
   leftCards?: SkillCardItem[];
 }
+
+// ==========================================
+// Why Trust Us Types
+// ==========================================
+export interface WhyTrustUsFeature {
+  id: string;
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+
+export interface WhyTrustUsProps {
+  title: string;
+  description: string;
+  image: string;
+  imageAlt: string;
+  features: WhyTrustUsFeature[];
+}

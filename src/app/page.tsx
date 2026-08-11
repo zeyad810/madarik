@@ -1,11 +1,10 @@
 import Header from "@/components/layout/header/Header";
 import Hero from "@/features/site/components/Hero";
-import { SectionHeader } from "@/components/ui/SectionHeader";
 import CustomerReviews from "@/features/site/components/CustomerReviews";
 import Features from "@/features/site/components/Features";
 import HowItWorks from "@/features/site/components/HowItWorks";
 import Skills from "@/features/site/components/Skills";
-import sectionHeading from "../../public/iamges/sectionHeading.png";
+import WhyTrustUs, { whyTrustUsData } from "@/features/site/components/WhyTrustUs";
 
 export default function HomePage() {
   return (
@@ -16,18 +15,7 @@ export default function HomePage() {
       <HowItWorks />
       <Skills />
       <CustomerReviews />
-      <section className="flex w-full flex-col gap-16 section-spacing px-4 md:px-8 container mx-auto">
-        <SectionHeader
-          align="center"
-          subtitle="آراء العملاء"
-          imageSrc={sectionHeading.src}
-          imageAlt="أيقونة كتاب ونجمة"
-          imageWidth={100}
-          imageHeight={100}
-          title=" رحلتنا نحو صناعة جيل قارئ"
-          description="نؤمن بأن بناء شخصية الطفل يبدأ من ترسيخ القيم وتنمية الفضول وتحويل المهارات إلى أدوات يعيشها بحب وسعادة ومعنى."
-        />
-      </section>
+      <WhyTrustUs {...whyTrustUsData} />  
     </main>
   );
 }
