@@ -214,3 +214,16 @@ export interface InstantReportProps {
   image?: string;
   imageAlt?: string;
 }
+
+// ==========================================
+// Product Section Types
+// ==========================================
+import type { Product } from "@/features/products/types";
+
+export interface ProductSectionProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  products?: Product[];
+}
+

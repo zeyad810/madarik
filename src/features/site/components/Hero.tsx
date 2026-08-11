@@ -149,7 +149,7 @@ const Hero: React.FC<HeroProps> = ({
             alt={sideImageAlt}
             width={821}
             height={648}
-            className="h-auto w-full object-contain drop-shadow-xl lg:max-w-205.25"
+            className="w-full max-h-95 md:max-h-none lg:w-205.25 lg:h-162 object-contain drop-shadow-xl"
             priority
           />
         </div>

@@ -15,7 +15,7 @@ description: Expert Senior Frontend Engineer guidelines for React 19+, Next.js (
 * **Zod**
 * **Zustand**
 * **Axios**
-* **Tailwind CSS**
+* **Tailwind CSS v4**
 * **Lucide React**
 * **ESLint & Prettier**
 
