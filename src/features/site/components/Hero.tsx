@@ -87,7 +87,8 @@ const Hero: React.FC<HeroProps> = ({
               alt={sideImageAlt}
               width={140}
               height={165}
-              className="w-35 h-41.25 object-contain drop-shadow-xl"
+              style={{ width: "100%", height: "auto" }}
+              className="max-h-41.25 object-contain drop-shadow-xl"
               priority
             />
           </div>
@@ -149,7 +150,8 @@ const Hero: React.FC<HeroProps> = ({
             alt={sideImageAlt}
             width={821}
             height={648}
-            className="w-full max-h-95 md:max-h-none lg:w-205.25 lg:h-162 object-contain drop-shadow-xl"
+            style={{ width: "100%", height: "auto" }}
+            className="max-h-95 md:max-h-none lg:w-205.25 object-contain drop-shadow-xl"
             priority
           />
         </div>

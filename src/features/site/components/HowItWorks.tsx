@@ -42,7 +42,7 @@ const DEFAULT_STEPS: StepItem[] = [
 
 const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
   return (
-    <div className="relative flex items-center w-full min-h-[140px] sm:min-h-[165px] md:min-h-[175px] group transition-all duration-300 hover:-translate-y-1">
+    <div className="relative flex items-center w-full min-h-[140px] sm:min-h-[165px] md:min-h-[175px]">
       {/* Capsule Frame Container composed of Two Divs */}
       <div className="relative flex-1 flex items-stretch min-h-[110px] sm:min-h-[140px] md:min-h-[160px]">
         {/* Right Div: Smaller segment under Circle Badge with Top & Bottom Border */}
@@ -59,7 +59,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
           {/* Top Border Gap & Dot at start (right edge) of Left Div */}
           <div className="absolute -top-1.25 right-4 sm:right-2 lg:right-1 translate-x-1/2 bg-white ps-1.5 flex items-center justify-center z-10 -translate-y-0.5">
             <span
-              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-transform duration-300 group-hover:scale-125"
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full"
               style={{ backgroundColor: step.color }}
             />
           </div>
@@ -67,7 +67,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
           {/* Bottom Border Gap & Dot at start (right edge) of Left Div */}
           <div className="absolute -bottom-1.25 right-4 sm:right-2 lg:right-1 translate-x-1/2 bg-white ps-1.5 flex items-center justify-center z-10 translate-y-0.5">
             <span
-              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-transform duration-300 group-hover:scale-125"
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full"
               style={{ backgroundColor: step.color }}
             />
           </div>
@@ -83,7 +83,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
       <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center z-20 bg-white ">
         {/* Crescent Shape Element */}
         <div
-          className="absolute -top-2.5 -right-2.5 w-[132px] h-[132px] sm:w-[164px] sm:h-[164px] md:w-[180px] md:h-[180px] pointer-events-none z-0 transition-transform duration-300 group-hover:scale-105"
+          className="absolute -top-2.5 -right-2.5 w-[132px] h-[132px] sm:w-[164px] sm:h-[164px] md:w-[180px] md:h-[180px] pointer-events-none z-0"
           style={{
             borderRadius: "100%",
             // @ts-expect-error - CSS draft corner-shape property
@@ -95,7 +95,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
         />
 
         {/* White Main Circle */}
-        <div className="relative z-10 w-[112px] h-[112px] sm:w-[144px] sm:h-[144px] md:w-[160px] md:h-[160px] rounded-full bg-white flex flex-col items-center justify-center text-center p-2.5 sm:p-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-100 transition-transform duration-300 group-hover:scale-[1.02]">
+        <div className="relative z-10 w-[112px] h-[112px] sm:w-[144px] sm:h-[144px] md:w-[160px] md:h-[160px] rounded-full bg-white flex flex-col items-center justify-center text-center p-2.5 sm:p-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-100">
           <span className="mad-h3 font-extrabold text-mad-text-primary mb-0.5 sm:mb-1 md:mb-1.5 font-sans">
             {step.number}
           </span>

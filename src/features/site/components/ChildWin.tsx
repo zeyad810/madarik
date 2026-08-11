@@ -35,6 +35,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
             src={bgImageSrc}
             alt="Background Illustration"
             fill
+            sizes="100vw"
             className="object-cover object-center opacity-95"
             priority
           />
