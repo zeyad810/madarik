@@ -2,13 +2,8 @@ import React from "react";
 import Button from "@/components/ui/Button";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 
-export interface SkillCardItem {
-  id: string;
-  title: string;
-  description: string;
-  accentColor: string;
-  imageSrc: string;
-}
+import { SkillCardItem } from "../types";
+
 
 const RIGHT_CARDS: SkillCardItem[] = [
   {
@@ -36,7 +31,7 @@ const LEFT_CARDS: SkillCardItem[] = [
     description:
       "يستطيع ولي الأمر الاطلاع على تقارير الطفل وإنجازاته ومستوى أداءه في أي وقت ومن أي مكان.",
     accentColor: "#8b5cf6",
-    imageSrc: "/assets/parent.svg",
+    imageSrc: "/assets/user-performance-analytics.svg",
   },
   {
     id: "school-reports",
@@ -44,7 +39,7 @@ const LEFT_CARDS: SkillCardItem[] = [
     description:
       "توفر المنصة تقارير شاملة للمعلمين والإدارة لمتابعة أداء الطلاب، وقياس مستوى الفصول",
     accentColor: "#ec4899",
-    imageSrc: "/assets/school.svg",
+    imageSrc: "/assets/school 2.svg",
   },
 ];
 
@@ -68,14 +63,14 @@ const Skills: React.FC = () => {
             icon="have"
             btnBackground="var(--mad-main)"
             btnColor="#ffffff"
-            className="px-7 py-3.5 text-base font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-full"
+            className="px-7 py-3.5 mad-body-2 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-full"
           />
         </div>
 
         {/* Cards Side (Placed SECOND in DOM so order-2 puts it on the LEFT in RTL) */}
-        <div className="w-full lg:w-7/12 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6 order-2">
+        <div className="w-full lg:w-7/12 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-8 order-2">
           {/* Right Column of Cards (inner column, next to text) */}
-          <div className="flex flex-col gap-5 lg:gap-6">
+          <div className="flex flex-col gap-5 lg:gap-8">
             {RIGHT_CARDS.map((card) => (
               <FeatureCard
                 key={card.id}
@@ -83,13 +78,13 @@ const Skills: React.FC = () => {
                 description={card.description}
                 accentColor={card.accentColor}
                 imageSrc={card.imageSrc}
-                className="!items-center !text-center lg:!items-center lg:!text-center shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+                className="items-start text-start shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
               />
             ))}
           </div>
 
           {/* Left Column of Cards (outer left column, shifted down on desktop) */}
-          <div className="flex flex-col gap-5 lg:gap-6 lg:translate-y-8">
+          <div className="flex flex-col gap-5 lg:gap-8 lg:translate-y-8">
             {LEFT_CARDS.map((card) => (
               <FeatureCard
                 key={card.id}
@@ -97,7 +92,7 @@ const Skills: React.FC = () => {
                 description={card.description}
                 accentColor={card.accentColor}
                 imageSrc={card.imageSrc}
-                className="!items-center !text-center lg:!items-center lg:!text-center shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+                className="items-start text-start shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
               />
             ))}
           </div>

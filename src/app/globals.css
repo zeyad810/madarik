@@ -178,76 +178,76 @@
      ------------------------------------------------------- */
 
   --mad-title-1-size: 72px;
-  --mad-title-1-line: 80px;
-  --mad-title-1-spacing: -0.02em;
+  --mad-title-1-line: 88px;
+  --mad-title-1-spacing: -0.8px;
 
   --mad-title-2-size: 64px;
-  --mad-title-2-line: 72px;
-  --mad-title-2-spacing: -0.02em;
+  --mad-title-2-line: 76px;
+  --mad-title-2-spacing: -0.8px;
 
-  --mad-title-3-size: 50px;
-  --mad-title-3-line: 56px;
-  --mad-title-3-spacing: -0.02em;
+  --mad-title-3-size: 56px;
+  --mad-title-3-line: 68px;
+  --mad-title-3-spacing: -0.6px;
 
-  --mad-h1-size: 50px;
-  --mad-h1-line: 56px;
-  --mad-h1-spacing: -0.02em;
+  --mad-h1-size: 56px;
+  --mad-h1-line: 68px;
+  --mad-h1-spacing: -0.5px;
 
-  --mad-h2-size: 38px;
-  --mad-h2-line: 44px;
-  --mad-h2-spacing: -0.01em;
+  --mad-h2-size: 48px;
+  --mad-h2-line: 58px;
+  --mad-h2-spacing: -0.4px;
 
-  --mad-h3-size: 32px;
-  --mad-h3-line: 38px;
-  --mad-h3-spacing: -0.01em;
+  --mad-h3-size: 40px;
+  --mad-h3-line: 48px;
+  --mad-h3-spacing: -0.3px;
 
-  --mad-h4-size: 26px;
-  --mad-h4-line: 32px;
-  --mad-h4-spacing: -0.01em;
+  --mad-h4-size: 32px;
+  --mad-h4-line: 38px;
+  --mad-h4-spacing: -0.2px;
 
-  --mad-h5-size: 22px;
-  --mad-h5-line: 28px;
-  --mad-h5-spacing: -0.005em;
+  --mad-h5-size: 24px;
+  --mad-h5-line: 30px;
+  --mad-h5-spacing: -0.15px;
 
-  --mad-h6-size: 18px;
+  --mad-h6-size: 20px;
   --mad-h6-line: 24px;
-  --mad-h6-spacing: -0.005em;
+  --mad-h6-spacing: 0px;
 
   --mad-label-1-size: 16px;
-  --mad-label-1-line: 20px;
-  --mad-label-1-spacing: -0.005em;
+  --mad-label-1-line: 22px;
+  --mad-label-1-spacing: -0.18px;
 
   --mad-label-2-size: 14px;
-  --mad-label-2-line: 18px;
-  --mad-label-2-spacing: -0.005em;
+  --mad-label-2-line: 20px;
+  --mad-label-2-spacing: -0.16px;
 
   --mad-label-3-size: 12px;
   --mad-label-3-line: 16px;
-  --mad-label-3-spacing: -0.005em;
+  --mad-label-3-spacing: -0.12px;
 
   --mad-body-1-size: 18px;
-  --mad-body-1-line: 26px;
-  --mad-body-1-spacing: 0em;
+  --mad-body-1-line: 28px;
+  --mad-body-1-spacing: 0px;
 
   --mad-body-2-size: 16px;
   --mad-body-2-line: 24px;
-  --mad-body-2-spacing: 0em;
+  --mad-body-2-spacing: 0px;
 
   --mad-body-3-size: 14px;
   --mad-body-3-line: 20px;
-  --mad-body-3-spacing: 0em;
+  --mad-body-3-spacing: 0px;
 
   --mad-body-4-size: 12px;
   --mad-body-4-line: 16px;
-  --mad-body-4-spacing: 0em;
+  --mad-body-4-spacing: 0px;
 
   --mad-caption-1-size: 10px;
-  --mad-caption-1-line: 14px;
-  --mad-caption-1-spacing: 0em;
+  --mad-caption-1-line: 12px;
+  --mad-caption-1-spacing: 0px;
 
-  --mad-caption-2-size: 8px;
-  --mad-caption-2-line: 12px;
-  --mad-caption-2-spacing: 0em;
+  --mad-caption-2-size: 9px;
+  --mad-caption-2-line: 10px;
+  --mad-caption-2-spacing: 0px;
 }
 
 /* =========================================================

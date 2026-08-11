@@ -54,7 +54,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
       </h3>
 
       {/* Description */}
-      <p className="mad-body-3 text-[12px] md:text-[14px] lg:text-[16px] text-mad-text-secondary font-normal">
+      <p className="mad-body-4 md:mad-body-3 lg:mad-body-2 text-mad-text-secondary font-normal">
         {description}
       </p>
     </div>

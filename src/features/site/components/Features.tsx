@@ -2,24 +2,8 @@ import React from "react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 
-export interface FeatureItem {
-  id: string | number;
-  title: string;
-  description: string;
-  accentColor: string;
-  bgCircleColor: string;
-  icon?: React.ReactNode;
-  imageSrc?: string;
-}
+import { FeatureItem, FeaturesProps } from "../types";
 
-interface FeaturesProps {
-  title?: string;
-  description?: string;
-  subtitle?: string;
-  imageSrc?: string;
-  imageAlt?: string;
-  features?: FeatureItem[];
-}
 
 const DEFAULT_FEATURES: FeatureItem[] = [
   {

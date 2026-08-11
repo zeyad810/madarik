@@ -2,19 +2,8 @@
 
 import React from "react";
 
-export interface StepItem {
-  id: string | number;
-  number: string;
-  title: string;
-  description: string;
-  color: string;
-}
+import { StepItem, HowItWorksProps } from "../types";
 
-interface HowItWorksProps {
-  title?: string;
-  subtitle?: string;
-  steps?: StepItem[];
-}
 
 const DEFAULT_STEPS: StepItem[] = [
   {
@@ -84,7 +73,7 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
           </div>
 
           {/* Description Text */}
-          <p className="text-[12px] sm:text-[16px] md:text-[20px] text-mad-text-secondary font-medium text-right select-none">
+          <p className="mad-body-4 sm:mad-body-2 md:mad-h6 text-mad-text-secondary font-medium text-right select-none">
             {step.description}
           </p>
         </div>
