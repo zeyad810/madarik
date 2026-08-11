@@ -8,6 +8,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ReviewItem, CustomerReviewsProps } from "../types";
 
 
@@ -21,7 +22,7 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
     role: "ولي أمر",
     comment:
       "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 0,
+    rating: 5,
   },
   {
     id: 2,
@@ -29,7 +30,7 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
     role: "ولي أمر",
     comment:
       "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 0,
+    rating: 5,
   },
   {
     id: 3,
@@ -53,15 +54,18 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
 // 3. Render Helper
 // ==========================================
 const renderReviewCard = (review: ReviewItem) => (
-  <div className="w-full bg-(--mad-purple-50) rounded-4xl p-6 md:p-8 flex flex-col items-start text-right shadow-[0_10px_30px_rgba(109,40,217,0.05)] border border-(--mad-purple-100) h-full justify-between transition-all duration-300">
-    {/* أيقونة الاقتباس - اتجاه اليمين */}
-    <div className="w-11 h-11 bg-(--mad-purple-100) rounded-full flex items-center justify-center text-mad-main-light font-bold mad-h6 mb-4 shrink-0">
-      <svg className="w-5 h-5 fill-mad-main-light" viewBox="0 0 24 24">
-        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-      </svg>
+  <div className="w-full bg-linear-to-b from-white via-[#f7f5ff] to-[#ede9fe] rounded-3xl p-6 md:p-8 flex flex-col items-start text-start shadow-[0_15px_35px_rgba(109,40,217,0.06)] h-full justify-between transition-all duration-300 hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)] hover:-translate-y-1">
+    {/* أيقونة الاقتباس - أعلى اليمين */}
+    <div className="w-full flex justify-start mb-2">
+      <div className="w-10 h-10 rounded-full bg-[#eee8fd] flex items-center justify-center text-mad-main-light font-bold shrink-0">
+        <svg className="w-4 h-4 fill-mad-main-light" viewBox="0 0 24 24">
+          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+        </svg>
+      </div>
     </div>
 
-    <div className="flex items-center gap-1 mb-4">
+    {/* نجوم التقييم */}
+    <div className="flex items-center justify-start gap-1 mb-4">
       {Array.from({ length: 5 }).map((_, index) => (
         <svg
           key={index}
@@ -77,15 +81,16 @@ const renderReviewCard = (review: ReviewItem) => (
     </div>
 
     {/* نص التقييم */}
-    <p className="mad-body-3 text-mad-text-primary mb-6 font-medium">
+    <p className="mad-body-3 text-mad-text-primary mb-6 font-medium leading-relaxed text-start">
       &quot;{review.comment}&quot;
     </p>
 
-    <div className="mt-auto">
+    {/* اسم كاتب التقييم والدور */}
+    <div className="mt-auto flex flex-col items-start text-start">
       <h4 className="mad-label-1 text-mad-main-light font-bold mb-0.5">
         {review.author}
       </h4>
-      <span className="mad-label-3 text-mad-text-secondary font-normal">
+      <span className="mad-label-3 text-mad-text-secondary font-medium">
         {review.role}
       </span>
     </div>
@@ -96,11 +101,22 @@ const renderReviewCard = (review: ReviewItem) => (
 // 4. Main Component
 // ==========================================
 const CustomerReviews: React.FC<CustomerReviewsProps> = ({
+  title = "ماذا يقول أولياء الأمور؟",
+  subtitle = "آراء العملاء",
+  description = "تجارب حقيقية من آباء وأمهات شهدوا تحسناً ملحوظاً في مهارات القراءة والتفكير النقدي لأطفالهم.",
   reviews = DEFAULT_REVIEWS,
 }) => {
   return (
-    <section dir="rtl" className="w-full container mx-auto section-spacing px-4 md:px-8">
-      <Swiper
+    <section dir="rtl" className="w-full section-spacing px-4 md:px-8 bg-white overflow-hidden">
+      <div className="container mx-auto flex flex-col items-center">
+        <SectionHeader
+          title={title}
+          subtitle={subtitle}
+          description={description}
+          align="center"
+          className="mb-12 md:mb-16 max-w-3xl mx-auto"
+        />
+        <Swiper
         modules={[Autoplay]}
         dir="rtl"
         spaceBetween={12}
@@ -130,6 +146,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
           </SwiperSlide>
         ))}
       </Swiper>
+      </div>
     </section>
   );
 };

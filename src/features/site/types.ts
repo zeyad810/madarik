@@ -1,6 +1,28 @@
 import type { ReactNode } from "react";
 
 // ==========================================
+// Hero Types
+// ==========================================
+export interface HeroStatItem {
+  id: string | number;
+  value: string;
+  label: string;
+}
+
+export interface HeroProps {
+  title?: string;
+  description?: string;
+  stats?: HeroStatItem[];
+  ctaText?: string;
+  ctaLink?: string;
+  bgImageSrc?: string;
+  mobileBgImageSrc?: string;
+  sideImageSrc?: string;
+  mobileSideImageSrc?: string;
+  sideImageAlt?: string;
+}
+
+// ==========================================
 // Customer Reviews Types
 // ==========================================
 export interface ReviewItem {
@@ -12,6 +34,11 @@ export interface ReviewItem {
 }
 
 export interface CustomerReviewsProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  imageSrc?: string;
+  imageAlt?: string;
   reviews?: ReviewItem[];
 }
 
@@ -73,6 +100,39 @@ export interface SkillsProps {
 }
 
 // ==========================================
+// FAQ Types
+// ==========================================
+export interface FaqItem {
+  id: number | string;
+  question: string;
+  answer: string;
+}
+
+export interface FqaProps {
+  subtitle?: string;
+  title?: string;
+  items?: FaqItem[];
+  imageSrc?: string;
+  imageAlt?: string;
+}
+
+// ==========================================
+// ChildWin Types
+// ==========================================
+export interface ChildWinCardItem {
+  id: string | number;
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface ChildWinProps {
+  title?: string;
+  description?: string;
+  bgImageSrc?: string;
+  cards?: ChildWinCardItem[];
+}
+
 // Why Trust Us Types
 // ==========================================
 export interface WhyTrustUsFeature {
