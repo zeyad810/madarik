@@ -3,7 +3,7 @@ import Image from "next/image";
 import { GraduationCap, Eye, SlidersHorizontal } from "lucide-react";
 
 export const whyTrustUsData: WhyTrustUsProps = {
-  title: "لماذا يثق بنا آلاف الآباء والمعلمين؟",
+  title: "لمـــــــــــاذا يثــــــــــــــــــــق بنــــــــــــا آلاف الآبــــاء والمعـلـميـــــــــــــن؟",
 
   description:
     "نساعد طفلك على تنمية مهارات القراءة والتفكير من خلال تجربة تعليمية آمنة وممتعة، مع متابعة مستمرة لتقدمه ومحتوى مصمم على يد متخصصين.",
@@ -37,7 +37,7 @@ export const whyTrustUsData: WhyTrustUsProps = {
 };
 
 const renderTitle = (title: string) => {
-  const highlight = "آلاف الآباء والمعلمين؟";
+  const highlight = "آلاف الآبــــاء والمعـلـميـــــــــــــن؟";
   if (!title.includes(highlight)) return title;
 
   const [before, after] = title.split(highlight);
@@ -67,7 +67,7 @@ const WhyTrustUs = ({
           {/* ==================== Content (right side) ==================== */}
           <div className="order-2 flex w-full flex-col items-start text-right lg:order-1">
             {/* Title block */}
-            <div className="relative flex w-full flex-col items-start">
+            <div className="relative flex w-[80%] md:w-full mx-auto flex-col items-start">
               {/* Decorative splash — absolute, above the first letter on the right */}
               <Image
                 src="/iamges/trustUs1svg.svg"
