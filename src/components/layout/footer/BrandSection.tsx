@@ -45,17 +45,19 @@ const BrandSection: React.FC<BrandSectionProps> = ({
   socialLinks = DEFAULT_SOCIAL_LINKS,
 }) => {
   return (
-    <div className="flex flex-col items-center md:items-start text-center md:text-right">
+    <div className="flex flex-col items-center lg:items-start text-center lg:text-right w-full">
       {/* Logo */}
-      <Logo />
+      <div className="flex justify-center lg:justify-start w-full">
+        <Logo />
+      </div>
 
       {/* Description */}
-      <p className="mt-4 text-xs sm:text-sm text-white/80 font-normal leading-relaxed max-w-sm">
+      <p className="mt-4 text-xs sm:text-sm text-white/90 font-normal leading-relaxed max-w-md text-center lg:text-right">
         {description}
       </p>
 
-      {/* Social Links */}
-      <div className="mt-6 flex items-center gap-3">
+      {/* Social Links (Centered on Mobile, Left-aligned on Desktop) */}
+      <div className="mt-5 flex items-center justify-center lg:justify-start gap-3 w-full">
         {socialLinks.map((social) => (
           <Link
             key={social.id}

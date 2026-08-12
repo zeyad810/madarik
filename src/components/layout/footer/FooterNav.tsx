@@ -15,7 +15,7 @@ const FooterNav: React.FC<FooterNavProps> = ({
   return (
     <>
       {/* Quick Links Column */}
-      <div className="flex flex-col items-center sm:items-start text-center sm:text-right">
+      <div className="flex flex-col items-start text-right">
         <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">
           روابط سريعة
         </h3>
@@ -24,7 +24,7 @@ const FooterNav: React.FC<FooterNavProps> = ({
             <li key={link.id}>
               <Link
                 href={link.href}
-                className="text-xs sm:text-sm text-white/80 hover:text-white transition-colors py-0.5 block font-medium"
+                className="text-xs sm:text-sm text-white/90 hover:text-white transition-colors py-0.5 block font-medium"
               >
                 {link.label}
               </Link>
@@ -34,7 +34,7 @@ const FooterNav: React.FC<FooterNavProps> = ({
       </div>
 
       {/* Important Links Column */}
-      <div className="flex flex-col items-center sm:items-start text-center sm:text-right">
+      <div className="flex flex-col items-start text-right hidden lg:flex">
         <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">
           روابط هامة
         </h3>
@@ -43,7 +43,7 @@ const FooterNav: React.FC<FooterNavProps> = ({
             <li key={link.id}>
               <Link
                 href={link.href}
-                className="text-xs sm:text-sm text-white/80 hover:text-white transition-colors py-0.5 block font-medium"
+                className="text-xs sm:text-sm text-white/90 hover:text-white transition-colors py-0.5 block font-medium"
               >
                 {link.label}
               </Link>

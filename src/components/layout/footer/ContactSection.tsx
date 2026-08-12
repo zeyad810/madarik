@@ -10,12 +10,12 @@ const ContactSection: React.FC<ContactSectionProps> = ({
   contactInfo = DEFAULT_CONTACT_INFO,
 }) => {
   return (
-    <div className="flex flex-col items-center sm:items-start text-center sm:text-right">
+    <div className="flex flex-col items-start text-right">
       <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">
         تواصل معنا
       </h3>
 
-      <div className="flex flex-col gap-3 text-xs sm:text-sm text-white/80 font-normal">
+      <div className="flex flex-col gap-3 text-xs sm:text-sm text-white/90 font-normal">
         {/* Email */}
         <a
           href={`mailto:${contactInfo.email}`}
@@ -33,7 +33,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({
         </a>
 
         {/* Location */}
-        <p className="leading-relaxed">{contactInfo.location}</p>
+        <p className="leading-relaxed text-right">{contactInfo.location}</p>
       </div>
     </div>
   );
