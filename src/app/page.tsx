@@ -1,4 +1,5 @@
 import Header from "@/components/layout/header/Header";
+import Footer from "@/components/layout/footer/Footer";
 import Hero from "@/features/site/components/Hero";
 import CustomerReviews from "@/features/site/components/CustomerReviews";
 import Features from "@/features/site/components/Features";
@@ -27,7 +28,7 @@ export default function HomePage() {
       <InstantReport />
       <Pricing />
       <ProductSection />
-
+      <Footer />
     </main>
   );
 }
