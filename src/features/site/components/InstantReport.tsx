@@ -96,7 +96,7 @@ const InstantReport = ({
           {/* ==================== Content (left / end side in RTL) ==================== */}
           <div className="order-2 flex flex-col items-start text-right">
             {/* Title */}
-            <h2 className="mad-title-2 font-bold" style={{ color: "#0B1120" }}>
+            <h2 className="mad-h2 font-bold" style={{ color: "#0B1120" }}>
               {title}
             </h2>
 
