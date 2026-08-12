@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { twMerge } from "tailwind-merge";
 import { SectionHeaderProps } from "@/types";
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -24,7 +25,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
   return (
     <div
-      className={`flex flex-col gap-2 ${alignmentClasses[align]} ${className}`}
+      className={twMerge("flex flex-col gap-2", alignmentClasses[align], className)}
     >
       {imageSrc && (
         <div className="mb-2">
@@ -40,21 +41,32 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
       {subtitle && (
         <span
-          className={`mad-label-1 font-bold text-mad-third ${subtitleClassName}`}
+          className={twMerge(
+            subtitleClassName ? "" : "mad-label-1 font-bold text-mad-third",
+            subtitleClassName
+          )}
         >
           {subtitle}
         </span>
       )}
 
       <h2
-        className={`mad-h2 font-bold text-mad-text-primary ${titleClassName}`}
+        className={twMerge(
+          titleClassName ? "" : "mad-h2 font-bold text-mad-text-primary",
+          titleClassName
+        )}
       >
         {title}
       </h2>
 
       {description && (
         <p
-          className={`mad-body-1 w-full md:w-[67%] text-mad-text-secondary mt-1 ${descriptionClassName}`}
+          className={twMerge(
+            descriptionClassName
+              ? ""
+              : "mad-body-1 w-full md:w-[67%] text-mad-text-secondary mt-1",
+            descriptionClassName
+          )}
         >
           {description}
         </p>
