@@ -31,12 +31,14 @@ const Footer: React.FC<FooterProps> = ({
   return (
     <footer
       dir="rtl"
-      className="w-full bg-cover bg-top bg-no-repeat text-white pt-24 pb-8 sm:pt-32 sm:pb-12 relative overflow-hidden"
+      className="w-full bg-no-repeat text-white pt-28 sm:pt-40 md:pt-48 lg:pt-56 pb-8 sm:pb-12 min-h-[620px] md:min-h-[780px] lg:min-h-[950px] xl:min-h-[1100px] flex flex-col justify-between relative overflow-hidden"
       style={{
         backgroundImage: `url('${bgImageSrc}')`,
+        backgroundSize: "100% 100%",
+        backgroundPosition: "center top",
       }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-end flex-1">
         {/* ==========================================
             1. NEWSLETTER SECTION
            ========================================== */}
@@ -45,7 +47,7 @@ const Footer: React.FC<FooterProps> = ({
         {/* ==========================================
             2. MAIN FOOTER CONTENT GRID
            ========================================== */}
-        <div className="mt-12 sm:mt-16 lg:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-6 sm:pb-8">
+        <div className="mt-12 sm:mt-16 lg:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-6 sm:pb-8">
           {/* Brand & Logo Column (Desktop: 4 cols, Mobile: full) */}
           <div className="sm:col-span-2 lg:col-span-4">
             <BrandSection
@@ -69,7 +71,7 @@ const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* ==========================================
-            3. COPYRIGHT BAR
+            3. COPYRIGHT BAR (Centered Text)
            ========================================== */}
         <CopyrightBar copyrightText={copyrightText} />
       </div>
