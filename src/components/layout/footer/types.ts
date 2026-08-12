@@ -39,4 +39,5 @@ export interface FooterProps {
   socialLinks?: SocialLink[];
   copyrightText?: string;
   bgImageSrc?: string;
+  mobileBgImageSrc?: string;
 }
