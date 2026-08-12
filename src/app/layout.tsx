@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import QueryProvider from "@/providers/QueryProvider";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const ibmPlexSansArabic = localFont({
@@ -44,7 +45,9 @@ export default function RootLayout({
     >
       <body className={`${ibmPlexSansArabic.className} min-h-full flex flex-col font-sans`}>
         <QueryProvider>{children}</QueryProvider>
+        <Toaster position="top-center" reverseOrder={false} />
       </body>
     </html>
   );
 }
+

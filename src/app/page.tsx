@@ -12,12 +12,15 @@ import WhyTrustUs, { whyTrustUsData } from "@/features/site/components/WhyTrustU
 import Pricing from "@/features/site/components/Pricing";
 import InstantReport from "@/features/site/components/InstantReport";
 import ProductSection from "@/features/site/components/ProductSection";
+import ContactUs from "@/features/site/components/ContactUs";
+import MadVideo from "@/features/site/components/MadVideo";
 
 export default function HomePage() {
   return (
     <main className="w-full min-h-screen flex flex-col">
       <Header />
       <Hero />
+      <MadVideo />
       <Features />
       <HowItWorks />
       <ChildWin />
@@ -28,7 +31,10 @@ export default function HomePage() {
       <InstantReport />
       <Pricing />
       <ProductSection />
+      <ContactUs />
       <Footer />
     </main>
   );
 }
+
+

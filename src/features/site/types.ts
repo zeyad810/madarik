@@ -227,3 +227,48 @@ export interface ProductSectionProps {
   products?: Product[];
 }
 
+// ==========================================
+// Contact Us Types
+// ==========================================
+export interface ContactFormData {
+  fullName: string;
+  email: string;
+  message: string;
+}
+
+export interface ContactInfoItem {
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface SocialLinks {
+  instagram?: string;
+  twitter?: string;
+  facebook?: string;
+}
+
+export interface ContactUsProps {
+  title?: string;
+  description?: string;
+  contactInfo?: ContactInfoItem;
+  socialLinks?: SocialLinks;
+  onSubmit?: (data: ContactFormData) => Promise<void> | void;
+}
+
+// ==========================================
+// Video Section Types
+// ==========================================
+export interface MadVideoProps {
+  subtitle?: string;
+  title?: string;
+  description?: string;
+  ctaText?: string;
+  ctaHref?: string;
+  youtubeId?: string;
+  thumbnailSrc?: string;
+  onCtaClick?: () => void;
+}
+
+
+
