@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Check } from "lucide-react";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import type { PricingPlan, PricingProps } from "../types";
 
 // ==========================================
@@ -147,7 +148,7 @@ const PlanCard = ({
       <hr className="my-5 border-gray-100" />
 
       {/* Features */}
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-4 mb-12">
         {plan.features.map((f) => (
           <FeatureRow key={f} text={f} />
         ))}
@@ -187,12 +188,13 @@ const Pricing = ({
     <section dir="rtl" className="w-full bg-white py-16 sm:py-20 lg:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center">
-          <h2 className="mad-title-2 font-bold text-mad-main">{title}</h2>
-          {description && (
-            <p className="mad-h6 mt-3 text-mad-main/60">{description}</p>
-          )}
-        </div>
+        <SectionHeader
+          title={title}
+          description={description}
+          align="center"
+          titleClassName="mad-h2 font-bold text-mad-text-primary"
+          descriptionClassName="mad-h6 mt-3 text-mad-text-secondary md:w-full max-w-2xl mx-auto"
+        />
 
         {/* Cards grid */}
         <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2 lg:gap-8">

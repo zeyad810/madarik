@@ -43,7 +43,7 @@ const Newsletter: React.FC<NewsletterProps> = ({
   return (
     <div className="w-full text-center">
       {/* Title */}
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+      <h2 className="text-xl sm:text-5xl font-extrabold text-white leading-tight">
         {data.title}
       </h2>
 
