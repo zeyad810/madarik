@@ -187,7 +187,7 @@ const Header: React.FC = () => {
       <aside
         dir="rtl"
         aria-label="القائمة الجانبية"
-        className={`fixed top-0 bottom-0 right-0 z-50 flex w-[300px] sm:w-[330px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 bottom-0 right-0 z-50 flex w-75 sm:w-82.5 flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
