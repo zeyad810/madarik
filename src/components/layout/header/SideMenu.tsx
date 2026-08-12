@@ -1,0 +1,112 @@
+import React from "react";
+import Link from "next/link";
+import { X } from "lucide-react";
+import { SIDE_MENU_ITEMS } from "./constants";
+
+interface SideMenuProps {
+  isOpen: boolean;
+  activeCategory: string;
+  onClose: () => void;
+  onSelectCategory: (id: string) => void;
+}
+
+const SideMenu: React.FC<SideMenuProps> = ({
+  isOpen,
+  activeCategory,
+  onClose,
+  onSelectCategory,
+}) => {
+  return (
+    <>
+      {/* Backdrop */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          aria-hidden="true"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in"
+        />
+      )}
+
+      {/* Side Menu Drawer Panel */}
+      <aside
+        dir="rtl"
+        aria-label="القائمة الجانبية"
+        className={`fixed top-0 bottom-0 right-0 z-50 flex w-75 sm:w-82.5  rounded-tl-[40px] rounded-bl-[40px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Side Menu Header (Purple Card Top) */}
+        <div className="relative bg-mad-main px-6 py-6 text-white shrink-0"
+        style={{borderTopLeftRadius: "32px"}}>
+          <div className="flex items-center justify-between">
+            {/* Logo + Subtitle Text */}
+            <div className="flex flex-col text-right">
+              <h2 className="text-lg font-extrabold text-white leading-tight">
+                مدارك القراءة
+              </h2>
+              <span className="mt-0.5 text-xs font-normal text-white/80">
+                منصة تعليمية عربية
+              </span>
+            </div>
+
+            {/* Close Button (Translucent White Circle) */}
+            <button
+              onClick={onClose}
+              aria-label="إغلاق القائمة"
+              className="flex size-9 items-center justify-center rounded-full cursor-pointer bg-white/20 text-white transition-colors hover:bg-white/30 active:scale-95"
+            >
+              <X className="size-5" strokeWidth={2.5} />
+            </button>
+          </div>
+        </div>
+
+        {/* Side Menu Categories List */}
+        <div className="flex-1 overflow-y-auto">
+          <nav className="flex flex-col">
+            {SIDE_MENU_ITEMS.map((item) => {
+              const isActive = activeCategory === item.id;
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => {
+                    onSelectCategory(item.id);
+                    onClose();
+                  }}
+                  className={`flex items-center justify-between px-6 py-3.5 text-right text-sm font-semibold transition-all border-b border-gray-100/70 ${
+                    isActive
+                      ? "bg-[#F3E8FF] text-mad-main font-bold border-r-4 border-r-mad-main"
+                      : "text-gray-700 hover:bg-purple-50/60 hover:text-mad-main"
+                  }`}
+                >
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Mobile Auth Action Buttons (Bottom of Side Menu) */}
+        <div className="shrink-0 border-t border-gray-100 p-5 flex flex-col gap-3">
+          <Link
+            href="/register"
+            onClick={onClose}
+            className="w-full py-3 px-4 rounded-xl bg-mad-main text-white font-bold text-center text-sm shadow-md transition-all hover:bg-mad-main/90 active:scale-95"
+          >
+            إنشاء حساب
+          </Link>
+
+          <Link
+            href="/login"
+            onClick={onClose}
+            className="w-full py-3 px-4 rounded-xl border border-mad-main text-mad-main font-bold text-center text-sm transition-all hover:bg-mad-main/5 active:scale-95"
+          >
+            تسجيل الدخول
+          </Link>
+        </div>
+      </aside>
+    </>
+  );
+};
+
+export default SideMenu;
