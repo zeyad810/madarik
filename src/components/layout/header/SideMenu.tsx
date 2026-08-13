@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { X, LogOut, User } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
 
 interface SideMenuProps {
@@ -16,6 +19,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
   onClose,
   onSelectCategory,
 }) => {
+  const { data: session, status } = useSession();
+
   return (
     <>
       {/* Backdrop */}
@@ -88,21 +93,46 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
         {/* Mobile Auth Action Buttons (Bottom of Side Menu) */}
         <div className="shrink-0 border-t border-gray-100 p-5 flex flex-col gap-3">
-          <Link
-            href="/register"
-            onClick={onClose}
-            className="w-full py-3 px-4 rounded-xl bg-mad-main text-white font-bold text-center text-sm shadow-md transition-all hover:bg-mad-main/90 active:scale-95"
-          >
-            إنشاء حساب
-          </Link>
+          {status === "loading" ? (
+            <div className="h-11 w-full bg-gray-200 animate-pulse rounded-xl" />
+          ) : status === "authenticated" ? (
+            <div className="flex flex-col gap-3">
+              {session?.user?.name && (
+                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-purple-50 text-mad-main font-semibold text-sm border border-purple-100">
+                  <User className="size-4 shrink-0" />
+                  <span className="truncate">{session.user.name}</span>
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  onClose();
+                  signOut({ callbackUrl: "/" });
+                }}
+                className="w-full py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-center text-sm transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer border border-red-200"
+              >
+                <LogOut className="size-4" />
+                <span>تسجيل الخروج</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link
+                href="/register"
+                onClick={onClose}
+                className="w-full py-3 px-4 rounded-xl bg-mad-main text-white font-bold text-center text-sm shadow-md transition-all hover:bg-mad-main/90 active:scale-95 text-center"
+              >
+                إنشاء حساب
+              </Link>
 
-          <Link
-            href="/login"
-            onClick={onClose}
-            className="w-full py-3 px-4 rounded-xl border border-mad-main text-mad-main font-bold text-center text-sm transition-all hover:bg-mad-main/5 active:scale-95"
-          >
-            تسجيل الدخول
-          </Link>
+              <Link
+                href="/login"
+                onClick={onClose}
+                className="w-full py-3 px-4 rounded-xl border border-mad-main text-mad-main font-bold text-center text-sm transition-all hover:bg-mad-main/5 active:scale-95 text-center"
+              >
+                تسجيل الدخول
+              </Link>
+            </>
+          )}
         </div>
       </aside>
     </>
@@ -110,3 +140,4 @@ const SideMenu: React.FC<SideMenuProps> = ({
 };
 
 export default SideMenu;
+

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import Logo from "./Logo";
 import DesktopNav from "./DesktopNav";
@@ -9,14 +10,19 @@ import MobileSearchBar from "./MobileSearchBar";
 import SideMenu from "./SideMenu";
 
 const Header: React.FC = () => {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("home");
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Scroll listener for sticky header styling
+  // Scroll listener for sticky header styling (only active on Home page)
   useEffect(() => {
+    if (!isHomePage) return;
+
     const handleScroll = () => {
       if (window.scrollY > 20) {
         setIsScrolled(true);
@@ -25,9 +31,10 @@ const Header: React.FC = () => {
       }
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
   // Disable body scroll when Side Menu drawer is open
   useEffect(() => {
@@ -55,14 +62,18 @@ const Header: React.FC = () => {
 
   return (
     <>
-      {/* Sticky Header Container */}
+      {/* Header Container */}
       <header
         dir="rtl"
-        className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-300 px-4 sm:px-6 lg:px-12 ${
-          isScrolled
-            ? "bg-mad-main/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10"
-            : "bg-transparent py-4 sm:py-5"
-        }`}
+        className={
+          isHomePage
+            ? `fixed top-0 left-0 right-0 z-40 w-full transition-all duration-300 px-4 sm:px-6 lg:px-12 ${
+                isScrolled
+                  ? "bg-mad-main/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10"
+                  : "bg-transparent py-4 sm:py-5"
+              }`
+            : "sticky top-0 left-0 right-0 z-40 w-full transition-all duration-300 px-4 sm:px-6 lg:px-12 bg-mad-main shadow-lg py-3 border-b border-white/10"
+        }
       >
         <div className="container mx-auto flex items-center justify-between">
           {/* ==========================================

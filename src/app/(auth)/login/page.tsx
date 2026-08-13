@@ -13,13 +13,11 @@ export default function LoginPage() {
   const [phoneNumber] = useState<string>("");
 
   const handleLoginSubmit = (_data: LoginFormData) => {
-    router.push("/");
-    router.refresh();
+    window.location.href = "/";
   };
 
   const handleOtpSuccess = (_code: string) => {
-    router.push("/");
-    router.refresh();
+    window.location.href = "/";
   };
 
   return (

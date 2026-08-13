@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { loginSchema, LoginFormData } from "./validation";
 import { AUTH_TEXTS, AUTH_TYPOGRAPHY, AUTH_COLORS } from "./constants";
@@ -29,6 +29,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     control,
@@ -42,6 +43,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
       password: "",
     },
   });
+
+  const isLoading = isSubmitting || isRedirecting;
 
   const onSubmit = async (data: LoginFormData) => {
     setApiError(null);
@@ -60,12 +63,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
       }
 
       if (res?.ok) {
+        setIsRedirecting(true);
         toast.success("تم تسجيل الدخول بنجاح");
         if (onSubmitSuccess) {
           onSubmitSuccess(data);
         } else {
-          router.push("/");
-          router.refresh();
+          window.location.href = "/";
         }
       }
     } catch {
@@ -111,7 +114,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           placeholder={texts.phonePlaceholder}
           required
           defaultCountry="SA"
-          disabled={isSubmitting}
+          disabled={isLoading}
         />
 
         {/* Password Field */}
@@ -125,6 +128,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               type={showPassword ? "text" : "password"}
               placeholder={texts.passwordPlaceholder}
               {...register("password")}
+              disabled={isLoading}
               className={`w-full bg-transparent border-none outline-none ${typography.input} ${colors.inputText} ${colors.inputPlaceholder} tracking-widest font-sans`}
               dir="rtl"
             />
@@ -159,10 +163,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isLoading}
           className={`w-full mt-4 py-3.5 px-6 rounded-full ${colors.submitButton} ${typography.button} flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer active:scale-[0.99]`}
         >
-          {isSubmitting ? (
+          {isLoading ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
               <span>{texts.submittingButton}</span>

@@ -80,18 +80,11 @@ const StepCard: React.FC<{ step: StepItem }> = ({ step }) => {
       </div>
 
       {/* Right Circle Badge Overlay */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center z-20 bg-white ">
-        {/* Crescent Shape Element */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center z-20 bg-white">
+        {/* Background Accent Circle (same ratio, slightly shifted) */}
         <div
-          className="absolute -top-2.5 -right-2.5 w-[132px] h-[132px] sm:w-[164px] sm:h-[164px] md:w-[180px] md:h-[180px] pointer-events-none z-0"
-          style={{
-            borderRadius: "100%",
-            // @ts-expect-error - CSS draft corner-shape property
-            cornerShape: "scoop round round scoop",
-            color: step.color,
-            background: step.color,
-            transform: "translate(10px, -5px) rotate(-33deg)",
-          }}
+          className="absolute inset-0 rounded-full pointer-events-none z-0 scale-[1.02] translate-x-2 -translate-y-2"
+          style={{ backgroundColor: step.color }}
         />
 
         {/* White Main Circle */}
