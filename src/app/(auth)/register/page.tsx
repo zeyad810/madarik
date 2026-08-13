@@ -1,4 +1,3 @@
-import React from "react";
 import { Metadata } from "next";
 import SidePanle from "@/features/auth/SidePanle";
 import RegisterClient from "@/features/auth/RegisterClient";
