@@ -14,7 +14,7 @@ const SidePanle = ({
 }: SidePanleProps) => {
   return (
     <div
-      className={`hidden md:block w-[928px] h-[875px] relative shrink-0 overflow-hidden ${className}`}
+      className={`hidden md:block w-full md:w-1/2 flex-1 max-w-[928px] max-h-[875px] aspect-[928/875] relative overflow-hidden shrink ${className}`}
     >
       <Image
         src={src}
