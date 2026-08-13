@@ -17,7 +17,8 @@ declare module "axios" {
   }
 }
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://madarik.themiify.com/api/v1";
 
 export const axiosConfig: AxiosRequestConfig = {
   baseURL: API_BASE_URL,

@@ -46,38 +46,6 @@ const MadVideo: React.FC<MadVideoProps> = ({
     >
       <div className="container relative mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-          {/* ==================== VIDEO THUMBNAIL / EMBED PLAYER ==================== */}
-          <div className="lg:col-span-6 xl:col-span-6 relative">
-            <div
-              onClick={() => setIsOpen(true)}
-              className="relative w-full aspect-video rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-lg cursor-pointer group bg-mad-white-200"
-            >
-              {/* Thumbnail Image */}
-              <Image
-                src={thumbnailSrc}
-                alt={title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                priority
-              />
-
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-black/15 group-hover:bg-black/25 transition-colors duration-300" />
-
-              {/* Glowing Play Button Center */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button
-                  type="button"
-                  aria-label="تشغيل الفيديو"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-mad-purple-100/90 text-mad-purple-600 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300 backdrop-blur-xs border border-mad-purple-200 cursor-pointer"
-                >
-                  <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-current ml-1" />
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* ==================== CONTENT & CTA COLUMN ==================== */}
           <div className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-right">
             {/* Subtitle / Eyebrow */}
@@ -107,6 +75,38 @@ const MadVideo: React.FC<MadVideoProps> = ({
                 <span>{ctaText}</span>
                 <ArrowLeft className="w-5 h-5" />
               </a>
+            </div>
+          </div>
+
+          {/* ==================== VIDEO THUMBNAIL / EMBED PLAYER ==================== */}
+          <div className="lg:col-span-6 xl:col-span-6 relative">
+            <div
+              onClick={() => setIsOpen(true)}
+              className="relative w-full aspect-video rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-lg cursor-pointer group bg-mad-white-200"
+            >
+              {/* Thumbnail Image */}
+              <Image
+                src={thumbnailSrc}
+                alt={title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                priority
+              />
+
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-black/15 group-hover:bg-black/25 transition-colors duration-300" />
+
+              {/* Glowing Play Button Center */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <button
+                  type="button"
+                  aria-label="تشغيل الفيديو"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-mad-purple-100/90 text-mad-purple-600 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300 backdrop-blur-xs border border-mad-purple-200 cursor-pointer"
+                >
+                  <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-current ml-1" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
