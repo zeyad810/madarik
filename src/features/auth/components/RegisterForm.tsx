@@ -17,6 +17,7 @@ import { extractAuthErrorMessage } from "../helpers/formatAuthError";
 
 interface RegisterFormProps {
   onSubmitSuccess?: (data: RegisterFormData, response?: RegisterResponse) => void;
+  defaultPhone?: string;
   texts?: typeof AUTH_TEXTS.register;
   typography?: typeof AUTH_TYPOGRAPHY;
   colors?: typeof AUTH_COLORS;
@@ -24,6 +25,7 @@ interface RegisterFormProps {
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({
   onSubmitSuccess,
+  defaultPhone = "",
   texts = AUTH_TEXTS.register,
   typography = AUTH_TYPOGRAPHY,
   colors = AUTH_COLORS,
@@ -57,7 +59,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
-      phone: "",
+      phone: defaultPhone,
       password: "",
       confirmPassword: "",
     },
