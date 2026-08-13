@@ -14,6 +14,7 @@ export interface AuthUser {
   name: string;
   email: string | null;
   phone: string;
+  change_by_admin?: boolean;
   status: string;
   phone_verified_at: string | null;
   otp_attempts?: number;
@@ -28,7 +29,7 @@ export interface LoginResponse {
   token: string;
   user_type: string;
   user: AuthUser;
-  children: Child[];
+  children?: Child[];
   is_subscribed: boolean;
 }
 
@@ -36,3 +37,4 @@ export interface LoginCredentials {
   phone: string;
   password: string;
 }
+
