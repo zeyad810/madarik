@@ -23,6 +23,7 @@ export default function NotFound() {
               src="/assets/404.png"
               alt="404 - الصفحة غير موجودة"
               fill
+              sizes="(max-width: 768px) 100vw, 440px"
               className="object-contain drop-shadow-xl"
               priority
             />
