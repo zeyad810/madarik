@@ -8,6 +8,7 @@ interface OtpProps {
   phoneNumber?: string;
   onVerifySuccess?: (otpCode: string) => void;
   onResendCode?: () => void;
+  onBackToLogin?: () => void;
   initialTimerSeconds?: number;
   texts?: typeof AUTH_TEXTS.otp;
   typography?: typeof AUTH_TYPOGRAPHY;
@@ -18,6 +19,7 @@ const Otp: React.FC<OtpProps> = ({
   phoneNumber = AUTH_TEXTS.otp.defaultPhone,
   onVerifySuccess,
   onResendCode,
+  onBackToLogin,
   initialTimerSeconds = 300,
   texts = AUTH_TEXTS.otp,
   typography = AUTH_TYPOGRAPHY,
@@ -147,9 +149,20 @@ const Otp: React.FC<OtpProps> = ({
         <p className={`${typography.otpDescription} text-[#98A2B3]`}>
           {texts.description}
         </p>
-        <p className={`${typography.otpPhone} text-[#667085]`} dir="ltr">
-          {phoneNumber}
-        </p>
+        <div className="flex items-center justify-center gap-2">
+          <p className={`${typography.otpPhone} text-[#667085]`} dir="ltr">
+            {phoneNumber}
+          </p>
+          {onBackToLogin && (
+            <button
+              type="button"
+              onClick={onBackToLogin}
+              className="text-xs text-[#175CD3] hover:underline font-medium cursor-pointer"
+            >
+              (تعديل)
+            </button>
+          )}
+        </div>
         <p className={`${typography.otpDescription} text-[#98A2B3] pt-1`}>
           {texts.instruction}
         </p>

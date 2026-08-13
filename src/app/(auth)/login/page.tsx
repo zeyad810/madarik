@@ -9,31 +9,46 @@ import { LoginFormData } from "@/features/auth/validation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [step] = useState<"login" | "otp">("login");
-  const [phoneNumber] = useState<string>("");
+  const [step, setStep] = useState<"login" | "otp">("login");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
-  const handleLoginSubmit = (_data: LoginFormData) => {
-    window.location.href = "/";
+  const handleLoginSuccess = (data: LoginFormData) => {
+    if (data?.phone) {
+      setPhoneNumber(data.phone);
+    }
+    setStep("otp");
   };
 
-  const handleOtpSuccess = (_code: string) => {
-    window.location.href = "/";
+  const handleOtpSuccess = () => {
+    router.replace("/");
+  };
+
+  const handleBackToLogin = () => {
+    setStep("login");
   };
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center p-4 lg:p-8 bg-white" dir="rtl">
+    <main
+      className="min-h-screen w-full flex items-center justify-center p-4 lg:p-8 bg-white"
+      dir="rtl"
+    >
       <div className="w-full flex flex-col md:flex-row items-center justify-center lg:justify-between gap-8">
         <div className="w-full flex-1 flex items-center justify-center">
           {step === "login" ? (
-            <LoginForm onSubmitSuccess={handleLoginSubmit} />
+            <LoginForm
+              defaultPhone={phoneNumber}
+              onSubmitSuccess={handleLoginSuccess}
+            />
           ) : (
             <Otp
               phoneNumber={phoneNumber}
               onVerifySuccess={handleOtpSuccess}
-              onResendCode={() => console.log("Resending OTP code...")}
+              onBackToLogin={handleBackToLogin}
+              onResendCode={() => console.log("Resending OTP code for phone:", phoneNumber)}
             />
           )}
         </div>
+
         <SidePanle />
       </div>
     </main>

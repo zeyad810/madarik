@@ -15,6 +15,7 @@ import PhoneNumberInput from "@/components/ui/PhoneNumberInput";
 
 interface LoginFormProps {
   onSubmitSuccess?: (data: LoginFormData) => void;
+  defaultPhone?: string;
   texts?: typeof AUTH_TEXTS.login;
   typography?: typeof AUTH_TYPOGRAPHY;
   colors?: typeof AUTH_COLORS;
@@ -22,6 +23,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({
   onSubmitSuccess,
+  defaultPhone = "",
   texts = AUTH_TEXTS.login,
   typography = AUTH_TYPOGRAPHY,
   colors = AUTH_COLORS,
@@ -39,7 +41,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      phone: "",
+      phone: defaultPhone,
       password: "",
     },
   });
@@ -68,7 +70,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
         if (onSubmitSuccess) {
           onSubmitSuccess(data);
         } else {
-          window.location.href = "/";
+          router.push("/");
+          router.refresh();
         }
       }
     } catch {

@@ -38,3 +38,14 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterPayload {
+  name: string;
+  phone: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  message: string;
+  dev_otp?: string;
+}
+

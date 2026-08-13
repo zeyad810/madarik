@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { X, LogOut, User } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
@@ -97,18 +98,36 @@ const SideMenu: React.FC<SideMenuProps> = ({
             <div className="h-11 w-full bg-gray-200 animate-pulse rounded-xl" />
           ) : status === "authenticated" ? (
             <div className="flex flex-col gap-3">
-              {session?.user?.name && (
-                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-purple-50 text-mad-main font-semibold text-sm border border-purple-100">
-                  <User className="size-4 shrink-0" />
-                  <span className="truncate">{session.user.name}</span>
+              {/* Parent Profile Summary */}
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-purple-50/70 border border-purple-100">
+                <div className="size-10 rounded-full overflow-hidden border border-mad-main/20 shrink-0">
+                  <Image
+                    src="/assets/user_avatar.png"
+                    alt={session?.user?.name || "المستخدم"}
+                    width={40}
+                    height={40}
+                    className="size-full object-cover"
+                  />
                 </div>
-              )}
+                <div className="flex flex-col overflow-hidden">
+                  <span className="font-bold text-gray-900 text-sm truncate">
+                    {session?.user?.name || "ولي الأمر"}
+                  </span>
+                  <span className="text-[10px] text-mad-main font-semibold">
+                    {session?.user?.children?.length || 0} أطفال مسجلون
+                  </span>
+                </div>
+              </div>
+
+           
+
+              {/* Logout Button at bottom */}
               <button
                 onClick={() => {
                   onClose();
                   signOut({ callbackUrl: "/" });
                 }}
-                className="w-full py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-center text-sm transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer border border-red-200"
+                className="w-full py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-center text-sm transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer border border-red-200 mt-1"
               >
                 <LogOut className="size-4" />
                 <span>تسجيل الخروج</span>
