@@ -5,6 +5,7 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
+import { getSession } from "next-auth/react";
 import { AUTH_TOKEN_KEY } from "../lib/auth";
 import { ApiError, ApiErrorResponse } from "../types";
 
@@ -31,9 +32,10 @@ export const apiClient: AxiosInstance = axios.create(axiosConfig);
 
 // Request Interceptor
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  async (config: InternalAxiosRequestConfig) => {
     if (!config.skipAuth && typeof window !== "undefined") {
-      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const session = await getSession();
+      const token = session?.accessToken || localStorage.getItem(AUTH_TOKEN_KEY);
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

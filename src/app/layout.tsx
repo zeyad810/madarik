@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import QueryProvider from "@/providers/QueryProvider";
+import AuthProvider from "@/providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
@@ -44,8 +45,10 @@ export default function RootLayout({
       className={`${ibmPlexSansArabic.variable} ${ibmPlexSansArabic.className} h-full antialiased`}
     >
       <body className={`${ibmPlexSansArabic.className} min-h-full flex flex-col font-sans`}>
-        <QueryProvider>{children}</QueryProvider>
-        <Toaster position="top-center" reverseOrder={false} />
+        <AuthProvider>
+          <QueryProvider>{children}</QueryProvider>
+          <Toaster position="top-center" reverseOrder={false} />
+        </AuthProvider>
       </body>
     </html>
   );
