@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import SidePanle from "@/features/auth/SidePanle";
-import LoginClient from "@/features/auth/LoginClient";
+import LoginForm from "@/features/auth/LoginForm";
 
 export const metadata: Metadata = {
   title: "تسجيل الدخول | مدارك",
@@ -16,7 +16,7 @@ export default function LoginPage() {
     >
       <div className="w-full flex flex-col md:flex-row items-center justify-center lg:justify-between gap-8">
         <div className="w-full flex-1 flex items-center justify-center">
-          <LoginClient />
+          <LoginForm />
         </div>
 
         <SidePanle />

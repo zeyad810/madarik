@@ -69,10 +69,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
         toast.success("تم تسجيل الدخول بنجاح");
         if (onSubmitSuccess) {
           onSubmitSuccess(data);
-        } else {
-          router.push("/");
-          router.refresh();
         }
+        router.push("/");
+        router.refresh();
       }
     } catch {
       const errorMsg = "حدث خطأ غير متوقع عند تسجيل الدخول";
