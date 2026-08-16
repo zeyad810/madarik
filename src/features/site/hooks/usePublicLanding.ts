@@ -20,19 +20,7 @@ export interface UsePublicLandingOptions<TData = ApiResponse<PublicLandingData>>
     "queryKey" | "queryFn"
   > {}
 
-/**
- * Single hook to fetch public landing page data (GET /public).
- *
- * @example
- * // 1. Fetch entire response
- * const { data, isLoading } = usePublicLanding();
- *
- * @example
- * // 2. Fetch with custom selector
- * const { data: faq } = usePublicLanding({
- *   select: (res) => res.data?.faq_section,
- * });
- */
+
 export const usePublicLanding = <TData = ApiResponse<PublicLandingData>>(
   options?: UsePublicLandingOptions<TData>
 ): UseQueryResult<TData, ApiError | Error> => {

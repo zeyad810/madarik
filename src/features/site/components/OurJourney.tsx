@@ -3,43 +3,38 @@
 import React from "react";
 import Image from "next/image";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import { OurJourneyProps, OurJourneyStep } from "../types";
 
-export const DEFAULT_JOURNEY_STEPS: OurJourneyStep[] = [
-  {
-    id: "who-we-are",
-    title: "من نحن؟",
-    description:
-      "مدارك القراءة منصة تعليمية متخصصة تهدف إلى تنمية مهارات القراءة لدى الأطفال من خلال قصص تفاعلية، وأنشطة تعليمية، وتقارير ذكية تساعد أولياء الأمور والمدارس على متابعة رحلة التعلم وتحقيق أفضل النتائج.",
-    color: "#8B5CF6", // Purple
-  },
-  {
-    id: "our-vision",
-    title: "رؤيتنا",
-    description:
-      "نسعى لأن نكون المنصة التعليمية الرائدة في تطوير مهارات القراءة لدى الأطفال، من خلال تقديم تجربة تعليمية تفاعلية تجمع بين المتعة، والتقنية، والقياس المستمر للتقدم.",
-    color: "#FBC203", // Yellow
-  },
-  {
-    id: "our-mission",
-    title: "رسالتنا",
-    description:
-      "تمكين كل طفل من بناء عادة القراءة، وتنمية مهاراته اللغوية والفكرية، مع توفير أدوات ذكية تدعم أولياء الأمور والمعلمين في متابعة التقدم واتخاذ قرارات تعليمية مبنية على بيانات دقيقة.",
-    color: "#F55697", // Pink
-  },
-];
+const JOURNEY_COLORS = ["#8B5CF6", "#FBC203", "#F55697"];
 
 const OurJourney: React.FC<OurJourneyProps> = ({
-  title = "رحلتنا نحو صناعة جيل قارئ",
-  description = "نؤمن بأن بناء شخصية الطفل يبدأ من ترسيخ القيم وتنمية الفضول وتحويل المهارات إلى أدوات يعيشها بحب وسعادة ومعنى.",
+  title: propTitle,
+  description: propDescription,
   subtitle,
   imageSrc = "/iamges/sectionHeading.png",
   imageAlt = "رحلتنا نحو صناعة جيل قارئ",
-  steps = DEFAULT_JOURNEY_STEPS,
+  steps: propSteps,
 }) => {
-  const step1 = steps[0] || DEFAULT_JOURNEY_STEPS[0];
-  const step2 = steps[1] || DEFAULT_JOURNEY_STEPS[1];
-  const step3 = steps[2] || DEFAULT_JOURNEY_STEPS[2];
+  const { data: journeyData } = usePublicLanding({
+    select: (res) => res.data?.journey_section,
+  });
+
+  const title = propTitle ?? journeyData?.title ?? "";
+  const description = propDescription ?? journeyData?.subtitle ?? "";
+
+  const steps: OurJourneyStep[] =
+    propSteps ??
+    (journeyData?.milestones?.map((milestone, idx) => ({
+      id: `milestone-${idx}`,
+      title: milestone.title,
+      description: milestone.description,
+      color: JOURNEY_COLORS[idx % JOURNEY_COLORS.length],
+    })) ?? []);
+
+  const step1 = steps[0];
+  const step2 = steps[1];
+  const step3 = steps[2];
 
   return (
     <section
@@ -59,99 +54,109 @@ const OurJourney: React.FC<OurJourneyProps> = ({
         />
 
         {/* ==================== Desktop Layout (lg and up) ==================== */}
-        <div className="relative w-full max-w-[1140px] xl:max-w-[1240px] mx-auto hidden lg:block pt-8 pb-28">
-          <div className="relative w-full aspect-[1298/325]">
-            {/* Curved Path Graphic */}
-            <Image
-              src="/iamges/yourPath.svg"
-              alt="مسار رحلتنا"
-              fill
-              className="object-contain pointer-events-none select-none"
-              priority
-            />
+        {step1 && (
+          <div className="relative w-full max-w-[1140px] xl:max-w-[1240px] mx-auto hidden lg:block pt-8 pb-28">
+            <div className="relative w-full aspect-[1298/325]">
+              {/* Curved Path Graphic */}
+              <Image
+                src="/iamges/yourPath.svg"
+                alt="مسار رحلتنا"
+                fill
+                className="object-contain pointer-events-none select-none"
+                priority
+              />
 
-            {/* Step 1: من نحن؟ (Right side in RTL) */}
-            <div
-              className="absolute flex flex-col items-center pointer-events-auto"
-              style={{
-                right: "2.85%",
-                top: "46%",
-                transform: "translate(50%, -100%)",
-              }}
-            >
-              <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
-                {step1.title}
-              </h3>
-            </div>
-            <div
-              className="absolute flex flex-col items-center text-center pointer-events-auto"
-              style={{
-                right: "2.85%",
-                top: "80%",
-                transform: "translateX(50%)",
-                width: "300px",
-              }}
-            >
-              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
-                {step1.description}
-              </p>
-            </div>
+              {/* Step 1: من نحن؟ (Right side in RTL) */}
+              <div
+                className="absolute flex flex-col items-center pointer-events-auto"
+                style={{
+                  right: "2.85%",
+                  top: "46%",
+                  transform: "translate(50%, -100%)",
+                }}
+              >
+                <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                  {step1.title}
+                </h3>
+              </div>
+              <div
+                className="absolute flex flex-col items-center text-center pointer-events-auto"
+                style={{
+                  right: "2.85%",
+                  top: "80%",
+                  transform: "translateX(50%)",
+                  width: "300px",
+                }}
+              >
+                <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                  {step1.description}
+                </p>
+              </div>
 
-            {/* Step 2: رؤيتنا (Center elevated peak) */}
-            <div
-              className="absolute flex flex-col items-center pointer-events-auto"
-              style={{
-                left: "50.38%",
-                top: "2%",
-                transform: "translate(-50%, -100%)",
-              }}
-            >
-              <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
-                {step2.title}
-              </h3>
-            </div>
-            <div
-              className="absolute flex flex-col items-center text-center pointer-events-auto"
-              style={{
-                left: "50.38%",
-                top: "34%",
-                transform: "translateX(-50%)",
-                width: "340px",
-              }}
-            >
-              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
-                {step2.description}
-              </p>
-            </div>
+              {/* Step 2: رؤيتنا (Center elevated peak) */}
+              {step2 && (
+                <>
+                  <div
+                    className="absolute flex flex-col items-center pointer-events-auto"
+                    style={{
+                      left: "50.38%",
+                      top: "2%",
+                      transform: "translate(-50%, -100%)",
+                    }}
+                  >
+                    <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                      {step2.title}
+                    </h3>
+                  </div>
+                  <div
+                    className="absolute flex flex-col items-center text-center pointer-events-auto"
+                    style={{
+                      left: "50.38%",
+                      top: "34%",
+                      transform: "translateX(-50%)",
+                      width: "340px",
+                    }}
+                  >
+                    <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                      {step2.description}
+                    </p>
+                  </div>
+                </>
+              )}
 
-            {/* Step 3: رسالتنا (Left side in RTL) */}
-            <div
-              className="absolute flex flex-col items-center pointer-events-auto"
-              style={{
-                left: "3.54%",
-                top: "46%",
-                transform: "translate(-50%, -100%)",
-              }}
-            >
-              <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
-                {step3.title}
-              </h3>
-            </div>
-            <div
-              className="absolute flex flex-col items-center text-center pointer-events-auto"
-              style={{
-                left: "3.54%",
-                top: "80%",
-                transform: "translateX(-50%)",
-                width: "300px",
-              }}
-            >
-              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
-                {step3.description}
-              </p>
+              {/* Step 3: رسالتنا (Left side in RTL) */}
+              {step3 && (
+                <>
+                  <div
+                    className="absolute flex flex-col items-center pointer-events-auto"
+                    style={{
+                      left: "3.54%",
+                      top: "46%",
+                      transform: "translate(-50%, -100%)",
+                    }}
+                  >
+                    <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                      {step3.title}
+                    </h3>
+                  </div>
+                  <div
+                    className="absolute flex flex-col items-center text-center pointer-events-auto"
+                    style={{
+                      left: "3.54%",
+                      top: "80%",
+                      transform: "translateX(-50%)",
+                      width: "300px",
+                    }}
+                  >
+                    <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                      {step3.description}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        </div>
+        )}
 
         {/* ==================== Mobile Layout (Cards stack) ==================== */}
         <div className="flex lg:hidden flex-col gap-8 sm:gap-10 w-full max-w-md sm:max-w-lg mx-auto pt-4 pb-4">

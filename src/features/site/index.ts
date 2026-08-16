@@ -13,6 +13,7 @@ export { default as InstantReport } from "./components/InstantReport";
 export { default as ProductSection } from "./components/ProductSection";
 export { default as ContactUs } from "./components/ContactUs";
 export { default as MadVideo } from "./components/MadVideo";
+export { default as OurJourney } from "./components/OurJourney";
 
 // Hooks
 export * from "./hooks/usePublicLanding";
