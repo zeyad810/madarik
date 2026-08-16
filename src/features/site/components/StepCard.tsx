@@ -1,13 +1,24 @@
+"use client";
+
 import React from "react";
+import { motion } from "framer-motion";
 import { StepItem } from "../types";
 
 interface StepCardProps {
   step: StepItem;
+  index?: number;
 }
 
-export const StepCard: React.FC<StepCardProps> = ({ step }) => {
+export const StepCard: React.FC<StepCardProps> = ({ step, index = 0 }) => {
   return (
-    <div className="relative flex items-center w-full min-h-[140px] sm:min-h-[165px] md:min-h-[175px]">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, delay: index * 0.12, ease: "easeOut" }}
+      whileHover={{ scale: 1.02, transition: { duration: 0.25 } }}
+      className="relative flex items-center w-full min-h-[140px] sm:min-h-[165px] md:min-h-[175px]"
+    >
       {/* Capsule Frame Container composed of Two Divs */}
       <div className="relative flex-1 flex items-stretch min-h-[110px] sm:min-h-[140px] md:min-h-[160px]">
         {/* Right Div: Smaller segment under Circle Badge with Top & Bottom Border */}
@@ -62,7 +73,7 @@ export const StepCard: React.FC<StepCardProps> = ({ step }) => {
           </span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

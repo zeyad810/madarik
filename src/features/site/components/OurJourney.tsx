@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import { OurJourneyProps, OurJourneyStep } from "../types";
@@ -55,7 +56,13 @@ const OurJourney: React.FC<OurJourneyProps> = ({
 
         {/* ==================== Desktop Layout (lg and up) ==================== */}
         {step1 && (
-          <div className="relative w-full mx-auto hidden lg:block pt-8 pb-28">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative w-full mx-auto hidden lg:block pt-8 pb-28"
+          >
             <div className="relative w-full aspect-1298/325">
               {/* Curved Path Graphic */}
               <Image
@@ -66,7 +73,12 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 priority
               />
 
-              <div
+              {/* Step 1: من نحن؟ (Right side in RTL) */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
                 className="absolute flex flex-col items-center pointer-events-auto"
                 style={{
                   right: "8.85%",
@@ -77,8 +89,12 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 <h3 className="mad-h5 font-bold text-mad-text-primary whitespace-nowrap mb-2">
                   {step1.title}
                 </h3>
-              </div>
-              <div
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
                 className="absolute flex flex-col items-center text-center pointer-events-auto"
                 style={{
                   right: "8.85%",
@@ -90,14 +106,19 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                   {step1.description}
                 </p>
-              </div>
+              </motion.div>
 
+              {/* Step 2: رؤيتنا (Center elevated peak) */}
               {step2 && (
                 <>
-                  <div
+                  <motion.div
+                    initial={{ opacity: 0, y: -15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
                     className="absolute flex flex-col items-center pointer-events-auto"
                     style={{
-                      left: "50.38%",
+                      left: "48.48%",
                       top: "2%",
                       transform: "translate(-50%, -100%)",
                     }}
@@ -105,11 +126,15 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                     <h3 className="mad-h5 font-bold text-mad-text-primary whitespace-nowrap mb-2">
                       {step2.title}
                     </h3>
-                  </div>
-                  <div
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
                     className="absolute flex flex-col items-center text-center pointer-events-auto"
                     style={{
-                      left: "50.38%",
+                      left: "39.38%",
                       top: "34%",
                       transform: "translateX(-50%)",
                       width: "340px",
@@ -118,13 +143,18 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                     <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                       {step2.description}
                     </p>
-                  </div>
+                  </motion.div>
                 </>
               )}
 
+              {/* Step 3: رسالتنا (Left side in RTL) */}
               {step3 && (
                 <>
-                  <div
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
                     className="absolute flex flex-col items-center pointer-events-auto"
                     style={{
                       left: "8.54%",
@@ -135,8 +165,12 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                     <h3 className="mad-h5 font-bold text-mad-text-primary whitespace-nowrap mb-2">
                       {step3.title}
                     </h3>
-                  </div>
-                  <div
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.7 }}
                     className="absolute flex flex-col items-center text-center pointer-events-auto"
                     style={{
                       left: "8.54%",
@@ -148,18 +182,23 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                     <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                       {step3.description}
                     </p>
-                  </div>
+                  </motion.div>
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* ==================== Mobile Layout (Cards stack) ==================== */}
         <div className="flex lg:hidden flex-col gap-8 sm:gap-10 w-full max-w-md sm:max-w-lg mx-auto pt-4 pb-4">
-          {steps.map((step) => (
-            <div
+          {steps.map((step, idx) => (
+            <motion.div
               key={step.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, delay: idx * 0.15, ease: "easeOut" }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="relative bg-white rounded-3xl sm:rounded-[28px] border-2 p-6 sm:p-8 pt-8 sm:pt-9 text-center shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all duration-300 hover:shadow-md"
               style={{ borderColor: step.color }}
             >
@@ -180,7 +219,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
               <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                 {step.description}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

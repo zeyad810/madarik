@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 
@@ -66,44 +67,52 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         />
 
         {/* Product Swiper Slider */}
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          dir="rtl"
-          spaceBetween={16}
-          slidesPerView={1.2}
-          watchOverflow
-          observer
-          observeParents
-          breakpoints={{
-            375: {
-              slidesPerView: 1.2,
-              spaceBetween: 12,
-            },
-            600: {
-              slidesPerView: 2,
-              spaceBetween: 12,
-            },
-            768: {
-              slidesPerView: 2,
-              spaceBetween: 16,
-            },
-            1024: {
-              slidesPerView: 3,
-              spaceBetween: 20,
-            },
-            1360: {
-              slidesPerView: 4,
-              spaceBetween: 24,
-            },
-          }}
-          className="w-full pb-14!"
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="w-full"
         >
-          {products.map((item) => (
-            <SwiperSlide key={item.id} className="h-auto! flex justify-center">
-              <ProductCard product={item} className="max-w-none" />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            dir="rtl"
+            spaceBetween={16}
+            slidesPerView={1.2}
+            watchOverflow
+            observer
+            observeParents
+            breakpoints={{
+              375: {
+                slidesPerView: 1.2,
+                spaceBetween: 12,
+              },
+              600: {
+                slidesPerView: 2,
+                spaceBetween: 12,
+              },
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 16,
+              },
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+              },
+              1360: {
+                slidesPerView: 4,
+                spaceBetween: 24,
+              },
+            }}
+            className="w-full pb-14!"
+          >
+            {products.map((item) => (
+              <SwiperSlide key={item.id} className="h-auto! flex justify-center">
+                <ProductCard product={item} className="max-w-none" />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </motion.div>
       </div>
     </section>
   );

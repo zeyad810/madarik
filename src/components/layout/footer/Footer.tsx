@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import Newsletter from "./Newsletter";
 import BrandSection from "./BrandSection";
 import FooterNav from "./FooterNav";
@@ -52,12 +53,25 @@ const Footer: React.FC<FooterProps> = ({
           {/* ==========================================
               1. NEWSLETTER SECTION
              ========================================== */}
-          <Newsletter data={newsletter} onSubscribe={onSubscribe} />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <Newsletter data={newsletter} onSubscribe={onSubscribe} />
+          </motion.div>
 
           {/* ==========================================
               2. MAIN FOOTER CONTENT GRID
              ========================================== */}
-          <div className="mt-10 sm:mt-16 lg:mt-24 flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-10 pb-6 sm:pb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            className="mt-10 sm:mt-16 lg:mt-24 flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-10 pb-6 sm:pb-8"
+          >
             {/* Brand & Logo Section (Centered on Mobile, Left-aligned column on Desktop) */}
             <div className="w-full lg:col-span-4 flex flex-col items-center lg:items-start">
               <BrandSection
@@ -78,7 +92,7 @@ const Footer: React.FC<FooterProps> = ({
                 <ContactSection contactInfo={contactInfo} />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* ==========================================
               3. COPYRIGHT BAR (Legal links on mobile ONLY + Centered Text)

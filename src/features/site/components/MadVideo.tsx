@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ArrowLeft } from "lucide-react";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { MadVideoProps } from "../types";
@@ -45,7 +46,13 @@ const MadVideo: React.FC<MadVideoProps> = ({
       <div className="container relative mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           {/* ==================== CONTENT & CTA COLUMN ==================== */}
-          <div className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-right">
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="lg:col-span-6 xl:col-span-6 flex flex-col items-start text-right"
+          >
             {/* Subtitle / Eyebrow */}
             {subtitle && (
               <span className="mad-label-1 font-bold text-mad-purple-600 mb-2 block">
@@ -64,7 +71,11 @@ const MadVideo: React.FC<MadVideoProps> = ({
             </p>
 
             {/* CTA Button */}
-            <div className="mt-8">
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="mt-8"
+            >
               <a
                 href={ctaHref}
                 onClick={onCtaClick}
@@ -73,12 +84,20 @@ const MadVideo: React.FC<MadVideoProps> = ({
                 <span>{ctaText}</span>
                 <ArrowLeft className="w-5 h-5" />
               </a>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* ==================== VIDEO THUMBNAIL / EMBED PLAYER ==================== */}
-          <div className="lg:col-span-6 xl:col-span-6 relative">
-            <div
+          <motion.div
+            initial={{ opacity: 0, x: -40, scale: 0.95 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="lg:col-span-6 xl:col-span-6 relative"
+          >
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
               onClick={() => setIsOpen(true)}
               className="relative w-full aspect-video rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-lg cursor-pointer group bg-mad-white-200"
             >
@@ -97,50 +116,62 @@ const MadVideo: React.FC<MadVideoProps> = ({
 
               {/* Glowing Play Button Center */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
                   type="button"
                   aria-label="تشغيل الفيديو"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-mad-purple-100/90 text-mad-purple-600 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300 backdrop-blur-xs border border-mad-purple-200 cursor-pointer"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-mad-purple-100/90 text-mad-purple-600 flex items-center justify-center shadow-xl backdrop-blur-xs border border-mad-purple-200 cursor-pointer"
                 >
                   <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-current ml-1" />
-                </button>
+                </motion.button>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
       {/* ==================== YOUTUBE EMBED MODAL ==================== */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200"
-          onClick={() => setIsOpen(false)}
-        >
-          <div
-            className="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs"
+            onClick={() => setIsOpen(false)}
           >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              aria-label="إغلاق الفيديو"
-              className="absolute -top-12 left-0 sm:top-4 sm:left-4 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-colors cursor-pointer"
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X className="w-6 h-6" />
-            </button>
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                aria-label="إغلاق الفيديو"
+                className="absolute -top-12 left-0 sm:top-4 sm:left-4 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-6 h-6" />
+              </button>
 
-            {/* YouTube Embed Iframe */}
-            <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
-              title={title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full border-0"
-            />
-          </div>
-        </div>
-      )}
+              {/* YouTube Embed Iframe */}
+              <iframe
+                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
+                title={title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

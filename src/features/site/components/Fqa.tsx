@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import { FaqItem, FqaProps } from "../types";
 
@@ -38,7 +39,13 @@ const Fqa: React.FC<FqaProps> = ({
       <div className="container mx-auto flex flex-col items-center relative z-10">
 
         {/* Section Header */}
-        <div className="text-center max-w-3xl mb-12 md:mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center max-w-3xl mb-12 md:mb-16"
+        >
           {subtitle && (
             <span className="mad-label-1 font-bold text-mad-main-light block mb-2">
               {subtitle}
@@ -47,14 +54,24 @@ const Fqa: React.FC<FqaProps> = ({
           <h2 className="mad-h2 font-extrabold text-mad-text-primary">
             {title}
           </h2>
-        </div>
+        </motion.div>
 
         {/* Content Layout Grid */}
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
           {/* Illustration Image Column (Right in RTL layout) */}
-          <div className="lg:col-span-5 flex justify-center items-center order-2 lg:order-1">
-            <div className="relative w-[291px] h-[291px] lg:w-[596px] lg:h-[596px] aspect-square shrink-0">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="lg:col-span-5 flex justify-center items-center order-2 lg:order-1"
+          >
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+              className="relative w-[291px] h-[291px] lg:w-[596px] lg:h-[596px] aspect-square shrink-0"
+            >
               <Image
                 src={imageSrc}
                 alt={imageAlt}
@@ -63,21 +80,26 @@ const Fqa: React.FC<FqaProps> = ({
                 className="w-full h-full object-contain drop-shadow-2xl"
                 priority
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Accordion List Column (Left in RTL layout) */}
           <div className="lg:col-span-7 flex flex-col items-start gap-4 order-1 lg:order-2">
             <div className="w-full flex flex-col gap-4">
-              {items.map((item) => {
+              {items.map((item, index) => {
                 const isOpen = activeOpenId === item.id;
                 return (
-                  <div
+                  <motion.div
                     key={item.id}
+                    initial={{ opacity: 0, y: 25 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
+                    whileHover={{ y: -2 }}
                     className={`group w-full rounded-2xl md:rounded-3xl p-5 md:p-6 transition-all duration-300 cursor-pointer select-none ${
                       isOpen
                         ? "bg-white/80 backdrop-blur-md border-t-4 border-t-mad-main border-y border-l border-white/90 shadow-[0_12px_32px_rgba(109,40,217,0.08)]"
-                        : "bg-white/60 backdrop-blur-md border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:bg-white/85 hover:border-purple-200/80 hover:shadow-[0_10px_30px_rgba(109,40,217,0.08)] hover:-translate-y-0.5"
+                        : "bg-white/60 backdrop-blur-md border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:bg-white/85 hover:border-purple-200/80 hover:shadow-[0_10px_30px_rgba(109,40,217,0.08)]"
                     }`}
                     onClick={() => toggleItem(item.id)}
                   >
@@ -114,34 +136,43 @@ const Fqa: React.FC<FqaProps> = ({
                       </span>
                     </div>
 
-                    {/* Smooth Collapsible Answer Panel */}
-                    <div
-                      className={`grid transition-all duration-300 ease-in-out ${
-                        isOpen
-                          ? "grid-rows-[1fr] opacity-100 mt-3.5"
-                          : "grid-rows-[0fr] opacity-0 mt-0"
-                      }`}
-                    >
-                      <div className="overflow-hidden">
-                        <p className="mad-body-2 text-mad-text-secondary leading-relaxed text-right pt-0.5">
-                          {item.answer}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                    {/* Smooth Collapsible Answer Panel with AnimatePresence */}
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <p className="mad-body-2 text-mad-text-secondary leading-relaxed text-right pt-3.5">
+                            {item.answer}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
                 );
               })}
             </div>
 
             {/* View More Button */}
-            <div className="w-full flex justify-start mt-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="w-full flex justify-start mt-6"
+            >
               <button
                 type="button"
-                className="px-9 py-3.5 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-[0_12px_30px_rgba(109,40,217,0.35)] hover:shadow-[0_18px_40px_rgba(109,40,217,0.45)] transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer backdrop-blur-xs"
+                className="px-9 py-3.5 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-[0_12px_30px_rgba(109,40,217,0.35)] hover:shadow-[0_18px_40px_rgba(109,40,217,0.45)] transition-all duration-300 cursor-pointer backdrop-blur-xs"
               >
                 عرض المزيد
               </button>
-            </div>
+            </motion.div>
           </div>
 
         </div>

@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export interface FeatureCardProps {
   title: string;
@@ -9,6 +12,7 @@ export interface FeatureCardProps {
   icon?: React.ReactNode;
   imageSrc?: string;
   className?: string;
+  index?: number;
 }
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({
@@ -19,10 +23,16 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   icon,
   imageSrc,
   className = "",
+  index = 0,
 }) => {
   return (
-    <div
-      className={`group bg-white rounded-3xl py-4 px-3 md:p-6 xl:py-5 xl:px-8 flex flex-col items-center text-center lg:items-start lg:text-start border border-slate-100 border-t-[5px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden w-full ${className}`}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      className={`group bg-white rounded-3xl py-4 px-3 md:p-6 xl:py-5 xl:px-8 flex flex-col items-center text-center lg:items-start lg:text-start border border-slate-100 border-t-[5px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl transition-shadow duration-300 overflow-hidden w-full ${className}`}
       style={{
         borderTopColor: accentColor,
       }}
@@ -56,7 +66,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
       <p className="mad-body-4 md:mad-body-3 lg:mad-body-2 text-mad-text-secondary font-normal">
         {description}
       </p>
-    </div>
+    </motion.div>
   );
 };
 

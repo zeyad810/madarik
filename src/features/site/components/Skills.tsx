@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { usePublicLanding } from "../hooks/usePublicLanding";
@@ -65,31 +66,40 @@ const Skills: React.FC<SkillsProps> = ({
       <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-12 xl:gap-16">
         
         {/* Text & Action Side (Right in RTL layout) */}
-        <div className="w-full lg:w-5/12 flex flex-col items-center lg:items-start text-center lg:text-right order-1">
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="w-full lg:w-5/12 flex flex-col items-center lg:items-start text-center lg:text-right order-1"
+        >
           <h2 className="mad-h2 font-extrabold text-mad-text-primary mb-4 md:mb-6 leading-tight">
             {title}
           </h2>
           <p className="mad-body-1 text-mad-text-secondary font-normal mb-8 leading-relaxed max-w-xl">
             {description}
           </p>
-          <Button
-            btnLink="#"
-            btnText="ابدأ تجربتك المجانية الآن"
-            btnType="fit"
-            icon="have"
-            btnBackground="var(--mad-main)"
-            btnColor="#ffffff"
-            className="px-7 py-3.5 mad-body-2 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-full"
-          />
-        </div>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Button
+              btnLink="#"
+              btnText="ابدأ تجربتك المجانية الآن"
+              btnType="fit"
+              icon="have"
+              btnBackground="var(--mad-main)"
+              btnColor="#ffffff"
+              className="px-7 py-3.5 mad-body-2 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-full"
+            />
+          </motion.div>
+        </motion.div>
 
         {/* Cards Side (Left in RTL layout) */}
         <div className="w-full lg:w-7/12 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-8 order-2">
           {/* Right Column of Cards (inner column, next to text) */}
           <div className="flex flex-col gap-5 lg:gap-8">
-            {rightCards.map((card) => (
+            {rightCards.map((card, idx) => (
               <FeatureCard
                 key={card.id}
+                index={idx}
                 title={card.title}
                 description={card.description}
                 accentColor={card.accentColor}
@@ -101,9 +111,10 @@ const Skills: React.FC<SkillsProps> = ({
 
           {/* Left Column of Cards (outer left column, shifted down on desktop) */}
           <div className="flex flex-col gap-5 lg:gap-8 lg:translate-y-8">
-            {leftCards.map((card) => (
+            {leftCards.map((card, idx) => (
               <FeatureCard
                 key={card.id}
+                index={idx + 2}
                 title={card.title}
                 description={card.description}
                 accentColor={card.accentColor}

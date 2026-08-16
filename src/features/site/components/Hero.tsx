@@ -2,6 +2,7 @@
 
 import React, { useSyncExternalStore } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { usePublicLanding } from "../hooks/usePublicLanding";
@@ -52,27 +53,58 @@ const Hero: React.FC<HeroProps> = ({
       >
         <div className="container mx-auto flex flex-col items-start px-4 sm:px-6 z-10 relative">
           {/* Mobile Content Side (70% width) */}
-          <div className="w-[68%] flex items-start justify-start flex-col gap-3">
-            <h1 className="text-[16px] font-bold text-white leading-tight">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="w-[68%] flex items-start justify-start flex-col gap-3"
+          >
+            <motion.h1
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-[16px] font-bold text-white leading-tight"
+            >
               {title}
-            </h1>
+            </motion.h1>
 
-            <p className="text-[14px] font-normal text-white/90 leading-relaxed max-w-2xl">
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-[14px] font-normal text-white/90 leading-relaxed max-w-2xl"
+            >
               {description}
-            </p>
+            </motion.p>
 
             {/* Stats Section (Two columns on mobile) */}
-            <div className="grid grid-cols-2 gap-2 py-1 w-full">
-              {stats.map((stat) => (
-                <div key={stat.id} className="flex items-start justify-start flex-col gap-0.5">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="grid grid-cols-2 gap-2 py-1 w-full"
+            >
+              {stats.map((stat, idx) => (
+                <motion.div
+                  key={stat.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, delay: 0.3 + idx * 0.1 }}
+                  className="flex items-start justify-start flex-col gap-0.5"
+                >
                   <p className="text-[14px] font-bold text-mad-third">{stat.value}</p>
                   <p className="text-[14px] font-medium text-white/90">{stat.label}</p>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Call to Action Button */}
-            <div className="pt-1">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="pt-1"
+            >
               <Button
                 btnLink={ctaLink}
                 btnText={ctaText}
@@ -84,11 +116,16 @@ const Hero: React.FC<HeroProps> = ({
                 btnShadow="shadow-[inset_0_2px_6px_rgba(255,255,255,0.45),inset_0_-2px_4px_rgba(0,0,0,0.2)]"
                 className="font-bold text-sm px-5 py-1.5 rounded-full hover:scale-[1.02] active:scale-95 transition-all"
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Mobile Side Image (Absolute on the Left, w: 140px, h: 165px) */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-35 h-41.25 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, x: -30, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-35 h-41.25 flex items-center justify-center"
+          >
             <Image
               src={sideImageSrc}
               alt={sideImageAlt}
@@ -98,7 +135,7 @@ const Hero: React.FC<HeroProps> = ({
               className="max-h-41.25 object-contain drop-shadow-xl"
               priority
             />
-          </div>
+          </motion.div>
         </div>
       </section>
     );
@@ -115,27 +152,61 @@ const Hero: React.FC<HeroProps> = ({
     >
       <div className="container mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 px-4 sm:px-6 md:px-8 z-10">
         {/* Content Side */}
-        <div className="w-full md:w-2/3 flex items-start justify-start flex-col gap-6">
-          <h1 className="mad-title-1 font-bold text-white leading-tight">
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="w-full md:w-2/3 flex items-start justify-start flex-col gap-6"
+        >
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            className="mad-title-1 font-bold text-white leading-tight"
+          >
             {title}
-          </h1>
+          </motion.h1>
 
-          <p className="mad-h5 font-normal text-white/90 leading-relaxed max-w-2xl">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="mad-h5 font-normal text-white/90 leading-relaxed max-w-2xl"
+          >
             {description}
-          </p>
+          </motion.p>
 
           {/* Stats Section */}
-          <div className="flex flex-wrap items-start justify-start gap-6 sm:gap-10 md:gap-12 py-2">
-            {stats.map((stat) => (
-              <div key={stat.id} className="flex items-start justify-start flex-col gap-1">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+            className="flex flex-wrap items-start justify-start gap-6 sm:gap-10 md:gap-12 py-2"
+          >
+            {stats.map((stat, idx) => (
+              <motion.div
+                key={stat.id}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.35 + idx * 0.1, ease: "easeOut" }}
+                whileHover={{ scale: 1.05 }}
+                className="flex items-start justify-start flex-col gap-1 transition-transform"
+              >
                 <p className="mad-h3 font-bold text-mad-third">{stat.value}</p>
                 <p className="mad-h6 font-medium text-white/90">{stat.label}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Call to Action Button */}
-          <div className="pt-2">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="pt-2"
+          >
             <Button
               btnLink={ctaLink}
               btnText={ctaText}
@@ -147,21 +218,32 @@ const Hero: React.FC<HeroProps> = ({
               btnShadow="shadow-[inset_0_3px_8px_rgba(255,255,255,0.45),inset_0_-2px_6px_rgba(0,0,0,0.2)]"
               className="font-bold text-base px-7 py-2.5 rounded-full hover:scale-[1.02] active:scale-95 transition-all"
             />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Desktop Side Image */}
-        <div className="w-full md:w-1/2 flex items-center justify-center">
-          <Image
-            src={sideImageSrc}
-            alt={sideImageAlt}
-            width={821}
-            height={648}
-            style={{ width: "100%", height: "auto" }}
-            className="max-h-95 md:max-h-none lg:w-205.25 object-contain drop-shadow-xl"
-            priority
-          />
-        </div>
+        <motion.div
+          initial={{ opacity: 0, x: -50, scale: 0.9 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="w-full md:w-1/2 flex items-center justify-center"
+        >
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-full flex items-center justify-center"
+          >
+            <Image
+              src={sideImageSrc}
+              alt={sideImageAlt}
+              width={821}
+              height={648}
+              style={{ width: "100%", height: "auto" }}
+              className="max-h-95 md:max-h-none lg:w-205.25 object-contain drop-shadow-xl"
+              priority
+            />
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

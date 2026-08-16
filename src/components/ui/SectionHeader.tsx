@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { SectionHeaderProps } from "@/types";
 
@@ -24,11 +27,21 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className={twMerge("flex flex-col gap-2", alignmentClasses[align], className)}
     >
       {imageSrc && (
-        <div className="mb-2">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+          className="mb-2"
+        >
           <Image
             src={imageSrc}
             alt={imageAlt}
@@ -36,7 +49,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
             height={imageHeight}
             className="object-contain w-auto h-auto"
           />
-        </div>
+        </motion.div>
       )}
 
       {subtitle && (
@@ -71,6 +84,6 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
           {description}
         </p>
       )}
-    </div>
+    </motion.div>
   );
 };
