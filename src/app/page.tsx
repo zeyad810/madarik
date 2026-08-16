@@ -9,6 +9,7 @@ import Skills from "@/features/site/components/Skills";
 import Fqa from "@/features/site/components/Fqa";
 import sectionHeading from "../../public/iamges/sectionHeading.png";
 import WhyTrustUs, { whyTrustUsData } from "@/features/site/components/WhyTrustUs";
+import OurJourney from "@/features/site/components/OurJourney";
 import Pricing from "@/features/site/components/Pricing";
 import InstantReport from "@/features/site/components/InstantReport";
 import ProductSection from "@/features/site/components/ProductSection";
@@ -21,6 +22,7 @@ export default function HomePage() {
       <Header />
       <Hero />
       <MadVideo />
+      <OurJourney />
       <Features />
       <HowItWorks />
       <ChildWin />

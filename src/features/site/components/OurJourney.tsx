@@ -1,0 +1,189 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { OurJourneyProps, OurJourneyStep } from "../types";
+
+export const DEFAULT_JOURNEY_STEPS: OurJourneyStep[] = [
+  {
+    id: "who-we-are",
+    title: "من نحن؟",
+    description:
+      "مدارك القراءة منصة تعليمية متخصصة تهدف إلى تنمية مهارات القراءة لدى الأطفال من خلال قصص تفاعلية، وأنشطة تعليمية، وتقارير ذكية تساعد أولياء الأمور والمدارس على متابعة رحلة التعلم وتحقيق أفضل النتائج.",
+    color: "#8B5CF6", // Purple
+  },
+  {
+    id: "our-vision",
+    title: "رؤيتنا",
+    description:
+      "نسعى لأن نكون المنصة التعليمية الرائدة في تطوير مهارات القراءة لدى الأطفال، من خلال تقديم تجربة تعليمية تفاعلية تجمع بين المتعة، والتقنية، والقياس المستمر للتقدم.",
+    color: "#FBC203", // Yellow
+  },
+  {
+    id: "our-mission",
+    title: "رسالتنا",
+    description:
+      "تمكين كل طفل من بناء عادة القراءة، وتنمية مهاراته اللغوية والفكرية، مع توفير أدوات ذكية تدعم أولياء الأمور والمعلمين في متابعة التقدم واتخاذ قرارات تعليمية مبنية على بيانات دقيقة.",
+    color: "#F55697", // Pink
+  },
+];
+
+const OurJourney: React.FC<OurJourneyProps> = ({
+  title = "رحلتنا نحو صناعة جيل قارئ",
+  description = "نؤمن بأن بناء شخصية الطفل يبدأ من ترسيخ القيم وتنمية الفضول وتحويل المهارات إلى أدوات يعيشها بحب وسعادة ومعنى.",
+  subtitle,
+  imageSrc = "/iamges/sectionHeading.png",
+  imageAlt = "رحلتنا نحو صناعة جيل قارئ",
+  steps = DEFAULT_JOURNEY_STEPS,
+}) => {
+  const step1 = steps[0] || DEFAULT_JOURNEY_STEPS[0];
+  const step2 = steps[1] || DEFAULT_JOURNEY_STEPS[1];
+  const step3 = steps[2] || DEFAULT_JOURNEY_STEPS[2];
+
+  return (
+    <section
+      dir="rtl"
+      className="relative w-full section-spacing px-4 sm:px-6 md:px-8 bg-white overflow-hidden"
+    >
+      <div className="container mx-auto flex flex-col items-center">
+        {/* Section Header */}
+        <SectionHeader
+          title={title}
+          description={description}
+          subtitle={subtitle}
+          imageSrc={imageSrc}
+          imageAlt={imageAlt}
+          align="center"
+          className="mb-10 md:mb-16 max-w-3xl"
+        />
+
+        {/* ==================== Desktop Layout (lg and up) ==================== */}
+        <div className="relative w-full max-w-[1140px] xl:max-w-[1240px] mx-auto hidden lg:block pt-8 pb-28">
+          <div className="relative w-full aspect-[1298/325]">
+            {/* Curved Path Graphic */}
+            <Image
+              src="/iamges/yourPath.svg"
+              alt="مسار رحلتنا"
+              fill
+              className="object-contain pointer-events-none select-none"
+              priority
+            />
+
+            {/* Step 1: من نحن؟ (Right side in RTL) */}
+            <div
+              className="absolute flex flex-col items-center pointer-events-auto"
+              style={{
+                right: "2.85%",
+                top: "46%",
+                transform: "translate(50%, -100%)",
+              }}
+            >
+              <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                {step1.title}
+              </h3>
+            </div>
+            <div
+              className="absolute flex flex-col items-center text-center pointer-events-auto"
+              style={{
+                right: "2.85%",
+                top: "80%",
+                transform: "translateX(50%)",
+                width: "300px",
+              }}
+            >
+              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                {step1.description}
+              </p>
+            </div>
+
+            {/* Step 2: رؤيتنا (Center elevated peak) */}
+            <div
+              className="absolute flex flex-col items-center pointer-events-auto"
+              style={{
+                left: "50.38%",
+                top: "2%",
+                transform: "translate(-50%, -100%)",
+              }}
+            >
+              <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                {step2.title}
+              </h3>
+            </div>
+            <div
+              className="absolute flex flex-col items-center text-center pointer-events-auto"
+              style={{
+                left: "50.38%",
+                top: "34%",
+                transform: "translateX(-50%)",
+                width: "340px",
+              }}
+            >
+              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                {step2.description}
+              </p>
+            </div>
+
+            {/* Step 3: رسالتنا (Left side in RTL) */}
+            <div
+              className="absolute flex flex-col items-center pointer-events-auto"
+              style={{
+                left: "3.54%",
+                top: "46%",
+                transform: "translate(-50%, -100%)",
+              }}
+            >
+              <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                {step3.title}
+              </h3>
+            </div>
+            <div
+              className="absolute flex flex-col items-center text-center pointer-events-auto"
+              style={{
+                left: "3.54%",
+                top: "80%",
+                transform: "translateX(-50%)",
+                width: "300px",
+              }}
+            >
+              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                {step3.description}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ==================== Mobile Layout (Cards stack) ==================== */}
+        <div className="flex lg:hidden flex-col gap-8 sm:gap-10 w-full max-w-md sm:max-w-lg mx-auto pt-4 pb-4">
+          {steps.map((step) => (
+            <div
+              key={step.id}
+              className="relative bg-white rounded-[24px] sm:rounded-[28px] border-2 p-6 sm:p-8 pt-8 sm:pt-9 text-center shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all duration-300 hover:shadow-md"
+              style={{ borderColor: step.color }}
+            >
+              {/* Dot overlapping top center border */}
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-white px-2 flex items-center justify-center">
+                <span
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
+                  style={{ backgroundColor: step.color }}
+                />
+              </div>
+
+              {/* Title */}
+              <h3 className="mad-h4 font-bold text-mad-text-primary mb-3 sm:mb-4">
+                {step.title}
+              </h3>
+
+              {/* Description */}
+              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                {step.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default OurJourney;
