@@ -1,36 +1,40 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import { registerUser } from "../api";
-import { RegisterPayload, RegisterResponse } from "@/types/auth";
+import { verifyRegisterOtp } from "../api";
+import { VerifyRegisterPayload, VerifyRegisterResponse } from "@/types/auth";
 import { ApiError } from "@/types";
 import { extractAuthErrorMessage } from "../helpers/formatAuthError";
 
-export const useRegister = (
-  options?: UseMutationOptions<RegisterResponse, ApiError | Error, RegisterPayload>
+export const useVerifyRegisterOtp = (
+  options?: UseMutationOptions<
+    VerifyRegisterResponse,
+    ApiError | Error,
+    VerifyRegisterPayload
+  >
 ) => {
   const { onSuccess, onError, ...restOptions } = options || {};
 
-  return useMutation<RegisterResponse, ApiError | Error, RegisterPayload>({
+  return useMutation<VerifyRegisterResponse, ApiError | Error, VerifyRegisterPayload>({
     mutationFn: async (payload) => {
-      console.log("[Register Request Payload]:", payload);
-      return await registerUser(payload);
+      console.log("[Verify OTP Request Payload]:", payload);
+      return await verifyRegisterOtp(payload);
     },
     onSuccess: (data, variables, context) => {
-      console.log("[Register Success Response]:", data);
+      console.log("[Verify OTP Success Response]:", data);
       if (data.message) {
         toast.success(data.message);
       } else {
-        toast.success("تم إنشاء الحساب وإرسال رمز التحقق بنجاح");
+        toast.success("تم التحقق وتأكيد الحساب بنجاح");
       }
       if (onSuccess) {
         (onSuccess as any)(data, variables, context);
       }
     },
     onError: (error, variables, context) => {
-      console.error("[Register Error]:", error);
+      console.error("[Verify OTP Error]:", error);
       const errorMessage = extractAuthErrorMessage(
         error,
-        "حدث خطأ غير متوقع أثناء إنشاء الحساب"
+        "رمز التحقق غير صحيح أو منتهي الصلاحية"
       );
       toast.error(errorMessage);
       if (onError) {

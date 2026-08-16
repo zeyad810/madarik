@@ -10,6 +10,7 @@ export { default as CountrySelect } from "./CountrySelect";
 
 // Hooks
 export * from "./hooks/useRegister";
+export * from "./hooks/useVerifyRegisterOtp";
 
 // API Services
 export * from "./api";
