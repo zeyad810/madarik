@@ -270,5 +270,191 @@ export interface MadVideoProps {
   onCtaClick?: () => void;
 }
 
+// ==========================================
+// Public Landing Page API Response Types
+// ==========================================
+import type { ApiResponse } from "@/types";
 
+export interface PublicHeroStat {
+  label: string;
+  value: string;
+}
 
+export interface PublicHeroBanner {
+  title: string;
+  subtitle: string;
+  stats: PublicHeroStat[];
+}
+
+export interface PublicWhyUsItem {
+  title: string;
+  description: string;
+}
+
+export interface PublicWhyUsSection {
+  title: string;
+  description: string;
+  items: PublicWhyUsItem[];
+}
+
+export interface PublicHowItWorksStep {
+  title: string;
+  number: string;
+  description: string;
+}
+
+export interface PublicHowItWorksSection {
+  title: string;
+  description: string;
+  steps: PublicHowItWorksStep[];
+}
+
+export interface PublicPlatformTourSection {
+  title: string;
+  eyebrow: string;
+  description: string;
+}
+
+export interface PublicInstantReportSection {
+  title: string;
+  description: string;
+  points: string[];
+}
+
+export interface PublicMoreThanStoriesItem {
+  title: string;
+  description: string;
+}
+
+export interface PublicMoreThanStoriesSection {
+  title: string;
+  description: string;
+  items: PublicMoreThanStoriesItem[];
+}
+
+export interface PublicChildBenefitsItem {
+  title: string;
+  description: string;
+}
+
+export interface PublicChildBenefitsSection {
+  title: string;
+  subtitle: string;
+  items: PublicChildBenefitsItem[];
+}
+
+export interface PublicStoryBlock {
+  id: string;
+  order: number;
+  block_type: "text" | "image" | string;
+  content: string;
+}
+
+export interface PublicSuggestedStory {
+  id: string;
+  code: string;
+  title: string;
+  description: string | null;
+  thumbnail_url: string;
+  cover_photo_url: string;
+  level: string;
+  outcome: string;
+  indicator: string;
+  age_category: string;
+  availability: "free" | "paid" | string;
+  pdf_url: string | null;
+  blocks?: PublicStoryBlock[];
+}
+
+export interface PublicSuggestedStoriesSection {
+  title: string;
+  link_text: string;
+  items: PublicSuggestedStory[];
+}
+
+export interface PublicTrustItem {
+  title: string;
+  description: string;
+}
+
+export interface PublicTrustSection {
+  title: string;
+  description: string;
+  items: PublicTrustItem[];
+}
+
+export interface PublicJourneyMilestone {
+  title: string;
+  description: string;
+}
+
+export interface PublicJourneySection {
+  title: string;
+  subtitle: string;
+  milestones: PublicJourneyMilestone[];
+}
+
+export interface PublicTestimonial {
+  id: string;
+  name: string;
+  role: string;
+  quote: string;
+  display_order: number;
+  status: "active" | "inactive" | string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PublicTestimonialsSection {
+  title: string;
+  items: PublicTestimonial[];
+}
+
+export interface PublicFaqApiItem {
+  id: number;
+  question: string;
+  answer: string;
+  status: "active" | "inactive" | string;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PublicFaqSection {
+  title: string;
+  subtitle: string;
+  items: PublicFaqApiItem[];
+}
+
+export interface PublicContactSection {
+  title: string;
+  subtitle: string;
+  button_text: string;
+}
+
+export interface PublicNewsletterSection {
+  title: string;
+  subtitle: string;
+}
+
+export interface PublicLandingData {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  hero_banner: PublicHeroBanner;
+  why_us_section: PublicWhyUsSection;
+  how_it_works_section: PublicHowItWorksSection;
+  platform_tour_section: PublicPlatformTourSection;
+  instant_report_section: PublicInstantReportSection;
+  more_than_stories_section: PublicMoreThanStoriesSection;
+  child_benefits_section: PublicChildBenefitsSection;
+  suggested_stories_section: PublicSuggestedStoriesSection;
+  trust_section: PublicTrustSection;
+  journey_section: PublicJourneySection;
+  testimonials_section: PublicTestimonialsSection;
+  faq_section: PublicFaqSection;
+  contact_section: PublicContactSection;
+  newsletter_section: PublicNewsletterSection;
+}
+
+export type PublicLandingResponse = ApiResponse<PublicLandingData>;
