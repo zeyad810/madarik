@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 
@@ -15,7 +16,10 @@ import { ReviewItem, CustomerReviewsProps } from "../types";
 // Render Helper
 // ==========================================
 const renderReviewCard = (review: ReviewItem) => (
-  <div className="w-full bg-linear-to-b from-white via-[#f7f5ff] to-[#ede9fe] rounded-3xl p-6 md:p-8 flex flex-col items-start text-start shadow-[0_15px_35px_rgba(109,40,217,0.06)] h-full justify-between transition-all duration-300 hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)] hover:-translate-y-1">
+  <motion.div
+    whileHover={{ y: -6, transition: { duration: 0.25 } }}
+    className="w-full bg-linear-to-b from-white via-[#f7f5ff] to-[#ede9fe] rounded-3xl p-6 md:p-8 flex flex-col items-start text-start shadow-[0_15px_35px_rgba(109,40,217,0.06)] h-full justify-between transition-shadow duration-300 hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)]"
+  >
     {/* أيقونة الاقتباس - أعلى اليمين */}
     <div className="w-full flex justify-start mb-2">
       <div className="w-10 h-10 rounded-full bg-[#eee8fd] flex items-center justify-center text-mad-main-light font-bold shrink-0">
@@ -55,7 +59,7 @@ const renderReviewCard = (review: ReviewItem) => (
         {review.role}
       </span>
     </div>
-  </div>
+  </motion.div>
 );
 
 // ==========================================
@@ -99,36 +103,44 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
           align="center"
           className="mb-12 md:mb-16 max-w-3xl mx-auto"
         />
-        <Swiper
-          modules={[Autoplay]}
-          dir="rtl"
-          spaceBetween={12}
-          slidesPerView={1.2}
-          watchOverflow
-          observer
-          observeParents
-          breakpoints={{
-            600: {
-              slidesPerView: 1.5,
-              spaceBetween: 16,
-            },
-            800: {
-              slidesPerView: 2,
-              spaceBetween: 20,
-            },
-            1024: {
-              slidesPerView: 3,
-              spaceBetween: 24,
-            },
-          }}
-          className="w-full !pb-12"
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="w-full"
         >
-          {reviews.map((review) => (
-            <SwiperSlide key={review.id} className="h-auto! flex">
-              {renderReviewCard(review)}
-            </SwiperSlide>
-          ))}
-        </Swiper>
+          <Swiper
+            modules={[Autoplay]}
+            dir="rtl"
+            spaceBetween={12}
+            slidesPerView={1.2}
+            watchOverflow
+            observer
+            observeParents
+            breakpoints={{
+              600: {
+                slidesPerView: 1.5,
+                spaceBetween: 16,
+              },
+              800: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
+            }}
+            className="w-full !pb-12"
+          >
+            {reviews.map((review) => (
+              <SwiperSlide key={review.id} className="h-auto! flex">
+                {renderReviewCard(review)}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </motion.div>
       </div>
     </section>
   );

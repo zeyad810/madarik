@@ -59,9 +59,10 @@ const Features: React.FC<FeaturesProps> = ({
 
         {/* Features Cards Grid */}
         <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 lg:gap-6">
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <FeatureCard
               key={feature.id}
+              index={index}
               title={feature.title}
               description={feature.description}
               accentColor={feature.accentColor}

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import type { PricingPlan, PricingProps } from "../types";
@@ -78,9 +79,11 @@ const FeatureRow = ({ text }: { text: string }) => (
 /** Pricing plan card */
 const PlanCard = ({
   plan,
+  index = 0,
   onCtaClick,
 }: {
   plan: PricingPlan;
+  index?: number;
   onCtaClick?: (id: string) => void;
 }) => {
   const handleCta = () => {
@@ -92,7 +95,16 @@ const PlanCard = ({
   };
 
   return (
-    <div className="relative flex flex-col rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.55, delay: index * 0.15, ease: "easeOut" }}
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      className={`relative flex flex-col rounded-3xl border bg-white p-6 shadow-sm sm:p-8 transition-shadow duration-300 hover:shadow-xl ${
+        plan.featured ? "border-mad-main ring-2 ring-mad-main/10" : "border-gray-200"
+      }`}
+    >
       {/* Icon */}
       <div className="flex justify-center">
         <div className="relative" style={{ width: 100, height: 70 }}>
@@ -155,9 +167,15 @@ const PlanCard = ({
       </ul>
 
       {/* CTA */}
-      <button
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         onClick={handleCta}
-        className="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-mad-main px-6 py-3 text-sm font-bold text-mad-main transition-all hover:bg-mad-main/5 active:scale-95"
+        className={`mt-auto flex w-full items-center justify-center gap-2 rounded-2xl border-2 px-6 py-3 text-sm font-bold transition-all cursor-pointer ${
+          plan.featured
+            ? "border-mad-main bg-mad-main text-white hover:bg-mad-main/90 shadow-md"
+            : "border-mad-main text-mad-main hover:bg-mad-main/5"
+        }`}
       >
         {/* WhatsApp icon for schools plan */}
         {plan.id === "schools" && (
@@ -170,8 +188,8 @@ const PlanCard = ({
           </svg>
         )}
         {plan.ctaLabel}
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 
@@ -185,7 +203,7 @@ const Pricing = ({
   onCtaClick,
 }: PricingProps) => {
   return (
-    <section dir="rtl" className="w-full bg-white py-16 sm:py-20 lg:py-24">
+    <section dir="rtl" className="w-full bg-white py-16 sm:py-20 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <SectionHeader
@@ -198,8 +216,8 @@ const Pricing = ({
 
         {/* Cards grid */}
         <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2 lg:gap-8">
-          {plans.map((plan) => (
-            <PlanCard key={plan.id} plan={plan} onCtaClick={onCtaClick} />
+          {plans.map((plan, index) => (
+            <PlanCard key={plan.id} plan={plan} index={index} onCtaClick={onCtaClick} />
           ))}
         </div>
       </div>

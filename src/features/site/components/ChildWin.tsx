@@ -75,28 +75,28 @@ const ChildWin: React.FC<ChildWinProps> = ({
             {/* Card 01: Top Right (RTL Col 1) */}
             {cards[0] && (
               <div className="w-full lg:col-span-4 lg:col-start-1 lg:row-start-1">
-                <ChildWinCard item={cards[0]} />
+                <ChildWinCard item={cards[0]} index={0} />
               </div>
             )}
 
             {/* Card 02: Top Left (RTL Col 3) */}
             {cards[1] && (
               <div className="w-full lg:col-span-4 lg:col-start-9 lg:row-start-1">
-                <ChildWinCard item={cards[1]} />
+                <ChildWinCard item={cards[1]} index={1} />
               </div>
             )}
 
             {/* Card 03: Bottom Right (RTL Col 1) */}
             {cards[2] && (
               <div className="w-full lg:col-span-4 lg:col-start-1 lg:row-start-2">
-                <ChildWinCard item={cards[2]} />
+                <ChildWinCard item={cards[2]} index={2} />
               </div>
             )}
 
             {/* Card 04: Bottom Left (RTL Col 3) */}
             {cards[3] && (
               <div className="w-full lg:col-span-4 lg:col-start-9 lg:row-start-2">
-                <ChildWinCard item={cards[3]} />
+                <ChildWinCard item={cards[3]} index={3} />
               </div>
             )}
 

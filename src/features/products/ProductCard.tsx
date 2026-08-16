@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { ProductCardProps } from "./types";
 import { ProductCardCover } from "./components/ProductCardCover";
 import { ProductCardTags } from "./components/ProductCardTags";
@@ -39,9 +40,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const ctaLink = ctaLinkProp ?? product?.ctaLink;
 
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
       dir="rtl"
-      className={`group w-full max-w-sm bg-white rounded-[28px] border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)] transition-all duration-300 overflow-hidden flex flex-col justify-between ${className}`}
+      className={`group w-full max-w-sm bg-white rounded-[28px] border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)] transition-shadow duration-300 overflow-hidden flex flex-col justify-between ${className}`}
     >
       {/* 1. Cover Image Header with Rosette & Age Badges */}
       <ProductCardCover
@@ -75,7 +77,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onCtaClick={onCtaClick}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

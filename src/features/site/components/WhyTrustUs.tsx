@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { GraduationCap, Eye, SlidersHorizontal } from "lucide-react";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { WhyTrustUsProps, WhyTrustUsFeature } from "../types";
@@ -36,13 +37,13 @@ const renderTitle = (title: string) => {
   return title;
 };
 
-const WhyTrustUs = ({
+const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
   title: propTitle,
   description: propDescription,
   image = "/iamges/whyTrustUs.svg",
   imageAlt = "معلم يستخدم جهازًا لوحيًا",
   features: propFeatures,
-}: WhyTrustUsProps) => {
+}) => {
   const { data: trustData } = usePublicLanding({
     select: (res) => res.data?.trust_section,
   });
@@ -67,30 +68,50 @@ const WhyTrustUs = ({
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* ==================== Content (right side in RTL) ==================== */}
-          <div className="order-2 flex w-full flex-col items-start text-right lg:order-1">
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="order-2 flex w-full flex-col items-start text-right lg:order-1"
+          >
             {/* Title block */}
             <div className="relative flex w-[80%] md:w-full mx-auto flex-col items-start">
               {/* Decorative splash — absolute, above the first letter on the right */}
-              <Image
-                src="/iamges/trustUs1svg.svg"
-                alt=""
-                aria-hidden="true"
-                width={47}
-                height={51}
+              <motion.div
+                initial={{ opacity: 0, scale: 0, rotate: -20 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
                 className="absolute -top-7 -right-9 select-none"
-              />
+              >
+                <Image
+                  src="/iamges/trustUs1svg.svg"
+                  alt=""
+                  aria-hidden="true"
+                  width={47}
+                  height={51}
+                />
+              </motion.div>
               <h2 className="mad-title-2 max-w-2xl font-bold text-gray-800">
                 {renderTitle(title)}
               </h2>
               {/* Wavy underline — aligned to the right start */}
-              <Image
-                src="/iamges/trustUs2svg.svg"
-                alt=""
-                aria-hidden="true"
-                width={126}
-                height={15}
-                className="mt-2 select-none self-start"
-              />
+              <motion.div
+                initial={{ opacity: 0, scaleX: 0 }}
+                whileInView={{ opacity: 1, scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="mt-2 select-none self-start origin-right"
+              >
+                <Image
+                  src="/iamges/trustUs2svg.svg"
+                  alt=""
+                  aria-hidden="true"
+                  width={126}
+                  height={15}
+                />
+              </motion.div>
             </div>
 
             {/* Description */}
@@ -108,9 +129,14 @@ const WhyTrustUs = ({
                 />
 
                 <div className="flex flex-col gap-4">
-                  {features.map((feature) => (
-                    <div
+                  {features.map((feature, idx) => (
+                    <motion.div
                       key={feature.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.45, delay: 0.2 + idx * 0.1, ease: "easeOut" }}
+                      whileHover={{ x: -4, transition: { duration: 0.2 } }}
                       className="relative flex items-stretch"
                     >
                       {/* Timeline Dot */}
@@ -120,7 +146,7 @@ const WhyTrustUs = ({
                       />
 
                       {/* Feature Card */}
-                      <div className="flex w-full items-center rounded-2xl bg-[#F8F7FD] px-4 py-4 sm:px-5">
+                      <div className="flex w-full items-center rounded-2xl bg-[#F8F7FD] px-4 py-4 sm:px-5 transition-shadow duration-300 hover:shadow-md">
                         {/* Icon */}
                         <div className="shrink-0 flex size-10 items-center justify-center rounded-full bg-mad-main text-white shadow-sm">
                           {feature.icon ?? (
@@ -138,16 +164,26 @@ const WhyTrustUs = ({
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* ==================== Image (left side in RTL) ==================== */}
-          <div className="order-1 flex w-full items-center justify-center lg:order-2">
-            <div className="relative aspect-758/907 w-full max-w-md lg:max-w-lg">
+          <motion.div
+            initial={{ opacity: 0, x: -40, scale: 0.95 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="order-1 flex w-full items-center justify-center lg:order-2"
+          >
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="relative aspect-758/907 w-full max-w-md lg:max-w-lg"
+            >
               <Image
                 src={image}
                 alt={imageAlt}
@@ -156,8 +192,8 @@ const WhyTrustUs = ({
                 sizes="(max-width: 1024px) 90vw, 45vw"
                 className="object-contain"
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </section>
