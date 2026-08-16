@@ -1,58 +1,53 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import type { PricingPlan, PricingProps } from "../types";
+import { usePublicPackages } from "../hooks/usePublicPackages";
+import type { PublicPackage } from "../types";
 
-// ==========================================
-// Mock Data  (replace with API data later)
-// ==========================================
-const DEFAULT_PLANS: PricingPlan[] = [
-  {
-    id: "family",
-    name: "الباقة العائلية",
-    description: "الباقة المثالية للعائلات التي تضم أكثر من طفل",
-    icon: "/iamges/family-icon.svg",
-    ageGroups: ["5-9", "10-12", "13-15"],
-    price: 149,
-    currency: "ر.س",
-    billingPeriod: "شهريًا",
-    badge: "لمدة سنة كاملة شاملة",
-    ctaLabel: "اشترك الآن",
-    featured: true,
-    features: [
-      "كل مميزات الباقة المقدمة",
-      "تفعيل حتى 5 حسابات للأطفال",
-      "تقارير نمو دورية وشهرية للوالدين",
-      "دعم أولوية 24/7 واستشارات تربوية",
-    ],
-  },
-  {
-    id: "schools",
-    name: "باقة المدارس",
-    description: "حل متكامل للمدارس والمعلمين",
-    icon: "/iamges/school-icon.svg",
-    ageGroups: ["5-9", "10-12", "13-15"],
-    price: null,
-    ctaLabel: "اشترك عبر الواتساب",
-    ctaHref: "https://wa.me/966500000000",
-    featured: false,
-    features: [
-      "إنشاء فصول دراسية وإدارة الطلاب",
-      "متابعة أداء الطلاب وإصدار التقارير",
-      "مكتبة قصصي وأنشطة تعليمية",
-      "اختبارات تكيفية",
-    ],
-  },
-];
+export interface PricingProps {
+  title?: string;
+  description?: string;
+  packages?: PublicPackage[];
+  onCtaClick?: (packageId: string) => void;
+}
 
 // ==========================================
 // Sub-components
 // ==========================================
 
-/** Static age-group pills — display only, not interactive */
+const PACKAGE_ICONS = [
+  "/iamges/family-icon.svg",
+  "/iamges/school-icon.svg",
+  "/iamges/crown-illustration.svg",
+];
+
+const WhatsAppIcon = ({ className = "size-5" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 2C6.477 2 2 6.477 2 12C2 13.818 2.485 15.523 3.332 16.992L2.086 21.543C1.988 21.902 2.316 22.228 2.674 22.127L7.172 20.852C8.618 21.603 10.26 22.022 12 22.022C17.523 22.022 22 17.545 22 12.022C22 6.5 17.523 2 12 2Z"
+      fill="#25D366"
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M17.508 14.385C17.211 14.236 15.75 13.518 15.478 13.419C15.205 13.32 15.007 13.271 14.809 13.568C14.611 13.865 14.042 14.534 13.868 14.732C13.695 14.931 13.522 14.955 13.224 14.806C12.927 14.657 11.97 14.344 10.835 13.333C9.952 12.545 9.355 11.572 9.181 11.274C9.008 10.977 9.162 10.816 9.311 10.668C9.444 10.535 9.608 10.321 9.756 10.147C9.905 9.974 9.954 9.85 10.054 9.652C10.153 9.454 10.103 9.281 10.029 9.132C9.955 8.983 9.36 7.521 9.112 6.927C8.871 6.347 8.626 6.427 8.444 6.417C8.271 6.409 8.073 6.407 7.875 6.407C7.677 6.407 7.355 6.481 7.083 6.779C6.411 7.476 6 8.36 6 9.278C6 10.741 7.065 12.154 7.213 12.353C7.362 12.551 9.309 15.553 12.29 16.84C13 17.147 13.553 17.33 13.985 17.466C14.697 17.693 15.345 17.661 15.856 17.584C16.427 17.499 17.614 16.865 17.862 16.171C18.11 15.477 18.11 14.882 18.035 14.758C17.961 14.634 17.763 14.56 17.466 14.411L17.508 14.385Z"
+      fill="white"
+    />
+  </svg>
+);
+
 const AgeGroupPills = ({ groups }: { groups: string[] }) => (
   <div className="mt-3 flex flex-wrap justify-center gap-2">
     {groups.map((g) => (
@@ -66,7 +61,6 @@ const AgeGroupPills = ({ groups }: { groups: string[] }) => (
   </div>
 );
 
-/** Single feature bullet row — checkmark matches age-group pill colour */
 const FeatureRow = ({ text }: { text: string }) => (
   <li className="flex items-center gap-3 text-right" dir="rtl">
     <span className="flex-1 text-sm leading-relaxed text-gray-700">{text}</span>
@@ -76,23 +70,51 @@ const FeatureRow = ({ text }: { text: string }) => (
   </li>
 );
 
-/** Pricing plan card */
-const PlanCard = ({
-  plan,
+/** Single Package Card directly using API fields */
+const PackageCard = ({
+  pkg,
   index = 0,
   onCtaClick,
 }: {
-  plan: PricingPlan;
+  pkg: PublicPackage;
   index?: number;
   onCtaClick?: (id: string) => void;
 }) => {
+  const router = useRouter();
+
+  const isWhatsApp =
+    pkg.cta_type === "whatsapp" ||
+    pkg.audience === "school" ||
+    pkg.cta_text?.includes("واتساب");
+
   const handleCta = () => {
-    if (plan.ctaHref) {
-      window.open(plan.ctaHref, "_blank", "noopener,noreferrer");
+    if (isWhatsApp) {
+      window.open("https://wa.me/966500000000", "_blank", "noopener,noreferrer");
+    } else if (onCtaClick) {
+      onCtaClick(pkg.id);
     } else {
-      onCtaClick?.(plan.id);
+      router.push("/register");
     }
   };
+
+  const getBillingPeriod = () => {
+    if (pkg.duration_label) return pkg.duration_label;
+    if (pkg.duration_type === "months") return "شهريًا";
+    if (pkg.duration_type === "years") return "سنويًا";
+    if (pkg.duration_type === "lifetime") return "مدى الحياة";
+    return "";
+  };
+
+  const iconSrc = PACKAGE_ICONS[index % PACKAGE_ICONS.length];
+
+  const featuresList = Array.isArray(pkg.features)
+    ? pkg.features
+    : typeof pkg.features === "string"
+    ? [pkg.features]
+    : [];
+
+  const priceNum =
+    pkg.price !== null && pkg.price !== undefined ? pkg.price : null;
 
   return (
     <motion.div
@@ -101,18 +123,17 @@ const PlanCard = ({
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.55, delay: index * 0.15, ease: "easeOut" }}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
-      className={`relative flex flex-col rounded-3xl border bg-white p-6 shadow-sm sm:p-8 transition-shadow duration-300 hover:shadow-xl ${
-        plan.featured ? "border-mad-main ring-2 ring-mad-main/10" : "border-gray-200"
-      }`}
+      className="relative flex flex-col rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 transition-shadow duration-300 hover:shadow-xl"
     >
       {/* Icon */}
       <div className="flex justify-center">
         <div className="relative" style={{ width: 100, height: 70 }}>
           <Image
-            src={plan.icon}
-            alt={plan.name}
+            src={iconSrc}
+            alt={pkg.name}
             fill
             sizes="100px"
+            loading="eager"
             className="object-contain"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
@@ -121,38 +142,39 @@ const PlanCard = ({
         </div>
       </div>
 
-      {/* Name + description */}
+      {/* Name */}
       <h3 className="mt-4 text-center text-xl font-bold text-mad-main">
-        {plan.name}
+        {pkg.name}
       </h3>
-      {plan.description && (
+
+      {/* Description */}
+      {pkg.description && (
         <p className="mt-1 text-center text-sm text-gray-500">
-          {plan.description}
+          {pkg.description}
         </p>
       )}
 
-      {/* Age group label + pills */}
-      <p className="mt-5 text-center text-xs font-semibold tracking-wide text-mad-main">
-        الفئات العمرية
-      </p>
-      <AgeGroupPills groups={plan.ageGroups} />
+      {/* Age Categories */}
+      {pkg.age_categories && pkg.age_categories.length > 0 && (
+        <>
+          <p className="mt-5 text-center text-xs font-semibold tracking-wide text-mad-main">
+            الفئات العمرية
+          </p>
+          <AgeGroupPills groups={pkg.age_categories} />
+        </>
+      )}
 
-      {/* Price block — above the divider */}
-      {plan.price !== null ? (
+      {/* Price block */}
+      {priceNum !== null ? (
         <div className="mt-5 text-center" dir="rtl">
           <div className="flex items-baseline justify-center gap-1">
             <span className="text-4xl font-extrabold text-mad-main">
-              {plan.price}
+              {priceNum}
             </span>
             <span className="text-base font-medium text-gray-500">
-              {plan.currency ?? "ريال"} / {plan.billingPeriod ?? "شهريًا"}
+              ر.س {getBillingPeriod() ? `/ ${getBillingPeriod()}` : ""}
             </span>
           </div>
-          {plan.badge && (
-            <p className="mt-1 text-xs font-medium text-mad-main underline underline-offset-2">
-              {plan.badge}
-            </p>
-          )}
         </div>
       ) : null}
 
@@ -160,34 +182,23 @@ const PlanCard = ({
       <hr className="my-5 border-gray-100" />
 
       {/* Features */}
-      <ul className="flex flex-col gap-4 mb-12">
-        {plan.features.map((f) => (
-          <FeatureRow key={f} text={f} />
-        ))}
-      </ul>
+      {featuresList.length > 0 && (
+        <ul className="flex flex-col gap-4 mb-12">
+          {featuresList.map((f, idx) => (
+            <FeatureRow key={idx} text={f} />
+          ))}
+        </ul>
+      )}
 
-      {/* CTA */}
+      {/* CTA Button */}
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={handleCta}
-        className={`mt-auto flex w-full items-center justify-center gap-2 rounded-2xl border-2 px-6 py-3 text-sm font-bold transition-all cursor-pointer ${
-          plan.featured
-            ? "border-mad-main bg-mad-main text-white hover:bg-mad-main/90 shadow-md"
-            : "border-mad-main text-mad-main hover:bg-mad-main/5"
-        }`}
+        className="mt-auto flex w-full items-center justify-center gap-2 rounded-full border border-mad-main text-mad-main hover:bg-mad-main/5 px-6 py-3 text-sm font-bold transition-all cursor-pointer"
       >
-        {/* WhatsApp icon for schools plan */}
-        {plan.id === "schools" && (
-          <svg
-            viewBox="0 0 24 24"
-            className="size-4 fill-current"
-            aria-hidden="true"
-          >
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-          </svg>
-        )}
-        {plan.ctaLabel}
+        {isWhatsApp && <WhatsAppIcon className="size-5 shrink-0" />}
+        {pkg.cta_text || (isWhatsApp ? "اشترك عبر الواتساب" : "اشترك الآن")}
       </motion.button>
     </motion.div>
   );
@@ -196,12 +207,35 @@ const PlanCard = ({
 // ==========================================
 // Main Component
 // ==========================================
-const Pricing = ({
-  title = "اختر الباقة المناسبة لطفلك",
-  description = "باقات مرنة تناسب جميع المراحل العمرية، لتمنح طفلك تجربة قراءة ممتعة وآمنة.",
-  plans = DEFAULT_PLANS,
+const Pricing: React.FC<PricingProps> = ({
+  title: propTitle,
+  description: propDescription,
+  packages: propPackages,
   onCtaClick,
-}: PricingProps) => {
+}) => {
+  const { data: packagesData } = usePublicPackages({
+    select: (res) => res.data,
+  });
+
+  const title = propTitle ?? packagesData?.title ?? "اختر الباقة المناسبة لطفلك";
+  const description =
+    propDescription ??
+    packagesData?.subtitle ??
+    "باقات مرنة تناسب جميع المراحل العمرية، لتمنح طفلك تجربة قراءة ممتعة وآمنة.";
+
+  const packagesList = propPackages ?? packagesData?.packages ?? [];
+
+  if (packagesList.length === 0) {
+    return null;
+  }
+
+  const gridColsClass =
+    packagesList.length === 1
+      ? "max-w-md grid-cols-1"
+      : packagesList.length === 2
+      ? "max-w-3xl sm:grid-cols-2"
+      : "max-w-5xl sm:grid-cols-2 lg:grid-cols-3";
+
   return (
     <section dir="rtl" className="w-full bg-white py-16 sm:py-20 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -215,9 +249,14 @@ const Pricing = ({
         />
 
         {/* Cards grid */}
-        <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2 lg:gap-8">
-          {plans.map((plan, index) => (
-            <PlanCard key={plan.id} plan={plan} index={index} onCtaClick={onCtaClick} />
+        <div className={`mx-auto mt-12 grid gap-6 lg:gap-8 ${gridColsClass}`}>
+          {packagesList.map((pkg, index) => (
+            <PackageCard
+              key={pkg.id}
+              pkg={pkg}
+              index={index}
+              onCtaClick={onCtaClick}
+            />
           ))}
         </div>
       </div>
@@ -226,4 +265,3 @@ const Pricing = ({
 };
 
 export default Pricing;
-export { DEFAULT_PLANS as pricingDefaultPlans };

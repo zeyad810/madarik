@@ -477,3 +477,32 @@ export interface PublicLandingData {
 }
 
 export type PublicLandingResponse = ApiResponse<PublicLandingData>;
+
+export interface PublicPackage {
+  id: string;
+  name: string;
+  audience: "individual" | "school" | string;
+  description: string | null;
+  features: string[] | string | null;
+  price: string | number | null;
+  duration_type: "months" | "years" | "lifetime" | string;
+  duration_value: number | null;
+  duration_label: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  age_categories: string[];
+  status: string;
+  cta_type: "checkout" | "whatsapp" | string;
+  cta_text: string | null;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PublicPackagesData {
+  title: string | null;
+  subtitle: string | null;
+  packages: PublicPackage[];
+}
+
+export type PublicPackagesResponse = ApiResponse<PublicPackagesData>;
