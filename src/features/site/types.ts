@@ -257,6 +257,25 @@ export interface ContactUsProps {
 }
 
 // ==========================================
+// Our Journey Types
+// ==========================================
+export interface OurJourneyStep {
+  id: string | number;
+  title: string;
+  description: string;
+  color: string;
+}
+
+export interface OurJourneyProps {
+  title?: string;
+  description?: string;
+  subtitle?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+  steps?: OurJourneyStep[];
+}
+
+// ==========================================
 // Video Section Types
 // ==========================================
 export interface MadVideoProps {
