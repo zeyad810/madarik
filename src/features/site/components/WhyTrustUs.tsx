@@ -1,6 +1,6 @@
 import type { WhyTrustUsProps } from "../types";
 import Image from "next/image";
-import { GraduationCap, SlidersHorizontal } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 export const whyTrustUsData: WhyTrustUsProps = {
   title: "لمــــــــــاذا يثــــــــــــــق بنـــــــــــا آلاف الآبــــاء والمعـلـميــــــــــن؟",
