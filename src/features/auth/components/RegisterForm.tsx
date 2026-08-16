@@ -68,6 +68,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   const isLoading = isSubmitting || isPending;
 
   const onSubmit = (data: RegisterFormData) => {
+    console.log("[Register Form Submitted Data]:", data);
     executeRegister({
       name: data.username.trim(),
       phone: data.phone.trim(),

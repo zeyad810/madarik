@@ -11,8 +11,12 @@ export const useRegister = (
   const { onSuccess, onError, ...restOptions } = options || {};
 
   return useMutation<RegisterResponse, ApiError | Error, RegisterPayload>({
-    mutationFn: registerUser,
+    mutationFn: async (payload) => {
+      console.log("[Register Request Payload]:", payload);
+      return await registerUser(payload);
+    },
     onSuccess: (data, variables, context) => {
+      console.log("[Register Success Response]:", data);
       if (data.message) {
         toast.success(data.message);
       } else {
@@ -23,6 +27,7 @@ export const useRegister = (
       }
     },
     onError: (error, variables, context) => {
+      console.error("[Register Error]:", error);
       const errorMessage = extractAuthErrorMessage(
         error,
         "حدث خطأ غير متوقع أثناء إنشاء الحساب"

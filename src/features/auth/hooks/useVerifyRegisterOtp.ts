@@ -15,8 +15,12 @@ export const useVerifyRegisterOtp = (
   const { onSuccess, onError, ...restOptions } = options || {};
 
   return useMutation<VerifyRegisterResponse, ApiError | Error, VerifyRegisterPayload>({
-    mutationFn: verifyRegisterOtp,
+    mutationFn: async (payload) => {
+      console.log("[Verify OTP Request Payload]:", payload);
+      return await verifyRegisterOtp(payload);
+    },
     onSuccess: (data, variables, context) => {
+      console.log("[Verify OTP Success Response]:", data);
       if (data.message) {
         toast.success(data.message);
       } else {
@@ -27,6 +31,7 @@ export const useVerifyRegisterOtp = (
       }
     },
     onError: (error, variables, context) => {
+      console.error("[Verify OTP Error]:", error);
       const errorMessage = extractAuthErrorMessage(
         error,
         "رمز التحقق غير صحيح أو منتهي الصلاحية"
