@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { AUTH_TEXTS, AUTH_TYPOGRAPHY, AUTH_COLORS } from "./constants";
 
 interface OtpProps {
@@ -10,6 +11,8 @@ interface OtpProps {
   onResendCode?: () => void;
   onBackToLogin?: () => void;
   initialTimerSeconds?: number;
+  isLoading?: boolean;
+  errorMessage?: string | null;
   texts?: typeof AUTH_TEXTS.otp;
   typography?: typeof AUTH_TYPOGRAPHY;
   colors?: typeof AUTH_COLORS;
@@ -21,13 +24,15 @@ const Otp: React.FC<OtpProps> = ({
   onResendCode,
   onBackToLogin,
   initialTimerSeconds = 300,
+  isLoading = false,
+  errorMessage = null,
   texts = AUTH_TEXTS.otp,
   typography = AUTH_TYPOGRAPHY,
   colors = AUTH_COLORS,
 }) => {
   const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
   const [timer, setTimer] = useState<number>(initialTimerSeconds);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isInternalSubmitting, setIsInternalSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -106,6 +111,9 @@ const Otp: React.FC<OtpProps> = ({
     }
   };
 
+  const isSubmitting = isLoading || isInternalSubmitting;
+  const displayedError = errorMessage || errorMsg;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const otpCode = digits.join("");
@@ -114,7 +122,7 @@ const Otp: React.FC<OtpProps> = ({
       return;
     }
 
-    setIsSubmitting(true);
+    setIsInternalSubmitting(true);
     setErrorMsg("");
 
     if (onVerifySuccess) {
@@ -122,7 +130,7 @@ const Otp: React.FC<OtpProps> = ({
     } else {
       console.log("OTP Submitted:", otpCode);
     }
-    setIsSubmitting(false);
+    setIsInternalSubmitting(false);
   };
 
   return (
@@ -184,6 +192,7 @@ const Otp: React.FC<OtpProps> = ({
                 inputMode="numeric"
                 maxLength={1}
                 value={digit}
+                disabled={isSubmitting}
                 onChange={(e) => handleDigitChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
@@ -196,9 +205,9 @@ const Otp: React.FC<OtpProps> = ({
         </div>
 
         {/* Validation Error Message */}
-        {errorMsg && (
+        {displayedError && (
           <span className={`${typography.error} ${colors.errorText} text-center`}>
-            {errorMsg}
+            {displayedError}
           </span>
         )}
 
@@ -208,6 +217,7 @@ const Otp: React.FC<OtpProps> = ({
             <button
               type="button"
               onClick={handleResend}
+              disabled={isSubmitting}
               className={`${typography.otpResend} ${colors.otpResendLink}`}
             >
               {texts.resendText}
@@ -217,7 +227,7 @@ const Otp: React.FC<OtpProps> = ({
               <button
                 type="button"
                 onClick={handleResend}
-                disabled={timer > 0}
+                disabled={true}
                 className={`${typography.otpResend} text-[#98A2B3] cursor-not-allowed`}
               >
                 {texts.resendText}
@@ -236,9 +246,16 @@ const Otp: React.FC<OtpProps> = ({
         <button
           type="submit"
           disabled={isSubmitting || digits.join("").length < 6}
-          className={`w-full py-3.5 px-6 rounded-full ${colors.submitButton} ${typography.button} transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]`}
+          className={`w-full py-3.5 px-6 rounded-full ${colors.submitButton} ${typography.button} flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]`}
         >
-          {isSubmitting ? texts.submittingButton : texts.confirmButton}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>{texts.submittingButton}</span>
+            </>
+          ) : (
+            texts.confirmButton
+          )}
         </button>
       </form>
     </div>

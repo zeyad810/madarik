@@ -49,3 +49,13 @@ export interface RegisterResponse {
   dev_otp?: string;
 }
 
+export interface VerifyRegisterPayload {
+  phone: string;
+  otp: string;
+}
+
+export interface VerifyRegisterResponse {
+  message?: string;
+  token?: string;
+  user?: AuthUser;
+}
