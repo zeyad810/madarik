@@ -3,37 +3,43 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { GraduationCap, Eye, SlidersHorizontal } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { WhyTrustUsProps, WhyTrustUsFeature } from "../types";
 
 const TRUST_ICONS = [
   <GraduationCap key="grad" className="size-5" strokeWidth={2} />,
-  <Eye key="eye" className="size-5" strokeWidth={2} />,
-  <SlidersHorizontal key="slider" className="size-5" strokeWidth={2} />,
+  <Image
+    key="glass"
+    width={20}
+    height={20}
+    src="/iamges/whytrustGlassIcon.svg"
+    alt="icon"
+  />,
+  <Image
+    key="brain"
+    width={20}
+    height={20}
+    src="/iamges/whytrustBrainIcon.svg"
+    alt="icon"
+  />,
 ];
 
 const renderTitle = (title: string) => {
-  const highlightWords = [
-    "الآباء والمعلمين؟",
-    "الآباء والمعلمين",
-    "الآباء والمعـلـميـــــــــــــن؟",
-    "آلاف الآباء",
-    "ألف الآباء",
-  ];
+  if (!title) return null;
 
-  for (const phrase of highlightWords) {
-    if (title.includes(phrase)) {
-      const [before, after] = title.split(phrase);
-      return (
-        <>
-          {before}
-          <span className="text-mad-main">{phrase}</span>
-          {after}
-        </>
-      );
-    }
+  const words = title.trim().split(/\s+/);
+  if (words.length > 3) {
+    const firstPart = words.slice(0, 3).join(" ");
+    const coloredPart = words.slice(3).join(" ");
+    return (
+      <>
+        {firstPart}{" "}
+        <span className="text-mad-main">{coloredPart}</span>
+      </>
+    );
   }
+
   return title;
 };
 
