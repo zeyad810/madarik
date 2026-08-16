@@ -1,7 +1,6 @@
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
 import Hero from "@/features/site/components/Hero";
-import GlobalLandingLoader from "@/features/site/components/GlobalLandingLoader";
 import CustomerReviews from "@/features/site/components/CustomerReviews";
 import Features from "@/features/site/components/Features";
 import HowItWorks from "@/features/site/components/HowItWorks";
@@ -20,7 +19,6 @@ import MadVideo from "@/features/site/components/MadVideo";
 export default function HomePage() {
   return (
     <main className="w-full min-h-screen flex flex-col">
-      <GlobalLandingLoader />
       <Header />
       <Hero />
       <MadVideo />
