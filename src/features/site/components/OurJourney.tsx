@@ -55,8 +55,8 @@ const OurJourney: React.FC<OurJourneyProps> = ({
 
         {/* ==================== Desktop Layout (lg and up) ==================== */}
         {step1 && (
-          <div className="relative w-full max-w-[1140px] xl:max-w-[1240px] mx-auto hidden lg:block pt-8 pb-28">
-            <div className="relative w-full aspect-[1298/325]">
+          <div className="relative w-full mx-auto hidden lg:block pt-8 pb-28">
+            <div className="relative w-full aspect-1298/325">
               {/* Curved Path Graphic */}
               <Image
                 src="/iamges/yourPath.svg"
@@ -66,34 +66,32 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 priority
               />
 
-              {/* Step 1: من نحن؟ (Right side in RTL) */}
               <div
                 className="absolute flex flex-col items-center pointer-events-auto"
                 style={{
-                  right: "2.85%",
+                  right: "8.85%",
                   top: "46%",
                   transform: "translate(50%, -100%)",
                 }}
               >
-                <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                <h3 className="mad-h5 font-bold text-mad-text-primary whitespace-nowrap mb-2">
                   {step1.title}
                 </h3>
               </div>
               <div
                 className="absolute flex flex-col items-center text-center pointer-events-auto"
                 style={{
-                  right: "2.85%",
+                  right: "8.85%",
                   top: "80%",
                   transform: "translateX(50%)",
                   width: "300px",
                 }}
               >
-                <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                   {step1.description}
                 </p>
               </div>
 
-              {/* Step 2: رؤيتنا (Center elevated peak) */}
               {step2 && (
                 <>
                   <div
@@ -104,7 +102,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                       transform: "translate(-50%, -100%)",
                     }}
                   >
-                    <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                    <h3 className="mad-h5 font-bold text-mad-text-primary whitespace-nowrap mb-2">
                       {step2.title}
                     </h3>
                   </div>
@@ -117,38 +115,37 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                       width: "340px",
                     }}
                   >
-                    <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                    <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                       {step2.description}
                     </p>
                   </div>
                 </>
               )}
 
-              {/* Step 3: رسالتنا (Left side in RTL) */}
               {step3 && (
                 <>
                   <div
                     className="absolute flex flex-col items-center pointer-events-auto"
                     style={{
-                      left: "3.54%",
+                      left: "8.54%",
                       top: "46%",
                       transform: "translate(-50%, -100%)",
                     }}
                   >
-                    <h3 className="mad-h4 font-bold text-mad-text-primary whitespace-nowrap mb-2">
+                    <h3 className="mad-h5 font-bold text-mad-text-primary whitespace-nowrap mb-2">
                       {step3.title}
                     </h3>
                   </div>
                   <div
                     className="absolute flex flex-col items-center text-center pointer-events-auto"
                     style={{
-                      left: "3.54%",
+                      left: "8.54%",
                       top: "80%",
                       transform: "translateX(-50%)",
                       width: "300px",
                     }}
                   >
-                    <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+                    <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                       {step3.description}
                     </p>
                   </div>
@@ -163,7 +160,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
           {steps.map((step) => (
             <div
               key={step.id}
-              className="relative bg-white rounded-[24px] sm:rounded-[28px] border-2 p-6 sm:p-8 pt-8 sm:pt-9 text-center shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all duration-300 hover:shadow-md"
+              className="relative bg-white rounded-3xl sm:rounded-[28px] border-2 p-6 sm:p-8 pt-8 sm:pt-9 text-center shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all duration-300 hover:shadow-md"
               style={{ borderColor: step.color }}
             >
               {/* Dot overlapping top center border */}
@@ -180,7 +177,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
               </h3>
 
               {/* Description */}
-              <p className="mad-body-3 text-mad-text-secondary leading-relaxed font-medium">
+              <p className="mad-body-2 text-mad-text-secondary leading-relaxed font-medium">
                 {step.description}
               </p>
             </div>
