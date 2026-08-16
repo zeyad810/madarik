@@ -8,10 +8,10 @@ import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { InstantReportFeature, InstantReportProps } from "../types";
 
 const DEFAULT_ICONS = [
-  "/assets/report.svg",
-  "/assets/checkedbook.svg",
-  "/assets/parent.svg",
-  "/assets/school.svg",
+  "/assets/reporttt.svg",
+  "/assets/rewardd.svg",
+  "/assets/fileSearch.svg",
+  "/assets/boxReward.svg",
 ];
 
 // ==========================================
@@ -38,8 +38,8 @@ const FeatureRow = ({
           src={feature.icon}
           alt=""
           aria-hidden="true"
-          width={22}
-          height={22}
+          width={30}
+          height={30}
           className="object-contain"
         />
       </div>
