@@ -3,6 +3,7 @@ export { default as Hero } from "./components/Hero";
 export { default as CustomerReviews } from "./components/CustomerReviews";
 export { default as Features } from "./components/Features";
 export { default as HowItWorks } from "./components/HowItWorks";
+export { default as StepCard } from "./components/StepCard";
 export { default as ChildWin } from "./components/ChildWin";
 export { default as Skills } from "./components/Skills";
 export { default as Fqa } from "./components/Fqa";
@@ -14,7 +15,7 @@ export { default as ContactUs } from "./components/ContactUs";
 export { default as MadVideo } from "./components/MadVideo";
 
 // Hooks
-export * from "./hooks";
+export * from "./hooks/usePublicLanding";
 
 // Services & API
 export * from "./api";

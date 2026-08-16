@@ -18,7 +18,7 @@ import {
 } from "./constants";
 
 const Footer: React.FC<FooterProps> = ({
-  newsletter = DEFAULT_NEWSLETTER,
+  newsletter,
   onSubscribe,
   brandDescription = DEFAULT_BRAND_DESCRIPTION,
   quickLinks = DEFAULT_QUICK_LINKS,

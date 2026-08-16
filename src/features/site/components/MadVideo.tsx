@@ -3,29 +3,27 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Play, X, ArrowLeft } from "lucide-react";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { MadVideoProps } from "../types";
 
-export const defaultMadVideoData = {
-  subtitle: "جولة سريعة داخل المنصة",
-  title: "تعرف على منصة إقرأ",
-  description:
-    "شاهد هذا الفيديو التعريفي القصير لتكتشف كيف تأخذ طفلك خطوة بخطوة في رحلة مليئة بالقصص والأنشطة الإبداعية المصممة لتعزيز النطق وبناء مهارات التفكير النقدي.",
-  ctaText: "ابدأ تجربتك المجانية الآن",
-  ctaHref: "#",
-  youtubeId: "dQw4w9WgXcQ", // Replace with target Youtube video ID
-  thumbnailSrc: "/iamges/video_thumbnail.png",
-};
-
 const MadVideo: React.FC<MadVideoProps> = ({
-  subtitle = defaultMadVideoData.subtitle,
-  title = defaultMadVideoData.title,
-  description = defaultMadVideoData.description,
-  ctaText = defaultMadVideoData.ctaText,
-  ctaHref = defaultMadVideoData.ctaHref,
-  youtubeId = defaultMadVideoData.youtubeId,
-  thumbnailSrc = defaultMadVideoData.thumbnailSrc,
+  subtitle: propSubtitle,
+  title: propTitle,
+  description: propDescription,
+  ctaText = "ابدأ تجربتك المجانية الآن",
+  ctaHref = "#",
+  youtubeId = "dQw4w9WgXcQ", // Replace with target Youtube video ID
+  thumbnailSrc = "/iamges/video_thumbnail.png",
   onCtaClick,
 }) => {
+  const { data: tourData } = usePublicLanding({
+    select: (res) => res.data?.platform_tour_section,
+  });
+
+  const title = propTitle ?? tourData?.title ?? "";
+  const subtitle = propSubtitle ?? tourData?.eyebrow ?? "";
+  const description = propDescription ?? tourData?.description ?? "";
+
   const [isOpen, setIsOpen] = useState(false);
 
   // Close modal on Escape key press

@@ -7,51 +7,12 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import { ReviewItem, CustomerReviewsProps } from "../types";
 
-
 // ==========================================
-// 2. Mock Data
-// ==========================================
-const DEFAULT_REVIEWS: ReviewItem[] = [
-  {
-    id: 1,
-    author: "أ. سارة القحطاني",
-    role: "ولي أمر",
-    comment:
-      "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 5,
-  },
-  {
-    id: 2,
-    author: "أ. سارة القحطاني",
-    role: "ولي أمر",
-    comment:
-      "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 5,
-  },
-  {
-    id: 3,
-    author: "أ. سارة القحطاني",
-    role: "ولي أمر",
-    comment:
-      "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 5,
-  },
-  {
-    id: 4,
-    author: "أ. سارة القحطاني",
-    role: "ولي أمر",
-    comment:
-      "المنصة آمنة وموثوقة، التتبع اليومي للمستوى يمنحني رؤية واضحة لتقدم ابني. شكراً على هذا العمل الرائع!",
-    rating: 5,
-  },
-];
-
-// ==========================================
-// 3. Render Helper
+// Render Helper
 // ==========================================
 const renderReviewCard = (review: ReviewItem) => (
   <div className="w-full bg-linear-to-b from-white via-[#f7f5ff] to-[#ede9fe] rounded-3xl p-6 md:p-8 flex flex-col items-start text-start shadow-[0_15px_35px_rgba(109,40,217,0.06)] h-full justify-between transition-all duration-300 hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)] hover:-translate-y-1">
@@ -98,14 +59,34 @@ const renderReviewCard = (review: ReviewItem) => (
 );
 
 // ==========================================
-// 4. Main Component
+// Main Component
 // ==========================================
 const CustomerReviews: React.FC<CustomerReviewsProps> = ({
-  title = "ماذا يقول أولياء الأمور؟",
-  subtitle = "آراء العملاء",
-  description = "تجارب حقيقية من آباء وأمهات شهدوا تحسناً ملحوظاً في مهارات القراءة والتفكير النقدي لأطفالهم.",
-  reviews = DEFAULT_REVIEWS,
+  title: propTitle,
+  subtitle: propSubtitle,
+  description: propDescription,
+  imageSrc,
+  imageAlt,
+  reviews: propReviews,
 }) => {
+  const { data: testimonialsData } = usePublicLanding({
+    select: (res) => res.data?.testimonials_section,
+  });
+
+  const title = propTitle ?? testimonialsData?.title ?? "";
+  const subtitle = propSubtitle ?? "آراء العملاء";
+  const description = propDescription ?? "";
+
+  const reviews: ReviewItem[] =
+    propReviews ??
+    (testimonialsData?.items?.map((item) => ({
+      id: item.id,
+      author: item.name,
+      role: item.role,
+      comment: item.quote,
+      rating: 5,
+    })) ?? []);
+
   return (
     <section dir="rtl" className="w-full section-spacing px-4 md:px-8 bg-white overflow-hidden">
       <div className="container mx-auto flex flex-col items-center">
@@ -113,39 +94,41 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
           title={title}
           subtitle={subtitle}
           description={description}
+          imageSrc={imageSrc}
+          imageAlt={imageAlt}
           align="center"
           className="mb-12 md:mb-16 max-w-3xl mx-auto"
         />
         <Swiper
-        modules={[Autoplay]}
-        dir="rtl"
-        spaceBetween={12}
-        slidesPerView={1.2}
-        watchOverflow
-        observer
-        observeParents
-        breakpoints={{
-          600: {
-            slidesPerView: 1.5,
-            spaceBetween: 16,
-          },
-          800: {
-            slidesPerView: 2,
-            spaceBetween: 20,
-          },
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 24,
-          },
-        }}
-        className="w-full !pb-12"
-      >
-        {reviews.map((review) => (
-          <SwiperSlide key={review.id} className="h-auto! flex">
-            {renderReviewCard(review)}
-          </SwiperSlide>
-        ))}
-      </Swiper>
+          modules={[Autoplay]}
+          dir="rtl"
+          spaceBetween={12}
+          slidesPerView={1.2}
+          watchOverflow
+          observer
+          observeParents
+          breakpoints={{
+            600: {
+              slidesPerView: 1.5,
+              spaceBetween: 16,
+            },
+            800: {
+              slidesPerView: 2,
+              spaceBetween: 20,
+            },
+            1024: {
+              slidesPerView: 3,
+              spaceBetween: 24,
+            },
+          }}
+          className="w-full !pb-12"
+        >
+          {reviews.map((review) => (
+            <SwiperSlide key={review.id} className="h-auto! flex">
+              {renderReviewCard(review)}
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </section>
   );

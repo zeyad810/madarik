@@ -2,52 +2,31 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import { FaqItem, FqaProps } from "../types";
 
-const DEFAULT_FAQ_ITEMS: FaqItem[] = [
-  {
-    id: 1,
-    question: "ما الفئة العمرية المناسبة للمنصة؟",
-    answer:
-      "منصة مدارك مصممة خصيصاً للأطفال من سن ٤ إلى ١٢ سنة. تضم المنصة محتوى متدرجاً يناسب مختلف المراحل، من المرحلة التأسيسية للأطفال الصغار حتى مرحلة الاستقلالية في القراءة لكبارهم.",
-  },
-  {
-    id: 2,
-    question: "كيف يمكنني الاشتراك في المنصة؟",
-    answer:
-      "يمكنك الاشتراك بسهولة عبر إنشاء حساب ولي أمر أو مدرسة، ثم اختيار الباقة التنافسية المناسبة والبدء في استخدام المنصة فوراً.",
-  },
-  {
-    id: 3,
-    question: "هل المحتوى آمن لطفلي؟",
-    answer:
-      "نعم، جميع قصص ومحتويات المنصة آمنة تماماً وخالية من أي إعلانات، وتراعي القيم التربوية والتطويرية للطفل.",
-  },
-  {
-    id: 4,
-    question: "هل يمكنني إلغاء اشتراكي في أي وقت؟",
-    answer:
-      "نعم، يمكنك إلغاء الاشتراك أو تجميده في أي وقت مباشرة من خلال لوحة تحكم حسابك بسهولة ودون أي تعقيدات.",
-  },
-  {
-    id: 5,
-    question: "ما الفرق بين الباقات المتاحة؟",
-    answer:
-      "تختلف الباقات بناءً على عدد حسابات الأطفال وتفاصيل التقارير الذكية والمميزات المخصصة للمدارس والمؤسسات.",
-  },
-];
-
 const Fqa: React.FC<FqaProps> = ({
-  subtitle = "لديك أسئلة؟ نحن هنا للإجابة",
-  title = "الأسئلة الشائعة",
-  items = DEFAULT_FAQ_ITEMS,
+  subtitle: propSubtitle,
+  title: propTitle,
+  items: propItems,
   imageSrc = "/assets/person-ques.png",
   imageAlt = "شخص يفكر وحوله علامات استفهام",
 }) => {
-  const [openId, setOpenId] = useState<number | string | null>(items[0]?.id ?? 1);
+  const { data: faqData } = usePublicLanding({
+    select: (res) => res.data?.faq_section,
+  });
+
+  const title = propTitle ?? faqData?.title ?? "";
+  const subtitle = propSubtitle ?? faqData?.subtitle ?? "";
+  const items: FaqItem[] = propItems ?? (faqData?.items ?? []);
+
+  const [openId, setOpenId] = useState<number | string | null>(null);
+
+  // If no item is explicitly toggled, default to opening the first item
+  const activeOpenId = openId ?? items[0]?.id ?? null;
 
   const toggleItem = (id: number | string) => {
-    setOpenId((prev) => (prev === id ? null : id));
+    setOpenId((prev) => (prev === id ? -1 : id));
   };
 
   return (
@@ -60,9 +39,11 @@ const Fqa: React.FC<FqaProps> = ({
 
         {/* Section Header */}
         <div className="text-center max-w-3xl mb-12 md:mb-16">
-          <span className="mad-label-1 font-bold text-mad-main-light block mb-2">
-            {subtitle}
-          </span>
+          {subtitle && (
+            <span className="mad-label-1 font-bold text-mad-main-light block mb-2">
+              {subtitle}
+            </span>
+          )}
           <h2 className="mad-h2 font-extrabold text-mad-text-primary">
             {title}
           </h2>
@@ -89,35 +70,39 @@ const Fqa: React.FC<FqaProps> = ({
           <div className="lg:col-span-7 flex flex-col items-start gap-4 order-1 lg:order-2">
             <div className="w-full flex flex-col gap-4">
               {items.map((item) => {
-                const isOpen = openId === item.id;
+                const isOpen = activeOpenId === item.id;
                 return (
                   <div
                     key={item.id}
-                    className={`group w-full rounded-2xl md:rounded-3xl p-5 md:p-6 transition-all duration-300 cursor-pointer select-none ${isOpen
+                    className={`group w-full rounded-2xl md:rounded-3xl p-5 md:p-6 transition-all duration-300 cursor-pointer select-none ${
+                      isOpen
                         ? "bg-white/80 backdrop-blur-md border-t-4 border-t-mad-main border-y border-l border-white/90 shadow-[0_12px_32px_rgba(109,40,217,0.08)]"
                         : "bg-white/60 backdrop-blur-md border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:bg-white/85 hover:border-purple-200/80 hover:shadow-[0_10px_30px_rgba(109,40,217,0.08)] hover:-translate-y-0.5"
-                      }`}
+                    }`}
                     onClick={() => toggleItem(item.id)}
                   >
                     {/* Question Header Row */}
                     <div className="flex items-center justify-between gap-4 w-full">
                       <h3
-                        className={`mad-body-1 md:mad-h6 font-bold text-right transition-colors duration-200 ${isOpen
+                        className={`mad-body-1 md:mad-h6 font-bold text-right transition-colors duration-200 ${
+                          isOpen
                             ? "text-mad-main"
                             : "text-mad-text-primary group-hover:text-mad-main-light"
-                          }`}
+                        }`}
                       >
                         {item.question}
                       </h3>
                       <span
-                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${isOpen
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                          isOpen
                             ? "bg-mad-main text-white shadow-md"
                             : "bg-[#f4f0ff]/80 backdrop-blur-xs text-mad-main-light group-hover:bg-purple-100 group-hover:scale-105"
-                          }`}
+                        }`}
                       >
                         <svg
-                          className={`w-4 h-4 fill-current transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-                            }`}
+                          className={`w-4 h-4 fill-current transition-transform duration-300 ${
+                            isOpen ? "rotate-180" : ""
+                          }`}
                           viewBox="0 0 24 24"
                         >
                           {isOpen ? (
@@ -131,10 +116,11 @@ const Fqa: React.FC<FqaProps> = ({
 
                     {/* Smooth Collapsible Answer Panel */}
                     <div
-                      className={`grid transition-all duration-300 ease-in-out ${isOpen
+                      className={`grid transition-all duration-300 ease-in-out ${
+                        isOpen
                           ? "grid-rows-[1fr] opacity-100 mt-3.5"
                           : "grid-rows-[0fr] opacity-0 mt-0"
-                        }`}
+                      }`}
                     >
                       <div className="overflow-hidden">
                         <p className="mad-body-2 text-mad-text-secondary leading-relaxed text-right pt-0.5">
@@ -147,7 +133,7 @@ const Fqa: React.FC<FqaProps> = ({
               })}
             </div>
 
-            {/* View More Button (Aligned to Start with Deep Purple Shadow & Glass Touch) */}
+            {/* View More Button */}
             <div className="w-full flex justify-start mt-6">
               <button
                 type="button"

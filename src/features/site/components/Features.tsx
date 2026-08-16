@@ -1,65 +1,48 @@
+"use client";
+
 import React from "react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FeatureCard } from "@/components/ui/FeatureCard";
-
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import { FeatureItem, FeaturesProps } from "../types";
 
-
-const DEFAULT_FEATURES: FeatureItem[] = [
-  {
-    id: "interactive-stories",
-    title: "قصص تفاعلية",
-    description:
-      "قصص مصممة بأسلوب شيق يساعد الأطفال على تنمية حب القراءة والاستمرار في التعلم.",
-    accentColor: "var(--mad-third)",
-    bgCircleColor: "var(--mad-orange-light)",
-    imageSrc: "/assets/book.svg",
-  },
-  {
-    id: "instant-reports",
-    title: "تقارير فورية",
-    description:
-      "تابع مستوى الطفل وإنجازاته من خلال تقارير واضحة ومحدثة باستمرار.",
-    accentColor: "var(--mad-main-light)",
-    bgCircleColor: "rgba(139, 92, 246, 0.12)",
-    imageSrc: "/assets/report.svg",
-  },
-  {
-    id: "skills-measurement",
-    title: "قياس مهارات القراءة",
-    description:
-      "قيّم مستوى القراءة لدى الطفل وحدد نقاط القوة والجوانب التي تحتاج إلى تطوير.",
-    accentColor: "var(--mad-secondary)",
-    bgCircleColor: "var(--mad-green-light)",
-    imageSrc: "/assets/checkedbook.svg",
-  },
-  {
-    id: "parent-account",
-    title: "حساب ولي الأمر",
-    description:
-      "إدارة جميع حسابات الأطفال من مكان واحد مع متابعة تقدم كل طفل بشكل مستقل.",
-    accentColor: "var(--mad-pink)",
-    bgCircleColor: "rgba(234, 88, 12, 0.12)",
-    imageSrc: "/assets/parent.svg",
-  },
-  {
-    id: "suitable-for-schools",
-    title: "مناسب للمدارس",
-    description: "إدارة المدارس لمتابعة الطلاب وإدارة الفصول الدراسية بسهولة.",
-    accentColor: "var(--mad-third)",
-    bgCircleColor: "var(--mad-orange-light)",
-    imageSrc: "/assets/school.svg",
-  },
+const FEATURE_STYLES = [
+  { accentColor: "var(--mad-third)", bgCircleColor: "var(--mad-orange-light)", imageSrc: "/assets/book.svg" },
+  { accentColor: "var(--mad-main-light)", bgCircleColor: "rgba(139, 92, 246, 0.12)", imageSrc: "/assets/report.svg" },
+  { accentColor: "var(--mad-secondary)", bgCircleColor: "var(--mad-green-light)", imageSrc: "/assets/checkedbook.svg" },
+  { accentColor: "var(--mad-pink)", bgCircleColor: "rgba(234, 88, 12, 0.12)", imageSrc: "/assets/parent.svg" },
+  { accentColor: "var(--mad-third)", bgCircleColor: "var(--mad-orange-light)", imageSrc: "/assets/school.svg" },
 ];
 
 const Features: React.FC<FeaturesProps> = ({
-  title = "لماذا مدارك القراءة؟",
-  description = "صممت منصة مدارك القراءة لتمنح الأطفال تجربة تعليمية ممتعة، وتوفر لأولياء الأمور والمعلمين الأدوات اللازمة لمتابعة تطور مهارات القراءة بثقة وسهولة.",
+  title: propTitle,
+  description: propDescription,
   subtitle,
   imageSrc,
   imageAlt,
-  features = DEFAULT_FEATURES,
+  features: propFeatures,
 }) => {
+  const { data: whyUsData } = usePublicLanding({
+    select: (res) => res.data?.why_us_section,
+  });
+
+  const title = propTitle ?? whyUsData?.title ?? "";
+  const description = propDescription ?? whyUsData?.description ?? "";
+
+  const features: FeatureItem[] =
+    propFeatures ??
+    (whyUsData?.items?.map((item, idx) => {
+      const style = FEATURE_STYLES[idx % FEATURE_STYLES.length];
+      return {
+        id: idx,
+        title: item.title,
+        description: item.description,
+        accentColor: style.accentColor,
+        bgCircleColor: style.bgCircleColor,
+        imageSrc: style.imageSrc,
+      };
+    }) ?? []);
+
   return (
     <section dir="rtl" className="w-full section-spacing px-4 md:px-8 bg-white">
       <div className="container mx-auto flex flex-col items-center">
@@ -95,5 +78,3 @@ const Features: React.FC<FeaturesProps> = ({
 };
 
 export default Features;
-
-

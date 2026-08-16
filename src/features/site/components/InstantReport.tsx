@@ -2,32 +2,14 @@
 
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { InstantReportFeature, InstantReportProps } from "../types";
 
-// ==========================================
-// Mock Data  (replace with API data later)
-// ==========================================
-const DEFAULT_FEATURES: InstantReportFeature[] = [
-  {
-    id: "instant-report",
-    text: "تقرير فوري بعد كل تجربة قراءة",
-    icon: "/assets/report.svg",
-  },
-  {
-    id: "clear-grades",
-    text: "عرض درجات الطالب بشكل واضح ومنظم",
-    icon: "/assets/checkedbook.svg",
-  },
-  {
-    id: "parent-tracking",
-    text: "متابعة نتائج الطالب من خلال حساب ولي الأمر",
-    icon: "/assets/parent.svg",
-  },
-  {
-    id: "school-reports",
-    text: "تقارير دورية للمدارس تساعد في متابعة أداء الطلاب",
-    icon: "/assets/school.svg",
-  },
+const DEFAULT_ICONS = [
+  "/assets/report.svg",
+  "/assets/checkedbook.svg",
+  "/assets/parent.svg",
+  "/assets/school.svg",
 ];
 
 // ==========================================
@@ -35,7 +17,6 @@ const DEFAULT_FEATURES: InstantReportFeature[] = [
 // ==========================================
 const FeatureRow = ({ feature }: { feature: InstantReportFeature }) => (
   <li className="flex items-center gap-4">
-    {/* Icon */}
     {feature.icon && (
       <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-mad-main/10">
         <Image
@@ -56,15 +37,30 @@ const FeatureRow = ({ feature }: { feature: InstantReportFeature }) => (
 // Main Component
 // ==========================================
 const InstantReport = ({
-  title = "تقرير فوري بعد كل تجربة قراءة",
-  description = `تعتمد "مدارك القراءة" على منهجية تربوية مصممة لقياس تقدم الطالب في القراءة، وتعرض النتائج في تقرير واضح يساعد ولي الأمر والمدرسة على متابعة الأداء.`,
-  features = DEFAULT_FEATURES,
+  title: propTitle,
+  description: propDescription,
+  features: propFeatures,
   ctaLabel = "ابدأ تجربتك المجانية الآن",
   ctaHref,
   onCtaClick,
   image = "/iamges/reportSecimg.png",
   imageAlt = "لوحة تحكم تقارير مدارك القراءة",
 }: InstantReportProps) => {
+  const { data: reportData } = usePublicLanding({
+    select: (res) => res.data?.instant_report_section,
+  });
+
+  const title = propTitle ?? reportData?.title ?? "";
+  const description = propDescription ?? reportData?.description ?? "";
+
+  const features: InstantReportFeature[] =
+    propFeatures ??
+    (reportData?.points?.map((point, idx) => ({
+      id: `point-${idx}`,
+      text: point,
+      icon: DEFAULT_ICONS[idx % DEFAULT_ICONS.length],
+    })) ?? []);
+
   const handleCta = () => {
     if (ctaHref) window.open(ctaHref, "_blank", "noopener,noreferrer");
     else onCtaClick?.();
@@ -112,10 +108,10 @@ const InstantReport = ({
               ))}
             </ul>
 
-            {/* CTA — solid primary, always */}
+            {/* CTA */}
             <button
               onClick={handleCta}
-              className="mt-10 flex items-center gap-2 rounded-full bg-mad-main px-7 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-mad-main/90 active:scale-95"
+              className="mt-10 flex items-center gap-2 rounded-full bg-mad-main px-7 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-mad-main/90 active:scale-95 cursor-pointer"
             >
               {ctaLabel}
               <ArrowLeft className="size-4" />
@@ -128,4 +124,3 @@ const InstantReport = ({
 };
 
 export default InstantReport;
-export { DEFAULT_FEATURES as instantReportDefaultFeatures };

@@ -143,11 +143,11 @@ export interface WhyTrustUsFeature {
 }
 
 export interface WhyTrustUsProps {
-  title: string;
-  description: string;
-  image: string;
-  imageAlt: string;
-  features: WhyTrustUsFeature[];
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  features?: WhyTrustUsFeature[];
 }
 
 // ==========================================
