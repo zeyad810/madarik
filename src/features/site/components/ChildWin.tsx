@@ -3,16 +3,32 @@
 import React from "react";
 import Image from "next/image";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { ChildWinProps } from "../types";
+import { usePublicLanding } from "../hooks/usePublicLanding";
+import { ChildWinProps, ChildWinCardItem } from "../types";
 import { ChildWinCard } from "./ChildWinCard";
-import { DEFAULT_CARDS } from "./childWinData";
 
 const ChildWin: React.FC<ChildWinProps> = ({
-  title = "ماذا سيكتسب طفلك؟",
-  description = "نساعد طفلك على بناء مهارات القراءة والتعلم بطريقة ممتعة، ليكتسب الثقة والمعرفة خطوة بخطوة.",
+  title: propTitle,
+  description: propDescription,
   bgImageSrc = "/assets/win-bg.png",
-  cards = DEFAULT_CARDS,
+  cards: propCards,
 }) => {
+  const { data: benefitsData } = usePublicLanding({
+    select: (res) => res.data?.child_benefits_section,
+  });
+
+  const title = propTitle ?? benefitsData?.title ?? "";
+  const description = propDescription ?? benefitsData?.subtitle ?? "";
+
+  const cards: ChildWinCardItem[] =
+    propCards ??
+    (benefitsData?.items?.map((item, idx) => ({
+      id: idx + 1,
+      number: `0${idx + 1}`,
+      title: item.title,
+      description: item.description,
+    })) ?? []);
+
   return (
     <>
       {/* Section Header outside the section container */}
@@ -43,7 +59,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
 
         <div className="container mx-auto relative z-10 flex flex-col items-center">
           {/* Mobile Character Illustration Card */}
-          <div className="lg:hidden relative w-full max-w-sm mx-auto h-[260px] sm:h-[320px] rounded-3xl overflow-hidden mb-10 border border-purple-100/80 bg-linear-to-b from-[#F5F1FF] via-[#FAF8FF] to-[#EFE8FF] shadow-sm flex items-center justify-center ">
+          <div className="lg:hidden relative w-full max-w-sm mx-auto h-[260px] sm:h-[320px] rounded-3xl overflow-hidden mb-10 border border-purple-100/80 bg-linear-to-b from-[#F5F1FF] via-[#FAF8FF] to-[#EFE8FF] shadow-sm flex items-center justify-center">
             <Image
               src={bgImageSrc}
               alt="Character Illustration"
@@ -57,24 +73,32 @@ const ChildWin: React.FC<ChildWinProps> = ({
           {/* Cards Layout */}
           <div className="w-full flex flex-col gap-8 sm:gap-10 lg:grid lg:grid-cols-12 lg:gap-6 xl:gap-8 lg:items-center min-h-[480px]">
             {/* Card 01: Top Right (RTL Col 1) */}
-            <div className="w-full lg:col-span-4 lg:col-start-1 lg:row-start-1">
-              <ChildWinCard item={cards[0]} />
-            </div>
+            {cards[0] && (
+              <div className="w-full lg:col-span-4 lg:col-start-1 lg:row-start-1">
+                <ChildWinCard item={cards[0]} />
+              </div>
+            )}
 
             {/* Card 02: Top Left (RTL Col 3) */}
-            <div className="w-full lg:col-span-4 lg:col-start-9 lg:row-start-1">
-              <ChildWinCard item={cards[1]} />
-            </div>
+            {cards[1] && (
+              <div className="w-full lg:col-span-4 lg:col-start-9 lg:row-start-1">
+                <ChildWinCard item={cards[1]} />
+              </div>
+            )}
 
             {/* Card 03: Bottom Right (RTL Col 1) */}
-            <div className="w-full lg:col-span-4 lg:col-start-1 lg:row-start-2">
-              <ChildWinCard item={cards[2]} />
-            </div>
+            {cards[2] && (
+              <div className="w-full lg:col-span-4 lg:col-start-1 lg:row-start-2">
+                <ChildWinCard item={cards[2]} />
+              </div>
+            )}
 
             {/* Card 04: Bottom Left (RTL Col 3) */}
-            <div className="w-full lg:col-span-4 lg:col-start-9 lg:row-start-2">
-              <ChildWinCard item={cards[3]} />
-            </div>
+            {cards[3] && (
+              <div className="w-full lg:col-span-4 lg:col-start-9 lg:row-start-2">
+                <ChildWinCard item={cards[3]} />
+              </div>
+            )}
 
             {/* Center Spacer for Boy Character Illustration on Desktop */}
             <div className="hidden lg:flex lg:col-span-4 lg:col-start-5 lg:row-start-1 lg:row-span-2 items-center justify-center min-h-[380px] pointer-events-none" />

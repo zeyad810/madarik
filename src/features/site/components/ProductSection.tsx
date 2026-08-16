@@ -10,95 +10,46 @@ import "swiper/css/pagination";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import ProductCard from "@/features/products/ProductCard";
 import { Product } from "@/features/products/types";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import { ProductSectionProps } from "../types";
 
-const DEFAULT_PRODUCTS: Product[] = [
-  {
-    id: "sea-story-01",
-    title: "البحر الأزرق الغامض",
-    description:
-      "رحلة تفاعلية مع كائنات المحيط الملونة لكشف أسرار الشعاب المرجانية وتنمية الوعي البيئي بالبحار.",
-    imageSrc: "/assets/sea_story.png",
-    imageAlt: "البحر الأزرق الغامض",
-    ageRange: "۱۰ - ۱۲ سنة",
-    isFree: true,
-    levelTag: "متقدم",
-    storyCodeTag: "Story 000-XXX",
-    ctaText: "ابدأ القراءة",
-  },
-  {
-    id: "jungle-story-02",
-    title: "مغامرة في الغابة السحرية",
-    description:
-      "استكشف أسرار الكائنات والحيوانات في أعماق الغابة واكتسب مفردات جديدة بمتعة تشويقية.",
-    imageSrc: "/assets/sea_story.png",
-    imageAlt: "مغامرة في الغابة السحرية",
-    ageRange: "٥ - ٨ سنوات",
-    isFree: true,
-    levelTag: "مبتدئ",
-    storyCodeTag: "Story 001-ABC",
-    ctaText: "ابدأ القراءة",
-  },
-  {
-    id: "space-story-03",
-    title: "رحلة إلى الفضاء الخارجي",
-    description:
-      "انطلق في رحلة بين الكواكب والنجوم لتعرف أكثر عن العجائب الكونيه والمهارات العلمية.",
-    imageSrc: "/assets/sea_story.png",
-    imageAlt: "رحلة إلى الفضاء الخارجي",
-    ageRange: "٨ - ۱۰ سنوات",
-    isFree: true,
-    levelTag: "متوسط",
-    storyCodeTag: "Story 002-XYZ",
-    ctaText: "ابدأ القراءة",
-  },
-  {
-    id: "castle-story-04",
-    title: "سر القلعة الذهبية",
-    description:
-      "مغامرة مشوقة لحل الألغاز وبناء القيم الأخلاقية والتفكير النقدي بطريقة تفاعلية.",
-    imageSrc: "/assets/sea_story.png",
-    imageAlt: "سر القلعة الذهبية",
-    ageRange: "۱۰ - ۱۲ سنة",
-    isFree: true,
-    levelTag: "متقدم",
-    storyCodeTag: "Story 003-LMN",
-    ctaText: "ابدأ القراءة",
-  },
-  {
-    id: "insects-story-05",
-    title: "عالم الحشرات العجيب",
-    description:
-      "اكتشف عالم الطبيعة والكائنات الصغيرة من خلال مشاهد تفاعلية ملونة ومبسطة للأطفال.",
-    imageSrc: "/assets/sea_story.png",
-    imageAlt: "عالم الحشرات العجيب",
-    ageRange: "٥ - ٨ سنوات",
-    isFree: true,
-    levelTag: "مبتدئ",
-    storyCodeTag: "Story 004-DEF",
-    ctaText: "ابدأ القراءة",
-  },
-  {
-    id: "heroes-story-06",
-    title: "أبطال المستقبل",
-    description:
-      "قصص ملهمة تعزز الثقة بالنفس والتعاون وبناء المهارات القيادية للأجيال القادمة.",
-    imageSrc: "/assets/sea_story.png",
-    imageAlt: "أبطال المستقبل",
-    ageRange: "٨ - ۱۰ سنوات",
-    isFree: true,
-    levelTag: "متوسط",
-    storyCodeTag: "Story 005-OPQ",
-    ctaText: "ابدأ القراءة",
-  },
-];
-
 const ProductSection: React.FC<ProductSectionProps> = ({
-  title = "قصصنا الأكثر شعبية",
-  subtitle = "المكتبة التفاعلية",
-  description = "مجموعة مختارة من الأنشطة والقصص المصممة خصيصاً لتطوير مهارات القراءة والكتابة بمتعة وأمان.",
-  products = DEFAULT_PRODUCTS,
+  title: propTitle,
+  subtitle: propSubtitle,
+  description: propDescription,
+  products: propProducts,
 }) => {
+  const { data: storiesData } = usePublicLanding({
+    select: (res) => res.data?.suggested_stories_section,
+  });
+
+  const title = propTitle ?? storiesData?.title ?? "";
+  const subtitle = propSubtitle ?? "المكتبة التفاعلية";
+  const description = propDescription ?? "";
+
+  const products: Product[] =
+    propProducts ??
+    (storiesData?.items?.map((story) => ({
+      id: story.id,
+      title: story.title,
+      description:
+        story.description ??
+        story.blocks?.find((b) => b.block_type === "text")?.content ??
+        "",
+      imageSrc:
+        story.cover_photo_url || story.thumbnail_url || "/assets/sea_story.png",
+      imageAlt: story.title,
+      ageRange:
+        story.age_category && story.age_category !== "0-0"
+          ? `${story.age_category} سنة`
+          : "جميع الأعمار",
+      isFree: story.availability === "free",
+      levelTag: story.level,
+      storyCodeTag: story.code,
+      ctaText: "ابدأ القراءة",
+      ctaLink: story.pdf_url ?? "#",
+    })) ?? []);
+
   return (
     <section
       dir="rtl"
@@ -120,10 +71,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({
           dir="rtl"
           spaceBetween={16}
           slidesPerView={1.2}
-          // autoplay={{
-          //   delay: 4000,
-          //   disableOnInteraction: false,
-          // }}
           watchOverflow
           observer
           observeParents

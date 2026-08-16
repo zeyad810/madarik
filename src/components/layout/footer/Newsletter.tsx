@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { ArrowUpLeft, Check, Loader2 } from "lucide-react";
+import { usePublicLanding } from "@/features/site/hooks/usePublicLanding";
 import { NewsletterData } from "./types";
-import { DEFAULT_NEWSLETTER } from "./constants";
 
 interface NewsletterProps {
   data?: NewsletterData;
@@ -11,9 +11,20 @@ interface NewsletterProps {
 }
 
 const Newsletter: React.FC<NewsletterProps> = ({
-  data = DEFAULT_NEWSLETTER,
+  data: propData,
   onSubscribe,
 }) => {
+  const { data: newsletterData } = usePublicLanding({
+    select: (res) => res.data?.newsletter_section,
+  });
+
+  const title = propData?.title ?? newsletterData?.title ?? "النشرة البريدية";
+  const description =
+    propData?.description ??
+    newsletterData?.subtitle ??
+    "اشترك معنا لتصلك أحدث القصص والميزات والنصائح التربوية المميزة يومياً.";
+  const placeholder = propData?.placeholder ?? "البريد الإلكتروني";
+
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
@@ -27,16 +38,11 @@ const Newsletter: React.FC<NewsletterProps> = ({
       setStatus("loading");
       if (onSubscribe) {
         await onSubscribe(email);
-      } else {
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 800));
       }
       setStatus("success");
       setEmail("");
-      setTimeout(() => setStatus("idle"), 4000);
     } catch {
       setStatus("error");
-      setTimeout(() => setStatus("idle"), 4000);
     }
   };
 
@@ -44,12 +50,12 @@ const Newsletter: React.FC<NewsletterProps> = ({
     <div className="w-full text-center">
       {/* Title */}
       <h2 className="text-xl sm:text-5xl font-extrabold text-white leading-tight">
-        {data.title}
+        {title}
       </h2>
 
       {/* Description */}
       <p className="text-sm sm:text-base text-white/90 font-medium max-w-xl mx-auto mt-2 sm:mt-3 leading-relaxed">
-        {data.description}
+        {description}
       </p>
 
       {/* Input Form */}
@@ -63,7 +69,7 @@ const Newsletter: React.FC<NewsletterProps> = ({
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder={data.placeholder || "البريد الإلكتروني"}
+            placeholder={placeholder}
             className="w-full rounded-full bg-white px-6 py-3.5 sm:py-4 text-right text-sm sm:text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-xl transition-all"
           />
         </div>

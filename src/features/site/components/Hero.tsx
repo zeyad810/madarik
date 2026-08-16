@@ -4,19 +4,13 @@ import React, { useSyncExternalStore } from "react";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import { HeroProps, HeroStatItem } from "../types";
 
-const DEFAULT_STATS: HeroStatItem[] = [
-  { id: "age-group", value: "5 - 15 سنة", label: "الفئة العمرية" },
-  { id: "stories", value: "+500", label: "قصة تفاعلية" },
-  { id: "readers", value: "+10,000", label: "طفل قارئ" },
-  { id: "schools", value: "+50", label: "مدرسة شريكة" },
-];
-
 const Hero: React.FC<HeroProps> = ({
-  title = "نصنع شغف القراءة ونبني عقول المستقبل بلغة الضاد",
-  description = 'منصة "مدارك القراءة" التعليمية تقدم لأطفالكم مكتبة رقمية متكاملة تضم مئات القصص التفاعلية المصممة بإشراف خبراء لغويين لتطوير مهارات القراءة والكتابة بمتعة وأمان.',
-  stats = DEFAULT_STATS,
+  title: propTitle,
+  description: propDescription,
+  stats: propStats,
   ctaText = "إشترك الآن",
   ctaLink = "/about",
   bgImageSrc = "/iamges/header_background.png",
@@ -24,6 +18,19 @@ const Hero: React.FC<HeroProps> = ({
   sideImageSrc = "/assets/hero_image.png",
   sideImageAlt = "صورة منصة مدارك",
 }) => {
+  const { data: heroData } = usePublicLanding({
+    select: (res) => res.data?.hero_banner,
+  });
+
+  const title = propTitle ?? heroData?.title ?? "";
+  const description = propDescription ?? heroData?.subtitle ?? "";
+  const stats: HeroStatItem[] =
+    propStats ??
+    (heroData?.stats?.map((stat, idx) => ({
+      id: idx,
+      value: stat.value,
+      label: stat.label,
+    })) ?? []);
   const { isMobile } = useBreakpoint();
   // useSyncExternalStore is the React-recommended way to detect the client
   // without triggering cascading renders from useEffect+setState.
