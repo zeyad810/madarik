@@ -15,6 +15,7 @@ const TRUST_ICONS = [
     height={20}
     src="/iamges/whytrustGlassIcon.svg"
     alt="icon"
+    className="w-auto h-auto"
   />,
   <Image
     key="brain"
@@ -22,6 +23,7 @@ const TRUST_ICONS = [
     height={20}
     src="/iamges/whytrustBrainIcon.svg"
     alt="icon"
+    className="w-auto h-auto"
   />,
 ];
 
