@@ -1,9 +1,9 @@
 import type { WhyTrustUsProps } from "../types";
 import Image from "next/image";
-import { GraduationCap, Eye, SlidersHorizontal } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 export const whyTrustUsData: WhyTrustUsProps = {
-  title: "لمـــــــــــاذا يثــــــــــــــــــــق بنــــــــــــا آلاف الآبــــاء والمعـلـميـــــــــــــن؟",
+  title: "لمــــــــــاذا يثــــــــــــــق بنـــــــــــا آلاف الآبــــاء والمعـلـميــــــــــن؟",
 
   description:
     "نساعد طفلك على تنمية مهارات القراءة والتفكير من خلال تجربة تعليمية آمنة وممتعة، مع متابعة مستمرة لتقدمه ومحتوى مصمم على يد متخصصين.",
@@ -25,19 +25,33 @@ export const whyTrustUsData: WhyTrustUsProps = {
       title: "رقابة كاملة وواضحة",
       description:
         "يمكن للأهل متابعة تقدم أبنائهم ومعرفة المهارات التي تحتاج إلى تطوير.",
-      icon: <Eye className="size-5" strokeWidth={2} />,
+      icon: (
+        <Image
+          width={20}
+          height={20}
+          src="/iamges/whytrustGlassIcon.svg"
+          alt="whyTrustUsIcon"
+        />
+      ),
     },
     {
       id: "personalized-learning",
       title: "تخصيص التعلم لكل طفل",
       description: "نقدم محتوى وتجربة تعليمية مناسبة لمستوى واحتياجات كل طفل.",
-      icon: <SlidersHorizontal className="size-5" strokeWidth={2} />,
+      icon: (
+        <Image
+          width={20}
+          height={20}
+          src="/iamges/whytrustBrainIcon.svg"
+          alt="whyTrustUsIcon"
+        />
+      ),
     },
   ],
 };
 
 const renderTitle = (title: string) => {
-  const highlight = "آلاف الآبــــاء والمعـلـميـــــــــــــن؟";
+  const highlight = "آلاف الآبــــاء والمعـلـميــــــــــن؟";
   if (!title.includes(highlight)) return title;
 
   const [before, after] = title.split(highlight);
