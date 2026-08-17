@@ -13,6 +13,8 @@ import { loginSchema, LoginFormData } from "./validation";
 import { AUTH_TEXTS, AUTH_TYPOGRAPHY, AUTH_COLORS } from "./constants";
 import PhoneNumberInput from "@/components/ui/PhoneNumberInput";
 
+import LoginSwitcher from "./LoginSwitcher";
+
 interface LoginFormProps {
   onSubmitSuccess?: (data: LoginFormData) => void;
   defaultPhone?: string;
@@ -32,7 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [showSwitcher, setShowSwitcher] = useState(false);
 
   const {
     control,
@@ -47,7 +49,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     },
   });
 
-  const isLoading = isSubmitting || isRedirecting;
+  const isLoading = isSubmitting;
 
   const onSubmit = async (data: LoginFormData) => {
     setApiError(null);
@@ -66,17 +68,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
       }
 
       if (res?.ok) {
-        setIsRedirecting(true);
         toast.success("تم تسجيل الدخول بنجاح");
         if (onSubmitSuccess) {
           onSubmitSuccess(data);
         }
-
-        const callbackUrl = searchParams?.get("callbackUrl");
-        const targetUrl = callbackUrl || "/";
-
-        router.push(targetUrl);
-        router.refresh();
+        setShowSwitcher(true);
       }
     } catch {
       const errorMsg = "حدث خطأ غير متوقع عند تسجيل الدخول";
@@ -84,6 +80,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
       toast.error(errorMsg);
     }
   };
+
+  if (showSwitcher) {
+    return (
+      <LoginSwitcher
+        onComplete={() => {
+          const callbackUrl = searchParams?.get("callbackUrl");
+          const targetUrl = callbackUrl || "/";
+          router.push(targetUrl);
+          router.refresh();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="w-full max-w-[440px] px-4 py-8 flex flex-col items-center justify-center font-sans" dir="rtl">
