@@ -1,0 +1,55 @@
+"use client";
+
+import React, { use } from "react";
+import Header from "@/components/layout/header/Header";
+import Footer from "@/components/layout/footer/Footer";
+import { StoryReaderView, StoryEmptyState } from "@/features/story";
+import { useStoryById } from "@/features/story/hooks/useStoryById";
+import { Loader2 } from "lucide-react";
+
+interface StoryReaderPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function StoryReaderPage({ params }: StoryReaderPageProps) {
+  const resolvedParams = use(params);
+  const storyId = resolvedParams.id;
+
+  const { data: storyResponse, isLoading, isError } = useStoryById(storyId);
+  const story = storyResponse?.data;
+
+  return (
+    <main className="w-full min-h-screen flex flex-col bg-[#F8FAFC]">
+      {/* 1. Global Header */}
+      <Header />
+
+      {/* 2. Page Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Loading State */}
+        {isLoading && (
+          <div className="py-32 flex flex-col items-center justify-center gap-4 text-slate-500">
+            <Loader2 className="w-10 h-10 animate-spin text-[#7939E3]" />
+            <p className="font-bold text-sm">جاري فتح القصة للقراءة...</p>
+          </div>
+        )}
+
+        {/* Error / Not Found State */}
+        {!isLoading && (!story || isError) && (
+          <div className="container mx-auto px-4 py-16">
+            <StoryEmptyState
+              title="لم نتمكن من العثور على محتوى القصة"
+              buttonText="العودة للقصص"
+              buttonHref="/stories"
+            />
+          </div>
+        )}
+
+        {/* Story Reader Component */}
+        {!isLoading && story && <StoryReaderView story={story} />}
+      </div>
+
+      {/* 3. Global Footer */}
+      <Footer />
+    </main>
+  );
+}

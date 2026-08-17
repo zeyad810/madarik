@@ -55,7 +55,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         levelTag: story.level,
         storyCodeTag: story.code,
         ctaText: "ابدأ القراءة",
-        ctaLink: story.pdf_url ?? "#",
+        ctaLink: `/stories/${story.id}`,
       };
     }) ?? []);
 

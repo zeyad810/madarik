@@ -10,7 +10,8 @@ export const getPublicLandingData = async (): Promise<ApiResponse<PublicLandingD
 };
 
 export const getPublicPackages = async (): Promise<ApiResponse<PublicPackagesData>> => {
-  const response = await api.get<ApiResponse<PublicPackagesData>>("/public/packages");
-  console.log("Public packages API response:", response);
-  return response;
+  const response = await fetch(`${API_BASE_URL}/public/packages`);
+  const data = await handleResponse<ApiResponse<PublicPackagesData>>(response);
+  console.log("Public packages API response:", data);
+  return data;
 };

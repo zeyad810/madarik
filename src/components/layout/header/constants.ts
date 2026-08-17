@@ -14,7 +14,7 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
 export const DESKTOP_NAV_LINKS: NavLinkItem[] = [
   { id: "home", label: "الرئيسية", href: "/" },
   { id: "results", label: "نتائجي", href: "/results" },
-  { id: "library", label: "مكتبة القصص", href: "/library" },
+  { id: "library", label: "مكتبة القصص", href: "/stories" },
   { id: "contact", label: "تواصل معنا", href: "/contact" },
   { id: "faq", label: "الأسئلة الشائعة", href: "/faq" },
 ];
