@@ -86,7 +86,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
       </div>
 
       {/* 2. Top Title Bar & Badges */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="rounded-3xl p-6 sm:p-8 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         {/* Right Info */}
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-2">
@@ -145,7 +145,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
       </div>
 
       {/* 3. Story Content Box */}
-      <div className="bg-white rounded-3xl p-6 sm:p-10 md:p-12 border border-slate-200/80 shadow-md">
+      <div className="rounded-3xl p-6 sm:p-10 md:p-12">
         {/* Story Section Heading */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-8">
           <h2 className="text-xl sm:text-2xl font-black text-mad-text-primary flex items-center gap-2">
@@ -184,6 +184,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                         src={imgUrl}
                         alt={story.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 850px"
                         className="object-cover"
                       />
                     </div>
