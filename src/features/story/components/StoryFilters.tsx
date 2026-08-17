@@ -34,7 +34,7 @@ export const StoryFilters: React.FC<StoryFiltersProps> = ({
           className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none ${
             activeTab === "all"
               ? "bg-[#7939E3] text-white shadow-md"
-              : "text-[#64748B] hover:text-[#1E293B]"
+              : "text-mad-text-secondary hover:text-mad-text-primary"
           }`}
         >
           الكل
@@ -46,7 +46,7 @@ export const StoryFilters: React.FC<StoryFiltersProps> = ({
           className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none ${
             activeTab === "age"
               ? "bg-[#7939E3] text-white shadow-md"
-              : "text-[#64748B] hover:text-[#1E293B]"
+              : "text-mad-text-secondary hover:text-mad-text-primary"
           }`}
         >
           حسب الفئة العمرية
@@ -58,7 +58,7 @@ export const StoryFilters: React.FC<StoryFiltersProps> = ({
           className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none ${
             activeTab === "level"
               ? "bg-[#7939E3] text-white shadow-md"
-              : "text-[#64748B] hover:text-[#1E293B]"
+              : "text-mad-text-secondary hover:text-mad-text-primary"
           }`}
         >
           حسب المستوى
