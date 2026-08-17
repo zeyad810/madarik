@@ -81,7 +81,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="absolute flex flex-col items-center pointer-events-auto"
                 style={{
-                  right: "8.85%",
+                  right: "0.85%",
                   top: "46%",
                   transform: "translate(50%, -100%)",
                 }}
@@ -97,7 +97,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="absolute flex flex-col items-center text-center pointer-events-auto"
                 style={{
-                  right: "8.85%",
+                  right: "0.85%",
                   top: "80%",
                   transform: "translateX(50%)",
                   width: "300px",
@@ -108,7 +108,6 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 </p>
               </motion.div>
 
-              {/* Step 2: رؤيتنا (Center elevated peak) */}
               {step2 && (
                 <>
                   <motion.div
@@ -147,7 +146,6 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                 </>
               )}
 
-              {/* Step 3: رسالتنا (Left side in RTL) */}
               {step3 && (
                 <>
                   <motion.div
@@ -157,7 +155,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                     transition={{ duration: 0.6, delay: 0.6 }}
                     className="absolute flex flex-col items-center pointer-events-auto"
                     style={{
-                      left: "8.54%",
+                      left: "3.55%",
                       top: "46%",
                       transform: "translate(-50%, -100%)",
                     }}
@@ -173,7 +171,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
                     transition={{ duration: 0.6, delay: 0.7 }}
                     className="absolute flex flex-col items-center text-center pointer-events-auto"
                     style={{
-                      left: "8.54%",
+                      left: "0.55%",
                       top: "80%",
                       transform: "translateX(-50%)",
                       width: "300px",

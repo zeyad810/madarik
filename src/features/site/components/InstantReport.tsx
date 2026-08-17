@@ -8,10 +8,10 @@ import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { InstantReportFeature, InstantReportProps } from "../types";
 
 const DEFAULT_ICONS = [
-  "/assets/report.svg",
-  "/assets/checkedbook.svg",
-  "/assets/parent.svg",
-  "/assets/school.svg",
+  "/assets/reporttt.svg",
+  "/assets/rewardd.svg",
+  "/assets/fileSearch.svg",
+  "/assets/boxReward.svg",
 ];
 
 // ==========================================
@@ -33,18 +33,20 @@ const FeatureRow = ({
     className="flex items-center gap-4 cursor-default"
   >
     {feature.icon && (
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-mad-main/10 shadow-xs">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-mad-main/10 shadow-xs">
         <Image
           src={feature.icon}
           alt=""
           aria-hidden="true"
-          width={22}
-          height={22}
-          className="object-contain"
+          width={30}
+          height={30}
+          className="w-auto h-auto object-contain"
         />
       </div>
     )}
-    <span className="mad-h6 font-semibold text-mad-text-primary">{feature.text}</span>
+    <span className="mad-h6 font-semibold text-mad-text-primary">
+      {feature.text}
+    </span>
   </motion.li>
 );
 
@@ -70,11 +72,12 @@ const InstantReport: React.FC<InstantReportProps> = ({
 
   const features: InstantReportFeature[] =
     propFeatures ??
-    (reportData?.points?.map((point, idx) => ({
+    reportData?.points?.map((point, idx) => ({
       id: `point-${idx}`,
       text: point,
       icon: DEFAULT_ICONS[idx % DEFAULT_ICONS.length],
-    })) ?? []);
+    })) ??
+    [];
 
   const handleCta = () => {
     if (ctaHref) window.open(ctaHref, "_blank", "noopener,noreferrer");
@@ -98,7 +101,11 @@ const InstantReport: React.FC<InstantReportProps> = ({
           >
             <motion.div
               animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+              transition={{
+                duration: 4.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
               className="relative w-full max-w-lg"
             >
               <Image
@@ -128,7 +135,10 @@ const InstantReport: React.FC<InstantReportProps> = ({
             </h2>
 
             {/* Description */}
-            <p className="mad-h6 mt-4 max-w-xl leading-7" style={{ color: "#64748B" }}>
+            <p
+              className="mad-h6 mt-4 max-w-xl leading-7"
+              style={{ color: "#64748B" }}
+            >
               {description}
             </p>
 
