@@ -60,6 +60,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
           alt={story.title}
           fill
           priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1200px"
           className="object-cover object-center"
         />
       </motion.div>
@@ -213,6 +214,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             src={coverImage}
             alt={story.title}
             fill
+            sizes="(max-width: 1024px) 100vw, 380px"
             className="object-cover"
             priority
           />

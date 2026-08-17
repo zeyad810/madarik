@@ -62,8 +62,9 @@ export const SuggestedStories: React.FC<SuggestedStoriesProps> = ({
           <Image
             src="/iamges/sectionHeading.png"
             alt="أيقونة قصص مقترحة"
-            fill
-            className="object-contain"
+            width={64}
+            height={64}
+            className="w-16 h-16 object-contain"
           />
         </div>
 

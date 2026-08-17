@@ -34,6 +34,7 @@ export const StoryEmptyState: React.FC<StoryEmptyStateProps> = ({
           src="/iamges/Story-Page-Empty.png"
           alt={title}
           fill
+          sizes="(max-width: 768px) 256px, 384px"
           className="object-contain"
           priority
         />

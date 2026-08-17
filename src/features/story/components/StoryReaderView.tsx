@@ -184,6 +184,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                         src={imgUrl}
                         alt={story.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 850px"
                         className="object-cover"
                       />
                     </div>
