@@ -2,28 +2,33 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { Bell, Search, LogOut } from "lucide-react";
-import { Child } from "@/types/auth";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 export const UserDropdown: React.FC = () => {
-  const { data: session } = useSession();
+  const {
+    activeId,
+    activeAccount,
+    switchAccount,
+    children,
+    isParentRole,
+  } = useActiveAccount();
+
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<string>("parent");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const user = session?.user;
-  const children: Child[] = user?.children || [];
-
-  // Extract user_type with default fallback to 'child' if not existing
-  const rawUserType = session?.user_type || (user as unknown as Record<string, unknown>)?.user_type;
-  const userType = rawUserType ? String(rawUserType).toLowerCase() : "child";
-  const isParent = userType === "parent" || userType === "ولي امر" || userType === "ولي الأمر";
-  const defaultRoleName = isParent ? "ولي الامر" : "طفل";
-
-  const parentName = user?.name || defaultRoleName;
-  const isParentActive = !user?.status || user.status === "active";
+  const parentName = activeAccount?.rawParent?.name || (isParentRole ? "ولي الأمر" : "المستخدم");
+  const isParentActive = !activeAccount?.rawParent?.status || activeAccount?.rawParent?.status === "active";
   const parentStatusLabel = isParentActive ? "نشط" : "معطل";
+
+  // Active avatar for the header button
+  const currentAvatarSrc =
+    activeAccount?.type === "child"
+      ? activeAccount.gender === "female"
+        ? "/assets/girl_avatar.png"
+        : "/assets/boy_avatar.png"
+      : "/assets/user_avatar.png";
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -66,8 +71,8 @@ export const UserDropdown: React.FC = () => {
           className="relative size-10.5 rounded-full bg-white/20 p-0.5 shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all hover:scale-105 active:scale-95 cursor-pointer ring-2 ring-white/80 overflow-hidden shrink-0"
         >
           <Image
-            src="/assets/user_avatar.png"
-            alt={parentName}
+            src={currentAvatarSrc}
+            alt={activeAccount?.name || "المستخدم"}
             width={42}
             height={42}
             className="size-full object-cover rounded-full"
@@ -80,13 +85,17 @@ export const UserDropdown: React.FC = () => {
             dir="rtl"
             className="absolute top-full left-0 mt-3 w-80 bg-white rounded-[28px] shadow-2xl border border-gray-100 p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
           >
-            {/* Parent Row (Only data from session response) */}
+            {/* Parent Row */}
             <div
-              onClick={() => setSelectedId("parent")}
-              className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${selectedId === "parent"
+              onClick={() => {
+                switchAccount("parent");
+                setIsOpen(false);
+              }}
+              className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${
+                activeId === "parent"
                   ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs"
                   : "border-transparent hover:bg-gray-50"
-                }`}
+              }`}
             >
               <div className="flex items-center gap-3">
                 <div className="size-12 rounded-full ring-2 ring-purple-600 p-0.5 overflow-hidden shrink-0 bg-purple-50">
@@ -103,24 +112,26 @@ export const UserDropdown: React.FC = () => {
                 </span>
               </div>
               <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full ${isParentActive
+                className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                  isParentActive
                     ? "bg-[#DCFCE7] text-[#16A34A]"
                     : "bg-[#F3F4F6] text-[#9CA3AF]"
-                  }`}
+                }`}
               >
                 {parentStatusLabel}
               </span>
             </div>
 
-            {/* Children Rows (Only real data from session response) */}
+            {/* Children Rows */}
             {children.length > 0 ? (
               children.map((child, index) => {
-                const isSelected = selectedId === child.id;
+                const isSelected = activeId === child.id;
                 const isActive = !child.status || child.status === "active";
                 const statusLabel = isActive ? "نشط" : "معطل";
                 const badges =
-                  (child as unknown as Record<string, unknown>).badges_count as number ??
-                  (child as unknown as Record<string, unknown>).badges as number ??
+                  child.badges_count ??
+                  child.badges ??
+                  ((child as unknown as Record<string, unknown>).badges as number) ??
                   0;
                 const avatarSrc =
                   child.gender === "female"
@@ -138,13 +149,17 @@ export const UserDropdown: React.FC = () => {
                     <div className="my-1" />
 
                     <div
-                      onClick={() => setSelectedId(child.id)}
-                      className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${isSelected
+                      onClick={() => {
+                        switchAccount(child.id);
+                        setIsOpen(false);
+                      }}
+                      className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${
+                        isSelected
                           ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs"
                           : !isActive
                             ? "border-transparent opacity-60 hover:opacity-90 hover:bg-gray-50"
                             : "border-transparent hover:bg-gray-50"
-                        }`}
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
@@ -160,14 +175,16 @@ export const UserDropdown: React.FC = () => {
                         </div>
                         <div className="flex flex-col">
                           <span
-                            className={`font-bold text-base ${!isActive ? "text-gray-600" : "text-gray-900"
-                              }`}
+                            className={`font-bold text-base ${
+                              !isActive ? "text-gray-600" : "text-gray-900"
+                            }`}
                           >
                             {child.name}
                           </span>
                           <span
-                            className={`text-xs font-medium ${!isActive ? "text-gray-400" : "text-gray-500"
-                              }`}
+                            className={`text-xs font-medium ${
+                              !isActive ? "text-gray-400" : "text-gray-500"
+                            }`}
                           >
                             عدد الاوسمة : {badges}
                           </span>
@@ -175,10 +192,11 @@ export const UserDropdown: React.FC = () => {
                       </div>
 
                       <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full ${isActive
+                        className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                          isActive
                             ? "bg-[#DCFCE7] text-[#16A34A]"
                             : "bg-[#F3F4F6] text-[#9CA3AF]"
-                          }`}
+                        }`}
                       >
                         {statusLabel}
                       </span>

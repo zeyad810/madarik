@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 import { X, LogOut } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -21,7 +22,15 @@ const SideMenu: React.FC<SideMenuProps> = ({
   onClose,
   onSelectCategory,
 }) => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
+  const { activeAccount, children, isAuthenticated } = useActiveAccount();
+
+  const currentAvatarSrc =
+    activeAccount?.type === "child"
+      ? activeAccount.gender === "female"
+        ? "/assets/girl_avatar.png"
+        : "/assets/boy_avatar.png"
+      : "/assets/user_avatar.png";
 
   return (
     <AnimatePresence>
@@ -105,14 +114,14 @@ const SideMenu: React.FC<SideMenuProps> = ({
             <div className="shrink-0 border-t border-gray-100 p-5 flex flex-col gap-3">
               {status === "loading" ? (
                 <div className="h-11 w-full bg-gray-200 animate-pulse rounded-xl" />
-              ) : status === "authenticated" ? (
+              ) : isAuthenticated && activeAccount ? (
                 <div className="flex flex-col gap-3">
-                  {/* Parent Profile Summary */}
+                  {/* Active Account Profile Summary */}
                   <div className="flex items-center gap-3 p-3 rounded-2xl bg-purple-50/70 border border-purple-100">
                     <div className="size-10 rounded-full overflow-hidden border border-mad-main/20 shrink-0">
                       <Image
-                        src="/assets/user_avatar.png"
-                        alt={session?.user?.name || "المستخدم"}
+                        src={currentAvatarSrc}
+                        alt={activeAccount.name}
                         width={40}
                         height={40}
                         className="size-full object-cover"
@@ -120,10 +129,12 @@ const SideMenu: React.FC<SideMenuProps> = ({
                     </div>
                     <div className="flex flex-col overflow-hidden">
                       <span className="font-bold text-gray-900 text-sm truncate">
-                        {session?.user?.name || "ولي الأمر"}
+                        {activeAccount.name}
                       </span>
                       <span className="text-[10px] text-mad-main font-semibold">
-                        {session?.user?.children?.length || 0} أطفال مسجلون
+                        {activeAccount.type === "child"
+                          ? `طفل نشط (أوسمة: ${activeAccount.badges || 0})`
+                          : `${children.length} أطفال مسجلون`}
                       </span>
                     </div>
                   </div>
