@@ -1,7 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import axios from "axios";
 import { LoginResponse } from "@/types/auth";
+
+import { handleResponse } from "@/services/api";
 
 export const AUTH_TOKEN_KEY = "auth_token";
 
@@ -26,21 +27,19 @@ export const authOptions: NextAuthOptions = {
         try {
           const formattedPhone = credentials.phone.trim();
 
-          const response = await axios.post<LoginResponse>(
-            `${API_BASE_URL}/auth/login`,
-            {
+          const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
               phone: formattedPhone,
               password: credentials.password,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-              },
-            }
-          );
+            }),
+          });
 
-          const data = response.data;
+          const data = await handleResponse<LoginResponse>(response);
 
           if (data && data.token) {
             const user = {
@@ -66,12 +65,8 @@ export const authOptions: NextAuthOptions = {
 
           return null;
         } catch (error: unknown) {
-          if (axios.isAxiosError(error)) {
-            const message =
-              error.response?.data?.message ||
-              error.response?.data?.error ||
-              "فشل تسجيل الدخول، يرجى التأكد من بيانات الاعتماد";
-            throw new Error(message);
+          if (error instanceof Error) {
+            throw error;
           }
           throw new Error("حدث خطأ أثناء الاتصال بالخادم");
         }
