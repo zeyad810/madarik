@@ -13,6 +13,7 @@ export const UserDropdown: React.FC = () => {
     switchAccount,
     children,
     isParentRole,
+    resetAccount,
   } = useActiveAccount();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -213,6 +214,7 @@ export const UserDropdown: React.FC = () => {
             <button
               onClick={() => {
                 setIsOpen(false);
+                resetAccount();
                 signOut({ callbackUrl: "/" });
               }}
               className="w-full flex items-center justify-center gap-2 py-3.5 px-4 text-[#EF4444] hover:text-[#DC2626] font-bold text-base hover:bg-red-50/60 rounded-2xl transition-all cursor-pointer active:scale-95"

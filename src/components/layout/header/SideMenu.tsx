@@ -23,7 +23,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
   onSelectCategory,
 }) => {
   const { status } = useSession();
-  const { activeAccount, children, isAuthenticated } = useActiveAccount();
+  const { activeAccount, children, isAuthenticated, createAccountHref, resetAccount } = useActiveAccount();
 
   const currentAvatarSrc =
     activeAccount?.type === "child"
@@ -92,7 +92,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                   return (
                     <Link
                       key={item.id}
-                      href={item.href}
+                      href={createAccountHref(item.href)}
                       onClick={() => {
                         onSelectCategory(item.id);
                         onClose();
@@ -143,6 +143,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                   <button
                     onClick={() => {
                       onClose();
+                      resetAccount();
                       signOut({ callbackUrl: "/" });
                     }}
                     className="w-full py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-center text-sm transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer border border-red-200 mt-1"

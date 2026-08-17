@@ -72,27 +72,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
           onSubmitSuccess(data);
         }
 
-        // Fetch session to retrieve user role (user_type)
-        const session = await getSession();
-        const userType =
-          session?.user_type ||
-          (session?.user as unknown as Record<string, unknown>)?.user_type ||
-          "parent";
-
         const callbackUrl = searchParams?.get("callbackUrl");
-        let targetUrl = callbackUrl || "/";
-
-        try {
-          const url = new URL(targetUrl, window.location.origin);
-          if (userType) {
-            url.searchParams.set("user_type", String(userType));
-          }
-          targetUrl = url.pathname + url.search;
-        } catch {
-          targetUrl = userType
-            ? `/?user_type=${encodeURIComponent(String(userType))}`
-            : "/";
-        }
+        const targetUrl = callbackUrl || "/";
 
         router.push(targetUrl);
         router.refresh();
