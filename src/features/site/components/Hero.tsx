@@ -14,7 +14,7 @@ const Hero: React.FC<HeroProps> = ({
   stats: propStats,
   ctaText = "إشترك الآن",
   ctaLink = "/about",
-  bgImageSrc = "/iamges/header_background.png",
+  bgImageSrc = "/assets/Hero_bg.png",
   mobileBgImageSrc = "/assets/Hero-mobile-bg.png",
   sideImageSrc = "/assets/hero_image.png",
   sideImageAlt = "صورة منصة مدارك",
@@ -145,18 +145,18 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <section
       dir="rtl"
-      className="w-full min-h-screen pt-28 lg:pt-36 pb-16 bg-cover bg-center bg-no-repeat flex items-center justify-center relative overflow-hidden"
+      className="w-full min-h-screen lg:h-[1400px] lg:min-h-[1400px] pt-32 sm:pt-40 lg:pt-52 pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat flex items-start justify-center relative overflow-hidden"
       style={{
         backgroundImage: `url(${bgImageSrc})`,
       }}
     >
-      <div className="container mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 px-4 sm:px-6 md:px-8 z-10">
+      <div className="container mx-auto flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-12 px-4 sm:px-6 lg:px-12 z-10">
         {/* Content Side */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="w-full md:w-2/3 flex items-start justify-start flex-col gap-6"
+          className="w-full lg:w-1/2 flex items-start justify-start flex-col gap-6 lg:gap-8"
         >
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -181,7 +181,7 @@ const Hero: React.FC<HeroProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className="flex flex-wrap items-start justify-start gap-6 sm:gap-10 md:gap-12 py-2"
+            className="flex flex-wrap items-start justify-start gap-6 sm:gap-10 lg:gap-14 py-2"
           >
             {stats.map((stat, idx) => (
               <motion.div
@@ -216,7 +216,7 @@ const Hero: React.FC<HeroProps> = ({
               btnColor="var(--mad-white-50)"
               icon="have"
               btnShadow="shadow-[inset_0_3px_8px_rgba(255,255,255,0.45),inset_0_-2px_6px_rgba(0,0,0,0.2)]"
-              className="font-bold text-base px-7 py-2.5 rounded-full hover:scale-[1.02] active:scale-95 transition-all"
+              className="font-bold text-base px-8 py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all"
             />
           </motion.div>
         </motion.div>
@@ -226,12 +226,12 @@ const Hero: React.FC<HeroProps> = ({
           initial={{ opacity: 0, x: -50, scale: 0.9 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="w-full md:w-1/2 flex items-center justify-center"
+          className="w-full lg:w-1/2 flex items-start justify-center lg:justify-end"
         >
           <motion.div
-            animate={{ y: [0, -10, 0] }}
+            animate={{ y: [0, -12, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="w-full flex items-center justify-center"
+            className="w-full flex items-start justify-center lg:justify-end"
           >
             <Image
               src={sideImageSrc}
@@ -239,7 +239,7 @@ const Hero: React.FC<HeroProps> = ({
               width={821}
               height={648}
               style={{ width: "100%", height: "auto" }}
-              className="max-h-95 md:max-h-none lg:w-205.25 object-contain drop-shadow-xl"
+              className="max-h-95 md:max-h-none max-w-[620px] xl:max-w-[750px] object-contain drop-shadow-2xl"
               priority
             />
           </motion.div>
