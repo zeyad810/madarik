@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { DESKTOP_NAV_LINKS } from "./constants";
 import UserDropdown from "./UserDropdown";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 const DesktopNav: React.FC = () => {
   const { status } = useSession();
+  const { createAccountHref } = useActiveAccount();
 
   return (
     <>
@@ -16,7 +18,7 @@ const DesktopNav: React.FC = () => {
         {DESKTOP_NAV_LINKS.map((link) => (
           <Link
             key={link.id}
-            href={link.href}
+            href={createAccountHref(link.href)}
             className="text-white hover:text-white/80 font-semibold text-sm xl:text-base transition-colors relative py-1"
           >
             {link.label}

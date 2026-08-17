@@ -1,3 +1,5 @@
+export type UserRole = "parent" | "child" | "free_customer" | "student" | string;
+
 export interface Child {
   id: string;
   account_id: string;
@@ -7,6 +9,20 @@ export interface Child {
   status: string;
   created_at: string;
   updated_at: string;
+  badges_count?: number;
+  badges?: number;
+}
+
+export interface ActiveAccount {
+  id: string;
+  type: "parent" | "child";
+  name: string;
+  status?: string;
+  gender?: string;
+  badges?: number;
+  isParent: boolean;
+  rawChild?: Child;
+  rawParent?: AuthUser;
 }
 
 export interface AuthUser {

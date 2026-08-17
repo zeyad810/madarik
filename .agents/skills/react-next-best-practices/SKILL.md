@@ -7,7 +7,6 @@ TanStack React Query
 React Hook Form
 Zod
 Zustand
-Axios
 Tailwind CSS v4
 Lucide React
 ESLint & Prettier
@@ -45,7 +44,7 @@ Components Should NOT
 Components should not:
 
 Fetch data directly inside UI render trees.
-Make Axios calls directly.
+Make API calls directly from UI components.
 Contain complex business logic.
 Manage complex forms inline.
 Duplicate validation logic.
@@ -309,7 +308,7 @@ useCreateProduct()
 useUpdateProduct()
 useDeleteProduct()
 
-Pages and UI components should not call Axios directly.
+Pages and UI components should not call fetch directly.
 
 API Layer
 
@@ -341,31 +340,6 @@ Render UI.
 Show toast notifications.
 Modify React state.
 Contain component-specific behavior.
-Axios
-
-Use a shared Axios instance.
-
-Configure:
-
-Base URL
-Default headers
-Authorization
-Request interceptors
-Response interceptors
-Error normalization
-Token refresh when required
-
-Example:
-
-export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-Do not create a new Axios instance inside every component or hook.
-
 Authentication & Token Handling
 
 Authentication should be designed around the backend contract.
@@ -382,7 +356,7 @@ Keep authentication/session state separate from server resource data.
 
 Use:
 
-Axios interceptors for authorization and refresh handling.
+A centralized fetch-based authentication/request layer for authorization and refresh handling.
 React Query for authenticated API data.
 Zustand only for client-side session information when required by the architecture.
 Next.js middleware/server-side checks where appropriate.
@@ -623,7 +597,6 @@ Use helper utilities such as:
 
 extractApiError(error)
 
-Avoid repeating Axios error parsing in every component.
 
 Next.js App Router
 
@@ -1089,7 +1062,7 @@ Prefer Server Components where possible.
 Use Client Components only when required.
 Use React Query for client-side server state.
 Never fetch API data using useEffect.
-Create an API layer instead of calling Axios from components.
+Create an API layer instead of calling fetch directly from components.
 Create query-key factories.
 Create reusable React Query hooks.
 Use React Hook Form for non-trivial forms.
@@ -1249,7 +1222,7 @@ React Hook Form + Zod
 
 API communication
     ↓
-Axios + API Layer
+Fetch + API Layer
 
 Flexible component composition
     ↓
