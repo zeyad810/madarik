@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -29,6 +29,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   colors = AUTH_COLORS,
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -70,7 +71,30 @@ const LoginForm: React.FC<LoginFormProps> = ({
         if (onSubmitSuccess) {
           onSubmitSuccess(data);
         }
-        router.push("/");
+
+        // Fetch session to retrieve user role (user_type)
+        const session = await getSession();
+        const userType =
+          session?.user_type ||
+          (session?.user as unknown as Record<string, unknown>)?.user_type ||
+          "parent";
+
+        const callbackUrl = searchParams?.get("callbackUrl");
+        let targetUrl = callbackUrl || "/";
+
+        try {
+          const url = new URL(targetUrl, window.location.origin);
+          if (userType) {
+            url.searchParams.set("user_type", String(userType));
+          }
+          targetUrl = url.pathname + url.search;
+        } catch {
+          targetUrl = userType
+            ? `/?user_type=${encodeURIComponent(String(userType))}`
+            : "/";
+        }
+
+        router.push(targetUrl);
         router.refresh();
       }
     } catch {

@@ -30,26 +30,34 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 
   const products: Product[] =
     propProducts ??
-    (storiesData?.items?.map((story) => ({
-      id: story.id,
-      title: story.title,
-      description:
-        story.description ??
-        story.blocks?.find((b) => b.block_type === "text")?.content ??
-        "",
-      imageSrc:
-        story.cover_photo_url || story.thumbnail_url || "/assets/sea_story.png",
-      imageAlt: story.title,
-      ageRange:
-        story.age_category && story.age_category !== "0-0"
-          ? `${story.age_category} سنة`
-          : "جميع الأعمار",
-      isFree: story.availability === "free",
-      levelTag: story.level,
-      storyCodeTag: story.code,
-      ctaText: "ابدأ القراءة",
-      ctaLink: story.pdf_url ?? "#",
-    })) ?? []);
+    (storiesData?.items?.map((story) => {
+      const rawImg = story.cover_photo_url || story.thumbnail_url;
+      const isBrokenPlaceholder =
+        !rawImg || rawImg.includes("via.placeholder.com");
+      const safeImageSrc = isBrokenPlaceholder
+        ? "/assets/sea_story.png"
+        : rawImg;
+
+      return {
+        id: story.id,
+        title: story.title,
+        description:
+          story.description ??
+          story.blocks?.find((b) => b.block_type === "text")?.content ??
+          "",
+        imageSrc: safeImageSrc,
+        imageAlt: story.title,
+        ageRange:
+          story.age_category && story.age_category !== "0-0"
+            ? `${story.age_category} سنة`
+            : "جميع الأعمار",
+        isFree: story.availability === "free",
+        levelTag: story.level,
+        storyCodeTag: story.code,
+        ctaText: "ابدأ القراءة",
+        ctaLink: story.pdf_url ?? "#",
+      };
+    }) ?? []);
 
   return (
     <section
