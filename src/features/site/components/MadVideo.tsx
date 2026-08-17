@@ -99,7 +99,7 @@ const MadVideo: React.FC<MadVideoProps> = ({
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
               onClick={() => setIsOpen(true)}
-              className="relative w-full aspect-video rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-lg cursor-pointer group bg-mad-white-200"
+              className="relative w-full aspect-video rounded-3xl sm:rounded-4xl overflow-hidden shadow-lg cursor-pointer group bg-mad-white-200"
             >
               {/* Thumbnail Image */}
               <Image

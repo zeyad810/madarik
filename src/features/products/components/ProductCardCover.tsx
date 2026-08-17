@@ -26,7 +26,7 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
   );
 
   return (
-    <div className="relative w-full h-[220px] bg-slate-100 overflow-hidden select-none">
+    <div className="relative w-full h-55 bg-slate-100 overflow-hidden select-none">
       {/* Story Cover Image */}
       <Image
         src={currentSrc}

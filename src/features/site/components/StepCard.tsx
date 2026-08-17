@@ -17,13 +17,13 @@ export const StepCard: React.FC<StepCardProps> = ({ step, index = 0 }) => {
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.12, ease: "easeOut" }}
       whileHover={{ scale: 1.02, transition: { duration: 0.25 } }}
-      className="relative flex items-center w-full min-h-[140px] sm:min-h-[165px] md:min-h-[175px]"
+      className="relative flex items-center w-full min-h-35 sm:min-h-41.25 md:min-h-43.75"
     >
       {/* Capsule Frame Container composed of Two Divs */}
-      <div className="relative flex-1 flex items-stretch min-h-[110px] sm:min-h-[140px] md:min-h-[160px]">
+      <div className="relative flex-1 flex items-stretch min-h-27.5 sm:min-h-35 md:min-h-40">
         {/* Right Div: Smaller segment under Circle Badge with Top & Bottom Border */}
         <div
-          className="relative w-25 sm:w-[140px] md:w-[160px] flex-shrink-0 border-y-[3px] border-solid bg-white transition-colors duration-300"
+          className="relative w-25 sm:w-35 md:w-40 shrink-0 border-y-[3px] border-solid bg-white transition-colors duration-300"
           style={{ borderColor: step.color }}
         />
 
@@ -64,11 +64,11 @@ export const StepCard: React.FC<StepCardProps> = ({ step, index = 0 }) => {
         />
 
         {/* White Main Circle */}
-        <div className="relative z-10 w-[112px] h-[112px] sm:w-[144px] sm:h-[144px] md:w-[160px] md:h-[160px] rounded-full bg-white flex flex-col items-center justify-center text-center p-2.5 sm:p-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-100">
+        <div className="relative z-10 w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-white flex flex-col items-center justify-center text-center p-2.5 sm:p-3 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-100">
           <span className="mad-h3 font-extrabold text-mad-text-primary mb-0.5 sm:mb-1 md:mb-1.5 font-sans">
             {step.number}
           </span>
-          <span className="mad-label-1 font-bold text-mad-text-primary max-w-[95px] sm:max-w-[110px]">
+          <span className="mad-label-1 font-bold text-mad-text-primary max-w-23.75 sm:max-w-27.5">
             {step.title}
           </span>
         </div>
