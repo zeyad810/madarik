@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Image from "next/image";
 import { FreeRosetteBadge } from "./FreeRosetteBadge";
 
@@ -15,16 +17,25 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
   isFree = true,
   ageRange,
 }) => {
+  // If backend returns a dead/offline placeholder URL, fallback gracefully
+  const isBrokenPlaceholder =
+    !imageSrc || imageSrc.includes("via.placeholder.com");
+  const fallbackSrc = "/assets/sea_story.png";
+  const [currentSrc, setCurrentSrc] = useState(
+    isBrokenPlaceholder ? fallbackSrc : imageSrc
+  );
+
   return (
     <div className="relative w-full h-[220px] bg-slate-100 overflow-hidden select-none">
       {/* Story Cover Image */}
       <Image
-        src={imageSrc}
+        src={currentSrc}
         alt={imageAlt}
         fill
         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
         className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
         priority
+        onError={() => setCurrentSrc(fallbackSrc)}
       />
 
       {/* Overlay Dark Gradient Vignette for Text Contrast */}
