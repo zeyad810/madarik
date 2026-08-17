@@ -22,7 +22,7 @@ export const ChildWinCard: React.FC<ChildWinCardProps> = ({
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.55, delay: index * 0.1, ease: "easeOut" }}
       whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.25 } }}
-      className={`relative bg-white/95 backdrop-blur-md rounded-2xl md:rounded-[24px] pt-8 pb-7 px-6 md:px-7 shadow-[0_10px_35px_rgba(109,40,217,0.06)] border border-purple-50/80 hover:shadow-[0_18px_40px_rgba(109,40,217,0.12)] transition-shadow duration-300 text-center flex flex-col items-center justify-center max-w-sm mx-auto w-full ${className}`}
+      className={`relative bg-white/95 backdrop-blur-md rounded-2xl md:rounded-3xl pt-8 pb-7 px-6 md:px-7 shadow-[0_10px_35px_rgba(109,40,217,0.06)] border border-purple-50/80 hover:shadow-[0_18px_40px_rgba(109,40,217,0.12)] transition-shadow duration-300 text-center flex flex-col items-center justify-center max-w-sm mx-auto w-full ${className}`}
     >
       {/* Floating Badge at Top Center */}
       <motion.div

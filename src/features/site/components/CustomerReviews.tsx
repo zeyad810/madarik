@@ -20,7 +20,6 @@ const renderReviewCard = (review: ReviewItem) => (
     whileHover={{ y: -6, transition: { duration: 0.25 } }}
     className="w-full bg-linear-to-b from-white via-[#f7f5ff] to-[#ede9fe] rounded-3xl p-6 md:p-8 flex flex-col items-start text-start shadow-[0_15px_35px_rgba(109,40,217,0.06)] h-full justify-between transition-shadow duration-300 hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)]"
   >
-    {/* أيقونة الاقتباس - أعلى اليمين */}
     <div className="w-full flex justify-start mb-2">
       <div className="w-10 h-10 rounded-full bg-[#eee8fd] flex items-center justify-center text-mad-main-light font-bold shrink-0">
         <svg className="w-4 h-4 fill-mad-main-light" viewBox="0 0 24 24">
@@ -29,7 +28,6 @@ const renderReviewCard = (review: ReviewItem) => (
       </div>
     </div>
 
-    {/* نجوم التقييم */}
     <div className="flex items-center justify-start gap-1 mb-4">
       {Array.from({ length: 5 }).map((_, index) => (
         <svg
@@ -45,12 +43,10 @@ const renderReviewCard = (review: ReviewItem) => (
       ))}
     </div>
 
-    {/* نص التقييم */}
     <p className="mad-body-3 text-mad-text-primary mb-6 font-medium leading-relaxed text-start">
       &quot;{review.comment}&quot;
     </p>
 
-    {/* اسم كاتب التقييم والدور */}
     <div className="mt-auto flex flex-col items-start text-start">
       <h4 className="mad-label-1 text-mad-main-light font-bold mb-0.5">
         {review.author}
@@ -132,7 +128,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
                 spaceBetween: 24,
               },
             }}
-            className="w-full !pb-12"
+            className="w-full pb-12!"
           >
             {reviews.map((review) => (
               <SwiperSlide key={review.id} className="h-auto! flex">

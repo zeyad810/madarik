@@ -43,7 +43,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
 
       <section
         dir="rtl"
-        className="relative w-full h-auto lg:h-[900px] section-spacing px-4 md:px-8 bg-[#FBF9FF] overflow-hidden flex items-center justify-center"
+        className="relative w-full h-auto lg:h-225 section-spacing px-4 md:px-8 bg-[#FBF9FF] overflow-hidden flex items-center justify-center"
       >
         {/* Background Graphic Illustration (Desktop only center background) */}
         <div className="hidden lg:flex absolute inset-0 z-0 pointer-events-none items-center justify-center">
@@ -59,7 +59,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
 
         <div className="container mx-auto relative z-10 flex flex-col items-center">
           {/* Mobile Character Illustration Card */}
-          <div className="lg:hidden relative w-full max-w-sm mx-auto h-[260px] sm:h-[320px] rounded-3xl overflow-hidden mb-10 border border-purple-100/80 bg-linear-to-b from-[#F5F1FF] via-[#FAF8FF] to-[#EFE8FF] shadow-sm flex items-center justify-center">
+          <div className="lg:hidden relative w-full max-w-sm mx-auto h-65 sm:h-80 rounded-3xl overflow-hidden mb-10 border border-purple-100/80 bg-linear-to-b from-[#F5F1FF] via-[#FAF8FF] to-[#EFE8FF] shadow-sm flex items-center justify-center">
             <Image
               src={bgImageSrc}
               alt="Character Illustration"
@@ -71,7 +71,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
           </div>
 
           {/* Cards Layout */}
-          <div className="w-full flex flex-col gap-8 sm:gap-10 lg:grid lg:grid-cols-12 lg:gap-6 xl:gap-8 lg:items-center min-h-[480px]">
+          <div className="w-full flex flex-col gap-8 sm:gap-10 lg:grid lg:grid-cols-12 lg:gap-6 xl:gap-8 lg:items-center min-h-120">
             {/* Card 01: Top Right (RTL Col 1) */}
             {cards[0] && (
               <div className="w-full lg:col-span-4 lg:col-start-1 lg:row-start-1">
@@ -101,7 +101,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
             )}
 
             {/* Center Spacer for Boy Character Illustration on Desktop */}
-            <div className="hidden lg:flex lg:col-span-4 lg:col-start-5 lg:row-start-1 lg:row-span-2 items-center justify-center min-h-[380px] pointer-events-none" />
+            <div className="hidden lg:flex lg:col-span-4 lg:col-start-5 lg:row-start-1 lg:row-span-2 items-center justify-center min-h-95 pointer-events-none" />
           </div>
         </div>
       </section>

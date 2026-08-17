@@ -70,7 +70,7 @@ const Fqa: React.FC<FqaProps> = ({
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-[291px] h-[291px] lg:w-[596px] lg:h-[596px] aspect-square shrink-0"
+              className="relative w-72.75 h-72.75 lg:w-149 lg:h-149 aspect-square shrink-0"
             >
               <Image
                 src={imageSrc}

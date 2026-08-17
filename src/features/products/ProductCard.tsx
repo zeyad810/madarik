@@ -60,7 +60,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <ProductCardTags storyCodeTag={storyCodeTag} levelTag={levelTag} />
 
           {/* Story Title */}
-          <h3 className="mad-h6 font-bold text-[#1E293B] mb-2.5 text-right leading-snug group-hover:text-mad-main transition-colors">
+          <h3 className="mad-h6 font-bold text-mad-text-primary mb-2.5 text-right leading-snug group-hover:text-mad-main transition-colors">
             {title}
           </h3>
 
