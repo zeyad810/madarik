@@ -1,22 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { Child } from "@/types/auth";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 
 interface LoginSwitcherProps {
   onComplete?: () => void;
+  onSwitchUser?: () => void;
 }
 
-export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({ onComplete }) => {
+export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
+  onComplete,
+  onSwitchUser,
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
-  const { switchAccount, activeId } = useActiveAccount();
+  const { data: session, status, update } = useSession();
+  const { switchAccount, activeId, resetAccount } = useActiveAccount();
 
   const user = session?.user;
   const children: Child[] = user?.children || [];
@@ -24,6 +28,20 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({ onComplete }) => {
   // Default selection: currently active ID or "parent"
   const [selectedId, setSelectedId] = useState<string>(activeId || "parent");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Sync selection if activeId loads
+  useEffect(() => {
+    if (activeId) {
+      setSelectedId(activeId);
+    }
+  }, [activeId]);
+
+  // Force session update on mount if session data is still empty
+  useEffect(() => {
+    if (status === "authenticated" && !user) {
+      update();
+    }
+  }, [status, user, update]);
 
   const parentName = user?.name || "ولي الأمر";
 
@@ -39,6 +57,14 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({ onComplete }) => {
       router.push(targetUrl);
       router.refresh();
     }
+  };
+
+  const handleDifferentAccount = async () => {
+    resetAccount();
+    if (onSwitchUser) {
+      onSwitchUser();
+    }
+    await signOut({ redirect: false });
   };
 
   if (status === "loading") {
@@ -73,27 +99,27 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({ onComplete }) => {
       </h1>
 
       {/* 3. Account Profiles Selection Cards */}
-      <div className="w-full flex items-center justify-center gap-3 sm:gap-4 mb-8 flex-wrap">
+      <div className="w-full flex items-center justify-center gap-3.5 sm:gap-4 mb-8 flex-wrap p-1">
         {/* Parent Card */}
         <button
           type="button"
           onClick={() => setSelectedId("parent")}
-          className={`w-24 sm:w-28 py-4 px-2.5 rounded-2xl flex flex-col items-center justify-center gap-2.5 transition-all duration-200 cursor-pointer border ${
+          className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${
             selectedId === "parent"
-              ? "border-2 border-mad-main bg-[#F8F5FF] shadow-md scale-102"
-              : "border border-gray-100 bg-white hover:border-gray-200 shadow-xs hover:scale-101"
+              ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
+              : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
           }`}
         >
           <div
-            className={`size-13 rounded-full overflow-hidden p-0.5 ring-2 ${
-              selectedId === "parent" ? "ring-mad-main" : "ring-purple-100"
-            } shrink-0 bg-purple-50`}
+            className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${
+              selectedId === "parent" ? "ring-[#7C3AED]/30" : "ring-purple-50"
+            } shrink-0 bg-purple-50 flex items-center justify-center`}
           >
             <Image
               src="/assets/user_avatar.png"
               alt={parentName}
-              width={52}
-              height={52}
+              width={56}
+              height={56}
               className="size-full object-cover rounded-full"
             />
           </div>
@@ -115,22 +141,22 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({ onComplete }) => {
               key={child.id || index}
               type="button"
               onClick={() => setSelectedId(child.id)}
-              className={`w-24 sm:w-28 py-4 px-2.5 rounded-2xl flex flex-col items-center justify-center gap-2.5 transition-all duration-200 cursor-pointer border ${
+              className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${
                 isSelected
-                  ? "border-2 border-mad-main bg-[#F8F5FF] shadow-md scale-102"
-                  : "border border-gray-100 bg-white hover:border-gray-200 shadow-xs hover:scale-101"
+                  ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
+                  : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
               }`}
             >
               <div
-                className={`size-13 rounded-full overflow-hidden p-0.5 ring-2 ${
-                  isSelected ? "ring-mad-main" : "ring-purple-100"
-                } shrink-0 bg-purple-50`}
+                className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${
+                  isSelected ? "ring-[#7C3AED]/30" : "ring-purple-50"
+                } shrink-0 bg-purple-50 flex items-center justify-center`}
               >
                 <Image
                   src={avatarSrc}
                   alt={child.name}
-                  width={52}
-                  height={52}
+                  width={56}
+                  height={56}
                   className="size-full object-cover rounded-full"
                 />
               </div>
@@ -158,6 +184,18 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({ onComplete }) => {
           <span>متابعة</span>
         )}
       </button>
+
+      {/* 5. Switch to a Different Account Link */}
+      <div className="text-center mt-6">
+        <button
+          type="button"
+          onClick={handleDifferentAccount}
+          className="text-xs sm:text-sm font-semibold text-gray-500 hover:text-mad-main underline transition-colors cursor-pointer inline-flex items-center gap-1.5"
+        >
+          <LogOut className="size-3.5" />
+          <span>تسجيل الدخول برقم هاتف آخر</span>
+        </button>
+      </div>
     </div>
   );
 };

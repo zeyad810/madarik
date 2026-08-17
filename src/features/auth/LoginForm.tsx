@@ -13,6 +13,7 @@ import { loginSchema, LoginFormData } from "./validation";
 import { AUTH_TEXTS, AUTH_TYPOGRAPHY, AUTH_COLORS } from "./constants";
 import PhoneNumberInput from "@/components/ui/PhoneNumberInput";
 
+import { useSession } from "next-auth/react";
 import LoginSwitcher from "./LoginSwitcher";
 
 interface LoginFormProps {
@@ -32,9 +33,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { status } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showSwitcher, setShowSwitcher] = useState(false);
+
+  const isSwitcherVisible = showSwitcher || status === "authenticated";
 
   const {
     control,
@@ -81,9 +85,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
   };
 
-  if (showSwitcher) {
+  if (isSwitcherVisible) {
     return (
       <LoginSwitcher
+        onSwitchUser={() => setShowSwitcher(false)}
         onComplete={() => {
           const callbackUrl = searchParams?.get("callbackUrl");
           const targetUrl = callbackUrl || "/";
