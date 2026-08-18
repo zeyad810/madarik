@@ -9,7 +9,6 @@ import ContactSection from "./ContactSection";
 import CopyrightBar from "./CopyrightBar";
 import { FooterProps } from "./types";
 import {
-  DEFAULT_NEWSLETTER,
   DEFAULT_BRAND_DESCRIPTION,
   DEFAULT_QUICK_LINKS,
   DEFAULT_IMPORTANT_LINKS,
