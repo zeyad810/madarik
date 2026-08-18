@@ -4,14 +4,13 @@ import React, { useState, useMemo } from "react";
 import { PlusCircle } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChildSlider } from "./ChildSlider";
-import { AddChildModal } from "./AddChildModal";
 import { ManagedChild } from "../types";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
+import Link from "next/link";
 
 export const ChildManagementView: React.FC = () => {
   const { children: sessionChildren } = useActiveAccount();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Map session children to ManagedChild format
   const mappedSessionChildren: ManagedChild[] = useMemo(() => {
@@ -27,32 +26,21 @@ export const ChildManagementView: React.FC = () => {
     }));
   }, [sessionChildren]);
 
-  // Support local additions during the active session
-  const [addedChildren, setAddedChildren] = useState<ManagedChild[]>([]);
   // Local status overrides if toggled by user in UI
   const [statusOverrides, setStatusOverrides] = useState<Record<string, "active" | "inactive">>({});
 
   const displayChildren = useMemo(() => {
-    const combined = [...mappedSessionChildren, ...addedChildren];
-    return combined.map((child) => ({
+    return mappedSessionChildren.map((child) => ({
       ...child,
       status: statusOverrides[child.id] || child.status,
     }));
-  }, [mappedSessionChildren, addedChildren, statusOverrides]);
+  }, [mappedSessionChildren, statusOverrides]);
 
   const handleToggleStatus = (child: ManagedChild) => {
     setStatusOverrides((prev) => ({
       ...prev,
       [child.id]: child.status === "active" ? "inactive" : "active",
     }));
-  };
-
-  const handleAddChild = (newChildData: Omit<ManagedChild, "id">) => {
-    const newChild: ManagedChild = {
-      ...newChildData,
-      id: `child-${Date.now()}`,
-    };
-    setAddedChildren((prev) => [newChild, ...prev]);
   };
 
   return (
@@ -94,13 +82,13 @@ export const ChildManagementView: React.FC = () => {
           </div>
 
           {/* Action Button: Add New Child */}
-          <button
-            onClick={() => setIsAddModalOpen(true)}
+          <Link href={"/parents/childMangement/addChild"}
+           
             className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
           >
             <PlusCircle className="size-5 stroke-[2.2]" />
             <span>إضافة طفل جديد</span>
-          </button>
+          </Link>
         </div>
 
         {/* =========================================================================
@@ -119,7 +107,7 @@ export const ChildManagementView: React.FC = () => {
               لا يوجد أطفال مضافين حالياً في حسابك.
             </p>
             <button
-              onClick={() => setIsAddModalOpen(true)}
+              type="button"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               <PlusCircle className="size-5 stroke-[2.2]" />
@@ -128,15 +116,6 @@ export const ChildManagementView: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* =========================================================================
-          5. ADD CHILD MODAL DIALOG
-         ========================================================================= */}
-      <AddChildModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAddChild={handleAddChild}
-      />
     </div>
   );
 };
