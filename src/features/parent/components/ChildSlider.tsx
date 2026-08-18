@@ -13,16 +13,12 @@ import ChildCard from "./ChildCard";
 
 interface ChildSliderProps {
   childrenList: ManagedChild[];
-  selectedChildId?: string | null;
-  onSelectChild?: (child: ManagedChild) => void;
   onEditChild?: (child: ManagedChild) => void;
   onToggleStatus?: (child: ManagedChild) => void;
 }
 
 export const ChildSlider: React.FC<ChildSliderProps> = ({
   childrenList,
-  selectedChildId,
-  onSelectChild,
   onEditChild,
   onToggleStatus,
 }) => {
@@ -59,14 +55,12 @@ export const ChildSlider: React.FC<ChildSliderProps> = ({
             spaceBetween: 24,
           },
         }}
-        className="w-full pb-12! pt-3 px-1.5"
+        className="w-full pt-3 px-1.5"
       >
         {childrenList.map((child) => (
           <SwiperSlide key={child.id} className="h-auto flex justify-center p-2">
             <ChildCard
               child={child}
-              isSelected={selectedChildId === child.id}
-              onSelect={onSelectChild}
               onEdit={onEditChild}
               onToggleStatus={onToggleStatus}
             />

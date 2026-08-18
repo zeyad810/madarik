@@ -7,16 +7,12 @@ import { ManagedChild } from "../types";
 
 interface ChildCardProps {
   child: ManagedChild;
-  isSelected?: boolean;
-  onSelect?: (child: ManagedChild) => void;
   onEdit?: (child: ManagedChild) => void;
   onToggleStatus?: (child: ManagedChild) => void;
 }
 
 export const ChildCard: React.FC<ChildCardProps> = ({
   child,
-  isSelected = false,
-  onSelect,
   onEdit,
   onToggleStatus,
 }) => {
@@ -24,12 +20,9 @@ export const ChildCard: React.FC<ChildCardProps> = ({
 
   return (
     <div
-      onClick={() => onSelect?.(child)}
       dir="rtl"
-      className={`w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between transition-all duration-200 cursor-pointer select-none border-2 box-border ${
-        isSelected
-          ? "border-mad-main bg-white shadow-lg ring-4 ring-mad-main/15 scale-[1.01]"
-          : !isActive
+      className={`w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between transition-all duration-200 select-none border-2 box-border ${
+        !isActive
           ? "border-gray-200/90 bg-[#F9FAFB]/90 opacity-80 hover:opacity-95 shadow-xs"
           : "border-gray-200 bg-white hover:border-purple-200 shadow-xs hover:shadow-md hover:scale-[1.01]"
       }`}

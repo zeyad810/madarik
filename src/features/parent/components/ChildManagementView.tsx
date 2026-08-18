@@ -4,14 +4,13 @@ import React, { useState, useMemo } from "react";
 import { PlusCircle } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChildSlider } from "./ChildSlider";
-import { AddChildModal } from "./AddChildModal";
 import { ManagedChild } from "../types";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
+import Link from "next/link";
 
 export const ChildManagementView: React.FC = () => {
-  const { children: sessionChildren, activeChild, switchAccount } = useActiveAccount();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { children: sessionChildren } = useActiveAccount();
 
   // Map session children to ManagedChild format
   const mappedSessionChildren: ManagedChild[] = useMemo(() => {
@@ -27,41 +26,15 @@ export const ChildManagementView: React.FC = () => {
     }));
   }, [sessionChildren]);
 
-  // Support local additions during the active session
-  const [addedChildren, setAddedChildren] = useState<ManagedChild[]>([]);
   // Local status overrides if toggled by user in UI
   const [statusOverrides, setStatusOverrides] = useState<Record<string, "active" | "inactive">>({});
 
   const displayChildren = useMemo(() => {
-    const combined = [...mappedSessionChildren, ...addedChildren];
-    return combined.map((child) => ({
+    return mappedSessionChildren.map((child) => ({
       ...child,
       status: statusOverrides[child.id] || child.status,
     }));
-  }, [mappedSessionChildren, addedChildren, statusOverrides]);
-
-  // Selected child for active preview notice
-  const [selectedChildId, setSelectedChildId] = useState<string>(
-    activeChild?.id || ""
-  );
-
-  // Synchronize selectedChildId with activeChild or first available child
-  React.useEffect(() => {
-    if (activeChild?.id) {
-      setSelectedChildId(activeChild.id);
-    } else if (displayChildren.length > 0 && !displayChildren.some((c) => c.id === selectedChildId)) {
-      setSelectedChildId(displayChildren[0].id);
-    }
-  }, [activeChild?.id, displayChildren, selectedChildId]);
-
-  const selectedChild =
-    displayChildren.find((c) => c.id === selectedChildId) ||
-    (displayChildren.length > 0 ? displayChildren[0] : null);
-
-  const handleSelectChild = (child: ManagedChild) => {
-    setSelectedChildId(child.id);
-    switchAccount(child.id);
-  };
+  }, [mappedSessionChildren, statusOverrides]);
 
   const handleToggleStatus = (child: ManagedChild) => {
     setStatusOverrides((prev) => ({
@@ -70,18 +43,8 @@ export const ChildManagementView: React.FC = () => {
     }));
   };
 
-  const handleAddChild = (newChildData: Omit<ManagedChild, "id">) => {
-    const newChild: ManagedChild = {
-      ...newChildData,
-      id: `child-${Date.now()}`,
-    };
-    setAddedChildren((prev) => [newChild, ...prev]);
-    setSelectedChildId(newChild.id);
-    switchAccount(newChild.id);
-  };
-
   return (
-    <div className="w-full min-h-screen bg-white section-spacing" dir="rtl">
+    <div className="w-full min-h-screen bg-white section-spacing pb-0!" dir="rtl">
       <div className="container mx-auto ">
         {/* =========================================================================
             1. BREADCRUMBS NAVIGATION
@@ -119,48 +82,32 @@ export const ChildManagementView: React.FC = () => {
           </div>
 
           {/* Action Button: Add New Child */}
-          <button
-            onClick={() => setIsAddModalOpen(true)}
+          <Link href={"/parents/childMangement/addChild"}
+           
             className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
           >
             <PlusCircle className="size-5 stroke-[2.2]" />
             <span>إضافة طفل جديد</span>
-          </button>
+          </Link>
         </div>
 
         {/* =========================================================================
-            3. CHILDREN SLIDER SECTION & PREVIEW NOTICE OR EMPTY STATE
+            3. CHILDREN SLIDER SECTION OR EMPTY STATE
            ========================================================================= */}
         {displayChildren.length > 0 ? (
-          <>
-            <div className="pt-4">
-              <ChildSlider
-                childrenList={displayChildren}
-                selectedChildId={selectedChildId}
-                onSelectChild={handleSelectChild}
-                onToggleStatus={handleToggleStatus}
-                onEditChild={(child) => {
-                  setSelectedChildId(child.id);
-                }}
-              />
-            </div>
-
-            {/* Current Active Preview Notice */}
-            {selectedChild && (
-              <div className="text-center pt-2">
-                <p className="text-mad-main font-bold text-sm sm:text-base transition-all">
-                  انت الان تري جميع بيانات {selectedChild.name}
-                </p>
-              </div>
-            )}
-          </>
+          <div className="pt-4">
+            <ChildSlider
+              childrenList={displayChildren}
+              onToggleStatus={handleToggleStatus}
+            />
+          </div>
         ) : (
           <div className="py-16 text-center space-y-4 border-2 border-dashed border-gray-200 rounded-3xl p-8 bg-gray-50/50">
             <p className="text-gray-500 font-medium text-base sm:text-lg">
               لا يوجد أطفال مضافين حالياً في حسابك.
             </p>
             <button
-              onClick={() => setIsAddModalOpen(true)}
+              type="button"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               <PlusCircle className="size-5 stroke-[2.2]" />
@@ -169,15 +116,6 @@ export const ChildManagementView: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* =========================================================================
-          5. ADD CHILD MODAL DIALOG
-         ========================================================================= */}
-      <AddChildModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAddChild={handleAddChild}
-      />
     </div>
   );
 };
