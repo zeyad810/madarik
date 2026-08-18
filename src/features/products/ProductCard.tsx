@@ -43,7 +43,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     <motion.div
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
       dir="rtl"
-      className={`group w-full max-w-sm bg-white rounded-[28px] border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)] transition-shadow duration-300 overflow-hidden flex flex-col justify-between ${className}`}
+      className={`group w-full max-w-sm h-full bg-white rounded-[28px] border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_45px_rgba(109,40,217,0.12)] transition-shadow duration-300 overflow-hidden flex flex-col justify-between ${className}`}
     >
       {/* 1. Cover Image Header with Rosette & Age Badges */}
       <ProductCardCover
@@ -60,12 +60,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <ProductCardTags storyCodeTag={storyCodeTag} levelTag={levelTag} />
 
           {/* Story Title */}
-          <h3 className="mad-h6 font-bold text-mad-text-primary mb-2.5 text-right leading-snug group-hover:text-mad-main transition-colors">
+          <h3 className="mad-h6 font-bold text-mad-text-primary mb-2.5 text-right leading-snug group-hover:text-mad-main transition-colors line-clamp-1 min-h-7">
             {title}
           </h3>
 
           {/* Story Description */}
-          <p className="mad-body-3 text-mad-text-secondary text-right font-normal leading-relaxed mb-6 line-clamp-2">
+          <p className="mad-body-3 text-mad-text-secondary text-right font-normal leading-relaxed mb-6 line-clamp-2 min-h-11">
             {description}
           </p>
         </div>
