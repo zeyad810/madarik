@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,6 +9,10 @@ import { useSession, signOut } from "next-auth/react";
 import { X, LogOut } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+
+// Smooth spring physics — feels like a native drawer
+const DRAWER_SPRING = { type: "spring", stiffness: 220, damping: 30, mass: 1, delay: 0.05 } as const;
+const DRAWER_EXIT   = { type: "tween",  ease: "easeInOut" as const, duration: 0.35 } as const;
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -64,14 +70,10 @@ const SideMenu: React.FC<SideMenuProps> = ({
             dir="rtl"
             aria-label="القائمة الجانبية"
             initial={{ x: "100%" }}
-            animate={{ x: 0 }}
+            animate={{ x: "0%" }}
             exit={{ x: "100%" }}
-            transition={{
-              type: "tween",
-              ease: [0.16, 1, 0.3, 1],
-              duration: 0.35,
-            }}
-            className="fixed top-0 bottom-0 right-0 z-50 flex w-75 sm:w-82.5 rounded-tl-[36px] rounded-bl-[36px] flex-col bg-white shadow-2xl overflow-hidden"
+            transition={isOpen ? DRAWER_SPRING : DRAWER_EXIT}
+            className="fixed top-0 bottom-0 right-0 z-50 flex w-75 sm:w-82.5 rounded-tl-4xl rounded-bl-4xl flex-col bg-white shadow-[0_0_60px_rgba(0,0,0,0.25)] overflow-hidden will-change-transform"
           >
             {/* Side Menu Header (Purple Card Top) */}
             <div className="relative bg-mad-main px-6 py-6 text-white shrink-0">
@@ -100,24 +102,31 @@ const SideMenu: React.FC<SideMenuProps> = ({
             {/* Side Menu Categories List */}
             <div className="flex-1 overflow-y-auto">
               <nav className="flex flex-col">
-                {SIDE_MENU_ITEMS.map((item) => {
+                {SIDE_MENU_ITEMS.map((item, i) => {
                   const isActive = isItemActive(item.href);
+                  const itemDelay = i * 0.045 + 0.05;
                   return (
-                    <Link
+                    <motion.div
                       key={item.id}
-                      href={createAccountHref(item.href)}
-                      onClick={() => {
-                        if (onSelectCategory) onSelectCategory(item.id);
-                        onClose();
-                      }}
-                      className={`flex items-center justify-between px-6 py-3.5 text-right text-sm font-semibold transition-all border-b border-gray-100/70 ${
-                        isActive
-                          ? "bg-[#F3E8FF] text-mad-main font-bold border-r-4 border-r-mad-main"
-                          : "text-gray-700 hover:bg-purple-50/60 hover:text-mad-main"
-                      }`}
+                      initial={{ opacity: 0, x: 16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: itemDelay, duration: 0.32, ease: "easeOut" }}
                     >
-                      <span>{item.label}</span>
-                    </Link>
+                      <Link
+                        href={createAccountHref(item.href)}
+                        onClick={() => {
+                          if (onSelectCategory) onSelectCategory(item.id);
+                          onClose();
+                        }}
+                        className={`flex items-center justify-between px-6 py-3.5 text-right text-sm font-semibold transition-all border-b border-gray-100/70 ${
+                          isActive
+                            ? "bg-[#F3E8FF] text-mad-main font-bold border-r-4 border-r-mad-main"
+                            : "text-gray-700 hover:bg-purple-50/60 hover:text-mad-main"
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                      </Link>
+                    </motion.div>
                   );
                 })}
               </nav>
