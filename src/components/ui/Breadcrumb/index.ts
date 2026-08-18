@@ -5,9 +5,9 @@ import { BreadcrumbLink } from "./BreadcrumbLink";
 import { BreadcrumbPage } from "./BreadcrumbPage";
 import { BreadcrumbSeparator } from "./BreadcrumbSeparator";
 import { BreadcrumbEllipsis } from "./BreadcrumbEllipsis";
-import { AutoBreadcrumbs } from "./AutoBreadcrumbs";
+import { AutoBreadcrumbs, DynamicBreadcrumbs } from "./AutoBreadcrumbs";
 
-// Compound component assembly
+// Compound component assembly for flexible and intuitive usage
 export const Breadcrumb = Object.assign(BreadcrumbRoot, {
   List: BreadcrumbList,
   Item: BreadcrumbItem,
@@ -16,9 +16,10 @@ export const Breadcrumb = Object.assign(BreadcrumbRoot, {
   Separator: BreadcrumbSeparator,
   Ellipsis: BreadcrumbEllipsis,
   Auto: AutoBreadcrumbs,
+  Dynamic: DynamicBreadcrumbs,
 });
 
-// Named exports for flexible imports
+// Named exports for individual imports
 export {
   BreadcrumbRoot,
   BreadcrumbList,
@@ -28,12 +29,14 @@ export {
   BreadcrumbSeparator,
   BreadcrumbEllipsis,
   AutoBreadcrumbs,
+  DynamicBreadcrumbs,
 };
 
 // Context hook
 export { useBreadcrumbContext } from "./context";
 
-// Types
+// Constants & Types
+export * from "./constants";
 export * from "./types";
 
 export default Breadcrumb;
