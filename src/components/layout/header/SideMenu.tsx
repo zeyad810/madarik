@@ -1,8 +1,7 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 import { X, LogOut } from "lucide-react";
@@ -11,19 +10,32 @@ import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 interface SideMenuProps {
   isOpen: boolean;
-  activeCategory: string;
+  activeCategory?: string;
   onClose: () => void;
-  onSelectCategory: (id: string) => void;
+  onSelectCategory?: (id: string) => void;
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({
   isOpen,
-  activeCategory,
   onClose,
   onSelectCategory,
 }) => {
+  const pathname = usePathname();
   const { status } = useSession();
-  const { activeAccount, children, isAuthenticated, createAccountHref, resetAccount } = useActiveAccount();
+  const {
+    activeAccount,
+    children,
+    isAuthenticated,
+    createAccountHref,
+    resetAccount,
+  } = useActiveAccount();
+
+  const isItemActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(href);
+  };
 
   const currentAvatarSrc =
     activeAccount?.type === "child"
@@ -54,14 +66,15 @@ const SideMenu: React.FC<SideMenuProps> = ({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 28, stiffness: 300 }}
-            className="fixed top-0 bottom-0 right-0 z-50 flex w-75 sm:w-82.5 rounded-tl-[40px] rounded-bl-[40px] flex-col bg-white shadow-2xl overflow-hidden"
+            transition={{
+              type: "tween",
+              ease: [0.16, 1, 0.3, 1],
+              duration: 0.35,
+            }}
+            className="fixed top-0 bottom-0 right-0 z-50 flex w-75 sm:w-82.5 rounded-tl-[36px] rounded-bl-[36px] flex-col bg-white shadow-2xl overflow-hidden"
           >
             {/* Side Menu Header (Purple Card Top) */}
-            <div
-              className="relative bg-mad-main px-6 py-6 text-white shrink-0"
-              style={{ borderTopLeftRadius: "32px" }}
-            >
+            <div className="relative bg-mad-main px-6 py-6 text-white shrink-0">
               <div className="flex items-center justify-between">
                 {/* Logo + Subtitle Text */}
                 <div className="flex flex-col text-right">
@@ -88,13 +101,13 @@ const SideMenu: React.FC<SideMenuProps> = ({
             <div className="flex-1 overflow-y-auto">
               <nav className="flex flex-col">
                 {SIDE_MENU_ITEMS.map((item) => {
-                  const isActive = activeCategory === item.id;
+                  const isActive = isItemActive(item.href);
                   return (
                     <Link
                       key={item.id}
                       href={createAccountHref(item.href)}
                       onClick={() => {
-                        onSelectCategory(item.id);
+                        if (onSelectCategory) onSelectCategory(item.id);
                         onClose();
                       }}
                       className={`flex items-center justify-between px-6 py-3.5 text-right text-sm font-semibold transition-all border-b border-gray-100/70 ${

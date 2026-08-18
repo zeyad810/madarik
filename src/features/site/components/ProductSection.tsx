@@ -116,7 +116,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
           >
             {products.map((item) => (
               <SwiperSlide key={item.id} className="h-auto! flex justify-center">
-                <ProductCard product={item} className="max-w-none" />
+                <ProductCard product={item} className="max-w-none h-full" />
               </SwiperSlide>
             ))}
           </Swiper>
