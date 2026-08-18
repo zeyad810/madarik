@@ -26,12 +26,12 @@ export const ChildCard: React.FC<ChildCardProps> = ({
     <div
       onClick={() => onSelect?.(child)}
       dir="rtl"
-      className={`w-full max-w-[280px] sm:max-w-[300px] mx-auto rounded-[32px] p-6 flex flex-col items-center justify-between transition-all duration-200 cursor-pointer select-none ${
+      className={`w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between transition-all duration-200 cursor-pointer select-none border-2 box-border ${
         isSelected
-          ? "border-2 border-mad-main bg-white shadow-lg ring-4 ring-mad-main/10 scale-[1.01]"
+          ? "border-mad-main bg-white shadow-lg ring-4 ring-mad-main/15 scale-[1.01]"
           : !isActive
-          ? "border border-gray-200/90 bg-[#F9FAFB]/90 opacity-80 hover:opacity-95 shadow-xs"
-          : "border border-gray-200 bg-white hover:border-purple-200 shadow-xs hover:shadow-md hover:scale-[1.01]"
+          ? "border-gray-200/90 bg-[#F9FAFB]/90 opacity-80 hover:opacity-95 shadow-xs"
+          : "border-gray-200 bg-white hover:border-purple-200 shadow-xs hover:shadow-md hover:scale-[1.01]"
       }`}
     >
       {/* 1. Avatar */}
@@ -46,7 +46,7 @@ export const ChildCard: React.FC<ChildCardProps> = ({
       </div>
 
       {/* 2. Name */}
-      <h3 className="text-xl font-bold text-gray-900 text-center mb-1 truncate max-w-full">
+      <h3 className="text-xl font-bold text-gray-900 text-center my-4 truncate max-w-full">
         {child.name}
       </h3>
 
@@ -62,12 +62,25 @@ export const ChildCard: React.FC<ChildCardProps> = ({
       </div>
 
       {/* 4. Divider */}
-      <div className="w-full border-t border-gray-100 my-4" />
+      <div className="w-full border-t border-gray-100 my-6" />
 
       {/* 5. Account Status Row */}
       <div className="w-full flex items-center justify-between text-xs sm:text-sm font-semibold mb-4 px-1">
+        {/* Status Label */}
+        <span className="text-gray-500 font-medium text-xs sm:text-sm">
+          حالة الحساب
+        </span>
+
         {/* Toggle Switch + Status Text */}
         <div className="flex items-center gap-2">
+          <span
+            className={`font-bold text-xs ${
+              isActive ? "text-[#22C55E]" : "text-gray-400"
+            }`}
+          >
+            {isActive ? "مفعل" : "معطل"}
+          </span>
+
           <button
             type="button"
             role="switch"
@@ -87,20 +100,7 @@ export const ChildCard: React.FC<ChildCardProps> = ({
               }`}
             />
           </button>
-
-          <span
-            className={`font-bold text-xs ${
-              isActive ? "text-[#22C55E]" : "text-gray-400"
-            }`}
-          >
-            {isActive ? "مفعل" : "معطل"}
-          </span>
         </div>
-
-        {/* Status Label */}
-        <span className="text-gray-500 font-medium text-xs sm:text-sm">
-          حالة الحساب
-        </span>
       </div>
 
       {/* 6. Edit Action Button */}

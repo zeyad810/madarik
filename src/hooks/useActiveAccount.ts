@@ -22,13 +22,13 @@ export function useActiveAccount() {
   const user = session?.user;
   const children: Child[] = useMemo(() => user?.children || [], [user?.children]);
 
-  // Extract user role from session
+  // Extract base parent/account role from session
   const rawUserType = session?.user_type || (user as unknown as Record<string, unknown>)?.user_type;
-  const userType = rawUserType ? String(rawUserType).toLowerCase() : "parent";
+  const sessionUserType = rawUserType ? String(rawUserType).toLowerCase() : "parent";
   const isParentRole =
-    userType === "parent" ||
-    userType === "ولي امر" ||
-    userType === "ولي الأمر";
+    sessionUserType === "parent" ||
+    sessionUserType === "ولي امر" ||
+    sessionUserType === "ولي الأمر";
 
   // Effective selected ID (safely falling back to "parent" during SSR/loading)
   const currentActiveId = hasHydrated ? activeAccountId : "parent";
@@ -55,6 +55,14 @@ export function useActiveAccount() {
   // Is parent currently active
   const isParentActive = !matchedChild;
 
+  // Active user_type: child user_type if child is selected, else session user_type
+  const activeUserType = useMemo(() => {
+    if (matchedChild) {
+      return matchedChild.user_type || "child";
+    }
+    return sessionUserType;
+  }, [matchedChild, sessionUserType]);
+
   // Active account metadata
   const activeAccount = useMemo<ActiveAccount | null>(() => {
     if (!user) return null;
@@ -69,6 +77,7 @@ export function useActiveAccount() {
       return {
         id: matchedChild.id,
         type: "child",
+        user_type: matchedChild.user_type || "child",
         name: matchedChild.name,
         status: matchedChild.status || "active",
         gender: matchedChild.gender,
@@ -81,23 +90,34 @@ export function useActiveAccount() {
     return {
       id: "parent",
       type: "parent",
+      user_type: sessionUserType,
       name: user.name || (isParentRole ? "ولي الأمر" : "المستخدم"),
       status: user.status || "active",
       isParent: true,
       rawParent: user,
     };
-  }, [user, matchedChild, isParentRole]);
+  }, [user, matchedChild, isParentRole, sessionUserType]);
 
   const activeId = activeAccount?.id || "parent";
 
   /**
-   * Switch the active account globally via Zustand + localStorage
+   * Switch the active account globally via Zustand + localStorage with both activeAccountId and user_type
    */
   const switchAccount = useCallback(
-    (targetId: string) => {
-      setActiveAccountId(targetId || "parent");
+    (targetId: string, targetUserType?: string) => {
+      const id = targetId || "parent";
+      let uType = targetUserType;
+      if (!uType) {
+        if (id === "parent") {
+          uType = sessionUserType;
+        } else {
+          const found = children.find((c) => c.id === id);
+          uType = found?.user_type || "child";
+        }
+      }
+      setActiveAccountId(id, uType);
     },
-    [setActiveAccountId]
+    [setActiveAccountId, children, sessionUserType]
   );
 
   /**
@@ -107,11 +127,14 @@ export function useActiveAccount() {
 
   return {
     activeId,
+    activeAccountId: currentActiveId,
+    user_type: activeUserType,
+    userRole: activeUserType,
+    sessionUserType,
     activeAccount,
     activeChild: matchedChild,
     isParentActive,
     children,
-    userRole: userType,
     isParentRole,
     switchAccount,
     createAccountHref,

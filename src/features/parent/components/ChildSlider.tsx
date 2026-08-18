@@ -59,10 +59,10 @@ export const ChildSlider: React.FC<ChildSliderProps> = ({
             spaceBetween: 24,
           },
         }}
-        className="w-full pb-12!"
+        className="w-full pb-12! pt-3 px-1.5"
       >
         {childrenList.map((child) => (
-          <SwiperSlide key={child.id} className="h-auto flex justify-center">
+          <SwiperSlide key={child.id} className="h-auto flex justify-center p-2">
             <ChildCard
               child={child}
               isSelected={selectedChildId === child.id}

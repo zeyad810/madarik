@@ -22,17 +22,19 @@ export function RoleGuard({
   loadingFallback = null,
   children,
 }: RoleGuardProps) {
-  const { userRole, isLoading, isAuthenticated } = useActiveAccount();
+  const { user_type, userRole, isLoading, isAuthenticated } = useActiveAccount();
 
   if (isLoading) {
     return <>{loadingFallback}</>;
   }
 
-  if (!isAuthenticated || !userRole) {
+  const currentRole = user_type || userRole;
+
+  if (!isAuthenticated || !currentRole) {
     return <>{fallback}</>;
   }
 
-  const hasAccess = hasRoleAccess(userRole, allowedRoles);
+  const hasAccess = hasRoleAccess(currentRole, allowedRoles);
 
   if (!hasAccess) {
     return <>{fallback}</>;
