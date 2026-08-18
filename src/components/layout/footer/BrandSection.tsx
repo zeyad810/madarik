@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Logo from "../header/Logo";
+import Image from "next/image";
 import { SocialLink } from "./types";
 import { DEFAULT_BRAND_DESCRIPTION, DEFAULT_SOCIAL_LINKS } from "./constants";
 
@@ -46,9 +46,16 @@ const BrandSection: React.FC<BrandSectionProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center lg:items-start text-center lg:text-right w-full">
-      {/* Logo */}
+      {/* Footer Logo */}
       <div className="flex justify-center lg:justify-start w-full">
-        <Logo />
+        <Image
+          src="/iamges/F-logo.svg"
+          alt="مدارك"
+          width={160}
+          height={60}
+          className="object-contain"
+          priority
+        />
       </div>
 
       {/* Description */}
