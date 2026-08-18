@@ -7,6 +7,7 @@ export interface Child {
   birth_date: string;
   gender: string;
   status: string;
+  user_type?: string;
   created_at: string;
   updated_at: string;
   badges_count?: number;
@@ -16,6 +17,7 @@ export interface Child {
 export interface ActiveAccount {
   id: string;
   type: "parent" | "child";
+  user_type?: string;
   name: string;
   status?: string;
   gender?: string;

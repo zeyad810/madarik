@@ -2,6 +2,8 @@
 
 import React, { ReactNode } from "react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { AccessDeniedFallback } from "./AccessDeniedFallback";
+import { hasRoleAccess } from "@/lib/roles";
 
 interface RoleGuardProps {
   allowedRoles: string[];
@@ -11,34 +13,28 @@ interface RoleGuardProps {
 }
 
 /**
- * RoleGuard restricts rendering to users with specific roles (e.g., 'parent', 'admin').
+ * RoleGuard restricts rendering to users with specific roles (e.g., 'parent', 'free', 'free_customer').
  * The user's role is sourced strictly from the authenticated session, never from the URL.
  */
 export function RoleGuard({
   allowedRoles,
-  fallback = null,
+  fallback = <AccessDeniedFallback />,
   loadingFallback = null,
   children,
 }: RoleGuardProps) {
-  const { userRole, isLoading, isAuthenticated } = useActiveAccount();
+  const { user_type, userRole, isLoading, isAuthenticated } = useActiveAccount();
 
   if (isLoading) {
     return <>{loadingFallback}</>;
   }
 
-  if (!isAuthenticated || !userRole) {
+  const currentRole = user_type || userRole;
+
+  if (!isAuthenticated || !currentRole) {
     return <>{fallback}</>;
   }
 
-  const normalizedRole = userRole.toLowerCase();
-  const normalizedAllowed = allowedRoles.map((r) => r.toLowerCase());
-
-  const hasAccess =
-    normalizedAllowed.includes(normalizedRole) ||
-    (normalizedRole === "parent" &&
-      (normalizedAllowed.includes("ولي امر") || normalizedAllowed.includes("ولي الأمر"))) ||
-    (normalizedRole === "ولي امر" && normalizedAllowed.includes("parent")) ||
-    (normalizedRole === "ولي الأمر" && normalizedAllowed.includes("parent"));
+  const hasAccess = hasRoleAccess(currentRole, allowedRoles);
 
   if (!hasAccess) {
     return <>{fallback}</>;
@@ -48,3 +44,4 @@ export function RoleGuard({
 }
 
 export default RoleGuard;
+

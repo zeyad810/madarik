@@ -1,8 +1,6 @@
 "use client";
 
 import React, { use } from "react";
-import Header from "@/components/layout/header/Header";
-import Footer from "@/components/layout/footer/Footer";
 import {
   StoryDetailHero,
   SuggestedStories,
@@ -28,11 +26,8 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
   const allStories = allStoriesResponse?.data ?? [];
 
   return (
-    <main className="w-full min-h-screen flex flex-col bg-slate-50/50">
-      {/* 1. Global Header */}
-      <Header />
-
-      {/* 2. Page Content */}
+    <div className="w-full min-h-screen flex flex-col bg-slate-50/50">
+      {/* Page Content */}
       <div className="container mx-auto px-4 sm:px-6 md:px-8 py-8 flex-1 flex flex-col">
         {/* Loading State */}
         {isLoading && (
@@ -77,9 +72,6 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
           </>
         )}
       </div>
-
-      {/* 3. Global Footer */}
-      <Footer />
-    </main>
+    </div>
   );
 }

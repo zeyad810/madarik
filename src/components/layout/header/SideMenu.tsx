@@ -9,6 +9,7 @@ import { useSession, signOut } from "next-auth/react";
 import { X, LogOut } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { RoleGuard } from "@/components/guards";
 
 // Smooth spring physics — feels like a native drawer
 const DRAWER_SPRING = { type: "spring", stiffness: 220, damping: 30, mass: 1, delay: 0.05 } as const;
@@ -105,7 +106,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 {SIDE_MENU_ITEMS.map((item, i) => {
                   const isActive = isItemActive(item.href);
                   const itemDelay = i * 0.045 + 0.05;
-                  return (
+                  const itemContent = (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, x: 16 }}
@@ -128,6 +129,20 @@ const SideMenu: React.FC<SideMenuProps> = ({
                       </Link>
                     </motion.div>
                   );
+
+                  if (item.allowedRoles && item.allowedRoles.length > 0) {
+                    return (
+                      <RoleGuard
+                        key={item.id}
+                        allowedRoles={item.allowedRoles}
+                        fallback={null}
+                      >
+                        {itemContent}
+                      </RoleGuard>
+                    );
+                  }
+
+                  return itemContent;
                 })}
               </nav>
             </div>
