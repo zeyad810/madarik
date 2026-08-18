@@ -4,9 +4,9 @@ import React, { use } from "react";
 import {
   StoryDetailHero,
   SuggestedStories,
-  StoryBreadcrumb,
   StoryEmptyState,
 } from "@/features/story";
+import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 import { useStoryById } from "@/features/story/hooks/useStoryById";
 import { useFreeStories } from "@/features/story/hooks/useFreeStories";
 import { Loader2 } from "lucide-react";
@@ -51,13 +51,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
           <>
             {/* Breadcrumb */}
             <div className="mb-6">
-              <StoryBreadcrumb
-                items={[
-                  { label: "الرئيسية", href: "/" },
-                  { label: "القصص", href: "/stories" },
-                  { label: story.title },
-                ]}
-              />
+              <AutoBreadcrumbs dynamicLabels={{ [story.id]: story.title }} />
             </div>
 
             {/* Top Banner & Overview Card */}
