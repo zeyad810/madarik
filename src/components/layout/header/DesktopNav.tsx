@@ -3,27 +3,41 @@
 import React from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { DESKTOP_NAV_LINKS } from "./constants";
 import UserDropdown from "./UserDropdown";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 const DesktopNav: React.FC = () => {
+  const pathname = usePathname();
   const { status } = useSession();
   const { createAccountHref } = useActiveAccount();
+
+  const isLinkActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   return (
     <>
       {/* Center Navigation Links */}
       <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-        {DESKTOP_NAV_LINKS.map((link) => (
-          <Link
-            key={link.id}
-            href={createAccountHref(link.href)}
-            className="text-white hover:text-white/80 font-semibold text-sm xl:text-base transition-colors relative py-1"
-          >
-            {link.label}
-          </Link>
-        ))}
+        {DESKTOP_NAV_LINKS.map((link) => {
+          const isActive = isLinkActive(link.href);
+          return (
+            <Link
+              key={link.id}
+              href={createAccountHref(link.href)}
+              className={`font-semibold text-sm xl:text-base transition-all relative py-1 ${
+                isActive
+                  ? "text-white font-bold underline underline-offset-8 decoration-2"
+                  : "text-white/80 hover:text-white"
+              }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Auth Action Buttons (Desktop) */}

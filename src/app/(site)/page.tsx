@@ -19,18 +19,18 @@ export default function HomePage() {
   return (
     <div className="w-full flex flex-col">
       <Hero />
-      <MadVideo />
-      <OurJourney />
       <Features />
       <HowItWorks />
-      <ChildWin />
+      <MadVideo />
+      <InstantReport />
       <Skills />
+      <ChildWin />
+      <ProductSection />
+      <WhyTrustUs />
+      <OurJourney />
+      <Pricing />
       <CustomerReviews imageSrc={sectionHeading.src} />
       <Fqa />
-      <WhyTrustUs />
-      <InstantReport />
-      <Pricing />
-      <ProductSection />
       <ContactUs />
     </div>
   );
