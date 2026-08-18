@@ -9,6 +9,7 @@ interface ProductCardCoverProps {
   imageAlt: string;
   isFree?: boolean;
   ageRange?: string;
+  levelTag?: string;
 }
 
 export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
@@ -16,6 +17,7 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
   imageAlt,
   isFree = true,
   ageRange,
+  levelTag,
 }) => {
   // If backend returns a dead/offline placeholder URL, fallback gracefully
   const isBrokenPlaceholder =
@@ -44,7 +46,7 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
       {/* Free Rosette Ribbon Badge (Top Left) */}
       {isFree && <FreeRosetteBadge />}
 
-      {/* Age Range Pill Badge (Top Right) */}
+      {/* Age Range Badge (Top Right) - e.g. "5-9 سنة" */}
       {ageRange && (
         <div className="absolute top-3.5 right-3.5 z-10 bg-white/95 backdrop-blur-xs text-[#6D28D9] font-bold text-xs px-3.5 py-1.5 rounded-full shadow-sm border border-purple-100/60 select-none">
           {ageRange}

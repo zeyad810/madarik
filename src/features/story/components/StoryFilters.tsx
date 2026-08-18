@@ -26,7 +26,7 @@ export const StoryFilters: React.FC<StoryFiltersProps> = ({
 }) => {
   return (
     <div dir="rtl" className="w-full flex flex-col items-start gap-4 mb-8">
-      {/* Primary Filter Tabs Aligned to Right (in RTL) */}
+      {/* Primary Filter Tabs */}
       <div className="inline-flex items-center bg-[#F4F4F6] p-1.5 rounded-full shadow-inner border border-slate-200/60">
         <button
           type="button"

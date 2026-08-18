@@ -26,7 +26,7 @@ export default function StoriesPage() {
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
   const [visibleCount, setVisibleCount] = useState<number>(INITIAL_VISIBLE_COUNT);
 
-  // Extract unique age categories & levels dynamically from API data
+  // Extract unique age categories dynamically from API data
   const availableAges = useMemo(() => {
     const set = new Set<string>();
     allStories.forEach((s) => {
@@ -37,6 +37,7 @@ export default function StoriesPage() {
     return Array.from(set);
   }, [allStories]);
 
+  // Extract unique levels dynamically from API data
   const availableLevels = useMemo(() => {
     const set = new Set<string>();
     allStories.forEach((s) => {
@@ -88,6 +89,7 @@ export default function StoriesPage() {
   };
 
   // Map Story to ProductCard format
+  // Badge on card cover shows `level` from API (e.g. "الفئة العمرية 5-9")
   const mappedProducts: Product[] = visibleStories.map((story) => {
     const rawImg = story.cover_photo_url || story.thumbnail_url;
     const isBrokenPlaceholder =
@@ -105,11 +107,13 @@ export default function StoriesPage() {
         "رحلة تفاعلية مع كائنات المحيط الملونة لكشف أسرار الشعب المرجانية وتنمية الوعي البيئي بالبحار.",
       imageSrc: safeImageSrc,
       imageAlt: story.title,
+      // ageRange kept for internal use but badge now shows level (see ProductCardCover)
       ageRange:
         story.age_category && story.age_category !== "0-0"
           ? `${story.age_category} سنة`
           : "جميع الأعمار",
       isFree: story.availability === "free" || !story.availability,
+      // levelTag = level from API → shown as badge on card cover
       levelTag: story.level ?? "متقدم",
       storyCodeTag: story.code ?? "Story 000-XXX",
       ctaText: "ابدأ القراءة",

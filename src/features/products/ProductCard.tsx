@@ -51,6 +51,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         imageAlt={imageAlt}
         isFree={isFree}
         ageRange={ageRange}
+        levelTag={levelTag}
       />
 
       {/* 2. Content Body */}

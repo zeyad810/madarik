@@ -133,7 +133,28 @@ export interface BreadcrumbEllipsisProps extends ComponentPropsWithoutRef<"span"
   onClick?: () => void;
 }
 
+/**
+ * Standard item format for breadcrumbs
+ */
+export interface BreadcrumbItemData {
+  label: string;
+  href?: string;
+  icon?: ReactNode;
+  badge?: ReactNode;
+  isLast?: boolean;
+}
+
 export interface AutoBreadcrumbsProps extends Omit<BreadcrumbProps, "children"> {
+  /**
+   * Optional manual items list to render. If provided, overrides dynamic pathname generation.
+   * Allows the same component to be used manually or dynamically.
+   */
+  items?: BreadcrumbItemData[];
+  /**
+   * Dynamic label dictionary to map dynamic route parameters (like IDs, slugs, UUIDs) to real titles.
+   * Example: `{ [story.id]: story.title }`
+   */
+  dynamicLabels?: Record<string, string>;
   /**
    * Custom dictionary mapping path segments to Arabic or custom display titles.
    * Example: `{ courses: "المسارات", profile: "الملف الشخصي" }`
@@ -167,4 +188,10 @@ export interface AutoBreadcrumbsProps extends Omit<BreadcrumbProps, "children"> 
    * Maximum number of items before collapsing into ellipsis.
    */
   maxItems?: number;
+  /**
+   * Optional override for the last/current item text or element.
+   */
+  customLastItem?: string | ReactNode;
 }
+
+export type DynamicBreadcrumbProps = AutoBreadcrumbsProps;

@@ -2,13 +2,9 @@
 
 import { createContext, useContext } from "react";
 import type { BreadcrumbContextValue } from "./types";
+import { DEFAULT_BREADCRUMB_CONTEXT } from "./constants";
 
-export const defaultBreadcrumbContext: BreadcrumbContextValue = {
-  variant: "default",
-  size: "md",
-  separator: "chevron",
-  dir: "auto",
-};
+export const defaultBreadcrumbContext: BreadcrumbContextValue = DEFAULT_BREADCRUMB_CONTEXT;
 
 export const BreadcrumbContext = createContext<BreadcrumbContextValue>(
   defaultBreadcrumbContext

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Story, StoryBlock } from "../types";
-import { StoryBreadcrumb } from "./StoryBreadcrumb";
+import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 
 interface StoryReaderViewProps {
   story: Story;
@@ -75,14 +75,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
     <div dir="rtl" className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6">
       {/* 1. Top Breadcrumb & Back */}
       <div className="mb-6">
-        <StoryBreadcrumb
-          items={[
-            { label: "الرئيسية", href: "/" },
-            { label: "القصص", href: "/stories" },
-            { label: story.title, href: `/stories/${story.id}` },
-            { label: "قراءة القصة" },
-          ]}
-        />
+        <AutoBreadcrumbs dynamicLabels={{ [story.id]: story.title }} />
       </div>
 
       {/* 2. Top Title Bar & Badges */}
