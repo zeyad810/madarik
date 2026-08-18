@@ -2,8 +2,6 @@
 
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import Header from "@/components/layout/header/Header";
-import Footer from "@/components/layout/footer/Footer";
 import ProductCard from "@/features/products/ProductCard";
 import { Product } from "@/features/products/types";
 import {
@@ -120,14 +118,11 @@ export default function StoriesPage() {
   });
 
   return (
-    <main className="w-full min-h-screen flex flex-col bg-slate-50/50">
-      {/* 1. Global Header */}
-      <Header />
-
-      {/* 2. Top Purple Hero Banner */}
+    <div className="w-full min-h-screen flex flex-col bg-slate-50/50">
+      {/* 1. Top Purple Hero Banner */}
       <StoryHeroBanner />
 
-      {/* 3. Main Content Container */}
+      {/* 2. Main Content Container */}
       <div className="container mx-auto px-4 sm:px-6 md:px-8 py-10 flex-1 flex flex-col items-center">
         {/* Filter Tabs & Chips */}
         <StoryFilters
@@ -199,9 +194,6 @@ export default function StoriesPage() {
           </>
         )}
       </div>
-
-      {/* 4. Global Footer */}
-      <Footer />
-    </main>
+    </div>
   );
 }

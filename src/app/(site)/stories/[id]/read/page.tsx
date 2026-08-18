@@ -1,8 +1,6 @@
 "use client";
 
 import React, { use } from "react";
-import Header from "@/components/layout/header/Header";
-import Footer from "@/components/layout/footer/Footer";
 import { StoryReaderView, StoryEmptyState } from "@/features/story";
 import { useStoryById } from "@/features/story/hooks/useStoryById";
 import { Loader2 } from "lucide-react";
@@ -19,11 +17,8 @@ export default function StoryReaderPage({ params }: StoryReaderPageProps) {
   const story = storyResponse?.data;
 
   return (
-    <main className="w-full min-h-screen flex flex-col bg-[#F8FAFC]">
-      {/* 1. Global Header */}
-      <Header />
-
-      {/* 2. Page Content */}
+    <div className="w-full min-h-screen flex flex-col bg-[#F8FAFC]">
+      {/* Page Content */}
       <div className="flex-1 flex flex-col">
         {/* Loading State */}
         {isLoading && (
@@ -47,9 +42,6 @@ export default function StoryReaderPage({ params }: StoryReaderPageProps) {
         {/* Story Reader Component */}
         {!isLoading && story && <StoryReaderView story={story} />}
       </div>
-
-      {/* 3. Global Footer */}
-      <Footer />
-    </main>
+    </div>
   );
 }

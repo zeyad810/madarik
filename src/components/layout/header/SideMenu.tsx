@@ -8,6 +8,7 @@ import { useSession, signOut } from "next-auth/react";
 import { X, LogOut } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { RoleGuard } from "@/components/guards";
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -89,7 +90,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
               <nav className="flex flex-col">
                 {SIDE_MENU_ITEMS.map((item) => {
                   const isActive = activeCategory === item.id;
-                  return (
+                  const itemContent = (
                     <Link
                       key={item.id}
                       href={createAccountHref(item.href)}
@@ -106,6 +107,20 @@ const SideMenu: React.FC<SideMenuProps> = ({
                       <span>{item.label}</span>
                     </Link>
                   );
+
+                  if (item.allowedRoles && item.allowedRoles.length > 0) {
+                    return (
+                      <RoleGuard
+                        key={item.id}
+                        allowedRoles={item.allowedRoles}
+                        fallback={null}
+                      >
+                        {itemContent}
+                      </RoleGuard>
+                    );
+                  }
+
+                  return itemContent;
                 })}
               </nav>
             </div>
