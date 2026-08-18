@@ -10,7 +10,7 @@ import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
 
 export const ChildManagementView: React.FC = () => {
-  const { children: sessionChildren, activeChild, switchAccount } = useActiveAccount();
+  const { children: sessionChildren } = useActiveAccount();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Map session children to ManagedChild format
@@ -40,29 +40,6 @@ export const ChildManagementView: React.FC = () => {
     }));
   }, [mappedSessionChildren, addedChildren, statusOverrides]);
 
-  // Selected child for active preview notice
-  const [selectedChildId, setSelectedChildId] = useState<string>(
-    activeChild?.id || ""
-  );
-
-  // Synchronize selectedChildId with activeChild or first available child
-  React.useEffect(() => {
-    if (activeChild?.id) {
-      setSelectedChildId(activeChild.id);
-    } else if (displayChildren.length > 0 && !displayChildren.some((c) => c.id === selectedChildId)) {
-      setSelectedChildId(displayChildren[0].id);
-    }
-  }, [activeChild?.id, displayChildren, selectedChildId]);
-
-  const selectedChild =
-    displayChildren.find((c) => c.id === selectedChildId) ||
-    (displayChildren.length > 0 ? displayChildren[0] : null);
-
-  const handleSelectChild = (child: ManagedChild) => {
-    setSelectedChildId(child.id);
-    switchAccount(child.id);
-  };
-
   const handleToggleStatus = (child: ManagedChild) => {
     setStatusOverrides((prev) => ({
       ...prev,
@@ -76,12 +53,10 @@ export const ChildManagementView: React.FC = () => {
       id: `child-${Date.now()}`,
     };
     setAddedChildren((prev) => [newChild, ...prev]);
-    setSelectedChildId(newChild.id);
-    switchAccount(newChild.id);
   };
 
   return (
-    <div className="w-full min-h-screen bg-white section-spacing" dir="rtl">
+    <div className="w-full min-h-screen bg-white section-spacing pb-0!" dir="rtl">
       <div className="container mx-auto ">
         {/* =========================================================================
             1. BREADCRUMBS NAVIGATION
@@ -129,31 +104,15 @@ export const ChildManagementView: React.FC = () => {
         </div>
 
         {/* =========================================================================
-            3. CHILDREN SLIDER SECTION & PREVIEW NOTICE OR EMPTY STATE
+            3. CHILDREN SLIDER SECTION OR EMPTY STATE
            ========================================================================= */}
         {displayChildren.length > 0 ? (
-          <>
-            <div className="pt-4">
-              <ChildSlider
-                childrenList={displayChildren}
-                selectedChildId={selectedChildId}
-                onSelectChild={handleSelectChild}
-                onToggleStatus={handleToggleStatus}
-                onEditChild={(child) => {
-                  setSelectedChildId(child.id);
-                }}
-              />
-            </div>
-
-            {/* Current Active Preview Notice */}
-            {selectedChild && (
-              <div className="text-center pt-2">
-                <p className="text-mad-main font-bold text-sm sm:text-base transition-all">
-                  انت الان تري جميع بيانات {selectedChild.name}
-                </p>
-              </div>
-            )}
-          </>
+          <div className="pt-4">
+            <ChildSlider
+              childrenList={displayChildren}
+              onToggleStatus={handleToggleStatus}
+            />
+          </div>
         ) : (
           <div className="py-16 text-center space-y-4 border-2 border-dashed border-gray-200 rounded-3xl p-8 bg-gray-50/50">
             <p className="text-gray-500 font-medium text-base sm:text-lg">
