@@ -46,8 +46,10 @@ export const SuggestedStories: React.FC<SuggestedStoriesProps> = ({
         story.age_category && story.age_category !== "0-0"
           ? `${story.age_category} سنة`
           : "جميع الأعمار",
-      isFree: story.availability === "free" || !story.availability,
-      levelTag: story.level ?? undefined,
+      levelTag:
+        (typeof story.level === "object" && story.level
+          ? story.level.name
+          : story.level) ?? undefined,
       storyCodeTag: story.code,
       ctaText: "ابدأ القراءة",
       ctaLink: `/stories/${story.id}`,

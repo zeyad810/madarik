@@ -53,7 +53,7 @@ const BrandSection: React.FC<BrandSectionProps> = ({
           alt="مدارك"
           width={160}
           height={60}
-          style={{ height: "auto" }}
+          style={{ width: "auto", height: "auto" }}
           className="object-contain"
           priority
         />

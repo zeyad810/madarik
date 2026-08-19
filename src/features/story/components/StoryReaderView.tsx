@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   CheckCircle2,
   Download,
@@ -10,8 +11,9 @@ import {
   BookOpen,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Story, StoryBlock } from "../types";
+import { Story, StoryBlock, getStoryQuizId } from "../types";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
+
 
 interface StoryReaderViewProps {
   story: Story;
@@ -104,14 +106,15 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
 
         {/* Left Action Buttons */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => alert("سيتم إتاحة الاختبار قريباً!")}
-            className="py-2.5 px-5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>حل الاختبار</span>
-          </button>
+          {getStoryQuizId(story) && (
+            <Link
+              href={`/stories/${story.id}/quiz`}
+              className="py-2.5 px-5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>حل الاختبار</span>
+            </Link>
+          )}
 
           {story.pdf_url ? (
             <a
@@ -204,14 +207,37 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="bg-[#FAF5FF] border-2 border-[#E9D5FF] rounded-3xl p-6 sm:p-8 mt-6 text-right"
+                className="flex flex-col gap-4"
               >
-                <h3 className="text-lg sm:text-xl font-black text-[#7939E3] mb-3">
-                  الدرس المستفاد
-                </h3>
-                <p className="text-sm sm:text-base text-[#475569] font-bold leading-relaxed">
-                  {lessonLearnedText}
-                </p>
+                <div className="bg-[#FAF5FF] border-2 border-[#E9D5FF] rounded-3xl p-6 sm:p-8 text-right">
+                  <h3 className="text-lg sm:text-xl font-black text-[#7939E3] mb-3">
+                    الدرس المستفاد
+                  </h3>
+                  <p className="text-sm sm:text-base text-[#475569] font-bold leading-relaxed">
+                    {lessonLearnedText}
+                  </p>
+                </div>
+
+                {/* Start Quiz CTA */}
+                {getStoryQuizId(story) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.15 }}
+                    className="bg-[#6D28D9] rounded-3xl p-6 sm:p-8 text-center"
+                  >
+                    <p className="text-white/80 text-sm font-bold mb-3">
+                      هل فهمت القصة جيداً؟ اختبر نفسك الآن!
+                    </p>
+                    <Link
+                      href={`/stories/${story.id}/quiz`}
+                      className="inline-flex items-center gap-2 py-3 px-8 rounded-full bg-white text-[#6D28D9] font-black text-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 active:scale-95"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      ابدأ الاختبار
+                    </Link>
+                  </motion.div>
+                )}
               </motion.div>
             )}
           </motion.div>

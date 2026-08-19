@@ -12,7 +12,7 @@ import {
   Target,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Story } from "../types";
+import { Story, getStoryQuizId } from "../types";
 import { FreeRosetteBadge } from "@/features/products/components/FreeRosetteBadge";
 
 interface StoryDetailHeroProps {
@@ -116,7 +116,9 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
                   المؤشر
                 </span>
                 <span className="block text-xs font-extrabold text-mad-text-primary truncate">
-                  {story.indicator || "يحدد الفكرة الرئيسية"}
+                  {typeof story.indicator === "object" && story.indicator
+                    ? story.indicator.name
+                    : story.indicator || "يحدد الفكرة الرئيسية"}
                 </span>
               </div>
             </div>
@@ -131,7 +133,9 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
                   المستوى
                 </span>
                 <span className="block text-xs font-extrabold text-mad-text-primary truncate">
-                  {story.level || "الأول"}
+                  {typeof story.level === "object" && story.level
+                    ? story.level.name
+                    : story.level || "الأول"}
                 </span>
               </div>
             </div>
@@ -146,7 +150,9 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
                   الناتج
                 </span>
                 <span className="block text-xs font-extrabold text-mad-text-primary truncate">
-                  {story.outcome || "توثيق مهارات"}
+                  {typeof story.outcome === "object" && story.outcome
+                    ? story.outcome.name
+                    : story.outcome || "توثيق مهارات"}
                 </span>
               </div>
             </div>
@@ -173,15 +179,16 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
               <span>ابدأ رحلة القراءة الآن</span>
             </Link>
 
-            {/* 2. حل الاختبار (Solid Violet Button) */}
-            <button
-              type="button"
-              onClick={() => alert("سيتم إتاحة الاختبار قريباً!")}
-              className="py-2.5 sm:py-3 px-6 rounded-full bg-[#6D28D9] hover:bg-[#5B20B5] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer select-none active:scale-95"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>حل الاختبار</span>
-            </button>
+            {/* 2. حل الاختبار (Solid Violet Button — only when quiz exists) */}
+            {getStoryQuizId(story) && (
+              <Link
+                href={`/stories/${story.id}/quiz`}
+                className="py-2.5 sm:py-3 px-6 rounded-full bg-[#6D28D9] hover:bg-[#5B20B5] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer select-none active:scale-95"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>حل الاختبار</span>
+              </Link>
+            )}
 
             {/* 3. تحميل PDF (Solid Yellow/Amber Button) */}
             {story.pdf_url ? (
