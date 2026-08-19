@@ -229,13 +229,13 @@ export const AddChildView: React.FC = () => {
                     type="date"
                     {...register("birthDate")}
                     disabled={isSubmitting}
-                    className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium cursor-pointer text-right ${
+                    className={`date-input w-full border rounded-2xl px-4 py-3.5 pr-11 bg-white text-xs sm:text-sm text-gray-900 outline-none transition-all font-medium cursor-pointer ${
                       errors.birthDate
                         ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
                         : "border-gray-200 focus:border-mad-main focus:ring-2 focus:ring-mad-main/10"
                     }`}
                   />
-                  <Calendar className="size-4.5 text-gray-400 absolute left-4 pointer-events-none stroke-[2]" />
+                  <Calendar className="size-4.5 text-gray-400 absolute right-4 pointer-events-none stroke-[2]" />
                 </div>
                 {errors.birthDate && (
                   <p className="text-xs text-red-500 font-semibold mt-1 text-right">
