@@ -16,6 +16,7 @@ export const AddChildView: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [isAccountActive, setIsAccountActive] = useState<boolean>(true);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -122,8 +123,8 @@ export const AddChildView: React.FC = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8" noValidate>
-            {/* Avatar Upload Section */}
-            <div className="flex flex-col items-center justify-center">
+            {/* Avatar Upload Section (Aligned Right) */}
+            <div className="flex flex-col items-start justify-start text-right">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -155,9 +156,29 @@ export const AddChildView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="text-xs sm:text-sm text-gray-500 font-medium mt-2 hover:text-mad-main transition-colors cursor-pointer"
+                className="text-xs sm:text-sm text-gray-500 font-medium mt-2 hover:text-mad-main transition-colors cursor-pointer pr-4"
               >
                 أضف صورة
+              </button>
+            </div>
+
+            {/* Account Status Toggle (Aligned Right) */}
+            <div className="flex items-center justify-start gap-4 pt-2">
+              <span className="text-sm sm:text-base font-bold text-gray-800">
+                حالة حساب الطفل
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsAccountActive(!isAccountActive)}
+                className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  isAccountActive ? "bg-green-600" : "bg-gray-300"
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    isAccountActive ? "-translate-x-5" : "translate-x-0"
+                  }`}
+                />
               </button>
             </div>
 
@@ -174,7 +195,7 @@ export const AddChildView: React.FC = () => {
               <div className="space-y-2">
                 <label
                   htmlFor="childName"
-                  className="block text-xs sm:text-sm font-bold text-gray-800"
+                  className="block text-xs sm:text-sm font-bold text-gray-800 text-right"
                 >
                   اسم الطفل <span className="text-red-500">*</span>
                 </label>
@@ -185,14 +206,14 @@ export const AddChildView: React.FC = () => {
                   {...register("name")}
                   disabled={isSubmitting}
                   placeholder="اكتب اسم طفلك هنا (الحد الأقصى 50 حرفاً)"
-                  className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium ${
+                  className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium text-right ${
                     errors.name
                       ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
                       : "border-gray-200 focus:border-mad-main focus:ring-2 focus:ring-mad-main/10"
                   }`}
                 />
                 {errors.name && (
-                  <p className="text-xs text-red-500 font-semibold mt-1">
+                  <p className="text-xs text-red-500 font-semibold mt-1 text-right">
                     {errors.name.message}
                   </p>
                 )}
@@ -202,7 +223,7 @@ export const AddChildView: React.FC = () => {
               <div className="space-y-2">
                 <label
                   htmlFor="childBirthDate"
-                  className="block text-xs sm:text-sm font-bold text-gray-800"
+                  className="block text-xs sm:text-sm font-bold text-gray-800 text-right"
                 >
                   تاريخ الميلاد <span className="text-red-500">*</span>
                 </label>
@@ -212,7 +233,7 @@ export const AddChildView: React.FC = () => {
                     type="date"
                     {...register("birthDate")}
                     disabled={isSubmitting}
-                    className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium cursor-pointer ${
+                    className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium cursor-pointer text-right ${
                       errors.birthDate
                         ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
                         : "border-gray-200 focus:border-mad-main focus:ring-2 focus:ring-mad-main/10"
@@ -221,7 +242,7 @@ export const AddChildView: React.FC = () => {
                   <Calendar className="size-4.5 text-gray-400 absolute left-4 pointer-events-none stroke-[2]" />
                 </div>
                 {errors.birthDate && (
-                  <p className="text-xs text-red-500 font-semibold mt-1">
+                  <p className="text-xs text-red-500 font-semibold mt-1 text-right">
                     {errors.birthDate.message}
                   </p>
                 )}
@@ -231,7 +252,7 @@ export const AddChildView: React.FC = () => {
               <div className="space-y-2">
                 <label
                   htmlFor="calculatedAge"
-                  className="block text-xs sm:text-sm font-bold text-gray-800"
+                  className="block text-xs sm:text-sm font-bold text-gray-800 text-right"
                 >
                   العمر (تحدد تلقائياً)
                 </label>
@@ -241,13 +262,13 @@ export const AddChildView: React.FC = () => {
                   readOnly
                   value={calculatedAge}
                   placeholder="تحدد تلقائياً بناءً على تاريخ الميلاد"
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3.5 bg-gray-50/70 text-xs sm:text-sm text-gray-700 outline-none font-medium cursor-not-allowed"
+                  className="w-full border border-gray-200 rounded-2xl px-4 py-3.5 bg-gray-50/70 text-xs sm:text-sm text-gray-700 outline-none font-medium cursor-not-allowed text-right"
                 />
               </div>
 
               {/* Left Column: Gender */}
               <div className="space-y-2">
-                <label className="block text-xs sm:text-sm font-bold text-gray-800">
+                <label className="block text-xs sm:text-sm font-bold text-gray-800 text-right">
                   الجنس <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center gap-6 pt-2">
@@ -280,14 +301,14 @@ export const AddChildView: React.FC = () => {
                   </label>
                 </div>
                 {errors.gender && (
-                  <p className="text-xs text-red-500 font-semibold mt-1">
+                  <p className="text-xs text-red-500 font-semibold mt-1 text-right">
                     {errors.gender.message}
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Terms & Conditions Checkbox */}
+            {/* Terms & Conditions Checkbox (Aligned Right) */}
             <div className="pt-2">
               <label className="flex items-start sm:items-center gap-2.5 cursor-pointer select-none">
                 <input
@@ -296,27 +317,19 @@ export const AddChildView: React.FC = () => {
                   disabled={isSubmitting}
                   className="size-4.5 mt-0.5 sm:mt-0 rounded-md accent-mad-main cursor-pointer"
                 />
-                <span className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed">
+                <span className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed text-right">
                   أوافق على شروط الاشتراك وسياسة الاستخدام المخصصة للأطفال في منصة مدارك القراءة.
                 </span>
               </label>
               {errors.agreedToTerms && (
-                <p className="text-xs text-red-500 font-semibold mt-1">
+                <p className="text-xs text-red-500 font-semibold mt-1 text-right">
                   {errors.agreedToTerms.message}
                 </p>
               )}
             </div>
 
-            {/* Action Buttons (Bottom Left in RTL) */}
-            <div className="flex items-center justify-end gap-4 pt-4">
-              {/* Cancel Button */}
-              <Link
-                href="/parents/childMangement"
-                className="px-8 py-3 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold text-sm sm:text-base transition-all active:scale-95 text-center min-w-[120px]"
-              >
-                إلغاء
-              </Link>
-
+            {/* Action Buttons (Aligned Right in RTL) */}
+            <div className="flex items-center justify-start gap-4 pt-4">
               {/* Submit Button */}
               <button
                 type="submit"
@@ -329,9 +342,17 @@ export const AddChildView: React.FC = () => {
                     <span>جاري الحفظ...</span>
                   </>
                 ) : (
-                  "حفظ البيانات"
+                  "حفظ التغيرات"
                 )}
               </button>
+
+              {/* Cancel Button */}
+              <Link
+                href="/parents/childMangement"
+                className="px-8 py-3 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold text-sm sm:text-base transition-all active:scale-95 text-center min-w-[120px]"
+              >
+                إلغاء
+              </Link>
             </div>
           </form>
         </div>

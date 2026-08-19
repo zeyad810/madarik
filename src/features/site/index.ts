@@ -14,6 +14,7 @@ export { default as ProductSection } from "./components/ProductSection";
 export { default as ContactUs } from "./components/ContactUs";
 export { default as MadVideo } from "./components/MadVideo";
 export { default as OurJourney } from "./components/OurJourney";
+export { default as Bannerslider } from "./components/Bannerslider";
 
 // Hooks
 export * from "./hooks/usePublicLanding";
