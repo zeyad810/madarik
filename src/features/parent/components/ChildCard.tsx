@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { SquarePen } from "lucide-react";
 import { ManagedChild } from "../types";
+import { Toggle } from "@/components/ui";
+
 
 interface ChildCardProps {
   child: ManagedChild;
@@ -74,25 +76,11 @@ export const ChildCard: React.FC<ChildCardProps> = ({
             {isActive ? "مفعل" : "معطل"}
           </span>
 
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isActive}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleStatus?.(child);
-            }}
-            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              isActive ? "bg-[#22C55E]" : "bg-gray-300"
-            }`}
-          >
-            <span
-              aria-hidden="true"
-              className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                isActive ? "-translate-x-5" : "translate-x-0"
-              }`}
-            />
-          </button>
+          <Toggle
+            checked={isActive}
+            onChange={() => onToggleStatus?.(child)}
+            ariaLabel="حالة الحساب"
+          />
         </div>
       </div>
 

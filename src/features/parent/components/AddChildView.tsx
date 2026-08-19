@@ -8,8 +8,10 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User, Camera, Calendar, Loader2 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { Toggle } from "@/components/ui";
 import { calculateAgeInArabic } from "@/lib/utils";
 import { addChildSchema, type AddChildFormData } from "../validation";
+
 
 export const AddChildView: React.FC = () => {
   const router = useRouter();
@@ -167,19 +169,13 @@ export const AddChildView: React.FC = () => {
               <span className="text-sm sm:text-base font-bold text-gray-800">
                 حالة حساب الطفل
               </span>
-              <button
-                type="button"
-                onClick={() => setIsAccountActive(!isAccountActive)}
-                className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  isAccountActive ? "bg-green-600" : "bg-gray-300"
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                    isAccountActive ? "-translate-x-5" : "translate-x-0"
-                  }`}
-                />
-              </button>
+              <Toggle
+                checked={isAccountActive}
+                onChange={setIsAccountActive}
+                size="lg"
+                activeColor="bg-green-600"
+                ariaLabel="حالة حساب الطفل"
+              />
             </div>
 
             {/* Top-level Server Error Message if any */}
