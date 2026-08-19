@@ -503,18 +503,6 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
           </aside>
         </div>
       </main>
-
-      {/* ─────────────────── BOTTOM DECORATIVE WAVE ─────────────────── */}
-      <div className="w-full relative mt-8 pointer-events-none overflow-hidden leading-[0]">
-        <Image
-          src="/iamges/FooterBg.png"
-          alt=""
-          width={1440}
-          height={180}
-          style={{ width: "100%", height: "auto" }}
-          className="w-full object-cover opacity-90"
-        />
-      </div>
     </div>
   );
 };
