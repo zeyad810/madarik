@@ -70,3 +70,18 @@ export function formatHistoryDate(dateStr: string): string {
     return dateStr;
   }
 }
+
+/**
+ * Returns current timestamp in ms. Isolated in utility module to satisfy React Compiler purity rules.
+ */
+export function getCurrentTimestamp(): number {
+  return Date.now();
+}
+
+/**
+ * Computes elapsed seconds from a start timestamp.
+ */
+export function calculateElapsedSeconds(startMs: number | null): number {
+  if (!startMs) return 0;
+  return Math.max(1, Math.round((Date.now() - startMs) / 1000));
+}

@@ -6,7 +6,7 @@
 // submission state. Timer is delegated to QuizTimer (uses Zustand persist).
 // ────────────────────────────────────────────────────────────────────────────
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,7 +23,11 @@ import { QuizProgress } from "./QuizProgress";
 import { QuizQuestion } from "./QuizQuestion";
 import { QuizResult } from "./QuizResult";
 import { QuizHistory } from "./QuizHistory";
-import { roleHasHistory } from "../utils";
+import {
+  roleHasHistory,
+  getCurrentTimestamp,
+  calculateElapsedSeconds,
+} from "../utils";
 import type {
   SelectedAnswersMap,
   CheckedAnswersMap,
@@ -54,7 +58,14 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
   const [validationError, setValidationError] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const isSubmittingRef = useRef(false); // prevents double-submit
-  const startTimeRef = useRef<number>(Date.now()); // tracks elapsed time
+  const startTimeRef = useRef<number | null>(null); // tracks elapsed time initialized in effect
+
+  // Initialize start time on mount
+  useEffect(() => {
+    if (startTimeRef.current === null) {
+      startTimeRef.current = getCurrentTimestamp();
+    }
+  }, []);
 
   // ── Timer store ────────────────────────────────────────────────────────────
   const { clearTimer } = useQuizTimerStore();
@@ -104,10 +115,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
         ? (response as any).data
         : response;
 
-      const elapsedSeconds = Math.max(
-        1,
-        Math.round((Date.now() - startTimeRef.current) / 1000)
-      );
+      const elapsedSeconds = calculateElapsedSeconds(startTimeRef.current);
 
       setQuizResult({
         ...resultData,
@@ -221,7 +229,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
     setQuizResult(null);
     setValidationError(null);
     isSubmittingRef.current = false;
-    startTimeRef.current = Date.now();
+    startTimeRef.current = getCurrentTimestamp();
     clearTimer();
   };
 
