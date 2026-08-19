@@ -6,6 +6,21 @@ import { handleResponse } from "@/services/api";
 
 export const AUTH_TOKEN_KEY = "auth_token";
 
+export function getStoredAuthToken(session?: any): string | null {
+  if (session?.accessToken) return session.accessToken;
+  if (session?.token) return session.token;
+  if (session?.user?.accessToken) return session.user.accessToken;
+  if (session?.user?.token) return session.user.token;
+  if (typeof window !== "undefined") {
+    const local =
+      localStorage.getItem(AUTH_TOKEN_KEY) ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken");
+    if (local) return local;
+  }
+  return null;
+}
+
 const API_BASE_URL =
   process.env.API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||

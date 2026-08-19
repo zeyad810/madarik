@@ -9,6 +9,7 @@ import {
   StoryFilters,
   StoryEmptyState,
   StoryFilterType,
+  Story,
 } from "@/features/story";
 import { useFreeStories } from "@/features/story/hooks/useFreeStories";
 import { Loader2 } from "lucide-react";
@@ -18,7 +19,13 @@ const LOAD_MORE_STEP = 4;
 
 export default function StoriesPage() {
   const { data: storiesResponse, isLoading, isError } = useFreeStories();
-  const allStories = storiesResponse?.data ?? [];
+  const allStories = useMemo<Story[]>(() => {
+    if (!storiesResponse) return [];
+    if (Array.isArray(storiesResponse.data)) return storiesResponse.data;
+    if (Array.isArray((storiesResponse as any)?.data?.data))
+      return (storiesResponse as any).data.data;
+    return [];
+  }, [storiesResponse]);
 
   // Filter States
   const [activeTab, setActiveTab] = useState<StoryFilterType>("all");
@@ -41,8 +48,10 @@ export default function StoriesPage() {
   const availableLevels = useMemo(() => {
     const set = new Set<string>();
     allStories.forEach((s) => {
-      if (s.level) {
-        set.add(s.level);
+      const levelName =
+        typeof s.level === "object" && s.level ? s.level.name : s.level;
+      if (levelName) {
+        set.add(levelName);
       }
     });
     return Array.from(set);
@@ -64,7 +73,11 @@ export default function StoriesPage() {
         return storyAge === selectedAge;
       }
       if (activeTab === "level" && selectedLevel !== "all") {
-        return story.level === selectedLevel;
+        const levelName =
+          typeof story.level === "object" && story.level
+            ? story.level.name
+            : story.level;
+        return levelName === selectedLevel;
       }
       return true;
     });
@@ -98,6 +111,11 @@ export default function StoriesPage() {
       ? "/assets/sea_story.png"
       : rawImg;
 
+    const levelStr =
+      typeof story.level === "object" && story.level
+        ? story.level.name
+        : story.level ?? "متقدم";
+
     return {
       id: story.id,
       title: story.title,
@@ -114,12 +132,13 @@ export default function StoriesPage() {
           : "جميع الأعمار",
       isFree: story.availability === "free" || !story.availability,
       // levelTag = level from API → shown as badge on card cover
-      levelTag: story.level ?? "متقدم",
+      levelTag: levelStr,
       storyCodeTag: story.code ?? "Story 000-XXX",
       ctaText: "ابدأ القراءة",
       ctaLink: `/stories/${story.id}`,
     };
   });
+
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-slate-50/50">

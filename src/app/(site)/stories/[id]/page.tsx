@@ -23,7 +23,11 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
   const { data: allStoriesResponse } = useFreeStories();
 
   const story = storyResponse?.data;
-  const allStories = allStoriesResponse?.data ?? [];
+  const allStories = Array.isArray(allStoriesResponse?.data)
+    ? allStoriesResponse.data
+    : Array.isArray((allStoriesResponse as any)?.data?.data)
+    ? (allStoriesResponse as any).data.data
+    : [];
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-slate-50/50">

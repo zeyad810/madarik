@@ -23,8 +23,11 @@ export function useActiveAccount() {
   const children: Child[] = useMemo(() => user?.children || [], [user?.children]);
 
   // Extract base parent/account role from session
-  const rawUserType = session?.user_type || (user as unknown as Record<string, unknown>)?.user_type;
-  const sessionUserType = rawUserType ? String(rawUserType).toLowerCase() : "parent";
+  const rawUserType =
+    session?.user_type ||
+    (user as unknown as Record<string, unknown>)?.user_type ||
+    (user as unknown as Record<string, unknown>)?.role;
+  const sessionUserType = rawUserType ? String(rawUserType).toLowerCase() : "visitor";
   const isParentRole =
     sessionUserType === "parent" ||
     sessionUserType === "ولي امر" ||
