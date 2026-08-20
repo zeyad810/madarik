@@ -1,6 +1,11 @@
 import { API_BASE_URL, handleResponse } from "@/services/api";
 import { getStoredAuthToken } from "@/lib/auth";
-import { AddChildPayload, AddChildResponse, ParentChildrenResponse } from "./types";
+import {
+  AddChildPayload,
+  AddChildResponse,
+  ParentChildrenResponse,
+  ToggleChildStatusResponse,
+} from "./types";
 
 /**
  * Builds HTTP headers with authorization bearer token.
@@ -75,4 +80,20 @@ export const getParentChildren = async (
   });
 
   return await handleResponse<ParentChildrenResponse>(response);
+};
+
+/**
+ * PATCH /parent/children/{id}/toggle
+ * Toggles the active/deactivated status of a child profile.
+ */
+export const toggleChildStatus = async (
+  childId: string | number,
+  token?: string | null
+): Promise<ToggleChildStatusResponse> => {
+  const response = await fetch(`${API_BASE_URL}/parent/children/${childId}/toggle`, {
+    method: "PATCH",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<ToggleChildStatusResponse>(response);
 };

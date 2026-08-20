@@ -11,12 +11,14 @@ interface ChildCardProps {
   child: ManagedChild;
   onEdit?: (child: ManagedChild) => void;
   onToggleStatus?: (child: ManagedChild) => void;
+  isToggling?: boolean;
 }
 
 export const ChildCard: React.FC<ChildCardProps> = ({
   child,
   onEdit,
   onToggleStatus,
+  isToggling = false,
 }) => {
   const isActive = child.status === "active";
 
@@ -78,6 +80,7 @@ export const ChildCard: React.FC<ChildCardProps> = ({
 
           <Toggle
             checked={isActive}
+            disabled={isToggling}
             onChange={() => onToggleStatus?.(child)}
             ariaLabel="حالة الحساب"
           />

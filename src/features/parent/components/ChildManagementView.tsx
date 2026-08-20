@@ -5,12 +5,14 @@ import { PlusCircle } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChildSlider } from "./ChildSlider";
 import { ManagedChild } from "../types";
+import { useToggleChildStatus } from "../hooks";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
 import Link from "next/link";
 
 export const ChildManagementView: React.FC = () => {
   const { children: sessionChildren } = useActiveAccount();
+  const toggleStatusMutation = useToggleChildStatus();
 
   // Map session children to ManagedChild format
   const mappedSessionChildren: ManagedChild[] = useMemo(() => {
@@ -21,7 +23,7 @@ export const ChildManagementView: React.FC = () => {
       avatar: c.avatar_img || c.avatar || (c.gender === "female" ? "/assets/girl_avatar.png" : "/assets/boy_avatar.png"),
       avatar_img: c.avatar_img || c.avatar,
       gender: (c.gender === "female" ? "female" : "male") as "male" | "female",
-      status: (c.status === "inactive" ? "inactive" : "active") as "active" | "inactive",
+      status: (c.status === "deactivated" || c.status === "inactive" ? "inactive" : "active") as "active" | "inactive",
       birthDate: c.birth_date,
       badgesCount: c.badges_count ?? c.badges ?? 0,
     }));
@@ -37,11 +39,42 @@ export const ChildManagementView: React.FC = () => {
     }));
   }, [mappedSessionChildren, statusOverrides]);
 
+  const togglingChildId = toggleStatusMutation.isPending
+    ? typeof toggleStatusMutation.variables === "string"
+      ? toggleStatusMutation.variables
+      : toggleStatusMutation.variables?.childId
+    : null;
+
   const handleToggleStatus = (child: ManagedChild) => {
+    const nextStatus = child.status === "active" ? "inactive" : "active";
+
+    // Optimistically update status in local UI
     setStatusOverrides((prev) => ({
       ...prev,
-      [child.id]: child.status === "active" ? "inactive" : "active",
+      [child.id]: nextStatus,
     }));
+
+    toggleStatusMutation.mutate(
+      { childId: child.id },
+      {
+        onError: () => {
+          // Revert optimistic update on failure
+          setStatusOverrides((prev) => {
+            const next = { ...prev };
+            delete next[child.id];
+            return next;
+          });
+        },
+        onSuccess: () => {
+          // Clean up override when session updates
+          setStatusOverrides((prev) => {
+            const next = { ...prev };
+            delete next[child.id];
+            return next;
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -100,6 +133,7 @@ export const ChildManagementView: React.FC = () => {
             <ChildSlider
               childrenList={displayChildren}
               onToggleStatus={handleToggleStatus}
+              togglingChildId={togglingChildId}
             />
           </div>
         ) : (
@@ -107,13 +141,13 @@ export const ChildManagementView: React.FC = () => {
             <p className="text-gray-500 font-medium text-base sm:text-lg">
               لا يوجد أطفال مضافين حالياً في حسابك.
             </p>
-            <button
-              type="button"
+            <Link
+              href="/parents/childMangement/addChild"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               <PlusCircle className="size-5 stroke-[2.2]" />
               <span>إضافة طفل الآن</span>
-            </button>
+            </Link>
           </div>
         )}
       </div>

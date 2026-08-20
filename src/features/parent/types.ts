@@ -7,7 +7,7 @@ export interface ManagedChild {
   avatar: string;
   avatar_img?: string | null;
   gender: "male" | "female";
-  status: "active" | "inactive";
+  status: "active" | "inactive" | "deactivated" | string;
   birthDate?: string;
   badgesCount?: number;
 }
@@ -16,7 +16,7 @@ export interface AddChildPayload {
   name: string;
   birth_date: string;
   gender: "male" | "female";
-  status?: "active" | "inactive" | string;
+  status?: "active" | "inactive" | "deactivated" | string;
   avatar?: string | null;
   avatar_img?: string | null;
   avatarFile?: File | null;
@@ -33,5 +33,13 @@ export interface ParentChildrenResponse {
   success?: boolean;
   message?: string;
   data?: Child[];
+}
+
+export interface ToggleChildStatusResponse {
+  success?: boolean;
+  message?: string;
+  data?: Child | { id: string; status: string; [key: string]: unknown };
+  child?: Child;
+  status?: string;
 }
 

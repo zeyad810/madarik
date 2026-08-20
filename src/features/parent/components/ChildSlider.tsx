@@ -15,12 +15,14 @@ interface ChildSliderProps {
   childrenList: ManagedChild[];
   onEditChild?: (child: ManagedChild) => void;
   onToggleStatus?: (child: ManagedChild) => void;
+  togglingChildId?: string | null;
 }
 
 export const ChildSlider: React.FC<ChildSliderProps> = ({
   childrenList,
   onEditChild,
   onToggleStatus,
+  togglingChildId,
 }) => {
   return (
     <div className="w-full py-4 relative select-none" dir="rtl">
@@ -63,6 +65,7 @@ export const ChildSlider: React.FC<ChildSliderProps> = ({
               child={child}
               onEdit={onEditChild}
               onToggleStatus={onToggleStatus}
+              isToggling={togglingChildId === child.id}
             />
           </SwiperSlide>
         ))}
