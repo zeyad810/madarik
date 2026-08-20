@@ -46,9 +46,10 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
   const currentAvatarSrc =
     activeAccount?.type === "child"
-      ? activeAccount.gender === "female"
-        ? "/assets/girl_avatar.png"
-        : "/assets/boy_avatar.png"
+      ? activeAccount.avatar ||
+        (activeAccount.gender === "female"
+          ? "/assets/girl_avatar.png"
+          : "/assets/boy_avatar.png")
       : "/assets/user_avatar.png";
 
   return (

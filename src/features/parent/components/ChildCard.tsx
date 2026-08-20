@@ -4,17 +4,21 @@ import React from "react";
 import Image from "next/image";
 import { SquarePen } from "lucide-react";
 import { ManagedChild } from "../types";
+import { Toggle } from "@/components/ui";
+
 
 interface ChildCardProps {
   child: ManagedChild;
   onEdit?: (child: ManagedChild) => void;
   onToggleStatus?: (child: ManagedChild) => void;
+  isToggling?: boolean;
 }
 
 export const ChildCard: React.FC<ChildCardProps> = ({
   child,
   onEdit,
   onToggleStatus,
+  isToggling = false,
 }) => {
   const isActive = child.status === "active";
 
@@ -74,25 +78,12 @@ export const ChildCard: React.FC<ChildCardProps> = ({
             {isActive ? "مفعل" : "معطل"}
           </span>
 
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isActive}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleStatus?.(child);
-            }}
-            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              isActive ? "bg-[#22C55E]" : "bg-gray-300"
-            }`}
-          >
-            <span
-              aria-hidden="true"
-              className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                isActive ? "-translate-x-5" : "translate-x-0"
-              }`}
-            />
-          </button>
+          <Toggle
+            checked={isActive}
+            disabled={isToggling}
+            onChange={() => onToggleStatus?.(child)}
+            ariaLabel="حالة الحساب"
+          />
         </div>
       </div>
 
@@ -108,6 +99,39 @@ export const ChildCard: React.FC<ChildCardProps> = ({
         <SquarePen className="size-4 stroke-[2.2]" />
         <span>تعديل</span>
       </button>
+    </div>
+  );
+};
+
+export const ChildCardSkeleton: React.FC = () => {
+  return (
+    <div
+      dir="rtl"
+      className="w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between border-2 border-gray-200/70 bg-white shadow-xs animate-pulse box-border select-none min-h-[380px]"
+    >
+      {/* 1. Avatar Skeleton */}
+      <div className="size-24 rounded-full bg-gray-200/80 ring-2 ring-purple-50 mb-3 shrink-0" />
+
+      {/* 2. Name Skeleton */}
+      <div className="h-7 w-32 bg-gray-200/80 rounded-lg my-4" />
+
+      {/* 3. Age Category Badge Skeleton */}
+      <div className="h-6 w-28 bg-purple-50 rounded-full mb-2" />
+
+      {/* 4. Divider */}
+      <div className="w-full border-t border-gray-100 my-6" />
+
+      {/* 5. Account Status Row Skeleton */}
+      <div className="w-full flex items-center justify-between mb-4 px-1">
+        <div className="h-4 w-16 bg-gray-200/70 rounded" />
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-8 bg-gray-200/70 rounded" />
+          <div className="w-11 h-6 bg-gray-200 rounded-full" />
+        </div>
+      </div>
+
+      {/* 6. Edit Action Button Skeleton */}
+      <div className="w-full h-[42px] rounded-full bg-gray-200/80" />
     </div>
   );
 };

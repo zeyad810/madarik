@@ -14,6 +14,7 @@ import InstantReport from "@/features/site/components/InstantReport";
 import ProductSection from "@/features/site/components/ProductSection";
 import ContactUs from "@/features/site/components/ContactUs";
 import MadVideo from "@/features/site/components/MadVideo";
+import { Bannerslider } from "@/features/site";
 
 export default function HomePage() {
   return (
@@ -32,6 +33,7 @@ export default function HomePage() {
       <CustomerReviews imageSrc={sectionHeading.src} />
       <Fqa />
       <ContactUs />
+      <Bannerslider />
     </div>
   );
 }

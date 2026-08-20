@@ -480,6 +480,31 @@
   }
 }
 
+/* =========================================================
+   DATE INPUT — hide native browser calendar icon
+   so custom icon overlay is used instead
+   ========================================================= */
+
+.date-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 2.5rem;
+  height: 100%;
+  cursor: pointer;
+}
+
+.date-input::-webkit-inner-spin-button,
+.date-input::-webkit-clear-button {
+  display: none;
+}
+
+/* Keep date value left-aligned in LTR order inside the RTL page */
+.date-input {
+  direction: ltr;
+  text-align: right;
+}
+
 @media (max-width: 600px) {
   :root {
     --mad-title-1-size: 36px;

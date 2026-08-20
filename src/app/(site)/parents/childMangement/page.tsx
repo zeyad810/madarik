@@ -10,7 +10,10 @@ export const metadata: Metadata = {
 
 export default function ChildManagementPage() {
   return (
-    <RoleGuard allowedRoles={["parent", "free", "free_customer"]}>
+    <RoleGuard
+      allowedRoles={["parent", "free", "free_customer"]}
+      loadingFallback={<ChildManagementView />}
+    >
       <ChildManagementView />
     </RoleGuard>
   );

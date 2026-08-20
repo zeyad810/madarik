@@ -23,6 +23,34 @@ export interface HeroProps {
 }
 
 // ==========================================
+// Banner Slider Types
+// ==========================================
+export interface BannerSlideItem {
+  id: string | number;
+  title: string;
+  description: string;
+  bgImage?: string;
+  mobileBgImage?: string;
+  sideImage?: string;
+  sideImageAlt?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  onButtonClick?: () => void;
+  badge?: string;
+  titleColor?: string;
+}
+
+export interface BannerSliderProps {
+  slides?: BannerSlideItem[];
+  autoplayDelay?: number;
+  showNavigation?: boolean;
+  showPagination?: boolean;
+  className?: string;
+  heightClass?: string;
+  onSlideChange?: (activeIndex: number) => void;
+}
+
+// ==========================================
 // Customer Reviews Types
 // ==========================================
 export interface ReviewItem {

@@ -84,6 +84,11 @@ export function useActiveAccount() {
         name: matchedChild.name,
         status: matchedChild.status || "active",
         gender: matchedChild.gender,
+        avatar_img: matchedChild.avatar_img || matchedChild.avatar,
+        avatar:
+          matchedChild.avatar_img ||
+          matchedChild.avatar ||
+          (matchedChild.gender === "female" ? "/assets/girl_avatar.png" : "/assets/boy_avatar.png"),
         badges,
         isParent: false,
         rawChild: matchedChild,

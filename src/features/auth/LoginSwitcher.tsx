@@ -132,9 +132,11 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
         {children.map((child, index) => {
           const isSelected = selectedId === child.id;
           const avatarSrc =
-            child.gender === "female"
+            child.avatar_img ||
+            child.avatar ||
+            (child.gender === "female"
               ? "/assets/girl_avatar.png"
-              : "/assets/boy_avatar.png";
+              : "/assets/boy_avatar.png");
 
           return (
             <button
