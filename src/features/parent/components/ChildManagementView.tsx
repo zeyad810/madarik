@@ -4,6 +4,7 @@ import React, { useState, useMemo, Suspense } from "react";
 import { PlusCircle } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChildSlider, ChildSliderSkeleton } from "./ChildSlider";
+import { ChildStatusConfirmModal } from "./ChildStatusConfirmModal";
 import { ManagedChild } from "../types";
 import { useToggleChildStatus, useParentChildren } from "../hooks";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
@@ -12,6 +13,9 @@ import Link from "next/link";
 export const ChildManagementView: React.FC = () => {
   const { children: parentChildren, isLoading } = useParentChildren();
   const toggleStatusMutation = useToggleChildStatus();
+
+  // Child currently selected for status toggle confirmation in the modal
+  const [selectedChildForToggle, setSelectedChildForToggle] = useState<ManagedChild | null>(null);
 
   // Map children to ManagedChild format
   const mappedChildren: ManagedChild[] = useMemo(() => {
@@ -44,23 +48,39 @@ export const ChildManagementView: React.FC = () => {
       : toggleStatusMutation.variables?.childId
     : null;
 
-  const handleToggleStatus = (child: ManagedChild) => {
-    const nextStatus = child.status === "active" ? "inactive" : "active";
+  // Open the confirmation modal when user clicks the toggle switch
+  const handleOpenToggleModal = (child: ManagedChild) => {
+    setSelectedChildForToggle(child);
+  };
+
+  // Close the confirmation modal
+  const handleCloseToggleModal = () => {
+    if (!toggleStatusMutation.isPending) {
+      setSelectedChildForToggle(null);
+    }
+  };
+
+  // Perform status toggle after user confirms in the modal
+  const handleConfirmToggleStatus = () => {
+    if (!selectedChildForToggle) return;
+
+    const childToToggle = selectedChildForToggle;
+    const nextStatus = childToToggle.status === "active" ? "inactive" : "active";
 
     // Optimistically update status in local UI
     setStatusOverrides((prev) => ({
       ...prev,
-      [child.id]: nextStatus,
+      [childToToggle.id]: nextStatus,
     }));
 
     toggleStatusMutation.mutate(
-      { childId: child.id },
+      { childId: childToToggle.id },
       {
         onError: () => {
           // Revert optimistic update on failure
           setStatusOverrides((prev) => {
             const next = { ...prev };
-            delete next[child.id];
+            delete next[childToToggle.id];
             return next;
           });
         },
@@ -68,9 +88,13 @@ export const ChildManagementView: React.FC = () => {
           // Clean up override when session/query updates
           setStatusOverrides((prev) => {
             const next = { ...prev };
-            delete next[child.id];
+            delete next[childToToggle.id];
             return next;
           });
+          setSelectedChildForToggle(null);
+        },
+        onSettled: () => {
+          setSelectedChildForToggle(null);
         },
       }
     );
@@ -136,7 +160,7 @@ export const ChildManagementView: React.FC = () => {
             <div className="pt-4">
               <ChildSlider
                 childrenList={displayChildren}
-                onToggleStatus={handleToggleStatus}
+                onToggleStatus={handleOpenToggleModal}
                 togglingChildId={togglingChildId}
               />
             </div>
@@ -155,6 +179,17 @@ export const ChildManagementView: React.FC = () => {
             </div>
           )}
         </Suspense>
+
+        {/* =========================================================================
+            4. CHILD STATUS CONFIRMATION MODAL (Warning for Off, Green for On)
+           ========================================================================= */}
+        <ChildStatusConfirmModal
+          isOpen={!!selectedChildForToggle}
+          child={selectedChildForToggle}
+          onClose={handleCloseToggleModal}
+          onConfirm={handleConfirmToggleStatus}
+          isLoading={toggleStatusMutation.isPending}
+        />
       </div>
     </div>
   );
