@@ -69,7 +69,12 @@ export const authOptions: NextAuthOptions = {
               otp_locked_until: data.user.otp_locked_until,
               created_at: data.user.created_at,
               updated_at: data.user.updated_at,
-              children: data.user.children || data.children || [],
+              children: (data.user.children || data.children || []).map((c: any) => ({
+                ...c,
+                status: c.status || "active",
+                avatar_img: c.avatar_img || c.avatar || null,
+                avatar: c.avatar || c.avatar_img || null,
+              })),
               accessToken: data.token,
               token: data.token,
               user_type: data.user_type,
@@ -89,7 +94,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -107,6 +112,13 @@ export const authOptions: NextAuthOptions = {
         token.created_at = user.created_at;
         token.updated_at = user.updated_at;
         token.children = user.children;
+      }
+      if (trigger === "update" && session) {
+        if (session.user?.children) {
+          token.children = session.user.children;
+        } else if (session.children) {
+          token.children = session.children;
+        }
       }
       return token;
     },

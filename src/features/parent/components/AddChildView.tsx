@@ -11,13 +11,14 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Toggle } from "@/components/ui";
 import { calculateAgeInArabic } from "@/lib/utils";
 import { addChildSchema, type AddChildFormData } from "../validation";
-
+import { useAddChild } from "../hooks";
 
 export const AddChildView: React.FC = () => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isAccountActive, setIsAccountActive] = useState<boolean>(true);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -38,6 +39,10 @@ export const AddChildView: React.FC = () => {
     },
   });
 
+  const addChildMutation = useAddChild();
+
+  const isPending = isSubmitting || addChildMutation.isPending;
+
   const birthDateValue = useWatch({ control, name: "birthDate" });
 
   const calculatedAge = useMemo(() => {
@@ -47,23 +52,38 @@ export const AddChildView: React.FC = () => {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setAvatarFile(file);
       const previewUrl = URL.createObjectURL(file);
       setAvatarPreview(previewUrl);
       setValue("avatar", previewUrl, { shouldValidate: true });
     }
   };
 
-  const onSubmit = async (data: AddChildFormData) => {
+  const onSubmit = (data: AddChildFormData) => {
     setServerError(null);
-    try {
-      // Future API integration or local state dispatch
-      console.log("[Add Child Form Submitted Data]:", data);
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      router.push("/parents/childMangement");
-    } catch {
-      setServerError("حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.");
-    }
+
+    addChildMutation.mutate(
+      {
+        name: data.name,
+        birth_date: data.birthDate,
+        gender: data.gender,
+        status: isAccountActive ? "active" : "inactive",
+        avatar: data.avatar,
+        avatarFile,
+      },
+      {
+        onSuccess: () => {
+          router.push("/parents/childMangement");
+        },
+        onError: (error) => {
+          if (error instanceof Error) {
+            setServerError(error.message);
+          }
+        },
+      }
+    );
   };
+
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing" dir="rtl">
@@ -200,7 +220,7 @@ export const AddChildView: React.FC = () => {
                   type="text"
                   maxLength={50}
                   {...register("name")}
-                  disabled={isSubmitting}
+                  disabled={isPending}
                   placeholder="اكتب اسم طفلك هنا (الحد الأقصى 50 حرفاً)"
                   className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium text-right ${
                     errors.name
@@ -228,7 +248,7 @@ export const AddChildView: React.FC = () => {
                     id="childBirthDate"
                     type="date"
                     {...register("birthDate")}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     className={`date-input w-full border rounded-2xl px-4 py-3.5 pr-11 bg-white text-xs sm:text-sm text-gray-900 outline-none transition-all font-medium cursor-pointer ${
                       errors.birthDate
                         ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
@@ -274,7 +294,7 @@ export const AddChildView: React.FC = () => {
                       type="radio"
                       value="female"
                       {...register("gender")}
-                      disabled={isSubmitting}
+                      disabled={isPending}
                       className="size-4.5 accent-mad-main cursor-pointer"
                     />
                     <span className="text-xs sm:text-sm font-bold text-gray-700">
@@ -288,7 +308,7 @@ export const AddChildView: React.FC = () => {
                       type="radio"
                       value="male"
                       {...register("gender")}
-                      disabled={isSubmitting}
+                      disabled={isPending}
                       className="size-4.5 accent-mad-main cursor-pointer"
                     />
                     <span className="text-xs sm:text-sm font-bold text-gray-700">
@@ -310,7 +330,7 @@ export const AddChildView: React.FC = () => {
                 <input
                   type="checkbox"
                   {...register("agreedToTerms")}
-                  disabled={isSubmitting}
+                  disabled={isPending}
                   className="size-4.5 mt-0.5 sm:mt-0 rounded-md accent-mad-main cursor-pointer"
                 />
                 <span className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed text-right">
@@ -329,10 +349,10 @@ export const AddChildView: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isPending}
                 className="px-8 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 cursor-pointer min-w-[140px] flex items-center justify-center gap-2"
               >
-                {isSubmitting ? (
+                {isPending ? (
                   <>
                     <Loader2 className="size-4.5 animate-spin" />
                     <span>جاري الحفظ...</span>

@@ -26,9 +26,10 @@ export const UserDropdown: React.FC = () => {
   // Active avatar for the header button
   const currentAvatarSrc =
     activeAccount?.type === "child"
-      ? activeAccount.gender === "female"
-        ? "/assets/girl_avatar.png"
-        : "/assets/boy_avatar.png"
+      ? activeAccount.avatar ||
+        (activeAccount.gender === "female"
+          ? "/assets/girl_avatar.png"
+          : "/assets/boy_avatar.png")
       : "/assets/user_avatar.png";
 
   // Close dropdown on click outside
@@ -135,9 +136,11 @@ export const UserDropdown: React.FC = () => {
                   ((child as unknown as Record<string, unknown>).badges as number) ??
                   0;
                 const avatarSrc =
-                  child.gender === "female"
+                  child.avatar_img ||
+                  child.avatar ||
+                  (child.gender === "female"
                     ? "/assets/girl_avatar.png"
-                    : "/assets/boy_avatar.png";
+                    : "/assets/boy_avatar.png");
                 const ringColor =
                   index % 3 === 0
                     ? "ring-blue-500"

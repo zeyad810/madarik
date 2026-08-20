@@ -7,6 +7,8 @@ export interface Child {
   birth_date: string;
   gender: string;
   status: string;
+  avatar_img?: string | null;
+  avatar?: string | null;
   user_type?: string;
   created_at: string;
   updated_at: string;
@@ -21,6 +23,8 @@ export interface ActiveAccount {
   name: string;
   status?: string;
   gender?: string;
+  avatar_img?: string | null;
+  avatar?: string | null;
   badges?: number;
   isParent: boolean;
   rawChild?: Child;
