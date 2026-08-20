@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient, type UseMutationOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  type UseMutationOptions,
+} from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { toggleChildStatus } from "../api";
@@ -17,7 +21,7 @@ export const useToggleChildStatus = (
     ToggleChildStatusResponse,
     ApiError | Error,
     ToggleChildStatusVariables | string
-  >
+  >,
 ) => {
   const { data: session, update: updateSession } = useSession();
   const queryClient = useQueryClient();
@@ -31,11 +35,13 @@ export const useToggleChildStatus = (
     ToggleChildStatusVariables | string
   >({
     mutationFn: async (variables) => {
-      const childId = typeof variables === "string" ? variables : variables.childId;
+      const childId =
+        typeof variables === "string" ? variables : variables.childId;
       return await toggleChildStatus(childId, token);
     },
     onSuccess: async (data, variables, context) => {
-      const childId = typeof variables === "string" ? variables : variables.childId;
+      const childId =
+        typeof variables === "string" ? variables : variables.childId;
       const successMessage = data.message || "تم تغيير حالة حساب الطفل بنجاح";
       toast.success(successMessage);
 
@@ -52,7 +58,8 @@ export const useToggleChildStatus = (
             // Determine new status: from server response data if available, or toggle current
             const rawData: any = data.data || data.child || data;
             const serverStatus =
-              rawData?.status || (typeof data.status === "string" ? data.status : null);
+              rawData?.status ||
+              (typeof data.status === "string" ? data.status : null);
 
             let nextStatus = serverStatus;
             if (!nextStatus) {
@@ -84,7 +91,7 @@ export const useToggleChildStatus = (
       console.error("[Toggle Child Status Error]:", error);
       const errorMessage = extractAuthErrorMessage(
         error,
-        "حدث خطأ أثناء تغيير حالة الحساب. يرجى المحاولة مرة أخرى."
+        "حدث خطأ أثناء تغيير حالة الحساب. يرجى المحاولة مرة أخرى.",
       );
       toast.error(errorMessage);
       if (onError) {

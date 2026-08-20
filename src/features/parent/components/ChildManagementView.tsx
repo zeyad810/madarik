@@ -1,23 +1,22 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import { PlusCircle } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { ChildSlider } from "./ChildSlider";
+import { ChildSlider, ChildSliderSkeleton } from "./ChildSlider";
 import { ManagedChild } from "../types";
-import { useToggleChildStatus } from "../hooks";
-import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { useToggleChildStatus, useParentChildren } from "../hooks";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
 import Link from "next/link";
 
 export const ChildManagementView: React.FC = () => {
-  const { children: sessionChildren } = useActiveAccount();
+  const { children: parentChildren, isLoading } = useParentChildren();
   const toggleStatusMutation = useToggleChildStatus();
 
-  // Map session children to ManagedChild format
-  const mappedSessionChildren: ManagedChild[] = useMemo(() => {
-    return (sessionChildren || []).map((c) => ({
-      id: c.id,
+  // Map children to ManagedChild format
+  const mappedChildren: ManagedChild[] = useMemo(() => {
+    return (parentChildren || []).map((c) => ({
+      id: String(c.id),
       name: c.name,
       ageCategory: getAgeCategoryFromBirthDate(c.birth_date),
       avatar: c.avatar_img || c.avatar || (c.gender === "female" ? "/assets/girl_avatar.png" : "/assets/boy_avatar.png"),
@@ -27,17 +26,17 @@ export const ChildManagementView: React.FC = () => {
       birthDate: c.birth_date,
       badgesCount: c.badges_count ?? c.badges ?? 0,
     }));
-  }, [sessionChildren]);
+  }, [parentChildren]);
 
   // Local status overrides if toggled by user in UI
   const [statusOverrides, setStatusOverrides] = useState<Record<string, "active" | "inactive">>({});
 
   const displayChildren = useMemo(() => {
-    return mappedSessionChildren.map((child) => ({
+    return mappedChildren.map((child) => ({
       ...child,
       status: statusOverrides[child.id] || child.status,
     }));
-  }, [mappedSessionChildren, statusOverrides]);
+  }, [mappedChildren, statusOverrides]);
 
   const togglingChildId = toggleStatusMutation.isPending
     ? typeof toggleStatusMutation.variables === "string"
@@ -66,7 +65,7 @@ export const ChildManagementView: React.FC = () => {
           });
         },
         onSuccess: () => {
-          // Clean up override when session updates
+          // Clean up override when session/query updates
           setStatusOverrides((prev) => {
             const next = { ...prev };
             delete next[child.id];
@@ -79,11 +78,11 @@ export const ChildManagementView: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-0!" dir="rtl">
-      <div className="container mx-auto ">
+      <div className="container mx-auto">
         {/* =========================================================================
             1. BREADCRUMBS NAVIGATION
            ========================================================================= */}
-        <div className="flex items-center justify-start ">
+        <div className="flex items-center justify-start">
           <Breadcrumb>
             <Breadcrumb.List>
               <Breadcrumb.Item>
@@ -116,8 +115,8 @@ export const ChildManagementView: React.FC = () => {
           </div>
 
           {/* Action Button: Add New Child */}
-          <Link href={"/parents/childMangement/addChild"}
-           
+          <Link
+            href={"/parents/childMangement/addChild"}
             className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
           >
             <PlusCircle className="size-5 stroke-[2.2]" />
@@ -126,30 +125,36 @@ export const ChildManagementView: React.FC = () => {
         </div>
 
         {/* =========================================================================
-            3. CHILDREN SLIDER SECTION OR EMPTY STATE
+            3. CHILDREN SLIDER SECTION OR EMPTY STATE / SKELETON (Suspended)
            ========================================================================= */}
-        {displayChildren.length > 0 ? (
-          <div className="pt-4">
-            <ChildSlider
-              childrenList={displayChildren}
-              onToggleStatus={handleToggleStatus}
-              togglingChildId={togglingChildId}
-            />
-          </div>
-        ) : (
-          <div className="py-16 text-center space-y-4 border-2 border-dashed border-gray-200 rounded-3xl p-8 bg-gray-50/50">
-            <p className="text-gray-500 font-medium text-base sm:text-lg">
-              لا يوجد أطفال مضافين حالياً في حسابك.
-            </p>
-            <Link
-              href="/parents/childMangement/addChild"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
-            >
-              <PlusCircle className="size-5 stroke-[2.2]" />
-              <span>إضافة طفل الآن</span>
-            </Link>
-          </div>
-        )}
+        <Suspense fallback={<ChildSliderSkeleton count={4} />}>
+          {isLoading ? (
+            <div className="pt-4">
+              <ChildSliderSkeleton count={4} />
+            </div>
+          ) : displayChildren.length > 0 ? (
+            <div className="pt-4">
+              <ChildSlider
+                childrenList={displayChildren}
+                onToggleStatus={handleToggleStatus}
+                togglingChildId={togglingChildId}
+              />
+            </div>
+          ) : (
+            <div className="py-16 text-center space-y-4 border-2 border-dashed border-gray-200 rounded-3xl p-8 bg-gray-50/50 mt-4">
+              <p className="text-gray-500 font-medium text-base sm:text-lg">
+                لا يوجد أطفال مضافين حالياً في حسابك.
+              </p>
+              <Link
+                href="/parents/childMangement/addChild"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
+              >
+                <PlusCircle className="size-5 stroke-[2.2]" />
+                <span>إضافة طفل الآن</span>
+              </Link>
+            </div>
+          )}
+        </Suspense>
       </div>
     </div>
   );
