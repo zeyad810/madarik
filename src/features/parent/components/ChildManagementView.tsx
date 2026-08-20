@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, Suspense } from "react";
 import { PlusCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChildSlider, ChildSliderSkeleton } from "./ChildSlider";
 import { ChildStatusConfirmModal } from "./ChildStatusConfirmModal";
@@ -11,6 +12,7 @@ import { getAgeCategoryFromBirthDate } from "@/lib/utils";
 import Link from "next/link";
 
 export const ChildManagementView: React.FC = () => {
+  const router = useRouter();
   const { children: parentChildren, isLoading } = useParentChildren();
   const toggleStatusMutation = useToggleChildStatus();
 
@@ -58,6 +60,11 @@ export const ChildManagementView: React.FC = () => {
     if (!toggleStatusMutation.isPending) {
       setSelectedChildForToggle(null);
     }
+  };
+
+  // Navigate to child form in edit mode
+  const handleEditChild = (child: ManagedChild) => {
+    router.push(`/parents/childMangement/addChild?mode=edit&id=${child.id}`);
   };
 
   // Perform status toggle after user confirms in the modal
@@ -140,7 +147,7 @@ export const ChildManagementView: React.FC = () => {
 
           {/* Action Button: Add New Child */}
           <Link
-            href={"/parents/childMangement/addChild"}
+            href={"/parents/childMangement/addChild?mode=add"}
             className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
           >
             <PlusCircle className="size-5 stroke-[2.2]" />
@@ -160,6 +167,7 @@ export const ChildManagementView: React.FC = () => {
             <div className="pt-4">
               <ChildSlider
                 childrenList={displayChildren}
+                onEditChild={handleEditChild}
                 onToggleStatus={handleOpenToggleModal}
                 togglingChildId={togglingChildId}
               />
@@ -170,7 +178,7 @@ export const ChildManagementView: React.FC = () => {
                 لا يوجد أطفال مضافين حالياً في حسابك.
               </p>
               <Link
-                href="/parents/childMangement/addChild"
+                href="/parents/childMangement/addChild?mode=add"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
               >
                 <PlusCircle className="size-5 stroke-[2.2]" />
@@ -179,6 +187,7 @@ export const ChildManagementView: React.FC = () => {
             </div>
           )}
         </Suspense>
+
 
         {/* =========================================================================
             4. CHILD STATUS CONFIRMATION MODAL (Warning for Off, Green for On)

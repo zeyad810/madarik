@@ -5,6 +5,8 @@ import {
   AddChildResponse,
   ParentChildrenResponse,
   ToggleChildStatusResponse,
+  UpdateChildPayload,
+  UpdateChildResponse,
 } from "./types";
 
 /**
@@ -68,6 +70,52 @@ export const createChild = async (
 };
 
 /**
+ * PUT /parent/children/{id}
+ * Updates an existing child profile for the authenticated parent.
+ * Endpoint: https://madarik.themiify.com/api/v1/parent/children/{id}
+ */
+export const updateChild = async (
+  payload: UpdateChildPayload,
+  token?: string | null
+): Promise<UpdateChildResponse> => {
+  const { id, ...bodyData } = payload;
+  const hasFile = payload.avatarFile instanceof File;
+
+  let body: BodyInit;
+  let isMultipart = false;
+
+  if (hasFile && payload.avatarFile) {
+    isMultipart = true;
+    const formData = new FormData();
+    if (bodyData.name) formData.append("name", bodyData.name.trim());
+    if (bodyData.birth_date) formData.append("birth_date", bodyData.birth_date);
+    if (bodyData.gender) formData.append("gender", bodyData.gender);
+    if (bodyData.status) formData.append("status", bodyData.status);
+    formData.append("avatar", payload.avatarFile);
+    formData.append("avatar_img", payload.avatarFile);
+    formData.append("_method", "PUT");
+    body = formData;
+  } else {
+    body = JSON.stringify({
+      ...(bodyData.name ? { name: bodyData.name.trim() } : {}),
+      ...(bodyData.birth_date ? { birth_date: bodyData.birth_date } : {}),
+      ...(bodyData.gender ? { gender: bodyData.gender } : {}),
+      ...(bodyData.status ? { status: bodyData.status } : {}),
+      ...(bodyData.avatar ? { avatar: bodyData.avatar } : {}),
+      ...(bodyData.avatar_img ? { avatar_img: bodyData.avatar_img } : {}),
+    });
+  }
+
+  const response = await fetch(`${API_BASE_URL}/parent/children/${id}`, {
+    method: isMultipart ? "POST" : "PUT",
+    headers: buildHeaders(token, isMultipart),
+    body,
+  });
+
+  return await handleResponse<UpdateChildResponse>(response);
+};
+
+/**
  * GET /parent/children
  * Fetches the children list of the authenticated parent.
  */
@@ -97,3 +145,4 @@ export const toggleChildStatus = async (
 
   return await handleResponse<ToggleChildStatusResponse>(response);
 };
+

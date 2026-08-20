@@ -35,6 +35,24 @@ export interface ParentChildrenResponse {
   data?: Child[];
 }
 
+export interface UpdateChildPayload {
+  id: string | number;
+  name: string;
+  birth_date: string;
+  gender: "male" | "female";
+  status?: "active" | "inactive" | "deactivated" | string;
+  avatar?: string | null;
+  avatar_img?: string | null;
+  avatarFile?: File | null;
+}
+
+export interface UpdateChildResponse {
+  success?: boolean;
+  message?: string;
+  data?: Child;
+  child?: Child;
+}
+
 export interface ToggleChildStatusResponse {
   success?: boolean;
   message?: string;

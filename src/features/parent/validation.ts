@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const addChildSchema = z.object({
+export const childBaseSchema = z.object({
   name: z
     .string()
     .trim()
@@ -19,10 +19,20 @@ export const addChildSchema = z.object({
   gender: z.enum(["male", "female"] as const, {
     message: "يرجى تحديد جنس الطفل",
   }),
+});
+
+export const addChildSchema = childBaseSchema.extend({
   agreedToTerms: z.boolean().refine((val) => val === true, {
     message: "يجب الموافقة على شروط الاشتراك وسياسة الاستخدام",
   }),
-  avatar: z.string().optional().nullable(),
+});
+
+export const updateChildSchema = childBaseSchema.extend({
+  agreedToTerms: z.boolean().optional(),
 });
 
 export type AddChildFormData = z.infer<typeof addChildSchema>;
+export type UpdateChildFormData = z.infer<typeof updateChildSchema>;
+export type ChildFormData = z.infer<typeof childBaseSchema> & {
+  agreedToTerms?: boolean;
+};

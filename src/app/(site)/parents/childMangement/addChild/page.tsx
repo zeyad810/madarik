@@ -1,17 +1,22 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Metadata } from "next";
-import { AddChildView } from "@/features/parent";
+import { AddChildView, AddChildSkeleton } from "@/features/parent";
 import { RoleGuard } from "@/components/guards";
 
 export const metadata: Metadata = {
-  title: "إنشاء حساب طفل جديد | مدارك القراءة",
-  description: "أضف حساباً خاصاً بطفلك لتمكينه من استكشاف القصص التعليمية الموجهة وحل الاختبارات التفاعلية الممتعة.",
+  title: "إدارة حساب الطفل | مدارك القراءة",
+  description: "إضافة أو تعديل حساب الطفل في منصة مدارك القراءة.",
 };
 
 export default function AddChildPage() {
   return (
-    <RoleGuard allowedRoles={["parent", "free", "free_customer"]}>
-      <AddChildView />
+    <RoleGuard
+      allowedRoles={["parent", "free", "free_customer"]}
+      loadingFallback={<AddChildSkeleton />}
+    >
+      <Suspense fallback={<AddChildSkeleton />}>
+        <AddChildView />
+      </Suspense>
     </RoleGuard>
   );
-}
+}

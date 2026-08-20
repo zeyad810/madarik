@@ -66,13 +66,13 @@ export const useAddChild = (
           ? currentChildren.map((c) => (c.id === newChild.id ? newChild : c))
           : [...currentChildren, newChild];
 
-        await updateSession({
+        updateSession({
           ...session,
           user: {
             ...session.user,
             children: updatedChildren,
           },
-        }).catch(() => null);
+        }).catch((err) => console.error("[Update session error]:", err));
       }
 
       if (onSuccess) {
