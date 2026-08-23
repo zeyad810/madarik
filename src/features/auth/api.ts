@@ -10,7 +10,7 @@ import {
 import { getStoredAuthToken } from "@/lib/auth";
 
 export const registerUser = async (
-  payload: RegisterPayload
+  payload: RegisterPayload,
 ): Promise<RegisterResponse> => {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
@@ -25,7 +25,7 @@ export const registerUser = async (
 };
 
 export const verifyRegisterOtp = async (
-  payload: VerifyRegisterPayload
+  payload: VerifyRegisterPayload,
 ): Promise<VerifyRegisterResponse> => {
   const response = await fetch(`${API_BASE_URL}/auth/register/verify`, {
     method: "POST",
@@ -41,7 +41,7 @@ export const verifyRegisterOtp = async (
 
 export const resetFirstPassword = async (
   payload: ResetPasswordPayload,
-  token?: string | null
+  token?: string | null,
 ): Promise<ResetPasswordResponse> => {
   const resolvedToken = token || getStoredAuthToken();
   const headers: Record<string, string> = {
@@ -53,14 +53,17 @@ export const resetFirstPassword = async (
     headers["Authorization"] = `Bearer ${resolvedToken}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      password: payload.password,
-      password_confirmation: payload.password_confirmation,
-    }),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/auth/reset-generated-password`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        password: payload.password,
+        password_confirmation: payload.password_confirmation,
+      }),
+    },
+  );
 
   return await handleResponse<ResetPasswordResponse>(response);
 };
