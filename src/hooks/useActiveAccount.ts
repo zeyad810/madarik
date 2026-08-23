@@ -11,7 +11,9 @@ export function useActiveAccount() {
 
   // Zustand global store with localStorage persistence
   const activeAccountId = useAccountStore((state) => state.activeAccountId);
-  const setActiveAccountId = useAccountStore((state) => state.setActiveAccountId);
+  const setActiveAccountId = useAccountStore(
+    (state) => state.setActiveAccountId,
+  );
   const resetAccount = useAccountStore((state) => state.resetAccount);
 
   // Ensure client-side localStorage hydration is complete
@@ -20,14 +22,19 @@ export function useActiveAccount() {
   }, []);
 
   const user = session?.user;
-  const children: Child[] = useMemo(() => user?.children || [], [user?.children]);
+  const children: Child[] = useMemo(
+    () => user?.children || [],
+    [user?.children],
+  );
 
   // Extract base parent/account role from session
   const rawUserType =
     session?.user_type ||
     (user as unknown as Record<string, unknown>)?.user_type ||
     (user as unknown as Record<string, unknown>)?.role;
-  const sessionUserType = rawUserType ? String(rawUserType).toLowerCase() : "visitor";
+  const sessionUserType = rawUserType
+    ? String(rawUserType).toLowerCase()
+    : "visitor";
   const isParentRole =
     sessionUserType === "parent" ||
     sessionUserType === "ولي امر" ||
@@ -53,7 +60,14 @@ export function useActiveAccount() {
     ) {
       resetAccount();
     }
-  }, [hasHydrated, status, activeAccountId, matchedChild, children.length, resetAccount]);
+  }, [
+    hasHydrated,
+    status,
+    activeAccountId,
+    matchedChild,
+    children.length,
+    resetAccount,
+  ]);
 
   // Is parent currently active
   const isParentActive = !matchedChild;
@@ -74,7 +88,8 @@ export function useActiveAccount() {
       const badges =
         matchedChild.badges_count ??
         matchedChild.badges ??
-        ((matchedChild as unknown as Record<string, unknown>).badges as number) ??
+        ((matchedChild as unknown as Record<string, unknown>)
+          .badges as number) ??
         0;
 
       return {
@@ -88,7 +103,9 @@ export function useActiveAccount() {
         avatar:
           matchedChild.avatar_img ||
           matchedChild.avatar ||
-          (matchedChild.gender === "female" ? "/assets/girl_avatar.png" : "/assets/boy_avatar.png"),
+          (matchedChild.gender === "female"
+            ? "/assets/girl_avatar.png"
+            : "/assets/boy_avatar.png"),
         badges,
         isParent: false,
         rawChild: matchedChild,
@@ -125,7 +142,7 @@ export function useActiveAccount() {
       }
       setActiveAccountId(id, uType);
     },
-    [setActiveAccountId, children, sessionUserType]
+    [setActiveAccountId, children, sessionUserType],
   );
 
   /**

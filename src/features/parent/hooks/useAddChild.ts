@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient, type UseMutationOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  type UseMutationOptions,
+} from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { createChild } from "../api";
@@ -9,7 +13,11 @@ import { extractAuthErrorMessage } from "@/features/auth/helpers/formatAuthError
 import type { Child } from "@/types/auth";
 
 export const useAddChild = (
-  options?: UseMutationOptions<AddChildResponse, ApiError | Error, AddChildPayload>
+  options?: UseMutationOptions<
+    AddChildResponse,
+    ApiError | Error,
+    AddChildPayload
+  >,
 ) => {
   const { data: session, update: updateSession } = useSession();
   const queryClient = useQueryClient();
@@ -47,12 +55,16 @@ export const useAddChild = (
             rawChild.avatar ||
             variables.avatar_img ||
             variables.avatar ||
-            (variables.gender === "female" ? "/assets/girl_avatar.png" : "/assets/boy_avatar.png"),
+            (variables.gender === "female"
+              ? "/assets/girl_avatar.png"
+              : "/assets/boy_avatar.png"),
           avatar:
             rawChild.avatar ||
             rawChild.avatar_img ||
             variables.avatar ||
-            (variables.gender === "female" ? "/assets/girl_avatar.png" : "/assets/boy_avatar.png"),
+            (variables.gender === "female"
+              ? "/assets/girl_avatar.png"
+              : "/assets/boy_avatar.png"),
           user_type: rawChild.user_type || "child",
           created_at: rawChild.created_at || new Date().toISOString(),
           updated_at: rawChild.updated_at || new Date().toISOString(),
@@ -83,7 +95,7 @@ export const useAddChild = (
       console.error("[Add Child Error]:", error);
       const errorMessage = extractAuthErrorMessage(
         error,
-        "حدث خطأ أثناء إضافة الطفل. يرجى المحاولة مرة أخرى."
+        "حدث خطأ أثناء إضافة الطفل. يرجى المحاولة مرة أخرى.",
       );
       toast.error(errorMessage);
       if (onError) {

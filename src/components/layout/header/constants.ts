@@ -9,7 +9,12 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
     href: "/parents/childMangement",
     allowedRoles: ["parent", "free", "free_customer"],
   },
-  { id: "children-reports", label: "تقارير الأطفال", href: "/reports" },
+  {
+    id: "children-reports",
+    label: "تقارير الأطفال",
+    href: "/parents/childReports",
+    allowedRoles: ["parent", "free", "free_customer"],
+  },
   { id: "attempts-log", label: "سجل المحاولات", href: "/attempts" },
   { id: "subscriptions", label: "الاشتراكات والدفع", href: "/subscriptions" },
   { id: "sub-status", label: "حالة اشتراكي", href: "/subscription-status" },

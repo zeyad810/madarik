@@ -104,16 +104,14 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
         <button
           type="button"
           onClick={() => setSelectedId("parent")}
-          className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${
-            selectedId === "parent"
+          className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${selectedId === "parent"
               ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
               : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
-          }`}
+            }`}
         >
           <div
-            className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${
-              selectedId === "parent" ? "ring-[#7C3AED]/30" : "ring-purple-50"
-            } shrink-0 bg-purple-50 flex items-center justify-center`}
+            className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${selectedId === "parent" ? "ring-[#7C3AED]/30" : "ring-purple-50"
+              } shrink-0 bg-purple-50 flex items-center justify-center`}
           >
             <Image
               src="/assets/user_avatar.png"
@@ -143,16 +141,14 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
               key={child.id || index}
               type="button"
               onClick={() => setSelectedId(child.id)}
-              className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${
-                isSelected
+              className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${isSelected
                   ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
                   : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
-              }`}
+                }`}
             >
               <div
-                className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${
-                  isSelected ? "ring-[#7C3AED]/30" : "ring-purple-50"
-                } shrink-0 bg-purple-50 flex items-center justify-center`}
+                className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${isSelected ? "ring-[#7C3AED]/30" : "ring-purple-50"
+                  } shrink-0 bg-purple-50 flex items-center justify-center`}
               >
                 <Image
                   src={avatarSrc}

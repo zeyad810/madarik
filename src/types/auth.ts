@@ -1,4 +1,5 @@
-export type UserRole = "parent" | "child" | "free_customer" | "student" | string;
+export type UserRole =
+  "parent" | "child" | "free_customer" | "student" | string;
 
 export interface Child {
   id: string;

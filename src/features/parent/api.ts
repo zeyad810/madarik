@@ -3,6 +3,7 @@ import { getStoredAuthToken } from "@/lib/auth";
 import {
   AddChildPayload,
   AddChildResponse,
+  ChildReportsResponse,
   ParentChildrenResponse,
   ToggleChildStatusResponse,
   UpdateChildPayload,
@@ -145,4 +146,22 @@ export const toggleChildStatus = async (
 
   return await handleResponse<ToggleChildStatusResponse>(response);
 };
+
+/**
+ * GET /parent/children
+ * Fetches comprehensive children profiles and reports including activities, quiz attempts, and scores.
+ * Endpoint: https://madarik.themiify.com/api/v1/parent/children
+ */
+export const getParentChildReports = async (
+  token?: string | null
+): Promise<ChildReportsResponse> => {
+  const response = await fetch(`${API_BASE_URL}/parent/children`, {
+    method: "GET",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<ChildReportsResponse>(response);
+};
+
+
 

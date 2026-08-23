@@ -61,3 +61,91 @@ export interface ToggleChildStatusResponse {
   status?: string;
 }
 
+// =========================================================================
+// Child Reports Interfaces (Based on API response)
+// =========================================================================
+
+export interface ReadingActivityStory {
+  id: string;
+  title: string;
+}
+
+export interface ReadingActivity {
+  id: string;
+  child_id: string;
+  student_id?: string | null;
+  school_student_id?: string | null;
+  story_id: string;
+  started_at: string;
+  finished_at?: string | null;
+  story?: ReadingActivityStory;
+}
+
+export interface QuizDetails {
+  id: string;
+  code: string;
+  story_id: string;
+  passing_score: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuizAttempt {
+  id: string;
+  child_id: string;
+  student_id?: string | null;
+  school_student_id?: string | null;
+  quiz_id: string;
+  score: number;
+  highest_score: number;
+  total_count: number;
+  attempt_number: number;
+  completed_at: string;
+  duration_seconds: number;
+  created_at: string;
+  updated_at: string;
+  quiz?: QuizDetails;
+}
+
+export interface UserBadge {
+  id?: string;
+  badge_id?: string;
+  child_id?: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  image?: string | null;
+  icon?: string | null;
+  earned_at?: string;
+  created_at?: string;
+  [key: string]: unknown;
+}
+
+export interface ChildReportItem {
+  id: string;
+  account_id: string;
+  avatar_img?: string | null;
+  avatar?: string | null;
+  name: string;
+  birth_date: string;
+  gender: "male" | "female" | string;
+  status: "active" | "deactivated" | "inactive" | string;
+  created_at: string;
+  updated_at: string;
+  quizzes_count: number;
+  average_score: number;
+  stories_read_count: number;
+  badges_count: number;
+  user_type: "child" | string;
+  reading_activities: ReadingActivity[];
+  quiz_attempts: QuizAttempt[];
+  user_badges: UserBadge[];
+}
+
+export interface ChildReportsResponse {
+  success: boolean;
+  message?: string;
+  data: ChildReportItem[];
+}
+
