@@ -128,3 +128,114 @@ export function calculateChildAverageScore(child: ChildReportItem): number {
   }
   return 0;
 }
+
+/**
+ * Returns badges count from child report item
+ */
+export function getChildBadgesCount(child: ChildReportItem): number {
+  return Number(child.badges_count ?? child.user_badges?.length ?? 0);
+}
+
+/**
+ * Returns quizzes count from child report item
+ */
+export function getChildQuizzesCount(child: ChildReportItem): number {
+  return Number(child.quizzes_count ?? child.quiz_attempts?.length ?? 0);
+}
+
+/**
+ * Returns rating label and Tailwind classes based on score percentage
+ */
+export function getScoreRating(score: number): {
+  label: string;
+  bgClass: string;
+  textClass: string;
+} {
+  if (score >= 90) {
+    return {
+      label: "مميز",
+      bgClass: "bg-[#DCFCE7] border-[#BBF7D0]",
+      textClass: "text-[#15803D]",
+    };
+  }
+  if (score >= 80) {
+    return {
+      label: "جيد جداً",
+      bgClass: "bg-[#F3E8FF] border-[#E9D5FF]",
+      textClass: "text-[#7E22CE]",
+    };
+  }
+  if (score >= 70) {
+    return {
+      label: "جيد",
+      bgClass: "bg-[#F1F5F9] border-[#E2E8F0]",
+      textClass: "text-[#475569]",
+    };
+  }
+  if (score >= 50) {
+    return {
+      label: "مقبول",
+      bgClass: "bg-[#FEF3C7] border-[#FDE68A]",
+      textClass: "text-[#B45309]",
+    };
+  }
+  return {
+    label: "بحاجة لتحسين",
+    bgClass: "bg-[#FFE4E6] border-[#FECDD3]",
+    textClass: "text-[#BE123C]",
+  };
+}
+
+/**
+ * Formats date and time into standard Arabic string (e.g. "اليوم، 1:30 ص")
+ */
+export function formatArabicDateTime(dateStr?: string | null): string {
+  if (!dateStr) return "اليوم، 1:30 ص";
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+
+  const today = new Date();
+  const isToday =
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "م" : "ص";
+  const formattedHours = hours % 12 || 12;
+  const timeStr = `${formattedHours}:${minutes} ${ampm}`;
+
+  if (isToday) {
+    return `اليوم، ${timeStr}`;
+  }
+
+  const days = [
+    "الأحد",
+    "الإثنين",
+    "الثلاثاء",
+    "الأربعاء",
+    "الخميس",
+    "الجمعة",
+    "السبت",
+  ];
+  const dayName = days[date.getDay()];
+  return `${dayName}، ${timeStr}`;
+}
+
+/**
+ * Calculates reading activity duration in minutes
+ */
+export function calculateActivityDurationMinutes(
+  startedAt?: string | null,
+  finishedAt?: string | null
+): number {
+  if (!startedAt) return 0;
+  const start = new Date(startedAt).getTime();
+  const end = finishedAt ? new Date(finishedAt).getTime() : Date.now();
+  if (isNaN(start) || isNaN(end) || end <= start) return 0;
+  return Math.max(1, Math.floor((end - start) / (1000 * 60)));
+}
+
+
+

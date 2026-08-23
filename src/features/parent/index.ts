@@ -16,5 +16,12 @@ export {
 export { default as ChildStatusConfirmModal } from "./components/ChildStatusConfirmModal";
 export { default as ChildReportCard, ChildReportCardSkeleton } from "./components/ChildReportCard";
 export { default as ChildsReports } from "./components/ChildsReports";
+export { default as ChildReport } from "./components/ChildReport";
+export { default as ChildReportSummaryCard } from "./components/ChildReportSummaryCard";
+export { default as ChildReportStats } from "./components/ChildReportStats";
+export { default as ChildQuizResultsTable } from "./components/ChildQuizResultsTable";
+export { default as ChildReadingHistory } from "./components/ChildReadingHistory";
+
+
 
 

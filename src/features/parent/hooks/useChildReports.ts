@@ -55,4 +55,17 @@ export const useChildReports = () => {
   };
 };
 
+export const useChildReport = (childId: string) => {
+  const { reports, isLoading, isError, refetch } = useChildReports();
+  const child = reports.find((c) => String(c.id) === String(childId)) || null;
+
+  return {
+    child,
+    isLoading,
+    isError,
+    refetch,
+  };
+};
+
 export default useChildReports;
+

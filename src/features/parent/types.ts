@@ -149,3 +149,23 @@ export interface ChildReportsResponse {
   data: ChildReportItem[];
 }
 
+export interface QuizResultRow {
+  id: string;
+  storyTitle: string;
+  level: string;
+  resultScore: number;
+  attemptsCount: number;
+  lastScore: number;
+  highestScore: number;
+  maxScore: number;
+}
+
+export interface ReadingHistoryRow {
+  id: string;
+  storyTitle: string;
+  dateText: string;
+  durationMinutes: number;
+  status: "completed" | "in_progress";
+}
+
+
