@@ -59,3 +59,13 @@ export function hasRoleAccess(userRole: string | undefined | null, allowedRoles:
     allowedRoles.map((r) => r.toLowerCase().trim()).includes(userRole.toLowerCase().trim())
   );
 }
+
+/**
+ * Checks whether a role corresponds to a student.
+ */
+export function isStudentRole(role: string | undefined | null): boolean {
+  if (!role) return false;
+  return normalizeRole(role) === "student";
+}
+
+

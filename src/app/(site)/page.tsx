@@ -15,10 +15,12 @@ import ProductSection from "@/features/site/components/ProductSection";
 import ContactUs from "@/features/site/components/ContactUs";
 import MadVideo from "@/features/site/components/MadVideo";
 import { Bannerslider } from "@/features/site";
+import { StudentRedirect } from "@/components/guards";
 
 export default function HomePage() {
   return (
     <div className="w-full flex flex-col">
+      <StudentRedirect />
       <Hero />
       <Features />
       <HowItWorks />

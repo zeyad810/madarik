@@ -35,6 +35,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
     isAuthenticated,
     createAccountHref,
     resetAccount,
+    isStudent,
   } = useActiveAccount();
 
   const isItemActive = (href: string) => {
@@ -43,6 +44,24 @@ const SideMenu: React.FC<SideMenuProps> = ({
     }
     return pathname.startsWith(href);
   };
+
+  const visibleMenuItems = SIDE_MENU_ITEMS.filter((item) => {
+    if (isStudent) {
+      return (
+        item.id === "available-stories" ||
+        item.id === "attempts-log" ||
+        item.id === "results" ||
+        item.id === "profile" ||
+        item.id === "settings" ||
+        item.href.startsWith("/stories") ||
+        item.href.startsWith("/results") ||
+        item.href.startsWith("/attempts") ||
+        item.href.startsWith("/profile") ||
+        item.href.startsWith("/settings")
+      );
+    }
+    return true;
+  });
 
   const currentAvatarSrc =
     activeAccount?.type === "child"
@@ -104,7 +123,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
             {/* Side Menu Categories List */}
             <div className="flex-1 overflow-y-auto">
               <nav className="flex flex-col">
-                {SIDE_MENU_ITEMS.map((item, i) => {
+                {visibleMenuItems.map((item, i) => {
                   const isActive = isItemActive(item.href);
                   const itemDelay = i * 0.045 + 0.05;
                   const itemContent = (
@@ -171,6 +190,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
                       <span className="text-[10px] text-mad-main font-semibold">
                         {activeAccount.type === "child"
                           ? `طفل نشط (أوسمة: ${activeAccount.badges || 0})`
+                          : isStudent
+                          ? "حساب طالب"
                           : `${children.length} أطفال مسجلون`}
                       </span>
                     </div>

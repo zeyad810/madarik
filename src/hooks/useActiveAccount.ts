@@ -4,6 +4,7 @@ import { useMemo, useCallback, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ActiveAccount, AuthUser, Child } from "@/types/auth";
 import { useAccountStore } from "@/store/useAccountStore";
+import { normalizeRole, isStudentRole } from "@/lib/roles";
 
 // ============================================================================
 // Constants & Configuration
@@ -42,6 +43,8 @@ export interface UseActiveAccountReturn {
   children: Child[];
   /** True if the authenticated user has a parent role */
   isParentRole: boolean;
+  /** True if the active account or user is a student */
+  isStudent: boolean;
   /** Switch the active account globally and persist to localStorage */
   switchAccount: (targetId: string, targetUserType?: string) => void;
   /** Helper to generate clean account URLs (state is globally preserved) */
@@ -73,15 +76,16 @@ function extractSessionUserType(
   const rawUserType =
     sessionObj?.user_type || userObj?.user_type || userObj?.role;
 
-  return rawUserType ? String(rawUserType).toLowerCase() : DEFAULT_VISITOR_ROLE;
+  return rawUserType ? normalizeRole(String(rawUserType)) : DEFAULT_VISITOR_ROLE;
 }
 
 /**
  * Checks whether the session user type represents a parent.
  */
 function checkIsParentRole(sessionUserType: string): boolean {
-  return PARENT_ROLE_ALIASES.has(sessionUserType);
+  return PARENT_ROLE_ALIASES.has(sessionUserType) || normalizeRole(sessionUserType) === "parent";
 }
+
 
 /**
  * Resolves the child's avatar with fallback based on gender.
@@ -265,6 +269,7 @@ export function useActiveAccount(): UseActiveAccountReturn {
     isParentActive,
     children,
     isParentRole,
+    isStudent: isStudentRole(activeUserType),
     switchAccount,
     createAccountHref,
     resetAccount,

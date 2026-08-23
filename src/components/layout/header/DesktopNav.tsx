@@ -11,18 +11,30 @@ import { useActiveAccount } from "@/hooks/useActiveAccount";
 const DesktopNav: React.FC = () => {
   const pathname = usePathname();
   const { status } = useSession();
-  const { createAccountHref } = useActiveAccount();
+  const { createAccountHref, user_type, userRole, isStudent } = useActiveAccount();
 
   const isLinkActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
 
+  const visibleNavLinks = DESKTOP_NAV_LINKS.filter((link) => {
+    if (isStudent) {
+      return (
+        link.id === "library" ||
+        link.id === "results" ||
+        link.href.startsWith("/stories") ||
+        link.href.startsWith("/results")
+      );
+    }
+    return true;
+  });
+
   return (
     <>
       {/* Center Navigation Links */}
       <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-        {DESKTOP_NAV_LINKS.map((link) => {
+        {visibleNavLinks.map((link) => {
           const isActive = isLinkActive(link.href);
           return (
             <Link
