@@ -17,9 +17,9 @@ export const ChildReportStats: React.FC<ChildReportStatsProps> = ({
   storiesCount,
   quizzesCount,
   averageScore,
-  storiesGrowth = "3.2%",
-  quizzesGrowth = "3.2%",
-  scoreGrowth = "3.2%",
+  storiesGrowth,
+  quizzesGrowth,
+  scoreGrowth,
 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5" dir="rtl">
@@ -51,10 +51,12 @@ export const ChildReportStats: React.FC<ChildReportStatsProps> = ({
           </div>
 
           {/* Left in RTL: Growth Badge */}
-          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#16A34A] text-xs font-extrabold">
-            <ArrowUpRight className="size-3.5 stroke-[2.5]" />
-            <span>{storiesGrowth}</span>
-          </div>
+          {storiesGrowth && (
+            <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#16A34A] text-xs font-extrabold">
+              <ArrowUpRight className="size-3.5 stroke-[2.5]" />
+              <span>{storiesGrowth}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -86,10 +88,12 @@ export const ChildReportStats: React.FC<ChildReportStatsProps> = ({
           </div>
 
           {/* Left in RTL: Growth Badge */}
-          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#16A34A] text-xs font-extrabold">
-            <ArrowUpRight className="size-3.5 stroke-[2.5]" />
-            <span>{quizzesGrowth}</span>
-          </div>
+          {quizzesGrowth && (
+            <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#16A34A] text-xs font-extrabold">
+              <ArrowUpRight className="size-3.5 stroke-[2.5]" />
+              <span>{quizzesGrowth}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -121,10 +125,12 @@ export const ChildReportStats: React.FC<ChildReportStatsProps> = ({
           </div>
 
           {/* Left in RTL: Growth Badge */}
-          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#16A34A] text-xs font-extrabold">
-            <ArrowUpRight className="size-3.5 stroke-[2.5]" />
-            <span>{scoreGrowth}</span>
-          </div>
+          {scoreGrowth && (
+            <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#16A34A] text-xs font-extrabold">
+              <ArrowUpRight className="size-3.5 stroke-[2.5]" />
+              <span>{scoreGrowth}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -13,7 +13,6 @@ import {
   formatArabicDateTime,
   calculateActivityDurationMinutes,
 } from "../utils";
-import { DEFAULT_QUIZ_ROWS, DEFAULT_READING_ROWS } from "../constants";
 import { ChildReportSummaryCard } from "./ChildReportSummaryCard";
 import { ChildReportStats } from "./ChildReportStats";
 import { ChildQuizResultsTable } from "./ChildQuizResultsTable";
@@ -27,14 +26,18 @@ interface ChildReportProps {
 export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
   const { child, isLoading } = useChildReport(childId);
 
-  const storiesCount = child ? getChildStoriesCount(child) : 51;
-  const quizzesCount = child ? getChildQuizzesCount(child) : 13;
-  const averageScore = child ? calculateChildAverageScore(child) : 80;
-  const gradeAndAge = child ? getChildGradeAndAge(child.birth_date) : "الصف الثالث • 8 سنوات";
-  const levelText = child ? getChildLevel(child) : "المستوى الثالث";
-  const activityTime = child ? formatArabicActivityTime(child.updated_at) : "نشط منذ يومان";
+  const storiesCount = child ? getChildStoriesCount(child) : 0;
+  const quizzesCount = child ? getChildQuizzesCount(child) : 0;
+  const averageScore = child ? calculateChildAverageScore(child) : 0;
+  const gradeAndAge = child?.birth_date ? getChildGradeAndAge(child.birth_date) : "";
+  const levelText = child ? getChildLevel(child) : "";
+  const activityTime = child?.updated_at
+    ? formatArabicActivityTime(child.updated_at)
+    : child
+    ? "نشط"
+    : "";
 
-  // Build Quiz rows from child data or fallback to defaults
+  // Build Quiz rows from child data or empty array
   const quizRows = useMemo(() => {
     if (child?.quiz_attempts && child.quiz_attempts.length > 0) {
       return child.quiz_attempts.map((attempt, index) => {
@@ -54,10 +57,10 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
         };
       });
     }
-    return DEFAULT_QUIZ_ROWS;
+    return [];
   }, [child, levelText]);
 
-  // Build Reading history rows from child data or fallback to defaults
+  // Build Reading history rows from child data or empty array
   const readingRows = useMemo(() => {
     if (child?.reading_activities && child.reading_activities.length > 0) {
       return child.reading_activities.slice(0, 5).map((act, index) => {
@@ -69,12 +72,12 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
           id: act.id || `read-${index}`,
           storyTitle: act.story?.title || `قصة ${index + 1}`,
           dateText: formatArabicDateTime(act.started_at),
-          durationMinutes: duration || 15,
+          durationMinutes: duration,
           status: act.finished_at ? ("completed" as const) : ("in_progress" as const),
         };
       });
     }
-    return DEFAULT_READING_ROWS;
+    return [];
   }, [child]);
 
   const handleExport = () => {
@@ -133,12 +136,13 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
 
         {/* 3. Child Profile Summary Card */}
         <ChildReportSummaryCard
-          name={child?.name || "ساندي"}
+          name={child?.name || ""}
           avatarUrl={child?.avatar_img || child?.avatar}
           gender={child?.gender}
           gradeAndAge={gradeAndAge}
           levelText={levelText}
-          activityTime={activityTime}
+          status={child?.status || "active"}
+          isActive={child ? child.status === "active" : true}
         />
 
         {/* 4. Summary Stat Metric Cards */}

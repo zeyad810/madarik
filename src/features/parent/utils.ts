@@ -190,9 +190,9 @@ export function getScoreRating(score: number): {
  * Formats date and time into standard Arabic string (e.g. "اليوم، 1:30 ص")
  */
 export function formatArabicDateTime(dateStr?: string | null): string {
-  if (!dateStr) return "اليوم، 1:30 ص";
+  if (!dateStr) return "";
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return dateStr;
+  if (isNaN(date.getTime())) return "";
 
   const today = new Date();
   const isToday =

@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { Child } from "@/types/auth";
 import { Loader2, LogOut } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/pagination";
 
 interface LoginSwitcherProps {
   onComplete?: () => void;
@@ -67,6 +72,62 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
     await signOut({ redirect: false });
   };
 
+  // Prepare profiles list (Parent + Children)
+  const profiles = useMemo(() => {
+    const parentProfile = {
+      id: "parent",
+      name: "ولي الأمر",
+      avatar: "/assets/user_avatar.png",
+    };
+
+    const childProfiles = children.map((child, index) => ({
+      id: child.id || `child-${index}`,
+      name: child.name,
+      avatar:
+        child.avatar_img ||
+        child.avatar ||
+        (child.gender === "female"
+          ? "/assets/girl_avatar.png"
+          : "/assets/boy_avatar.png"),
+    }));
+
+    return [parentProfile, ...childProfiles];
+  }, [children]);
+
+  const renderProfileCard = (profile: { id: string; name: string; avatar: string }) => {
+    const isSelected = selectedId === profile.id;
+
+    return (
+      <button
+        key={profile.id}
+        type="button"
+        onClick={() => setSelectedId(profile.id)}
+        className={`w-full min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${
+          isSelected
+            ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
+            : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
+        }`}
+      >
+        <div
+          className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${
+            isSelected ? "ring-[#7C3AED]/30" : "ring-purple-50"
+          } shrink-0 bg-purple-50 flex items-center justify-center`}
+        >
+          <Image
+            src={profile.avatar}
+            alt={profile.name}
+            width={56}
+            height={56}
+            className="size-full object-cover rounded-full"
+          />
+        </div>
+        <span className="text-xs sm:text-sm font-bold text-gray-800 text-center truncate max-w-full">
+          {profile.name}
+        </span>
+      </button>
+    );
+  };
+
   if (status === "loading") {
     return (
       <div className="w-full max-w-[440px] px-4 py-12 flex flex-col items-center justify-center font-sans">
@@ -98,73 +159,47 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
         تسجيل الدخول كـ
       </h1>
 
-      {/* 3. Account Profiles Selection Cards */}
-      <div className="w-full flex items-center justify-center gap-3.5 sm:gap-4 mb-8 flex-wrap p-1">
-        {/* Parent Card */}
-        <button
-          type="button"
-          onClick={() => setSelectedId("parent")}
-          className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${selectedId === "parent"
-              ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
-              : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
-            }`}
-        >
-          <div
-            className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${selectedId === "parent" ? "ring-[#7C3AED]/30" : "ring-purple-50"
-              } shrink-0 bg-purple-50 flex items-center justify-center`}
+      {/* 3. Account Profiles Selection Cards (Slider if > 3 cards, otherwise flex layout) */}
+      {profiles.length > 3 ? (
+        <div className="w-full mb-6 relative">
+          <Swiper
+            modules={[Pagination]}
+            dir="rtl"
+            slidesPerView={2.6}
+            spaceBetween={12}
+            grabCursor
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            breakpoints={{
+              0: {
+                slidesPerView: 2.3,
+                spaceBetween: 10,
+              },
+              360: {
+                slidesPerView: 2.7,
+                spaceBetween: 12,
+              },
+              420: {
+                slidesPerView: 3,
+                spaceBetween: 12,
+              },
+            }}
+            className="w-full pb-7! pt-1 px-1 [&_.swiper-pagination-bullet-active]:!bg-mad-main [&_.swiper-pagination-bullet]:bg-purple-200"
           >
-            <Image
-              src="/assets/user_avatar.png"
-              alt={parentName}
-              width={56}
-              height={56}
-              className="size-full object-cover rounded-full"
-            />
-          </div>
-          <span className="text-xs sm:text-sm font-bold text-gray-800 text-center truncate max-w-full">
-            ولي الأمر
-          </span>
-        </button>
-
-        {/* Children Cards */}
-        {children.map((child, index) => {
-          const isSelected = selectedId === child.id;
-          const avatarSrc =
-            child.avatar_img ||
-            child.avatar ||
-            (child.gender === "female"
-              ? "/assets/girl_avatar.png"
-              : "/assets/boy_avatar.png");
-
-          return (
-            <button
-              key={child.id || index}
-              type="button"
-              onClick={() => setSelectedId(child.id)}
-              className={`min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${isSelected
-                  ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
-                  : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
-                }`}
-            >
-              <div
-                className={`size-14 rounded-full overflow-hidden p-0.5 ring-2 ${isSelected ? "ring-[#7C3AED]/30" : "ring-purple-50"
-                  } shrink-0 bg-purple-50 flex items-center justify-center`}
-              >
-                <Image
-                  src={avatarSrc}
-                  alt={child.name}
-                  width={56}
-                  height={56}
-                  className="size-full object-cover rounded-full"
-                />
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-gray-800 text-center truncate max-w-full">
-                {child.name}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+            {profiles.map((profile) => (
+              <SwiperSlide key={profile.id} className="h-auto! flex justify-center py-1">
+                {renderProfileCard(profile)}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      ) : (
+        <div className="w-full flex items-center justify-center gap-3.5 sm:gap-4 mb-8 flex-wrap p-1">
+          {profiles.map(renderProfileCard)}
+        </div>
+      )}
 
       {/* 4. Continue Action Button */}
       <button
