@@ -7,7 +7,8 @@ import type { Child } from "@/types/auth";
 
 export const useParentChildren = () => {
   const { data: session, status } = useSession();
-  const { children: sessionChildren, isLoading: isSessionLoading } = useActiveAccount();
+  const { children: sessionChildren, isLoading: isSessionLoading } =
+    useActiveAccount();
   const token = session?.accessToken ?? null;
 
   const query = useQuery({
@@ -17,14 +18,15 @@ export const useParentChildren = () => {
       return res.data || [];
     },
     enabled: status === "authenticated" && !!token,
-    initialData: sessionChildren && sessionChildren.length > 0 ? sessionChildren : undefined,
+    initialData:
+      sessionChildren && sessionChildren.length > 0
+        ? sessionChildren
+        : undefined,
     staleTime: 1000 * 60 * 5, // 5 minutes cache
   });
 
   const children: Child[] =
-    query.data && query.data.length > 0
-      ? query.data
-      : sessionChildren || [];
+    query.data && query.data.length > 0 ? query.data : sessionChildren || [];
 
   const isLoading =
     (status === "loading" || isSessionLoading) && children.length === 0;

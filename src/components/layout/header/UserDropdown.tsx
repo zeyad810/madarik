@@ -27,9 +27,9 @@ export const UserDropdown: React.FC = () => {
   const currentAvatarSrc =
     activeAccount?.type === "child"
       ? activeAccount.avatar ||
-        (activeAccount.gender === "female"
-          ? "/assets/girl_avatar.png"
-          : "/assets/boy_avatar.png")
+      (activeAccount.gender === "female"
+        ? "/assets/girl_avatar.png"
+        : "/assets/boy_avatar.png")
       : "/assets/user_avatar.png";
 
   // Close dropdown on click outside
@@ -93,11 +93,10 @@ export const UserDropdown: React.FC = () => {
                 switchAccount("parent");
                 setIsOpen(false);
               }}
-              className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${
-                activeId === "parent"
+              className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${activeId === "parent"
                   ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs"
                   : "border-transparent hover:bg-gray-50"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div className="size-12 rounded-full ring-2 ring-purple-600 p-0.5 overflow-hidden shrink-0 bg-purple-50">
@@ -114,11 +113,10 @@ export const UserDropdown: React.FC = () => {
                 </span>
               </div>
               <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                  isParentActive
+                className={`text-xs font-semibold px-3 py-1 rounded-full ${isParentActive
                     ? "bg-[#DCFCE7] text-[#16A34A]"
                     : "bg-[#F3F4F6] text-[#9CA3AF]"
-                }`}
+                  }`}
               >
                 {parentStatusLabel}
               </span>
@@ -157,13 +155,12 @@ export const UserDropdown: React.FC = () => {
                         switchAccount(child.id);
                         setIsOpen(false);
                       }}
-                      className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${
-                        isSelected
+                      className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${isSelected
                           ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs"
                           : !isActive
                             ? "border-transparent opacity-60 hover:opacity-90 hover:bg-gray-50"
                             : "border-transparent hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
@@ -179,16 +176,14 @@ export const UserDropdown: React.FC = () => {
                         </div>
                         <div className="flex flex-col">
                           <span
-                            className={`font-bold text-base ${
-                              !isActive ? "text-gray-600" : "text-gray-900"
-                            }`}
+                            className={`font-bold text-base ${!isActive ? "text-gray-600" : "text-gray-900"
+                              }`}
                           >
                             {child.name}
                           </span>
                           <span
-                            className={`text-xs font-medium ${
-                              !isActive ? "text-gray-400" : "text-gray-500"
-                            }`}
+                            className={`text-xs font-medium ${!isActive ? "text-gray-400" : "text-gray-500"
+                              }`}
                           >
                             عدد الاوسمة : {badges}
                           </span>
@@ -196,11 +191,10 @@ export const UserDropdown: React.FC = () => {
                       </div>
 
                       <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                          isActive
+                        className={`text-xs font-semibold px-3 py-1 rounded-full ${isActive
                             ? "bg-[#DCFCE7] text-[#16A34A]"
                             : "bg-[#F3F4F6] text-[#9CA3AF]"
-                        }`}
+                          }`}
                       >
                         {statusLabel}
                       </span>

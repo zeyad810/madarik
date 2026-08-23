@@ -42,17 +42,20 @@ export const authOptions: NextAuthOptions = {
         try {
           const formattedPhone = credentials.phone.trim();
 
-          const response = await fetch(`${API_BASE_URL.replace(/\/+$/, "")}/auth/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
+          const response = await fetch(
+            `${API_BASE_URL.replace(/\/+$/, "")}/auth/login`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify({
+                phone: formattedPhone,
+                password: credentials.password,
+              }),
             },
-            body: JSON.stringify({
-              phone: formattedPhone,
-              password: credentials.password,
-            }),
-          });
+          );
 
           const data = await handleResponse<LoginResponse>(response);
 
@@ -69,12 +72,14 @@ export const authOptions: NextAuthOptions = {
               otp_locked_until: data.user.otp_locked_until,
               created_at: data.user.created_at,
               updated_at: data.user.updated_at,
-              children: (data.user.children || data.children || []).map((c: any) => ({
-                ...c,
-                status: c.status || "active",
-                avatar_img: c.avatar_img || c.avatar || null,
-                avatar: c.avatar || c.avatar_img || null,
-              })),
+              children: (data.user.children || data.children || []).map(
+                (c: any) => ({
+                  ...c,
+                  status: c.status || "active",
+                  avatar_img: c.avatar_img || c.avatar || null,
+                  avatar: c.avatar || c.avatar_img || null,
+                }),
+              ),
               accessToken: data.token,
               token: data.token,
               user_type: data.user_type,
@@ -145,7 +150,10 @@ export const authOptions: NextAuthOptions = {
           children: token.children || [],
         };
       }
-      console.log("NextAuth Server Session Data:", JSON.stringify(session, null, 2));
+      console.log(
+        "NextAuth Server Session Data:",
+        JSON.stringify(session, null, 2),
+      );
       return session;
     },
   },
@@ -156,5 +164,8 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "fallback_secret_for_madarik_app",
+  secret:
+    process.env.AUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    "fallback_secret_for_madarik_app",
 };

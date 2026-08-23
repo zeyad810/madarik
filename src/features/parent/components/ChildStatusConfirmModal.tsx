@@ -125,11 +125,10 @@ export const ChildStatusConfirmModal: React.FC<ChildStatusConfirmModalProps> = (
             <p className="text-xs text-gray-500">الفئة: {child.ageCategory}</p>
           </div>
           <div
-            className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${
-              isCurrentlyActive
+            className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ${isCurrentlyActive
                 ? "bg-emerald-100 text-emerald-700"
                 : "bg-gray-200 text-gray-600"
-            }`}
+              }`}
           >
             {isCurrentlyActive ? "مفعل حالياً" : "معطل حالياً"}
           </div>

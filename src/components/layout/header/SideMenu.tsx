@@ -13,7 +13,7 @@ import { RoleGuard } from "@/components/guards";
 
 // Smooth spring physics — feels like a native drawer
 const DRAWER_SPRING = { type: "spring", stiffness: 220, damping: 30, mass: 1, delay: 0.05 } as const;
-const DRAWER_EXIT   = { type: "tween",  ease: "easeInOut" as const, duration: 0.35 } as const;
+const DRAWER_EXIT = { type: "tween", ease: "easeInOut" as const, duration: 0.35 } as const;
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -47,9 +47,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
   const currentAvatarSrc =
     activeAccount?.type === "child"
       ? activeAccount.avatar ||
-        (activeAccount.gender === "female"
-          ? "/assets/girl_avatar.png"
-          : "/assets/boy_avatar.png")
+      (activeAccount.gender === "female"
+        ? "/assets/girl_avatar.png"
+        : "/assets/boy_avatar.png")
       : "/assets/user_avatar.png";
 
   return (
@@ -120,11 +120,10 @@ const SideMenu: React.FC<SideMenuProps> = ({
                           if (onSelectCategory) onSelectCategory(item.id);
                           onClose();
                         }}
-                        className={`flex items-center justify-between px-6 py-3.5 text-right text-sm font-semibold transition-all border-b border-gray-100/70 ${
-                          isActive
+                        className={`flex items-center justify-between px-6 py-3.5 text-right text-sm font-semibold transition-all border-b border-gray-100/70 ${isActive
                             ? "bg-[#F3E8FF] text-mad-main font-bold border-r-4 border-r-mad-main"
                             : "text-gray-700 hover:bg-purple-50/60 hover:text-mad-main"
-                        }`}
+                          }`}
                       >
                         <span>{item.label}</span>
                       </Link>

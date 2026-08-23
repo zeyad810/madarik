@@ -7,7 +7,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Loader2, AlertCircle } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { Toggle } from "@/components/ui";
+import { Toggle, ChildFormSkeleton, AddChildSkeleton } from "@/components/ui";
 import { calculateAgeInArabic, getAgeCategoryFromBirthDate } from "@/lib/utils";
 import {
   addChildSchema,
@@ -319,9 +319,8 @@ export const AddChildView: React.FC = () => {
                   </span>
                   <div className="flex items-center gap-2.5">
                     <span
-                      className={`font-bold text-xs ${
-                        isAccountActive ? "text-[#22C55E]" : "text-gray-400"
-                      }`}
+                      className={`font-bold text-xs ${isAccountActive ? "text-[#22C55E]" : "text-gray-400"
+                        }`}
                     >
                       {isAccountActive ? "مفعل" : "معطل"}
                     </span>
@@ -352,11 +351,10 @@ export const AddChildView: React.FC = () => {
                     {...register("name")}
                     disabled={isPending}
                     placeholder="اكتب اسم طفلك هنا (الحد الأقصى 50 حرفاً)"
-                    className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium text-right ${
-                      errors.name
+                    className={`w-full border rounded-2xl px-4 py-3.5 bg-white text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all font-medium text-right ${errors.name
                         ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
                         : "border-gray-200 focus:border-mad-main focus:ring-2 focus:ring-mad-main/10"
-                    }`}
+                      }`}
                   />
                   {errors.name && (
                     <p className="text-xs text-red-500 font-semibold mt-1 text-right">
@@ -379,11 +377,10 @@ export const AddChildView: React.FC = () => {
                       type="date"
                       {...register("birthDate")}
                       disabled={isPending}
-                      className={`date-input w-full border rounded-2xl px-4 py-3.5 pr-11 bg-white text-xs sm:text-sm text-gray-900 outline-none transition-all font-medium cursor-pointer ${
-                        errors.birthDate
+                      className={`date-input w-full border rounded-2xl px-4 py-3.5 pr-11 bg-white text-xs sm:text-sm text-gray-900 outline-none transition-all font-medium cursor-pointer ${errors.birthDate
                           ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
                           : "border-gray-200 focus:border-mad-main focus:ring-2 focus:ring-mad-main/10"
-                      }`}
+                        }`}
                     />
                     <Calendar className="size-4.5 text-gray-400 absolute right-4 pointer-events-none stroke-[2]" />
                   </div>
@@ -525,168 +522,5 @@ export const AddChildView: React.FC = () => {
   );
 };
 
-export const ChildFormSkeleton: React.FC<{ isEditMode?: boolean }> = ({ isEditMode = false }) => {
-  return (
-    <div
-      className="bg-white rounded-3xl border border-purple-100 shadow-xs p-6 sm:p-10 animate-pulse select-none"
-      dir="rtl"
-    >
-      {/* Card Header */}
-      <h2 className="text-mad-main font-bold text-lg sm:text-xl">
-        بيانات ملف الطفل
-      </h2>
-      <div className="border-b border-gray-100 mt-4 mb-8" />
-
-      {/* Form Skeleton */}
-      <div className="space-y-8">
-        {/* Account Status Row (if in edit mode) */}
-        {isEditMode && (
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/80 border border-gray-100">
-            <span className="text-xs sm:text-sm font-bold text-gray-800">
-              حالة حساب الطفل
-            </span>
-            <div className="flex items-center gap-2.5">
-              <div className="h-4 w-10 bg-gray-200/80 rounded" />
-              <div className="w-11 h-6 bg-gray-200 rounded-full" />
-            </div>
-          </div>
-        )}
-
-        {/* Form Fields Grid: 2 Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Field 1: Child Name */}
-          <div className="space-y-2">
-            <label className="block text-xs sm:text-sm font-bold text-gray-800 text-right">
-              اسم الطفل <span className="text-red-500">*</span>
-            </label>
-            <div className="w-full h-[48px] sm:h-[50px] border border-gray-200/80 rounded-2xl bg-gray-50/50" />
-          </div>
-
-          {/* Field 2: Birth Date */}
-          <div className="space-y-2">
-            <label className="block text-xs sm:text-sm font-bold text-gray-800 text-right">
-              تاريخ الميلاد <span className="text-red-500">*</span>
-            </label>
-            <div className="relative flex items-center">
-              <div className="w-full h-[48px] sm:h-[50px] border border-gray-200/80 rounded-2xl bg-gray-50/50" />
-              <Calendar className="size-4.5 text-gray-300 absolute right-4 pointer-events-none stroke-[2]" />
-            </div>
-          </div>
-
-          {/* Field 3: Age (Auto-calculated) */}
-          <div className="space-y-2">
-            <label className="block text-xs sm:text-sm font-bold text-gray-800 text-right">
-              العمر (تحدد تلقائياً)
-            </label>
-            <div className="w-full h-[48px] sm:h-[50px] border border-gray-200/80 rounded-2xl bg-gray-50/70" />
-          </div>
-
-          {/* Field 4: Gender */}
-          <div className="space-y-2">
-            <label className="block text-xs sm:text-sm font-bold text-gray-800 text-right">
-              الجنس <span className="text-red-500">*</span>
-            </label>
-            <div className="flex items-center gap-6 pt-2 h-[32px]">
-              <div className="flex items-center gap-2">
-                <div className="size-4.5 rounded-full bg-gray-200/80" />
-                <span className="text-xs sm:text-sm font-bold text-gray-400">
-                  أنثى
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="size-4.5 rounded-full bg-gray-200/80" />
-                <span className="text-xs sm:text-sm font-bold text-gray-400">
-                  ذكر
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Terms & Conditions Checkbox (if in add mode) */}
-        {!isEditMode && (
-          <div className="pt-2">
-            <div className="flex items-start sm:items-center gap-2.5">
-              <div className="size-4.5 mt-0.5 sm:mt-0 rounded-md bg-gray-200/80 shrink-0" />
-              <span className="text-xs sm:text-sm text-gray-400 font-medium leading-relaxed text-right">
-                أوافق على شروط الاشتراك وسياسة الاستخدام المخصصة للأطفال في منصة مدارك القراءة.
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-start gap-4 pt-4">
-          <div className="px-8 py-3 rounded-full bg-mad-main/40 text-white/80 font-bold text-sm sm:text-base min-w-[140px] h-[46px] sm:h-[48px] flex items-center justify-center">
-            {isEditMode ? "حفظ التعديلات" : "حفظ التغيرات"}
-          </div>
-          <div className="px-8 py-3 rounded-full border border-gray-200 text-gray-400 font-bold text-sm sm:text-base min-w-[120px] h-[46px] sm:h-[48px] flex items-center justify-center">
-            إلغاء
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const AddChildSkeleton: React.FC<{ isEditMode?: boolean }> = ({ isEditMode = false }) => {
-  return (
-    <div className="w-full min-h-screen bg-white section-spacing select-none" dir="rtl">
-      <div className="container mx-auto">
-        {/* =========================================================================
-            1. BREADCRUMBS NAVIGATION SKELETON
-           ========================================================================= */}
-        <div className="flex items-center justify-start mb-4">
-          <Breadcrumb>
-            <Breadcrumb.List>
-              <Breadcrumb.Item>
-                <Breadcrumb.Link
-                  href="/"
-                  className="text-mad-main font-bold hover:underline"
-                >
-                  الرئيسية
-                </Breadcrumb.Link>
-              </Breadcrumb.Item>
-              <Breadcrumb.Separator />
-              <Breadcrumb.Item>
-                <Breadcrumb.Link
-                  href="/parents/childMangement"
-                  className="text-mad-main font-bold hover:underline"
-                >
-                  إدارة الأطفال
-                </Breadcrumb.Link>
-              </Breadcrumb.Item>
-              <Breadcrumb.Separator />
-              <Breadcrumb.Item>
-                <Breadcrumb.Page className="text-gray-500 font-medium">
-                  {isEditMode ? "تعديل بيانات الطفل" : "إنشاء حساب طفل"}
-                </Breadcrumb.Page>
-              </Breadcrumb.Item>
-            </Breadcrumb.List>
-          </Breadcrumb>
-        </div>
-
-        {/* =========================================================================
-            2. PAGE HEADER SKELETON
-           ========================================================================= */}
-        <div className="space-y-1 mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight">
-            {isEditMode ? "تعديل بيانات الطفل" : "إنشاء حساب طفل جديد"}
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-normal">
-            {isEditMode
-              ? "قم بتحديث وتعديل بيانات ملف طفلك بسهولة لمتابعة رحلته التعليمية."
-              : "أضف حساباً خاصاً بطفلك لتمكينه من استكشاف القصص التعليمية الموجهة وحل الاختبارات التفاعلية الممتعة."}
-          </p>
-        </div>
-
-        {/* =========================================================================
-            3. CHILD FORM SKELETON
-           ========================================================================= */}
-        <ChildFormSkeleton isEditMode={isEditMode} />
-      </div>
-    </div>
-  );
-};
-
+export { ChildFormSkeleton, AddChildSkeleton } from "@/components/ui";
 export default AddChildView;

@@ -25,11 +25,10 @@ export const ChildCard: React.FC<ChildCardProps> = ({
   return (
     <div
       dir="rtl"
-      className={`w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between transition-all duration-200 select-none border-2 box-border ${
-        !isActive
+      className={`w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between transition-all duration-200 select-none border-2 box-border ${!isActive
           ? "border-gray-200/90 bg-[#F9FAFB]/90 opacity-80 hover:opacity-95 shadow-xs"
           : "border-gray-200 bg-white hover:border-purple-200 shadow-xs hover:shadow-md hover:scale-[1.01]"
-      }`}
+        }`}
     >
       {/* 1. Avatar */}
       <div className="size-24 rounded-full overflow-hidden p-1 ring-2 ring-purple-100/80 bg-purple-50 flex items-center justify-center mb-3 shrink-0 shadow-inner">
@@ -49,11 +48,10 @@ export const ChildCard: React.FC<ChildCardProps> = ({
 
       {/* 3. Age Category Badge */}
       <div
-        className={`px-3.5 py-1 rounded-full text-xs font-bold mb-2 ${
-          isActive
+        className={`px-3.5 py-1 rounded-full text-xs font-bold mb-2 ${isActive
             ? "bg-[#EDE9FE] text-mad-main"
             : "bg-gray-200 text-gray-500"
-        }`}
+          }`}
       >
         الفئة: {child.ageCategory}
       </div>
@@ -71,9 +69,8 @@ export const ChildCard: React.FC<ChildCardProps> = ({
         {/* Toggle Switch + Status Text */}
         <div className="flex items-center gap-2">
           <span
-            className={`font-bold text-xs ${
-              isActive ? "text-[#22C55E]" : "text-gray-400"
-            }`}
+            className={`font-bold text-xs ${isActive ? "text-[#22C55E]" : "text-gray-400"
+              }`}
           >
             {isActive ? "مفعل" : "معطل"}
           </span>
@@ -103,37 +100,5 @@ export const ChildCard: React.FC<ChildCardProps> = ({
   );
 };
 
-export const ChildCardSkeleton: React.FC = () => {
-  return (
-    <div
-      dir="rtl"
-      className="w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between border-2 border-gray-200/70 bg-white shadow-xs animate-pulse box-border select-none min-h-[380px]"
-    >
-      {/* 1. Avatar Skeleton */}
-      <div className="size-24 rounded-full bg-gray-200/80 ring-2 ring-purple-50 mb-3 shrink-0" />
-
-      {/* 2. Name Skeleton */}
-      <div className="h-7 w-32 bg-gray-200/80 rounded-lg my-4" />
-
-      {/* 3. Age Category Badge Skeleton */}
-      <div className="h-6 w-28 bg-purple-50 rounded-full mb-2" />
-
-      {/* 4. Divider */}
-      <div className="w-full border-t border-gray-100 my-6" />
-
-      {/* 5. Account Status Row Skeleton */}
-      <div className="w-full flex items-center justify-between mb-4 px-1">
-        <div className="h-4 w-16 bg-gray-200/70 rounded" />
-        <div className="flex items-center gap-2">
-          <div className="h-4 w-8 bg-gray-200/70 rounded" />
-          <div className="w-11 h-6 bg-gray-200 rounded-full" />
-        </div>
-      </div>
-
-      {/* 6. Edit Action Button Skeleton */}
-      <div className="w-full h-[42px] rounded-full bg-gray-200/80" />
-    </div>
-  );
-};
-
+export { ChildCardSkeleton } from "@/components/ui";
 export default ChildCard;
