@@ -13,6 +13,7 @@ import { isStudentRole } from "@/lib/roles";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import ResetFirstPasswordModal from "./components/ResetFirstPasswordModal";
 
 interface LoginSwitcherProps {
   onComplete?: () => void;
@@ -29,19 +30,22 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
   const { switchAccount, activeId, resetAccount } = useActiveAccount();
 
   const user = session?.user;
+  const rawFlag = user?.change_by_admin;
+  const needsPasswordReset =
+    rawFlag === false || (rawFlag as any) === 0 || (rawFlag as any) === "0";
   const rawRole = (session as any)?.user_type || (user as any)?.user_type;
   const isStudent = isStudentRole(rawRole);
   const children: Child[] = user?.children || [];
 
-  // If user is student, redirect immediately to stories
+  // If user is student (and no reset pending), redirect immediately to stories
   useEffect(() => {
-    if (isStudent) {
+    if (isStudent && !needsPasswordReset) {
       const callbackUrl = searchParams?.get("callbackUrl");
       const targetUrl = callbackUrl || "/stories";
       router.push(targetUrl);
       router.refresh();
     }
-  }, [isStudent, router, searchParams]);
+  }, [isStudent, needsPasswordReset, router, searchParams]);
 
   // Default selection: currently active ID or "parent"
   const [selectedId, setSelectedId] = useState<string>(activeId || "parent");
@@ -142,7 +146,7 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
     );
   };
 
-  if (status === "loading" || isStudent) {
+  if (status === "loading" || (isStudent && !needsPasswordReset)) {
     return (
       <div className="w-full max-w-[440px] px-4 py-12 flex flex-col items-center justify-center font-sans">
         <Loader2 className="size-8 animate-spin text-mad-main mb-4" />
@@ -158,6 +162,20 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
       className="w-full max-w-[440px] px-4 py-8 flex flex-col items-center justify-center font-sans animate-in fade-in zoom-in-95 duration-200"
       dir="rtl"
     >
+      {/* 0. Reset First Password Modal if flagged */}
+      <ResetFirstPasswordModal
+        isOpen={needsPasswordReset}
+        onSuccess={() => {
+          if (isStudent) {
+            const callbackUrl = searchParams?.get("callbackUrl");
+            const targetUrl = callbackUrl || "/stories";
+            router.push(targetUrl);
+            router.refresh();
+          }
+        }}
+        onSignOut={handleDifferentAccount}
+      />
+
       {/* 1. Centered Logo */}
       <div className="mb-5 flex justify-center">
         <Image

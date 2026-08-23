@@ -45,6 +45,22 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
+export const resetFirstPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(1, { message: AUTH_TEXTS.validation.passwordRequired })
+      .min(6, { message: AUTH_TEXTS.validation.passwordMinLength }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: AUTH_TEXTS.validation.passwordRequired }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: AUTH_TEXTS.validation.passwordMatch,
+    path: ["confirmPassword"],
+  });
+
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type OtpFormData = z.infer<typeof otpSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type ResetFirstPasswordFormData = z.infer<typeof resetFirstPasswordSchema>;
