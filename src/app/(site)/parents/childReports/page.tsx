@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ChildsReports } from "@/features/parent";
+import { RoleGuard } from "@/components/guards";
 
 export const metadata: Metadata = {
   title: "تقارير الأطفال - مدارك القراءة",
@@ -7,5 +8,12 @@ export const metadata: Metadata = {
 };
 
 export default function ChildReportsPage() {
-  return <ChildsReports />;
+  return (
+    <RoleGuard
+      allowedRoles={["parent", "free", "free_customer"]}
+      loadingFallback={<ChildsReports />}
+    >
+      <ChildsReports />
+    </RoleGuard>
+  );
 }
