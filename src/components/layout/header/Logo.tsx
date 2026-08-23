@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 interface LogoProps {
   className?: string;
@@ -15,9 +18,11 @@ const Logo: React.FC<LogoProps> = ({
   src = "/logo.png",
   alt = "شعار منصة مدارك القراءة"
 }) => {
+  const { isStudent } = useActiveAccount();
+
   return (
     <Link
-      href="/"
+      href={isStudent ? "/stories" : "/"}
       className={`inline-flex items-center justify-center shrink-0 ${className}`}
     >
       <Image
@@ -32,4 +37,4 @@ const Logo: React.FC<LogoProps> = ({
   );
 };
 
-export default Logo;
+export default Logo;

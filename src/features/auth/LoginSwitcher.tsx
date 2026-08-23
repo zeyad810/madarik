@@ -9,6 +9,7 @@ import { Child } from "@/types/auth";
 import { Loader2, LogOut } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
+import { isStudentRole } from "@/lib/roles";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -28,7 +29,19 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
   const { switchAccount, activeId, resetAccount } = useActiveAccount();
 
   const user = session?.user;
+  const rawRole = (session as any)?.user_type || (user as any)?.user_type;
+  const isStudent = isStudentRole(rawRole);
   const children: Child[] = user?.children || [];
+
+  // If user is student, redirect immediately to stories
+  useEffect(() => {
+    if (isStudent) {
+      const callbackUrl = searchParams?.get("callbackUrl");
+      const targetUrl = callbackUrl || "/stories";
+      router.push(targetUrl);
+      router.refresh();
+    }
+  }, [isStudent, router, searchParams]);
 
   // Default selection: currently active ID or "parent"
   const [selectedId, setSelectedId] = useState<string>(activeId || "parent");
@@ -58,11 +71,12 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
       onComplete();
     } else {
       const callbackUrl = searchParams?.get("callbackUrl");
-      const targetUrl = callbackUrl || "/";
+      const targetUrl = isStudent ? "/stories" : (callbackUrl || "/");
       router.push(targetUrl);
       router.refresh();
     }
   };
+
 
   const handleDifferentAccount = async () => {
     resetAccount();
@@ -128,11 +142,13 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
     );
   };
 
-  if (status === "loading") {
+  if (status === "loading" || isStudent) {
     return (
       <div className="w-full max-w-[440px] px-4 py-12 flex flex-col items-center justify-center font-sans">
         <Loader2 className="size-8 animate-spin text-mad-main mb-4" />
-        <span className="text-sm font-semibold text-gray-500">جاري تحميل بيانات الحساب...</span>
+        <span className="text-sm font-semibold text-gray-500">
+          {isStudent ? "جاري توجيهك إلى صفحة القصص..." : "جاري تحميل بيانات الحساب..."}
+        </span>
       </div>
     );
   }

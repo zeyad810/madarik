@@ -2,8 +2,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Bell, Search, LogOut } from "lucide-react";
+import { Bell, Search, LogOut, User } from "lucide-react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 export const UserDropdown: React.FC = () => {
@@ -206,6 +207,18 @@ export const UserDropdown: React.FC = () => {
 
             {/* Bottom Divider */}
             <div className="border-b border-gray-100 my-1 mx-2" />
+
+            {/* Edit Profile Link */}
+            <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="w-full flex items-center justify-between py-3 px-4 text-gray-700 hover:text-mad-main font-bold text-sm hover:bg-purple-50/60 rounded-2xl transition-all cursor-pointer mb-1"
+            >
+              <div className="flex items-center gap-3">
+                <User className="size-5 text-gray-500" />
+                <span>الملف الشخصي</span>
+              </div>
+            </Link>
 
             {/* Logout Action */}
             <button

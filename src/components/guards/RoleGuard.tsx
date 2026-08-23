@@ -1,9 +1,10 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AccessDeniedFallback } from "./AccessDeniedFallback";
-import { hasRoleAccess } from "@/lib/roles";
+import { hasRoleAccess, isStudentRole } from "@/lib/roles";
 
 interface RoleGuardProps {
   allowedRoles: string[];
@@ -14,7 +15,7 @@ interface RoleGuardProps {
 
 /**
  * RoleGuard restricts rendering to users with specific roles (e.g., 'parent', 'free', 'free_customer').
- * The user's role is sourced strictly from the authenticated session, never from the URL.
+ * If a student attempts to access a protected non-student page, they are immediately redirected to /stories.
  */
 export function RoleGuard({
   allowedRoles,
@@ -22,21 +23,31 @@ export function RoleGuard({
   loadingFallback = null,
   children,
 }: RoleGuardProps) {
-  const { user_type, userRole, isLoading, isAuthenticated } = useActiveAccount();
+  const router = useRouter();
+  const { user_type, userRole, isLoading, isAuthenticated, isStudent } = useActiveAccount();
+
+  const currentRole = user_type || userRole;
+  const hasAccess = hasRoleAccess(currentRole, allowedRoles);
+  const userIsStudent = isStudent || isStudentRole(currentRole);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && userIsStudent && !hasAccess) {
+      router.push("/stories");
+    }
+  }, [isLoading, isAuthenticated, userIsStudent, hasAccess, router]);
 
   if (isLoading) {
     return <>{loadingFallback}</>;
   }
 
-  const currentRole = user_type || userRole;
-
   if (!isAuthenticated || !currentRole) {
     return <>{fallback}</>;
   }
 
-  const hasAccess = hasRoleAccess(currentRole, allowedRoles);
-
   if (!hasAccess) {
+    if (userIsStudent) {
+      return <>{loadingFallback}</>;
+    }
     return <>{fallback}</>;
   }
 
@@ -44,4 +55,5 @@ export function RoleGuard({
 }
 
 export default RoleGuard;
+
 

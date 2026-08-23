@@ -15,6 +15,7 @@ import PhoneNumberInput from "@/components/ui/PhoneNumberInput";
 
 import { useSession } from "next-auth/react";
 import LoginSwitcher from "./LoginSwitcher";
+import { isStudentRole } from "@/lib/roles";
 
 interface LoginFormProps {
   onSubmitSuccess?: (data: LoginFormData) => void;
@@ -33,12 +34,25 @@ const LoginForm: React.FC<LoginFormProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showSwitcher, setShowSwitcher] = useState(false);
 
-  const isSwitcherVisible = showSwitcher || status === "authenticated";
+  const sessionUserType = (session as any)?.user_type || (session?.user as any)?.user_type;
+  const isStudent = isStudentRole(sessionUserType);
+
+  // If already authenticated as student, redirect immediately
+  React.useEffect(() => {
+    if (status === "authenticated" && isStudent) {
+      const callbackUrl = searchParams?.get("callbackUrl");
+      const targetUrl = callbackUrl || "/stories";
+      router.push(targetUrl);
+      router.refresh();
+    }
+  }, [status, isStudent, router, searchParams]);
+
+  const isSwitcherVisible = (showSwitcher || status === "authenticated") && !isStudent;
 
   const {
     control,
@@ -76,6 +90,17 @@ const LoginForm: React.FC<LoginFormProps> = ({
         if (onSubmitSuccess) {
           onSubmitSuccess(data);
         }
+
+        const currentSession = await getSession();
+        const rawRole = (currentSession as any)?.user_type || (currentSession?.user as any)?.user_type;
+        if (isStudentRole(rawRole)) {
+          const callbackUrl = searchParams?.get("callbackUrl");
+          const targetUrl = callbackUrl || "/stories";
+          router.push(targetUrl);
+          router.refresh();
+          return;
+        }
+
         setShowSwitcher(true);
       }
     } catch {
@@ -84,6 +109,15 @@ const LoginForm: React.FC<LoginFormProps> = ({
       toast.error(errorMsg);
     }
   };
+
+  if (status === "authenticated" && isStudent) {
+    return (
+      <div className="w-full max-w-[440px] px-4 py-12 flex flex-col items-center justify-center font-sans">
+        <Loader2 className="size-8 animate-spin text-mad-main mb-4" />
+        <span className="text-sm font-semibold text-gray-500">جاري توجيهك إلى صفحة القصص...</span>
+      </div>
+    );
+  }
 
   if (isSwitcherVisible) {
     return (
