@@ -124,11 +124,6 @@ export const authOptions: NextAuthOptions = {
         } else if (session.children) {
           token.children = session.children;
         }
-        if (session.user?.change_by_admin !== undefined) {
-          token.change_by_admin = Boolean(session.user.change_by_admin);
-        } else if (session.change_by_admin !== undefined) {
-          token.change_by_admin = Boolean(session.change_by_admin);
-        }
       }
       return token;
     },

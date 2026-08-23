@@ -82,14 +82,3 @@ export interface VerifyRegisterResponse {
   token?: string;
   user?: AuthUser;
 }
-
-export interface ResetPasswordPayload {
-  password: string;
-  password_confirmation: string;
-}
-
-export interface ResetPasswordResponse {
-  message: string;
-  status?: boolean | string;
-  data?: unknown;
-}
