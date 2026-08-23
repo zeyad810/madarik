@@ -48,6 +48,17 @@ export const AUTH_TEXTS = {
   sidePanel: {
     alt: "لوحة المصادقة",
   },
+  resetFirstPassword: {
+    heading: "تعيين كلمة المرور الجديدة",
+    description: "تمت إعادة تعيين كلمة المرور الخاصة بك من قِبل المسؤول. يرجى تعيين كلمة مرور جديدة لحسابك للمتابعة.",
+    passwordLabel: "كلمة المرور الجديدة",
+    passwordPlaceholder: "••••••••",
+    confirmPasswordLabel: "تأكيد كلمة المرور الجديدة",
+    confirmPasswordPlaceholder: "••••••••",
+    submitButton: "حفظ ومتابعة",
+    submittingButton: "جاري الحفظ...",
+    logoutText: "تسجيل الخروج والعودة لاحقاً",
+  },
   validation: {
     usernameRequired: "اسم المستخدم مطلوب",
     phoneRequired: "رقم الهاتف مطلوب",
