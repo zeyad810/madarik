@@ -75,7 +75,7 @@ export const ChildQuizResultsTable: React.FC<ChildQuizResultsTableProps> = ({
                   >
                     {/* 1. Story Title */}
                     <td className="py-4 px-4 font-bold text-mad-text-primary">
-                      {row.storyTitle}
+                      {row.story?.title || row.storyTitle}
                     </td>
 
                     {/* 2. Level */}

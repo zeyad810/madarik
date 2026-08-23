@@ -83,12 +83,14 @@ export interface ReadingActivity {
 
 export interface QuizDetails {
   id: string;
-  code: string;
-  story_id: string;
-  passing_score: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
+  code?: string;
+  story_id?: string;
+  passing_score?: number;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
+  title?: string;
+  story?: ReadingActivityStory;
 }
 
 export interface QuizAttempt {
@@ -101,11 +103,12 @@ export interface QuizAttempt {
   highest_score: number;
   total_count: number;
   attempt_number: number;
-  completed_at: string;
-  duration_seconds: number;
-  created_at: string;
-  updated_at: string;
+  completed_at?: string;
+  duration_seconds?: number;
+  created_at?: string;
+  updated_at?: string;
   quiz?: QuizDetails;
+  story?: ReadingActivityStory;
 }
 
 export interface UserBadge {
@@ -152,6 +155,7 @@ export interface ChildReportsResponse {
 export interface QuizResultRow {
   id: string;
   storyTitle: string;
+  story?: ReadingActivityStory;
   level: string;
   resultScore: number;
   attemptsCount: number;
@@ -163,6 +167,7 @@ export interface QuizResultRow {
 export interface ReadingHistoryRow {
   id: string;
   storyTitle: string;
+  story?: ReadingActivityStory;
   dateText: string;
   durationMinutes: number;
   status: "completed" | "in_progress";

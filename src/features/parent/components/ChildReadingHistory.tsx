@@ -30,24 +30,24 @@ export const ChildReadingHistory: React.FC<ChildReadingHistoryProps> = ({
                 className="w-full bg-white border border-mad-white-200/90 hover:border-mad-purple-200 hover:shadow-xs transition-all duration-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
                 {/* Right side in RTL: Story Title */}
-                <div className="font-bold text-sm sm:text-base text-mad-text-primary text-right">
-                  {row.storyTitle}
-                </div>
+                <div className="font-bold text-sm sm:text-base text-mad-text-primary text-right flex items-center gap-4">
+                  {row.story?.title || row.storyTitle}
 
-                {/* Middle: Date & Spent Duration */}
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-mad-text-secondary font-medium">
-                  {/* Date */}
-                  {row.dateText && (
+                  {/* Middle: Date & Spent Duration */}
+                  <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-mad-text-secondary font-medium">
+                    {/* Date */}
+                    {row.dateText && (
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="size-3.5 text-mad-text-secondary stroke-[2]" />
+                        <span>تاريخ القراءة: {row.dateText}</span>
+                      </div>
+                    )}
+
+                    {/* Duration */}
                     <div className="flex items-center gap-1.5">
-                      <Calendar className="size-3.5 text-mad-text-secondary stroke-[2]" />
-                      <span>تاريخ القراءة: {row.dateText}</span>
+                      <Clock className="size-3.5 text-mad-text-secondary stroke-[2]" />
+                      <span>الوقت المنقضي: {row.durationMinutes || 0} دقيقة</span>
                     </div>
-                  )}
-
-                  {/* Duration */}
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="size-3.5 text-mad-text-secondary stroke-[2]" />
-                    <span>الوقت المنقضي: {row.durationMinutes || 0} دقيقة</span>
                   </div>
                 </div>
 

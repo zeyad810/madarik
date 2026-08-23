@@ -42,12 +42,32 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
     if (child?.quiz_attempts && child.quiz_attempts.length > 0) {
       return child.quiz_attempts.map((attempt, index) => {
         const score = Number(attempt.score) || 0;
+
+        // Resolve story title from quiz or reading activities
+        const matchedReadingStory = child.reading_activities?.find(
+          (act) =>
+            (attempt.quiz?.story_id && act.story_id === attempt.quiz.story_id) ||
+            (attempt.quiz?.story_id && act.story?.id === attempt.quiz.story_id)
+        )?.story;
+
+        const resolvedTitle =
+          attempt.story?.title ||
+          attempt.quiz?.story?.title ||
+          attempt.quiz?.title ||
+          matchedReadingStory?.title ||
+          (attempt.quiz?.code ? `اختبار ${attempt.quiz.code}` : `اختبار القصة ${index + 1}`);
+
+        const resolvedStory = attempt.story ||
+          attempt.quiz?.story ||
+          matchedReadingStory || {
+            id: attempt.quiz?.story_id || `story-${index}`,
+            title: resolvedTitle,
+          };
+
         return {
           id: attempt.id || `quiz-${index}`,
-          storyTitle:
-            attempt.quiz?.story_id ||
-            attempt.quiz?.code ||
-            `اختبار القصة ${index + 1}`,
+          storyTitle: resolvedTitle,
+          story: resolvedStory,
           level: levelText,
           resultScore: score,
           attemptsCount: attempt.attempt_number || attempt.total_count || 1,
@@ -68,9 +88,12 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
           act.started_at,
           act.finished_at
         );
+        const resolvedTitle = act.story?.title || `قصة ${index + 1}`;
+
         return {
           id: act.id || `read-${index}`,
-          storyTitle: act.story?.title || `قصة ${index + 1}`,
+          storyTitle: resolvedTitle,
+          story: act.story || { id: act.story_id, title: resolvedTitle },
           dateText: formatArabicDateTime(act.started_at),
           durationMinutes: duration,
           status: act.finished_at ? ("completed" as const) : ("in_progress" as const),
