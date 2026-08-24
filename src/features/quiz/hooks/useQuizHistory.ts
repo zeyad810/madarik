@@ -11,27 +11,32 @@ import { quizQueryKeys, ROLES_WITH_HISTORY } from "../constants";
 import type { QuizHistoryResponse } from "../types";
 
 export function useQuizHistory(
-  quizId: string | null | undefined
+  targetId?: string | null | undefined
 ): UseQueryResult<QuizHistoryResponse, Error> {
   const { data: session, status } = useSession();
-  const { userRole, isAuthenticated } = useActiveAccount();
+  const { userRole, isAuthenticated, activeChild } = useActiveAccount();
 
   const role = isAuthenticated ? (userRole || "parent") : "visitor";
-  const token = session?.accessToken ?? null;
-  const hasAccess = ROLES_WITH_HISTORY.includes(role as (typeof ROLES_WITH_HISTORY)[number]);
+  const token = session?.accessToken || session?.token || null;
+  const hasAccess = ROLES_WITH_HISTORY.includes(
+    role as (typeof ROLES_WITH_HISTORY)[number]
+  );
+
+  // If parent and no targetId provided, use activeChild.id
+  const resolvedTargetId = targetId || (activeChild?.id ? activeChild.id : null);
 
   return useQuery({
-    queryKey: quizQueryKeys.history(role, quizId ?? ""),
+    queryKey: quizQueryKeys.history(role, resolvedTargetId ?? "all"),
     queryFn: async () => {
       try {
-        return await getQuizHistory(quizId!, role, token);
+        return await getQuizHistory(resolvedTargetId, role, token);
       } catch {
-        // History endpoint may not exist yet — return empty gracefully
         return { success: true, data: [] } satisfies QuizHistoryResponse;
       }
     },
-    enabled: Boolean(quizId) && hasAccess && status !== "loading",
+    enabled: hasAccess && status !== "loading",
     staleTime: 2 * 60 * 1000,
     retry: false,
   });
 }
+

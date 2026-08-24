@@ -24,7 +24,7 @@ export const useFreeStories = <TData = FreeStoriesResponse>(
   const { userRole, isAuthenticated } = useActiveAccount();
 
   const role = isAuthenticated ? (userRole || "visitor") : "visitor";
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   return useQuery({
     queryKey: storyQueryKeys.free(role),

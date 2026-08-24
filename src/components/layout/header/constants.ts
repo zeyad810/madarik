@@ -15,7 +15,12 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
     href: "/parents/childReports",
     allowedRoles: ["parent", "free", "free_customer"],
   },
-  { id: "attempts-log", label: "سجل المحاولات", href: "/attempts" },
+  {
+    id: "attempts-log",
+    label: "سجل المحاولات",
+    href: "/attempts",
+    allowedRoles: ["student", "parent", "child"],
+  },
   { id: "subscriptions", label: "الاشتراكات والدفع", href: "/subscriptions" },
   { id: "sub-status", label: "حالة اشتراكي", href: "/subscription-status" },
   { id: "profile", label: "الملف الشخصي", href: "/profile" },

@@ -20,7 +20,7 @@ export const useStoryById = <TData = StoryDetailResponse>(
   const { userRole, isAuthenticated } = useActiveAccount();
 
   const role = isAuthenticated ? (userRole || "visitor") : "visitor";
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   return useQuery({
     queryKey: [...storyQueryKeys.detail(id), role],

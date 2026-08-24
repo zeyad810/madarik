@@ -23,7 +23,7 @@ export const useUpdateChild = (
   const queryClient = useQueryClient();
   const { onSuccess, onError, ...restOptions } = options || {};
 
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   return useMutation<UpdateChildResponse, ApiError | Error, UpdateChildPayload>(
     {

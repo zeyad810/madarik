@@ -54,42 +54,73 @@ export interface QuizAnswerEntry {
 }
 
 export interface SubmitQuizPayload {
-  answers: QuizAnswerEntry[];
+  started_at?: string;
+  answers: Record<string, string> | QuizAnswerEntry[];
+}
+
+export interface SubmitResultAnswerItem {
+  question_id: string;
+  question_text?: string;
+  your_answer?: string | null;
+  correct_answer?: string;
+  is_correct?: boolean;
 }
 
 export interface QuizResultData {
   score: number;
+  points_earned?: number;
+  highest_score?: number;
   total_questions: number;
   correct_answers: number;
   wrong_answers?: number;
+  duration_seconds?: number;
   percentage?: number;
   passed: boolean;
   passing_score?: number;
   time_taken?: number;
+  badges_earned?: string[];
+  answers?: SubmitResultAnswerItem[];
 }
 
 export interface SubmitQuizResponse {
   success: boolean;
+  message?: string;
   data: QuizResultData;
 }
 
-// ── History ───────────────────────────────────────────────────────────────────
+// ── History / Attempts ────────────────────────────────────────────────────────
 
 export interface QuizHistoryItem {
   id: string;
-  quiz_id: string;
+  quiz_id?: string;
+  story_id?: string;
   story_title?: string;
+  story?: {
+    id: string;
+    title: string;
+    level?: string | { id: string; name: string };
+    outcome?: string;
+    indicator?: string;
+  };
+  level?: string;
+  outcome?: string;
+  indicator?: string;
   score: number;
   total_questions: number;
-  percentage: number;
-  passed: boolean;
-  passing_score: number;
+  percentage?: number;
+  passed?: boolean;
+  passing_score?: number;
+  attempts_count?: number;
   attempt_number?: number;
+  last_score?: number;
+  highest_score?: number;
+  max_score?: number | string;
   created_at: string;
 }
 
 export interface QuizHistoryResponse {
   success: boolean;
+  message?: string;
   data: QuizHistoryItem[];
 }
 
@@ -103,3 +134,4 @@ export interface AnswerCheckResult {
 export type CheckedAnswersMap = Record<string, AnswerCheckResult>;
 export type SelectedAnswersMap = Record<string, string>;
 export type SubmissionState = "idle" | "submitting" | "submitted";
+

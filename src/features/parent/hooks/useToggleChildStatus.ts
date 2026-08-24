@@ -27,7 +27,7 @@ export const useToggleChildStatus = (
   const queryClient = useQueryClient();
   const { onSuccess, onError, ...restOptions } = options || {};
 
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   return useMutation<
     ToggleChildStatusResponse,

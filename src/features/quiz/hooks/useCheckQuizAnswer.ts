@@ -17,7 +17,7 @@ export function useCheckQuizAnswer(
   const { userRole, isAuthenticated } = useActiveAccount();
 
   const role = isAuthenticated ? (userRole || "visitor") : "visitor";
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   return useMutation<CheckAnswerResponse, ApiError | Error, CheckAnswerPayload>({
     mutationFn: (payload) => checkQuizAnswer(quizId, role, payload, token),

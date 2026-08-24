@@ -17,7 +17,7 @@ export function useSubmitQuiz(
   const { userRole, isAuthenticated } = useActiveAccount();
 
   const role = isAuthenticated ? (userRole || "visitor") : "visitor";
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   return useMutation<SubmitQuizResponse, ApiError | Error, SubmitQuizPayload>({
     mutationFn: (payload) => submitQuiz(quizId, role, payload, token),

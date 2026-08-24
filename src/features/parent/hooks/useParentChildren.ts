@@ -9,7 +9,7 @@ export const useParentChildren = () => {
   const { data: session, status } = useSession();
   const { children: sessionChildren, isLoading: isSessionLoading } =
     useActiveAccount();
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   const query = useQuery({
     queryKey: parentQueryKeys.children(),
