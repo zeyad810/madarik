@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import QueryProvider from "@/providers/QueryProvider";
 import AuthProvider from "@/providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
+import { GlobalResetPasswordModal } from "@/features/auth/components/GlobalResetPasswordModal";
 import "./globals.css";
 
 const ibmPlexSansArabic = localFont({
@@ -46,7 +47,10 @@ export default function RootLayout({
     >
       <body className={`${ibmPlexSansArabic.className} min-h-full flex flex-col font-sans`}>
         <AuthProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            {children}
+            <GlobalResetPasswordModal />
+          </QueryProvider>
           <Toaster position="top-center" reverseOrder={false} />
         </AuthProvider>
       </body>

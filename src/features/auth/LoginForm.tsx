@@ -15,7 +15,6 @@ import PhoneNumberInput from "@/components/ui/PhoneNumberInput";
 
 import { useSession } from "next-auth/react";
 import LoginSwitcher from "./LoginSwitcher";
-import ResetFirstPasswordModal from "./components/ResetFirstPasswordModal";
 import { isStudentRole } from "@/lib/roles";
 
 interface LoginFormProps {
@@ -39,32 +38,21 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showSwitcher, setShowSwitcher] = useState(false);
-  const [showResetModal, setShowResetModal] = useState(false);
 
   const sessionUserType = (session as any)?.user_type || (session?.user as any)?.user_type;
   const isStudent = isStudentRole(sessionUserType);
-  const rawFlag = session?.user?.change_by_admin;
-  const needsPasswordReset =
-    rawFlag === false || (rawFlag as any) === 0 || (rawFlag as any) === "0";
 
-  // If user needs password reset (change_by_admin is false), prompt password reset immediately
+  // If already authenticated as student, redirect immediately
   React.useEffect(() => {
-    if (status === "authenticated" && needsPasswordReset) {
-      setShowResetModal(true);
-    }
-  }, [status, needsPasswordReset]);
-
-  // If already authenticated as student (and no reset pending), redirect immediately
-  React.useEffect(() => {
-    if (status === "authenticated" && isStudent && !needsPasswordReset && !showResetModal) {
+    if (status === "authenticated" && isStudent) {
       const callbackUrl = searchParams?.get("callbackUrl");
       const targetUrl = callbackUrl || "/stories";
       router.push(targetUrl);
       router.refresh();
     }
-  }, [status, isStudent, needsPasswordReset, showResetModal, router, searchParams]);
+  }, [status, isStudent, router, searchParams]);
 
-  const isSwitcherVisible = (showSwitcher || status === "authenticated") && !isStudent && !needsPasswordReset && !showResetModal;
+  const isSwitcherVisible = (showSwitcher || status === "authenticated") && !isStudent;
 
   const {
     control,
@@ -80,20 +68,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
   });
 
   const isLoading = isSubmitting;
-
-  const handleResetSuccess = async () => {
-    setShowResetModal(false);
-    const currentSession = await getSession();
-    const rawRole = (currentSession as any)?.user_type || (currentSession?.user as any)?.user_type;
-    if (isStudentRole(rawRole)) {
-      const callbackUrl = searchParams?.get("callbackUrl");
-      const targetUrl = callbackUrl || "/stories";
-      router.push(targetUrl);
-      router.refresh();
-      return;
-    }
-    setShowSwitcher(true);
-  };
 
   const onSubmit = async (data: LoginFormData) => {
     setApiError(null);
@@ -118,15 +92,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
         }
 
         const currentSession = await getSession();
-        const userFlag = currentSession?.user?.change_by_admin;
-        const userNeedsReset =
-          userFlag === false || (userFlag as any) === 0 || (userFlag as any) === "0";
-
-        if (userNeedsReset) {
-          setShowResetModal(true);
-          return;
-        }
-
         const rawRole = (currentSession as any)?.user_type || (currentSession?.user as any)?.user_type;
         if (isStudentRole(rawRole)) {
           const callbackUrl = searchParams?.get("callbackUrl");
@@ -145,7 +110,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
   };
 
-  if (status === "authenticated" && isStudent && !needsPasswordReset && !showResetModal) {
+  if (status === "authenticated" && isStudent) {
     return (
       <div className="w-full max-w-[440px] px-4 py-12 flex flex-col items-center justify-center font-sans">
         <Loader2 className="size-8 animate-spin text-mad-main mb-4" />
@@ -156,39 +121,20 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
   if (isSwitcherVisible) {
     return (
-      <>
-        <LoginSwitcher
-          onSwitchUser={() => setShowSwitcher(false)}
-          onComplete={() => {
-            const callbackUrl = searchParams?.get("callbackUrl");
-            const targetUrl = callbackUrl || "/";
-            router.push(targetUrl);
-            router.refresh();
-          }}
-        />
-        <ResetFirstPasswordModal
-          isOpen={showResetModal}
-          onSuccess={handleResetSuccess}
-          onSignOut={() => {
-            setShowResetModal(false);
-            setShowSwitcher(false);
-          }}
-        />
-      </>
+      <LoginSwitcher
+        onSwitchUser={() => setShowSwitcher(false)}
+        onComplete={() => {
+          const callbackUrl = searchParams?.get("callbackUrl");
+          const targetUrl = callbackUrl || "/";
+          router.push(targetUrl);
+          router.refresh();
+        }}
+      />
     );
   }
 
   return (
     <div className="w-full max-w-[440px] px-4 py-8 flex flex-col items-center justify-center font-sans" dir="rtl">
-      {/* Reset First Password Modal */}
-      <ResetFirstPasswordModal
-        isOpen={showResetModal}
-        onSuccess={handleResetSuccess}
-        onSignOut={() => {
-          setShowResetModal(false);
-          setShowSwitcher(false);
-        }}
-      />
       {/* Logo */}
       <div className="mb-4">
         <Image

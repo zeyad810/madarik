@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
