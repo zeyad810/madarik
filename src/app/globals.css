@@ -261,10 +261,6 @@
     scroll-padding-top: 60px;
   }
 
-  section[id],
-  div[id] {
-    scroll-margin-top: 60px;
-  }
 
   body {
     margin: 0;
