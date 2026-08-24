@@ -257,6 +257,13 @@
 @layer base {
   html {
     font-family: var(--mad-font-family);
+    scroll-behavior: smooth;
+    scroll-padding-top: 60px;
+  }
+
+  section[id],
+  div[id] {
+    scroll-margin-top: 60px;
   }
 
   body {
