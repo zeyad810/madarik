@@ -58,6 +58,7 @@ const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
 
   const title = propTitle ?? trustData?.title ?? "";
   const description = propDescription ?? trustData?.description ?? "";
+  const id = trustData?.id ?? "";
 
   const features: WhyTrustUsFeature[] =
     propFeatures ??
@@ -71,6 +72,7 @@ const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
   return (
     <section
       dir="rtl"
+      id={id}
       className="relative w-full overflow-hidden bg-white py-16 sm:py-20 lg:py-24"
     >
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
