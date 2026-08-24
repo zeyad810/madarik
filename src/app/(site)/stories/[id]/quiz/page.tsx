@@ -15,6 +15,8 @@ import Loading from "@/app/loading";
 import { useStoryById } from "@/features/story/hooks/useStoryById";
 import { QuizView } from "@/features/quiz/components/QuizView";
 import { getStoryQuizId } from "@/features/story/types";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { SelectChildPrompt } from "@/components/guards";
 
 interface QuizPageProps {
   params: Promise<{ id: string }>;
@@ -27,6 +29,10 @@ export default function QuizPage({ params }: QuizPageProps) {
   const { data: storyResponse, isLoading, isError } = useStoryById(storyId);
   const story = storyResponse?.data;
   const quizId = getStoryQuizId(story);
+  const { isAuthenticated, isParentRole, isParentActive } = useActiveAccount();
+
+  const shouldPromptChildSelection =
+    isAuthenticated && isParentRole && isParentActive;
 
   // Loading the story — use standard site loading
   if (isLoading) {
@@ -78,6 +84,17 @@ export default function QuizPage({ params }: QuizPageProps) {
     );
   }
 
+  // Parent Child Selection Prompt
+  if (shouldPromptChildSelection) {
+    return (
+      <SelectChildPrompt
+        actionType="quiz"
+        storyId={story.id}
+        storyTitle={story.title}
+      />
+    );
+  }
+
   // Render the quiz — pass quizId to QuizView
   return (
     <QuizView
@@ -87,4 +104,5 @@ export default function QuizPage({ params }: QuizPageProps) {
     />
   );
 }
+
 

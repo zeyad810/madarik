@@ -3,6 +3,8 @@
 import React, { use } from "react";
 import { StoryReaderView, StoryEmptyState } from "@/features/story";
 import { useStoryById } from "@/features/story/hooks/useStoryById";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { SelectChildPrompt } from "@/components/guards";
 import { Loader2 } from "lucide-react";
 
 interface StoryReaderPageProps {
@@ -15,6 +17,10 @@ export default function StoryReaderPage({ params }: StoryReaderPageProps) {
 
   const { data: storyResponse, isLoading, isError } = useStoryById(storyId);
   const story = storyResponse?.data;
+  const { isAuthenticated, isParentRole, isParentActive } = useActiveAccount();
+
+  const shouldPromptChildSelection =
+    isAuthenticated && isParentRole && isParentActive;
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-[#F8FAFC]">
@@ -39,9 +45,21 @@ export default function StoryReaderPage({ params }: StoryReaderPageProps) {
           </div>
         )}
 
-        {/* Story Reader Component */}
-        {!isLoading && story && <StoryReaderView story={story} />}
+        {/* Parent Child Selection Prompt */}
+        {!isLoading && story && shouldPromptChildSelection && (
+          <SelectChildPrompt
+            actionType="read"
+            storyId={story.id}
+            storyTitle={story.title}
+          />
+        )}
+
+        {/* Story Reader Component (Child / Student / Visitor or selected child) */}
+        {!isLoading && story && !shouldPromptChildSelection && (
+          <StoryReaderView story={story} />
+        )}
       </div>
     </div>
   );
 }
+
