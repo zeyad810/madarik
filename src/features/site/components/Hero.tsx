@@ -24,6 +24,7 @@ const Hero: React.FC<HeroProps> = ({
   });
 
   const title = propTitle ?? heroData?.title ?? "";
+  const id = heroData?.id ?? "";
   const description = propDescription ?? heroData?.subtitle ?? "";
   const stats: HeroStatItem[] =
     propStats ??
@@ -46,6 +47,7 @@ const Hero: React.FC<HeroProps> = ({
     return (
       <section
         dir="rtl"
+        id={id}
         className="w-full h-144.25 bg-cover bg-center bg-no-repeat flex items-start pt-20 sm:pt-24 justify-center relative overflow-hidden"
         style={{
           backgroundImage: `url(${mobileBgImageSrc})`,
