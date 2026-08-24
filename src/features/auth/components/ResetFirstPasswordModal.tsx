@@ -53,6 +53,8 @@ export const ResetFirstPasswordModal: React.FC<ResetFirstPasswordModalProps> = (
     executeReset({
       password: data.password,
       password_confirmation: data.confirmPassword,
+      new_password: data.password,
+      new_password_confirmation: data.confirmPassword,
     });
   };
 

@@ -53,14 +53,23 @@ export const resetFirstPassword = async (
     headers["Authorization"] = `Bearer ${resolvedToken}`;
   }
 
+  const newPassword = payload.new_password || payload.password;
+  const newPasswordConfirmation =
+    payload.new_password_confirmation ||
+    payload.password_confirmation ||
+    payload.confirm_password ||
+    newPassword;
+
   const response = await fetch(
     `${API_BASE_URL}/auth/reset-generated-password`,
     {
       method: "POST",
       headers,
       body: JSON.stringify({
-        password: payload.password,
-        password_confirmation: payload.password_confirmation,
+        new_password: newPassword,
+        new_password_confirmation: newPasswordConfirmation,
+        password: newPassword,
+        password_confirmation: newPasswordConfirmation,
       }),
     },
   );

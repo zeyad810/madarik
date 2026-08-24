@@ -85,7 +85,12 @@ export interface VerifyRegisterResponse {
 
 export interface ResetPasswordPayload {
   password: string;
-  password_confirmation: string;
+  password_confirmation?: string;
+  confirm_password?: string;
+  new_password?: string;
+  new_password_confirmation?: string;
+  phone?: string;
+  code?: string;
 }
 
 export interface ResetPasswordResponse {

@@ -26,13 +26,13 @@ export const useResetFirstPassword = (
     onSuccess: async (data, variables, context) => {
       console.log("[Reset First Password Success Response]:", data);
 
-      // Update NextAuth session so change_by_admin is set to true immediately
+      // Update NextAuth session so change_by_admin is set to false immediately
       if (session) {
         await update({
           ...session,
           user: {
             ...session.user,
-            change_by_admin: true,
+            change_by_admin: false,
           },
         }).catch(() => null);
       }

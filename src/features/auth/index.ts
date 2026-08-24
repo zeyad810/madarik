@@ -4,6 +4,7 @@ export { default as AuthHeader } from "./components/AuthHeader";
 export { default as AuthErrorAlert } from "./components/AuthErrorAlert";
 export { default as PasswordField } from "./components/PasswordField";
 export { default as ResetFirstPasswordModal } from "./components/ResetFirstPasswordModal";
+export { default as GlobalResetPasswordModal } from "./components/GlobalResetPasswordModal";
 export { default as LoginForm } from "./LoginForm";
 export { default as LoginSwitcher } from "./LoginSwitcher";
 export { default as Otp } from "./Otp";

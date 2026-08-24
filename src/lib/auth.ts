@@ -65,7 +65,12 @@ export const authOptions: NextAuthOptions = {
               name: data.user.name,
               email: data.user.email,
               phone: data.user.phone,
-              change_by_admin: data.user.change_by_admin,
+              change_by_admin: Boolean(
+                data.user.change_by_admin === true ||
+                (data.user.change_by_admin as any) === 1 ||
+                (data.user.change_by_admin as any) === "1" ||
+                (data.user.change_by_admin as any) === "true"
+              ),
               status: data.user.status,
               phone_verified_at: data.user.phone_verified_at,
               otp_attempts: data.user.otp_attempts,
@@ -109,7 +114,12 @@ export const authOptions: NextAuthOptions = {
         token.token = user.token || user.accessToken;
         token.user_type = user.user_type;
         token.is_subscribed = user.is_subscribed;
-        token.change_by_admin = user.change_by_admin;
+        token.change_by_admin = Boolean(
+          user.change_by_admin === true ||
+          (user.change_by_admin as any) === 1 ||
+          (user.change_by_admin as any) === "1" ||
+          (user.change_by_admin as any) === "true"
+        );
         token.status = user.status;
         token.phone_verified_at = user.phone_verified_at;
         token.otp_attempts = user.otp_attempts;
@@ -125,9 +135,19 @@ export const authOptions: NextAuthOptions = {
           token.children = session.children;
         }
         if (session.user?.change_by_admin !== undefined) {
-          token.change_by_admin = Boolean(session.user.change_by_admin);
+          token.change_by_admin = Boolean(
+            session.user.change_by_admin === true ||
+            (session.user.change_by_admin as any) === 1 ||
+            (session.user.change_by_admin as any) === "1" ||
+            (session.user.change_by_admin as any) === "true"
+          );
         } else if (session.change_by_admin !== undefined) {
-          token.change_by_admin = Boolean(session.change_by_admin);
+          token.change_by_admin = Boolean(
+            session.change_by_admin === true ||
+            (session.change_by_admin as any) === 1 ||
+            (session.change_by_admin as any) === "1" ||
+            (session.change_by_admin as any) === "true"
+          );
         }
       }
       return token;
