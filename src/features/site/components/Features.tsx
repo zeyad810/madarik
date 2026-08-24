@@ -15,6 +15,7 @@ const FEATURE_STYLES = [
 ];
 
 const Features: React.FC<FeaturesProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   subtitle,
@@ -26,6 +27,7 @@ const Features: React.FC<FeaturesProps> = ({
     select: (res) => res.data?.why_us_section,
   });
 
+  const id = propId ?? whyUsData?.id;
   const title = propTitle ?? whyUsData?.title ?? "";
   const description = propDescription ?? whyUsData?.description ?? "";
 
@@ -44,7 +46,7 @@ const Features: React.FC<FeaturesProps> = ({
     }) ?? []);
 
   return (
-    <section dir="rtl" className="w-full section-spacing px-4 md:px-8 bg-white">
+    <section dir="rtl" id={id} className="w-full section-spacing px-4 md:px-8 bg-white">
       <div className="container mx-auto flex flex-col items-center">
         {/* Section Header */}
         <SectionHeader

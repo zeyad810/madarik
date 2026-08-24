@@ -15,6 +15,7 @@ import { usePublicLanding } from "../hooks/usePublicLanding";
 import { ProductSectionProps } from "../types";
 
 const ProductSection: React.FC<ProductSectionProps> = ({
+  id: propId,
   title: propTitle,
   subtitle: propSubtitle,
   description: propDescription,
@@ -24,6 +25,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     select: (res) => res.data?.suggested_stories_section,
   });
 
+  const id = propId ?? storiesData?.id;
   const title = propTitle ?? storiesData?.title ?? "";
   const subtitle = propSubtitle ?? "المكتبة التفاعلية";
   const description = propDescription ?? "";
@@ -62,6 +64,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   return (
     <section
       dir="rtl"
+      id={id}
       className="w-full section-spacing px-4 md:px-8 bg-white overflow-hidden"
     >
       <div className="container mx-auto flex flex-col items-center">

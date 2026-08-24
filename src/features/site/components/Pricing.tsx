@@ -10,6 +10,7 @@ import { usePublicPackages } from "../hooks/usePublicPackages";
 import type { PublicPackage } from "../types";
 
 export interface PricingProps {
+  id?: string;
   title?: string;
   description?: string;
   packages?: PublicPackage[];
@@ -208,6 +209,7 @@ const PackageCard = ({
 // Main Component
 // ==========================================
 const Pricing: React.FC<PricingProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   packages: propPackages,
@@ -217,6 +219,7 @@ const Pricing: React.FC<PricingProps> = ({
     select: (res) => res.data,
   });
 
+  const id = propId ?? packagesData?.id;
   const title = propTitle ?? packagesData?.title ?? "اختر الباقة المناسبة لطفلك";
   const description =
     propDescription ??
@@ -237,7 +240,7 @@ const Pricing: React.FC<PricingProps> = ({
       : "max-w-5xl sm:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <section dir="rtl" className="w-full bg-white py-16 sm:py-20 lg:py-24 overflow-hidden">
+    <section dir="rtl" id={id} className="w-full bg-white py-16 sm:py-20 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <SectionHeader

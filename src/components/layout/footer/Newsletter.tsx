@@ -47,7 +47,7 @@ const Newsletter: React.FC<NewsletterProps> = ({
   };
 
   return (
-    <div className="w-full text-center">
+    <div id={newsletterData?.id} className="w-full text-center">
       {/* Title */}
       <h2 className="text-xl sm:text-5xl font-extrabold text-white leading-tight">
         {title}

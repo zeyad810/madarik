@@ -62,6 +62,7 @@ const renderReviewCard = (review: ReviewItem) => (
 // Main Component
 // ==========================================
 const CustomerReviews: React.FC<CustomerReviewsProps> = ({
+  id: propId,
   title: propTitle,
   subtitle: propSubtitle,
   description: propDescription,
@@ -73,6 +74,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
     select: (res) => res.data?.testimonials_section,
   });
 
+  const id = propId ?? testimonialsData?.id;
   const title = propTitle ?? testimonialsData?.title ?? "";
   const subtitle = propSubtitle ?? "آراء العملاء";
   const description = propDescription ?? "";
@@ -88,7 +90,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
     })) ?? []);
 
   return (
-    <section dir="rtl" className="w-full section-spacing px-4 md:px-8 bg-white overflow-hidden">
+    <section dir="rtl" id={id} className="w-full section-spacing px-4 md:px-8 bg-white overflow-hidden">
       <div className="container mx-auto flex flex-col items-center">
         <SectionHeader
           title={title}

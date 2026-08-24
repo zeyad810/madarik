@@ -52,6 +52,7 @@ const DEFAULT_SLIDES: BannerSlideItem[] = [
 ];
 
 const Bannerslider: React.FC<BannerSliderProps> = ({
+  id,
   slides = DEFAULT_SLIDES,
   autoplayDelay = 5000,
   showNavigation = true,
@@ -63,7 +64,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <div dir="rtl" className={`container w-full px-4 py-6 md:py-8 ${className}`}>
+    <div id={id} dir="rtl" className={`container w-full px-4 py-6 md:py-8 ${className}`}>
       <div className="relative w-full overflow-hidden rounded-3xl bg-linear-to-r from-mad-purple-800 via-mad-main to-mad-purple-950 shadow-xl group">
         <Swiper
           modules={[Autoplay, Pagination, Navigation, EffectFade]}

@@ -8,6 +8,7 @@ import { ChildWinProps, ChildWinCardItem } from "../types";
 import { ChildWinCard } from "./ChildWinCard";
 
 const ChildWin: React.FC<ChildWinProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   bgImageSrc = "/assets/win-bg.png",
@@ -17,6 +18,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
     select: (res) => res.data?.child_benefits_section,
   });
 
+  const id = propId ?? benefitsData?.id;
   const title = propTitle ?? benefitsData?.title ?? "";
   const description = propDescription ?? benefitsData?.subtitle ?? "";
 
@@ -43,6 +45,7 @@ const ChildWin: React.FC<ChildWinProps> = ({
 
       <section
         dir="rtl"
+        id={id}
         className="relative w-full h-auto lg:h-225 section-spacing px-4 md:px-8 bg-[#FBF9FF] overflow-hidden flex items-center justify-center"
       >
         {/* Background Graphic Illustration (Desktop only center background) */}

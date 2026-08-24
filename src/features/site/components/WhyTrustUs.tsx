@@ -46,6 +46,7 @@ const renderTitle = (title: string) => {
 };
 
 const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   image = "/iamges/whyTrustUs.svg",
@@ -56,9 +57,9 @@ const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
     select: (res) => res.data?.trust_section,
   });
 
+  const id = propId ?? trustData?.id;
   const title = propTitle ?? trustData?.title ?? "";
   const description = propDescription ?? trustData?.description ?? "";
-  const id = trustData?.id ?? "";
 
   const features: WhyTrustUsFeature[] =
     propFeatures ??
