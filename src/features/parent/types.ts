@@ -61,7 +61,50 @@ export interface ToggleChildStatusResponse {
   status?: string;
 }
 
+export interface ParentSettingsPayload {
+  name: string;
+  phone?: string;
+  notifications_enabled?: boolean;
+}
+
+export interface ParentSettingsData {
+  id?: string | number;
+  name?: string;
+  phone?: string;
+  notifications_enabled?: boolean;
+  avatar?: string | null;
+  avatar_img?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ParentSettingsResponse {
+  success?: boolean;
+  message?: string;
+  data?: ParentSettingsData;
+}
+
+export interface UpdateParentPasswordPayload {
+  current_password?: string;
+  new_password?: string;
+  new_password_confirmation?: string;
+  password_confirmation?: string;
+  confirm_password?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
+
+
+
+
+export interface UpdateParentPasswordResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
 // =========================================================================
+
 // Child Reports Interfaces (Based on API response)
 // =========================================================================
 
