@@ -46,6 +46,7 @@ const Hero: React.FC<HeroProps> = ({
     return (
       <section
         dir="rtl"
+        id="home" 
         className="w-full h-144.25 bg-cover bg-center bg-no-repeat flex items-start pt-20 sm:pt-24 justify-center relative overflow-hidden"
         style={{
           backgroundImage: `url(${mobileBgImageSrc})`,
