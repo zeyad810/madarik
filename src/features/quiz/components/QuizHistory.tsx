@@ -84,7 +84,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ quizId }) => {
           <div className="flex flex-col items-end gap-1 shrink-0">
             <div className="flex items-center gap-1.5">
               <span className="text-base font-black text-mad-text-primary">
-                {Math.round(item.percentage)}%
+                {Math.round(item.percentage ?? ((item.score / (item.total_questions || 1)) * 100))}%
               </span>
               {item.passed ? (
                 <CheckCircle2 className="w-4 h-4 text-[#34D399]" />

@@ -29,8 +29,8 @@ function getStoryApiPrefix(role: string): string {
  * Fetch all stories for the current role
  * Role-aware:
  * - visitor: GET /public/free-stories
- * - parent/child: GET /parent/stories (with fallback to /public/free-stories)
  * - free_customer: GET /free/stories (with fallback to /public/free-stories)
+ * - parent / child: GET /parent/stories (with fallback to /public/free-stories)
  * - student: GET /student/stories (with fallback to /public/free-stories)
  */
 export const getFreeStories = async (
@@ -45,8 +45,14 @@ export const getFreeStories = async (
     headers["Authorization"] = `Bearer ${resolvedToken}`;
   }
 
+  const prefix = getStoryApiPrefix(role);
+  const endpoint =
+    prefix === "public"
+      ? `${API_BASE_URL}/public/free-stories`
+      : `${API_BASE_URL}/${prefix}/stories`;
+
   try {
-    const response = await fetch(`${API_BASE_URL}/public/free-stories`, {
+    const response = await fetch(endpoint, {
       method: "GET",
       headers,
       next: { revalidate: 60 },
@@ -55,6 +61,23 @@ export const getFreeStories = async (
     const raw = await handleResponse<any>(response);
     return normalizeStoriesResponse(raw);
   } catch (error) {
+    // Graceful fallback to public free stories if role-specific stories fail
+    if (prefix !== "public") {
+      try {
+        const fallbackResponse = await fetch(
+          `${API_BASE_URL}/public/free-stories`,
+          {
+            method: "GET",
+            headers,
+            next: { revalidate: 60 },
+          }
+        );
+        const fallbackRaw = await handleResponse<any>(fallbackResponse);
+        return normalizeStoriesResponse(fallbackRaw);
+      } catch {
+        // ignore
+      }
+    }
     throw error;
   }
 };
@@ -99,8 +122,14 @@ export const getStoryById = async (
     headers["Authorization"] = `Bearer ${resolvedToken}`;
   }
 
+  const prefix = getStoryApiPrefix(role);
+  const endpoint =
+    prefix === "public"
+      ? `${API_BASE_URL}/public/stories/${id}`
+      : `${API_BASE_URL}/${prefix}/stories/${id}`;
+
   try {
-    const response = await fetch(`${API_BASE_URL}/public/stories/${id}`, {
+    const response = await fetch(endpoint, {
       method: "GET",
       headers,
       next: { revalidate: 60 },
@@ -119,7 +148,34 @@ export const getStoryById = async (
       data: storyData,
     };
   } catch (error) {
+    if (prefix !== "public") {
+      try {
+        const fallbackResponse = await fetch(
+          `${API_BASE_URL}/public/stories/${id}`,
+          {
+            method: "GET",
+            headers,
+            next: { revalidate: 60 },
+          }
+        );
+        const fallbackRaw = await handleResponse<any>(fallbackResponse);
+        const fallbackStoryData: Story = fallbackRaw?.data?.data
+          ? fallbackRaw.data.data
+          : fallbackRaw?.data
+          ? fallbackRaw.data
+          : fallbackRaw;
+
+        return {
+          success: fallbackRaw?.success ?? true,
+          message: fallbackRaw?.message ?? "",
+          data: fallbackStoryData,
+        };
+      } catch {
+        // ignore
+      }
+    }
     throw error;
   }
 };
+
 

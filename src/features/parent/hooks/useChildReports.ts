@@ -8,7 +8,7 @@ import type { ChildReportItem } from "../types";
 export const useChildReports = () => {
   const { data: session, status } = useSession();
   const { children: sessionChildren, isLoading: isSessionLoading } = useActiveAccount();
-  const token = session?.accessToken ?? null;
+  const token = session?.accessToken || session?.token || null;
 
   const query = useQuery({
     queryKey: parentQueryKeys.reports(),

@@ -33,6 +33,7 @@ import type {
   CheckedAnswersMap,
   SubmissionState,
   QuizResultData,
+  SubmitQuizPayload,
 } from "../types";
 
 interface QuizViewProps {
@@ -83,11 +84,29 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleSelectAnswer = (questionId: string, answer: string) => {
-    // Don't allow changing after checking
-    if (checkedAnswers[questionId]) return;
+  const handleSelectAnswer = async (questionId: string, answer: string) => {
+    // Don't allow changing after checking or while checking
+    if (checkedAnswers[questionId] || isChecking) return;
     setSelectedAnswers((prev) => ({ ...prev, [questionId]: answer }));
     setValidationError(null);
+
+    try {
+      const result = await checkAnswer({
+        question_id: questionId,
+        answer: answer,
+      });
+      if (result && result.data) {
+        setCheckedAnswers((prev) => ({
+          ...prev,
+          [questionId]: {
+            isCorrect: result.data.is_correct,
+            correctAnswer: result.data.correct_answer,
+          },
+        }));
+      }
+    } catch (err) {
+      console.warn("[Check Answer Error]:", err);
+    }
   };
 
   /** Performs the submit — safe against double-calls */
@@ -104,11 +123,11 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
     setSubmissionState("submitting");
 
     try {
-      const payload = {
-        answers: answerEntries.map(([question_id, answer]) => ({
-          question_id,
-          answer: typeof answer === "string" ? answer.trim() : answer,
-        })),
+      const payload: SubmitQuizPayload = {
+        started_at: startTimeRef.current
+          ? new Date(startTimeRef.current).toISOString()
+          : new Date().toISOString(),
+        answers: answers,
       };
       const response = await submitQuizMutation(payload);
       const resultData = (response as any)?.data
@@ -119,7 +138,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
 
       setQuizResult({
         ...resultData,
-        time_taken: resultData?.time_taken ?? elapsedSeconds,
+        time_taken:
+          resultData?.duration_seconds ??
+          resultData?.time_taken ??
+          elapsedSeconds,
       });
       setSubmissionState("submitted");
       clearTimer();
@@ -137,8 +159,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
     performSubmit(selectedAnswers);
   };
 
-  /** Move to next question after checking the current answer */
-  const handleNext = async () => {
+  /** Move to next question */
+  const handleNext = () => {
     if (!currentQuestion) return;
     const selectedAnswer = selectedAnswers[currentQuestion.id];
 
@@ -149,29 +171,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
     }
     setValidationError(null);
 
-    // Check answer if not already checked
-    if (!checkedAnswers[currentQuestion.id]) {
-      try {
-        const result = await checkAnswer({
-          question_id: currentQuestion.id,
-          answer: selectedAnswer,
-        });
-        setCheckedAnswers((prev) => ({
-          ...prev,
-          [currentQuestion.id]: {
-            isCorrect: result.data.is_correct,
-            correctAnswer: result.data.correct_answer,
-          },
-        }));
-        // Short pause so user can see feedback, then advance
-        await new Promise((r) => setTimeout(r, 1200));
-      } catch (err) {
-        // Check-answer failed — continue anyway without blocking
-        console.warn("[Check Answer Error]:", err);
-      }
-    }
-
-    // Advance or submit
+    // Advance
     if (currentIdx < totalQuestions - 1) {
       setCurrentIdx((prev) => prev + 1);
     }
@@ -197,26 +197,6 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
       ...selectedAnswers,
       [currentQuestion.id]: selectedAnswer,
     };
-
-    // Check last answer if not checked
-    if (!checkedAnswers[currentQuestion.id]) {
-      try {
-        const result = await checkAnswer({
-          question_id: currentQuestion.id,
-          answer: selectedAnswer,
-        });
-        setCheckedAnswers((prev) => ({
-          ...prev,
-          [currentQuestion.id]: {
-            isCorrect: result.data.is_correct,
-            correctAnswer: result.data.correct_answer,
-          },
-        }));
-        await new Promise((r) => setTimeout(r, 600));
-      } catch {
-        // Continue anyway
-      }
-    }
 
     await performSubmit(updatedAnswers);
   };
