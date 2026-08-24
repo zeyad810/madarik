@@ -21,7 +21,10 @@ export { default as ChildReportSummaryCard } from "./components/ChildReportSumma
 export { default as ChildReportStats } from "./components/ChildReportStats";
 export { default as ChildQuizResultsTable } from "./components/ChildQuizResultsTable";
 export { default as ChildReadingHistory } from "./components/ChildReadingHistory";
-
-
-
+export { default as SettingsView } from "./components/SettingsView";
+export { default as ParentProfileBanner } from "./components/ParentProfileBanner";
+export { default as ParentProfileCard } from "./components/ParentProfileCard";
+export { default as ParentProfileForm } from "./components/ParentProfileForm";
+export { default as ParentProfileDetails } from "./components/ParentProfileDetails";
+export { default as ParentGeneralSettings } from "./components/ParentGeneralSettings";
 

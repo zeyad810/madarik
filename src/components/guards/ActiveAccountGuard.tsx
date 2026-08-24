@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { ActiveAccount, Child } from "@/types/auth";
 

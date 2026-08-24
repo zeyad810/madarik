@@ -5,9 +5,13 @@ import {
   AddChildResponse,
   ChildReportsResponse,
   ParentChildrenResponse,
+  ParentSettingsPayload,
+  ParentSettingsResponse,
   ToggleChildStatusResponse,
   UpdateChildPayload,
   UpdateChildResponse,
+  UpdateParentPasswordPayload,
+  UpdateParentPasswordResponse,
 } from "./types";
 
 /**
@@ -162,6 +166,83 @@ export const getParentChildReports = async (
 
   return await handleResponse<ChildReportsResponse>(response);
 };
+
+/**
+ * GET /parent/settings
+ * Fetches the authenticated parent's settings.
+ */
+export const getParentSettings = async (
+  token?: string | null
+): Promise<ParentSettingsResponse> => {
+  const response = await fetch(`${API_BASE_URL}/parent/settings`, {
+    method: "GET",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<ParentSettingsResponse>(response);
+};
+
+/**
+ * PATCH /parent/settings
+ * Updates the authenticated parent's settings (name, notifications, etc.).
+ */
+export const updateParentSettings = async (
+  payload: ParentSettingsPayload,
+  token?: string | null
+): Promise<ParentSettingsResponse> => {
+  const response = await fetch(`${API_BASE_URL}/parent/settings`, {
+    method: "PATCH",
+    headers: buildHeaders(token),
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      ...(payload.notifications_enabled !== undefined
+        ? { notifications_enabled: payload.notifications_enabled }
+        : {}),
+    }),
+  });
+
+  return await handleResponse<ParentSettingsResponse>(response);
+};
+
+
+
+/**
+ * PUT /parent/settings/password
+ * Updates the authenticated parent's password.
+ */
+export const updateParentPassword = async (
+  payload: UpdateParentPasswordPayload,
+  token?: string | null
+): Promise<UpdateParentPasswordResponse> => {
+  const newPass = payload.new_password || payload.newPassword || "";
+  const currentPass = payload.current_password || payload.currentPassword || "";
+  const confirmPass =
+    payload.new_password_confirmation ||
+    payload.confirm_password ||
+    payload.confirmPassword ||
+    payload.password_confirmation ||
+    newPass;
+
+  const response = await fetch(`${API_BASE_URL}/parent/settings/password`, {
+    method: "PUT",
+    headers: buildHeaders(token),
+    body: JSON.stringify({
+      current_password: currentPass,
+      new_password: newPass,
+      new_password_confirmation: confirmPass,
+      password: newPass,
+      password_confirmation: confirmPass,
+      confirm_password: confirmPass,
+      ...(payload.currentPassword ? { currentPassword: currentPass } : {}),
+      ...(payload.newPassword ? { newPassword: newPass } : {}),
+      ...(payload.confirmPassword ? { confirmPassword: confirmPass } : {}),
+    }),
+  });
+
+  return await handleResponse<UpdateParentPasswordResponse>(response);
+};
+
+
 
 
 

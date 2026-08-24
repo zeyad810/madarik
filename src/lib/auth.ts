@@ -129,6 +129,17 @@ export const authOptions: NextAuthOptions = {
         token.children = user.children;
       }
       if (trigger === "update" && session) {
+
+        if (session.user?.name) {
+          token.name = session.user.name;
+        } else if (session.name) {
+          token.name = session.name;
+        }
+        if (session.user?.phone) {
+          token.phone = session.user.phone;
+        } else if (session.phone) {
+          token.phone = session.phone;
+        }
         if (session.user?.children) {
           token.children = session.user.children;
         } else if (session.children) {
@@ -151,6 +162,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
       return token;
+
     },
     async session({ session, token }) {
       if (token) {
