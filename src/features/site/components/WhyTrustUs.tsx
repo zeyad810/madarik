@@ -73,7 +73,7 @@ const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
     <section
       dir="rtl"
       id={id}
-      className="relative w-full overflow-hidden bg-white py-16 sm:py-20 lg:py-24"
+      className="relative w-full overflow-hidden bg-white py-16 sm:py-20 lg:py-24   "
     >
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
