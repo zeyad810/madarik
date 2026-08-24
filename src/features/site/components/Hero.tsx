@@ -9,6 +9,7 @@ import { usePublicLanding } from "../hooks/usePublicLanding";
 import { HeroProps, HeroStatItem } from "../types";
 
 const Hero: React.FC<HeroProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   stats: propStats,
@@ -23,8 +24,8 @@ const Hero: React.FC<HeroProps> = ({
     select: (res) => res.data?.hero_banner,
   });
 
+  const id = propId ?? heroData?.id;
   const title = propTitle ?? heroData?.title ?? "";
-  const id = heroData?.id ?? "";
   const description = propDescription ?? heroData?.subtitle ?? "";
   const stats: HeroStatItem[] =
     propStats ??
@@ -147,6 +148,7 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <section
       dir="rtl"
+      id={id}
       className="w-full min-h-screen lg:h-[1400px] lg:min-h-[1400px] pt-32 sm:pt-40 lg:pt-52 pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat flex items-start justify-center relative overflow-hidden"
       style={{
         backgroundImage: `url(${bgImageSrc})`,

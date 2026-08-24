@@ -15,6 +15,7 @@ const CARD_STYLES = [
 ];
 
 const Skills: React.FC<SkillsProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   rightCards: propRightCards,
@@ -24,6 +25,7 @@ const Skills: React.FC<SkillsProps> = ({
     select: (res) => res.data?.more_than_stories_section,
   });
 
+  const id = propId ?? moreThanStoriesData?.id;
   const title = propTitle ?? moreThanStoriesData?.title ?? "";
   const description = propDescription ?? moreThanStoriesData?.description ?? "";
 
@@ -62,7 +64,7 @@ const Skills: React.FC<SkillsProps> = ({
       });
 
   return (
-    <section dir="rtl" className="w-full bg-[#f8fafc]/50 section-spacing px-4 md:px-8 overflow-hidden">
+    <section dir="rtl" id={id} className="w-full bg-[#f8fafc]/50 section-spacing px-4 md:px-8 overflow-hidden">
       <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-12 xl:gap-16">
         
         {/* Text & Action Side (Right in RTL layout) */}

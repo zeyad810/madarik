@@ -8,6 +8,7 @@ import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { MadVideoProps } from "../types";
 
 const MadVideo: React.FC<MadVideoProps> = ({
+  id: propId,
   subtitle: propSubtitle,
   title: propTitle,
   description: propDescription,
@@ -21,6 +22,7 @@ const MadVideo: React.FC<MadVideoProps> = ({
     select: (res) => res.data?.platform_tour_section,
   });
 
+  const id = propId ?? tourData?.id;
   const title = propTitle ?? tourData?.title ?? "";
   const subtitle = propSubtitle ?? tourData?.eyebrow ?? "";
   const description = propDescription ?? tourData?.description ?? "";
@@ -41,6 +43,7 @@ const MadVideo: React.FC<MadVideoProps> = ({
   return (
     <section
       dir="rtl"
+      id={id}
       className="relative w-full overflow-hidden bg-mad-white-50 section-spacing px-4 md:px-8"
     >
       <div className="container relative mx-auto max-w-7xl">

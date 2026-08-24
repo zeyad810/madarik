@@ -14,6 +14,7 @@ const STEP_COLORS = [
 ];
 
 const HowItWorks: React.FC<HowItWorksProps> = ({
+  id: propId,
   title: propTitle,
   subtitle: propSubtitle,
   steps: propSteps,
@@ -22,6 +23,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({
     select: (res) => res.data?.how_it_works_section,
   });
 
+  const id = propId ?? howItWorksData?.id;
   const title = propTitle ?? howItWorksData?.title ?? "";
   const subtitle = propSubtitle ?? howItWorksData?.description ?? "";
 
@@ -36,7 +38,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({
     })) ?? []);
 
   return (
-    <section dir="rtl" className="w-full bg-white section-spacing px-4 sm:px-6 md:px-8 overflow-hidden">
+    <section dir="rtl" id={id} className="w-full bg-white section-spacing px-4 sm:px-6 md:px-8 overflow-hidden">
       <div className="container mx-auto flex flex-col items-center">
         {/* Header Section */}
         <motion.div

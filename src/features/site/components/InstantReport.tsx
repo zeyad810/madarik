@@ -54,6 +54,7 @@ const FeatureRow = ({
 // Main Component
 // ==========================================
 const InstantReport: React.FC<InstantReportProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   features: propFeatures,
@@ -67,6 +68,7 @@ const InstantReport: React.FC<InstantReportProps> = ({
     select: (res) => res.data?.instant_report_section,
   });
 
+  const id = propId ?? reportData?.id;
   const title = propTitle ?? reportData?.title ?? "";
   const description = propDescription ?? reportData?.description ?? "";
 
@@ -87,6 +89,7 @@ const InstantReport: React.FC<InstantReportProps> = ({
   return (
     <section
       dir="rtl"
+      id={id}
       className="w-full bg-white py-16 sm:py-20 lg:py-24 overflow-hidden"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

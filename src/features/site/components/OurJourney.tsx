@@ -10,6 +10,7 @@ import { OurJourneyProps, OurJourneyStep } from "../types";
 const JOURNEY_COLORS = ["#8B5CF6", "#FBC203", "#F55697"];
 
 const OurJourney: React.FC<OurJourneyProps> = ({
+  id: propId,
   title: propTitle,
   description: propDescription,
   subtitle,
@@ -21,6 +22,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
     select: (res) => res.data?.journey_section,
   });
 
+  const id = propId ?? journeyData?.id;
   const title = propTitle ?? journeyData?.title ?? "";
   const description = propDescription ?? journeyData?.subtitle ?? "";
 
@@ -40,6 +42,7 @@ const OurJourney: React.FC<OurJourneyProps> = ({
   return (
     <section
       dir="rtl"
+      id={id}
       className="relative w-full section-spacing px-4 sm:px-6 md:px-8 bg-white overflow-hidden"
     >
       <div className="container mx-auto flex flex-col items-center">

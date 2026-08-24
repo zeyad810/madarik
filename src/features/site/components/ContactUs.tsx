@@ -5,19 +5,30 @@ import { motion } from "framer-motion";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { ContactFormCard } from "./ContactFormCard";
 import { InstagramIcon, TwitterIcon, FacebookIcon } from "./ContactIcons";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import { defaultContactData } from "./contactData";
 import type { ContactUsProps } from "../types";
 
 const ContactUs: React.FC<ContactUsProps> = ({
-  title = defaultContactData.title,
-  description = defaultContactData.description,
+  id: propId,
+  title: propTitle,
+  description: propDescription,
   contactInfo = defaultContactData.contactInfo,
   socialLinks = defaultContactData.socialLinks,
   onSubmit,
 }) => {
+  const { data: contactData } = usePublicLanding({
+    select: (res) => res.data?.contact_section,
+  });
+
+  const id = propId ?? contactData?.id;
+  const title = propTitle ?? contactData?.title ?? defaultContactData.title;
+  const description = propDescription ?? contactData?.subtitle ?? defaultContactData.description;
+
   return (
     <section
       dir="rtl"
+      id={id}
       className="relative w-full overflow-hidden bg-mad-white-50 section-spacing px-4 md:px-8"
     >
       <div className="container relative mx-auto">

@@ -10,6 +10,7 @@ export interface HeroStatItem {
 }
 
 export interface HeroProps {
+  id?: string;
   title?: string;
   description?: string;
   stats?: HeroStatItem[];
@@ -41,6 +42,7 @@ export interface BannerSlideItem {
 }
 
 export interface BannerSliderProps {
+  id?: string;
   slides?: BannerSlideItem[];
   autoplayDelay?: number;
   showNavigation?: boolean;
@@ -62,6 +64,7 @@ export interface ReviewItem {
 }
 
 export interface CustomerReviewsProps {
+  id?: string;
   title?: string;
   subtitle?: string;
   description?: string;
@@ -84,6 +87,7 @@ export interface FeatureItem {
 }
 
 export interface FeaturesProps {
+  id?: string;
   title?: string;
   description?: string;
   subtitle?: string;
@@ -104,6 +108,7 @@ export interface StepItem {
 }
 
 export interface HowItWorksProps {
+  id?: string;
   title?: string;
   subtitle?: string;
   steps?: StepItem[];
@@ -121,6 +126,7 @@ export interface SkillCardItem {
 }
 
 export interface SkillsProps {
+  id?: string;
   title?: string;
   description?: string;
   rightCards?: SkillCardItem[];
@@ -137,6 +143,7 @@ export interface FaqItem {
 }
 
 export interface FqaProps {
+  id?: string;
   subtitle?: string;
   title?: string;
   items?: FaqItem[];
@@ -155,6 +162,7 @@ export interface ChildWinCardItem {
 }
 
 export interface ChildWinProps {
+  id?: string;
   title?: string;
   description?: string;
   bgImageSrc?: string;
@@ -171,6 +179,7 @@ export interface WhyTrustUsFeature {
 }
 
 export interface WhyTrustUsProps {
+  id?: string;
   title?: string;
   description?: string;
   image?: string;
@@ -212,6 +221,7 @@ export interface PricingPlan {
 }
 
 export interface PricingProps {
+  id?: string;
   title?: string;
   description?: string;
   plans?: PricingPlan[];
@@ -230,6 +240,7 @@ export interface InstantReportFeature {
 }
 
 export interface InstantReportProps {
+  id?: string;
   title?: string;
   description?: string;
   features?: InstantReportFeature[];
@@ -249,6 +260,7 @@ export interface InstantReportProps {
 import type { Product } from "@/features/products/types";
 
 export interface ProductSectionProps {
+  id?: string;
   title?: string;
   subtitle?: string;
   description?: string;
@@ -277,6 +289,7 @@ export interface SocialLinks {
 }
 
 export interface ContactUsProps {
+  id?: string;
   title?: string;
   description?: string;
   contactInfo?: ContactInfoItem;
@@ -295,6 +308,7 @@ export interface OurJourneyStep {
 }
 
 export interface OurJourneyProps {
+  id?: string;
   title?: string;
   description?: string;
   subtitle?: string;
@@ -307,6 +321,7 @@ export interface OurJourneyProps {
 // Video Section Types
 // ==========================================
 export interface MadVideoProps {
+  id?: string;
   subtitle?: string;
   title?: string;
   description?: string;
@@ -328,6 +343,7 @@ export interface PublicHeroStat {
 }
 
 export interface PublicHeroBanner {
+  id?: string;
   title: string;
   subtitle: string;
   stats: PublicHeroStat[];
@@ -339,6 +355,7 @@ export interface PublicWhyUsItem {
 }
 
 export interface PublicWhyUsSection {
+  id?: string;
   title: string;
   description: string;
   items: PublicWhyUsItem[];
@@ -351,18 +368,21 @@ export interface PublicHowItWorksStep {
 }
 
 export interface PublicHowItWorksSection {
+  id?: string;
   title: string;
   description: string;
   steps: PublicHowItWorksStep[];
 }
 
 export interface PublicPlatformTourSection {
+  id?: string;
   title: string;
   eyebrow: string;
   description: string;
 }
 
 export interface PublicInstantReportSection {
+  id?: string;
   title: string;
   description: string;
   points: string[];
@@ -374,6 +394,7 @@ export interface PublicMoreThanStoriesItem {
 }
 
 export interface PublicMoreThanStoriesSection {
+  id?: string;
   title: string;
   description: string;
   items: PublicMoreThanStoriesItem[];
@@ -385,6 +406,7 @@ export interface PublicChildBenefitsItem {
 }
 
 export interface PublicChildBenefitsSection {
+  id?: string;
   title: string;
   subtitle: string;
   items: PublicChildBenefitsItem[];
@@ -414,6 +436,7 @@ export interface PublicSuggestedStory {
 }
 
 export interface PublicSuggestedStoriesSection {
+  id?: string;
   title: string;
   link_text: string;
   items: PublicSuggestedStory[];
@@ -425,6 +448,7 @@ export interface PublicTrustItem {
 }
 
 export interface PublicTrustSection {
+  id?: string;
   title: string;
   description: string;
   items: PublicTrustItem[];
@@ -436,6 +460,7 @@ export interface PublicJourneyMilestone {
 }
 
 export interface PublicJourneySection {
+  id?: string;
   title: string;
   subtitle: string;
   milestones: PublicJourneyMilestone[];
@@ -453,6 +478,7 @@ export interface PublicTestimonial {
 }
 
 export interface PublicTestimonialsSection {
+  id?: string;
   title: string;
   items: PublicTestimonial[];
 }
@@ -468,18 +494,21 @@ export interface PublicFaqApiItem {
 }
 
 export interface PublicFaqSection {
+  id?: string;
   title: string;
   subtitle: string;
   items: PublicFaqApiItem[];
 }
 
 export interface PublicContactSection {
+  id?: string;
   title: string;
   subtitle: string;
   button_text: string;
 }
 
 export interface PublicNewsletterSection {
+  id?: string;
   title: string;
   subtitle: string;
 }
@@ -528,9 +557,11 @@ export interface PublicPackage {
 }
 
 export interface PublicPackagesData {
+  id?: string;
   title: string | null;
   subtitle: string | null;
   packages: PublicPackage[];
 }
 
 export type PublicPackagesResponse = ApiResponse<PublicPackagesData>;
+
