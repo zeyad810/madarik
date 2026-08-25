@@ -5,11 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, RotateCcw, Star } from "lucide-react";
+import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 import type { QuizResultData } from "../types";
 
 interface QuizResultProps {
   result: QuizResultData;
   storyId: string;
+  storyTitle?: string;
   userRole: string;
   onRetry?: () => void;
 }
@@ -24,9 +26,11 @@ function formatTimeTaken(seconds?: number): string {
 export const QuizResult: React.FC<QuizResultProps> = ({
   result,
   storyId,
+  storyTitle,
   userRole,
   onRetry,
 }) => {
+  const resolvedStoryTitle = storyTitle || (result as any)?.story_title || "القصة";
   const total = result.total_questions || 1;
   const correct = result.correct_answers ?? result.score ?? 0;
   const percentage = Math.round(
@@ -43,51 +47,44 @@ export const QuizResult: React.FC<QuizResultProps> = ({
       dir="rtl"
       className="min-h-screen flex flex-col justify-between bg-white relative overflow-hidden"
     >
-      {/* Confetti Background Texture — Only on success */}
-      {passed && (
-        <div
-          className="absolute inset-0 pointer-events-none bg-[url('/iamges/q-quiz-results-bg.png')] bg-contain bg-center opacity-80"
-          aria-hidden="true"
-        />
-      )}
-
       {/* ─────────────────── TOP BREADCRUMBS ─────────────────── */}
-      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-2 select-none">
-          <Link href="/" className="hover:text-[#7939E3] transition-colors">
-            الرئيسية
-          </Link>
-          <span>&gt;</span>
-          <Link href="/stories" className="hover:text-[#7939E3] transition-colors">
-            القصص
-          </Link>
-          <span>&gt;</span>
-          <Link href={`/stories/${storyId}`} className="hover:text-[#7939E3] transition-colors">
-            الأرنب والسلحفاة
-          </Link>
-          <span>&gt;</span>
-          <span className="text-slate-600">نتيجة الاختبار</span>
-        </div>
+      <div className="relative z-20 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <AutoBreadcrumbs
+          rootIcon={null}
+          dynamicLabels={{
+            [storyId]: resolvedStoryTitle,
+            quiz: "نتيجة الاختبار",
+          }}
+        />
       </div>
 
-      {/* ─────────────────── MAIN CONTENT ─────────────────── */}
-      <main className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6 py-4 flex-1 flex flex-col items-center justify-center gap-6 text-center">
-        {/* Title & Subtitle */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col items-center gap-1"
-        >
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1E1B4B]">
-            {passed ? "أحسنت يا بطل" : "لنحاول مرة أخرى"}
-          </h1>
-          <p className="text-sm sm:text-base font-semibold text-slate-500">
-            {passed
-              ? "لقد أنجزت من الاختبار بنجاح"
-              : "أعد تجربة الاختبار"}
-          </p>
-        </motion.div>
+      {/* ─────────────────── MAIN CONTENT AREA ─────────────────── */}
+      <div className="relative flex-1 flex flex-col justify-center overflow-hidden">
+        {/* Confetti Background Texture — Only on success and placed below the breadcrumbs */}
+        {passed && (
+          <div
+            className="absolute inset-0 pointer-events-none bg-[url('/iamges/q-quiz-results-bg.png')] bg-contain bg-center opacity-80"
+            aria-hidden="true"
+          />
+        )}
+
+        <main className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 flex-1 flex flex-col items-center justify-center gap-6 text-center">
+          {/* Title & Subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex flex-col items-center gap-1"
+          >
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1E1B4B]">
+              {passed ? "أحسنت يا بطل" : "لنحاول مرة أخرى"}
+            </h1>
+            <p className="text-sm sm:text-base font-semibold text-slate-500">
+              {passed
+                ? "لقد أنجزت من الاختبار بنجاح"
+                : "أعد تجربة الاختبار"}
+            </p>
+          </motion.div>
 
         {/* 3D Character Image */}
         <motion.div
@@ -248,6 +245,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
           )}
         </motion.div>
       </main>
+      </div>
     </div>
   );
 };

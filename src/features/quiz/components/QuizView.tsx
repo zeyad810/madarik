@@ -307,6 +307,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
       <QuizResult
         result={quizResult}
         storyId={storyId}
+        storyTitle={storyTitle || quiz?.story_title}
         userRole={role}
         onRetry={handleRetry}
       />
@@ -332,26 +333,20 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
       {/* ─────────────────── TOP HEADER & BREADCRUMBS ─────────────────── */}
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-2">
         {/* Breadcrumb Navigation */}
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-3 select-none">
-          <Link href="/" className="hover:text-[#7939E3] transition-colors">
-            الرئيسية
-          </Link>
-          <span>&gt;</span>
-          <Link href="/stories" className="hover:text-[#7939E3] transition-colors">
-            القصص
-          </Link>
-          <span>&gt;</span>
-          <Link href={`/stories/${storyId}`} className="hover:text-[#7939E3] transition-colors">
-            {storyTitle ?? quiz.story_title}
-          </Link>
-          <span>&gt;</span>
-          <span className="text-slate-600">اختبار القصة</span>
+        <div className="mb-3 select-none">
+          <AutoBreadcrumbs
+            rootIcon={null}
+            dynamicLabels={{
+              [storyId]: storyTitle || quiz.story_title || "القصة",
+              quiz: "اختبار القصة",
+            }}
+          />
         </div>
 
         {/* Header Title & Level Badges */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#1E1B4B]">
-            اختبار: {quiz.story_title || storyTitle}
+            اختبار: {storyTitle || quiz.story_title || "القصة"}
           </h1>
 
           <div className="flex items-center gap-2">
