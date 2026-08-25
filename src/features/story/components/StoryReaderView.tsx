@@ -17,6 +17,7 @@ import { Story, StoryBlock, getStoryQuizId } from "../types";
 import { useFinishStory } from "../hooks/useFinishStory";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
+import toast from "react-hot-toast";
 
 interface StoryReaderViewProps {
   story: Story;
@@ -32,6 +33,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
 
   // Track if story has been marked finished in this session
   const hasFinishedRef = useRef(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   // Extract and organize blocks into pages
   const blocks: StoryBlock[] =
@@ -178,27 +180,46 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
             </Link>
           )}
 
-          {story.pdf_url ? (
-            <a
-              href={story.pdf_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              download
-              className="py-2.5 px-5 rounded-full bg-[#EAB308] hover:bg-[#CA8A04] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer"
-            >
+          {/* 3. تحميل PDF */}
+          <button
+            type="button"
+            disabled={isDownloadingPdf}
+            onClick={async () => {
+              if (!story.pdf_url) {
+                toast.error("ملف PDF غير متوفر حالياً لهذه القصة");
+                return;
+              }
+
+              try {
+                setIsDownloadingPdf(true);
+                const res = await fetch(story.pdf_url);
+                if (!res.ok) throw new Error("Fetch error");
+                const blob = await res.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.style.display = "none";
+                a.href = blobUrl;
+                a.download = `${story.title || "قصة"}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(blobUrl);
+                toast.success("تم تحميل ملف PDF بنجاح");
+              } catch {
+                window.open(story.pdf_url, "_blank", "noopener,noreferrer");
+              } finally {
+                setIsDownloadingPdf(false);
+              }
+            }}
+            className="py-2.5 px-5 rounded-full bg-[#EAB308] hover:bg-[#CA8A04] disabled:opacity-75 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer"
+          >
+            {isDownloadingPdf ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
               <Download className="w-4 h-4" />
-              <span>تحميل PDF</span>
-            </a>
-          ) : (
-            <button
-              type="button"
-              onClick={() => alert("ملف PDF غير متوفر حالياً لهذه القصة")}
-              className="py-2.5 px-5 rounded-full bg-[#EAB308] hover:bg-[#CA8A04] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer"
-            >
-              <Download className="w-4 h-4" />
-              <span>تحميل PDF</span>
-            </button>
-          )}
+            )}
+            <span>{isDownloadingPdf ? "جاري التحميل..." : "تحميل PDF"}</span>
+          </button>
         </div>
       </div>
 
