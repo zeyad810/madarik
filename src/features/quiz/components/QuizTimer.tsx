@@ -2,67 +2,49 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { useQuizTimerStore } from "../store/useQuizTimerStore";
-import { getRemainingSeconds, formatTimerDisplay } from "../utils";
-import { QUIZ_DURATION_SECONDS } from "../constants";
+import { formatTimerDisplay } from "../utils";
+import { QUESTION_DURATION_SECONDS } from "../constants";
 
 interface QuizTimerProps {
-  quizId: string;
+  questionId: string;
+  durationSeconds?: number;
   /** Called when the timer reaches zero */
   onExpire: () => void;
 }
 
-export const QuizTimer: React.FC<QuizTimerProps> = ({ quizId, onExpire }) => {
-  const { quizId: storedQuizId, expiresAt, setTimer, clearTimer } = useQuizTimerStore();
-  const [remainingSeconds, setRemainingSeconds] = useState<number>(QUIZ_DURATION_SECONDS);
-  const hasExpiredRef = useRef(false);
-  const hasInitialized = useRef(false);
+export const QuizTimer: React.FC<QuizTimerProps> = ({
+  questionId,
+  durationSeconds = QUESTION_DURATION_SECONDS,
+  onExpire,
+}) => {
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(durationSeconds);
+  const onExpireRef = useRef(onExpire);
+  onExpireRef.current = onExpire;
 
-  // Initialize or restore timer on mount
+  // Reset timer on question change
   useEffect(() => {
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
-
-    if (storedQuizId === quizId && expiresAt !== null) {
-      const remaining = getRemainingSeconds(expiresAt);
-      if (remaining > 0) {
-        // Restore active timer
-        setRemainingSeconds(remaining);
-      } else {
-        // Expired from earlier session — reset fresh timer
-        const newExpiresAt = Date.now() + QUIZ_DURATION_SECONDS * 1000;
-        setTimer(quizId, newExpiresAt);
-        setRemainingSeconds(QUIZ_DURATION_SECONDS);
-      }
-    } else {
-      // New quiz — start fresh timer
-      const newExpiresAt = Date.now() + QUIZ_DURATION_SECONDS * 1000;
-      setTimer(quizId, newExpiresAt);
-      setRemainingSeconds(QUIZ_DURATION_SECONDS);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quizId]);
+    setRemainingSeconds(durationSeconds);
+  }, [questionId, durationSeconds]);
 
   // Tick every second
   useEffect(() => {
-    if (!expiresAt) return;
-
     const interval = setInterval(() => {
-      const remaining = getRemainingSeconds(expiresAt);
-      setRemainingSeconds(remaining);
-
-      if (remaining === 0 && !hasExpiredRef.current) {
-        hasExpiredRef.current = true;
-        clearInterval(interval);
-        clearTimer();
-        onExpire();
-      }
+      setRemainingSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setTimeout(() => {
+            onExpireRef.current();
+          }, 0);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [expiresAt, clearTimer, onExpire]);
+  }, [questionId, durationSeconds]);
 
-  const totalDuration = QUIZ_DURATION_SECONDS;
+  const totalDuration = durationSeconds;
   const progressPct = Math.max(0, Math.min(1, remainingSeconds / totalDuration));
 
   // SVG circle progress
@@ -73,7 +55,7 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({ quizId, onExpire }) => {
   return (
     <div className="flex flex-col items-center gap-2">
       {/* Label */}
-      <span className="text-xs font-bold text-slate-500">الوقت المتبقي</span>
+      <span className="text-xs font-bold text-slate-500">الوقت المتبقي للسؤال</span>
 
       {/* Circular progress */}
       <div className="relative w-24 h-24 my-1">
