@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, LogOut, Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 import Loading from "@/app/loading";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
@@ -18,6 +19,7 @@ import { useQuiz } from "../hooks/useQuiz";
 import { useCheckQuizAnswer } from "../hooks/useCheckQuizAnswer";
 import { useSubmitQuiz } from "../hooks/useSubmitQuiz";
 import { useQuizTimerStore } from "../store/useQuizTimerStore";
+import { quizQueryKeys } from "../constants";
 import { QuizTimer } from "./QuizTimer";
 import { QuizProgress } from "./QuizProgress";
 import { QuizQuestion } from "./QuizQuestion";
@@ -28,7 +30,6 @@ import {
   getCurrentTimestamp,
   calculateElapsedSeconds,
 } from "../utils";
-import { recordChildAttempt } from "../api";
 import type {
   SelectedAnswersMap,
   CheckedAnswersMap,
@@ -47,6 +48,7 @@ interface QuizViewProps {
 export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle }) => {
   const { userRole, isAuthenticated, activeChild, activeAccountId } = useActiveAccount();
   const role = isAuthenticated ? (userRole || "parent") : "visitor";
+  const queryClient = useQueryClient();
 
   // ── Data ───────────────────────────────────────────────────────────────────
   const { data: quizResponse, isLoading, isError } = useQuiz(quizId);
@@ -157,31 +159,13 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
       };
 
       setQuizResult(finalResult);
-
-      // Record this attempt so every retry is saved as a new attempt
-      const studentId =
-        (activeChild?.id ? activeChild.id : null) ||
-        (activeAccountId && activeAccountId !== "parent" ? activeAccountId : null);
-
-      const calculatedCorrect = Object.values(checkedAnswers).filter((x) => x.isCorrect).length;
-      recordChildAttempt(studentId, {
-        id: `att_${quizId}_${Date.now()}`,
-        quiz_id: quizId,
-        story_id: storyId,
-        story_title: quiz?.story_title || storyTitle || "اختبار القصة",
-        score: resultData?.correct_answers ?? resultData?.score ?? calculatedCorrect,
-        total_questions: resultData?.total_questions ?? totalQuestions ?? 1,
-        percentage:
-          resultData?.percentage ??
-          Math.round(((resultData?.correct_answers ?? calculatedCorrect) / (totalQuestions || 1)) * 100),
-        passed: resultData?.passed ?? true,
-        passing_score: quiz?.passing_score ?? 60,
-        level: typeof (quiz as any)?.level === "string" ? (quiz as any).level : (quiz as any)?.level?.name || "المستوى 3",
-        created_at: new Date().toISOString(),
-      });
-
       setSubmissionState("submitted");
       clearTimer();
+
+      // Invalidate history query immediately so the attempts page is up-to-date
+      queryClient.invalidateQueries({ queryKey: quizQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["quiz"] });
+      queryClient.refetchQueries({ queryKey: ["quiz", "history"] });
     } catch (err) {
       console.error("[Quiz Submit Error]:", err);
       setSubmissionState("idle");
@@ -189,11 +173,18 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
     }
   };
 
-  /** Called by QuizTimer when time runs out */
-  const handleTimerExpire = () => {
+  /** Called by QuizTimer when the 90-second question timer runs out */
+  const handleQuestionTimerExpire = () => {
     if (submissionState !== "idle") return;
-    if (Object.keys(selectedAnswers).length === 0) return;
-    performSubmit(selectedAnswers);
+
+    if (currentIdx < totalQuestions - 1) {
+      // Advance to the next question automatically
+      setCurrentIdx((prev) => prev + 1);
+      setValidationError(null);
+    } else {
+      // Last question reached -> automatically submit the quiz
+      performSubmit(selectedAnswers);
+    }
   };
 
   /** Move to next question */
@@ -370,18 +361,16 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
       {/* ─────────────────── 3-COLUMN MAIN CONTENT (RTL) ─────────────────── */}
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* 1. RIGHT COLUMN (in RTL, 1st child is on the RIGHT) — Character & Speech Bubble */}
-          <aside className="lg:col-span-3 hidden lg:flex flex-col items-center justify-start pt-6">
-
-            {/* 3D Character Illustration */}
-            <div className="relative w-full flex justify-center">
+          {/* 1. RIGHT COLUMN (in RTL, 1st child is on the RIGHT) — Character Illustration */}
+          <aside className="lg:col-span-3 hidden lg:flex flex-col items-center justify-center pt-2">
+            {/* 3D Character Illustration (Enlarged) */}
+            <div className="relative w-full flex justify-center items-center">
               <Image
                 src="/iamges/q-boyThinking.png"
                 alt="فكر جيدا"
-                width={240}
-                height={340}
-                style={{ width: "auto", height: "auto" }}
-                className="object-contain max-h-[380px] drop-shadow-md"
+                width={360}
+                height={500}
+                className="object-contain w-full max-w-[320px] xl:max-w-[360px] max-h-[460px] xl:max-h-[520px] drop-shadow-xl transition-all duration-300"
                 priority
               />
             </div>
@@ -504,9 +493,13 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
               </span>
             </div>
 
-            {/* Timer Card */}
+            {/* Timer Card (Per-question timer: 90 seconds = 1.5 mins) */}
             <div className="bg-white rounded-[24px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col items-center justify-center">
-              <QuizTimer quizId={quizId} onExpire={handleTimerExpire} />
+              <QuizTimer
+                questionId={currentQuestion?.id || String(currentIdx)}
+                durationSeconds={90}
+                onExpire={handleQuestionTimerExpire}
+              />
             </div>
 
             {/* Exit Quiz Button */}

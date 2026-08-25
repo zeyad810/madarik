@@ -60,8 +60,13 @@ export const AttemptsLogView: React.FC = () => {
   const isAllowed = role === "student" || role === "parent" || role === "child";
 
   // Data fetching
-  const { data: historyResponse, isLoading, isError } = useQuizHistory();
+  const { data: historyResponse, isLoading, isError, refetch } = useQuizHistory();
   const rawAttempts = historyResponse?.data || [];
+
+  // Always fetch fresh data on mount
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   // Filter States
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
@@ -345,9 +350,9 @@ export const AttemptsLogView: React.FC = () => {
                       const outcomeName = row.outcome || row.story?.outcome || "يفهم القصة";
                       const indicatorName = row.indicator || row.story?.indicator || "يحلل الأحداث";
                       const attemptsCount = row.attempts_count || row.attempt_number || 1;
-                      const lastScore = row.last_score ?? row.score ?? 90;
-                      const highestScore = row.highest_score ?? row.score ?? 90;
-                      const maxScore = row.max_score || 100;
+                      const lastScore = row.last_score ?? row.score ?? 0;
+                      const highestScore = row.highest_score ?? row.score ?? 0;
+                      const maxScore = 100;
                       const dateDisplay = formatDate(row.created_at);
 
                       const highestEmoji = getScoreEmoji(highestScore);

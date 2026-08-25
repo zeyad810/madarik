@@ -26,8 +26,10 @@ export function useSubmitQuiz(
 
   return useMutation<SubmitQuizResponse, ApiError | Error, SubmitQuizPayload>({
     mutationFn: (payload) => submitQuiz(quizId, role, payload, token, childId),
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: quizQueryKeys.all });
+    onSuccess: async (data, variables, context) => {
+      await queryClient.invalidateQueries({ queryKey: quizQueryKeys.all });
+      await queryClient.invalidateQueries({ queryKey: ["quiz"] });
+      await queryClient.refetchQueries({ queryKey: ["quiz", "history"] });
       if (options?.onSuccess) {
         (options.onSuccess as Function)(data, variables, context);
       }

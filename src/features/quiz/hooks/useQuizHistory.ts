@@ -39,7 +39,8 @@ export function useQuizHistory(
       }
     },
     enabled: hasAccess && status !== "loading",
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: "always",
     retry: false,
   });
 }
