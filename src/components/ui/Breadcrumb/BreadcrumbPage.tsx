@@ -59,13 +59,7 @@ export const BreadcrumbPage = React.forwardRef<
         )}
         {...props}
       >
-        {icon && iconPosition === "start" && (
-          <span className="shrink-0">{icon}</span>
-        )}
         <span className="truncate">{children}</span>
-        {icon && iconPosition === "end" && (
-          <span className="shrink-0">{icon}</span>
-        )}
         {badge && (
           <span
             className={cn(

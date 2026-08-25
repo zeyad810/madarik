@@ -52,17 +52,7 @@ export const BreadcrumbLink = React.forwardRef<
 
     const content = (
       <>
-        {icon && iconPosition === "start" && (
-          <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">
-            {icon}
-          </span>
-        )}
         <span className="truncate">{children}</span>
-        {icon && iconPosition === "end" && (
-          <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">
-            {icon}
-          </span>
-        )}
         {badge && (
           <span className="inline-flex items-center justify-center text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-mad-purple-100 text-mad-main border border-mad-purple-200/50">
             {badge}
