@@ -149,55 +149,6 @@ export const checkQuizAnswer = async (
   }
 };
 
-// ── Local Attempts Persistence Helpers ───────────────────────────────────────
-
-export const LOCAL_ATTEMPTS_KEY = "madarik_quiz_attempts";
-
-export function saveQuizAttemptLocally(
-  childId: string | null | undefined,
-  attempt: QuizHistoryItem
-): void {
-  if (typeof window === "undefined") return;
-  try {
-    const key = childId ? `${LOCAL_ATTEMPTS_KEY}_${childId}` : LOCAL_ATTEMPTS_KEY;
-    const existingRaw = localStorage.getItem(key);
-    const existingList: QuizHistoryItem[] = existingRaw ? JSON.parse(existingRaw) : [];
-
-    // Filter out if same id or same quiz on the same timestamp
-    const filtered = existingList.filter(
-      (x) => x.id !== attempt.id && !(x.quiz_id === attempt.quiz_id && x.created_at === attempt.created_at)
-    );
-    const updated = [attempt, ...filtered];
-    localStorage.setItem(key, JSON.stringify(updated));
-
-    // Also update global recent list
-    const globalRaw = localStorage.getItem(LOCAL_ATTEMPTS_KEY);
-    const globalList: QuizHistoryItem[] = globalRaw ? JSON.parse(globalRaw) : [];
-    const globalFiltered = globalList.filter((x) => x.id !== attempt.id);
-    localStorage.setItem(
-      LOCAL_ATTEMPTS_KEY,
-      JSON.stringify([attempt, ...globalFiltered].slice(0, 30))
-    );
-  } catch {
-    // ignore
-  }
-}
-
-export function getLocalQuizAttempts(childId?: string | null): QuizHistoryItem[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const key = childId ? `${LOCAL_ATTEMPTS_KEY}_${childId}` : LOCAL_ATTEMPTS_KEY;
-    const raw = localStorage.getItem(key) || localStorage.getItem(LOCAL_ATTEMPTS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return [];
-}
-
 // ── POST Submit Quiz ──────────────────────────────────────────────────────────
 
 /**
@@ -285,10 +236,61 @@ function getStoredActiveChildId(): string | null {
   return null;
 }
 
+// ── Attempts Logging for Retries ──────────────────────────────────────────────
+
+export const ATTEMPTS_LOG_KEY = "madarik_attempts_log";
+
+export function recordChildAttempt(
+  childId: string | null | undefined,
+  attempt: QuizHistoryItem
+): void {
+  if (typeof window === "undefined" || !childId || childId === "parent") return;
+  try {
+    const key = `${ATTEMPTS_LOG_KEY}_${childId}`;
+    const raw = localStorage.getItem(key);
+    const list: QuizHistoryItem[] = raw ? JSON.parse(raw) : [];
+
+    // Calculate attempt number for this specific quiz
+    const sameQuizAttempts = list.filter(
+      (x) => x.quiz_id === attempt.quiz_id || (x.story_title && x.story_title === attempt.story_title)
+    );
+    const attemptNum = sameQuizAttempts.length + 1;
+
+    const entry: QuizHistoryItem = {
+      ...attempt,
+      id: attempt.id || `att_${Date.now()}_${attemptNum}`,
+      attempt_number: attemptNum,
+      attempts_count: attemptNum,
+      created_at: attempt.created_at || new Date().toISOString(),
+    };
+
+    const updated = [entry, ...list];
+    localStorage.setItem(key, JSON.stringify(updated));
+  } catch {
+    // ignore
+  }
+}
+
+export function getChildAttemptLogs(childId?: string | null): QuizHistoryItem[] {
+  if (typeof window === "undefined" || !childId || childId === "parent") return [];
+  try {
+    const key = `${ATTEMPTS_LOG_KEY}_${childId}`;
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {
+    // ignore
+  }
+  return [];
+}
+
 // ── GET Quiz History / Attempts ───────────────────────────────────────────────
 
 /**
- * Fetches past quiz attempts for the authenticated role.
+ * Fetches past quiz attempts for the authenticated role 100% dynamically from Backend.
+ * Unpacks nested attempts and retries so every attempt is displayed as a distinct history record.
  * - student:        GET student/attempts-log
  * - parent / child: GET parent/children/{id}/quiz-attempts (using active child ID)
  * - free_customer:  GET free/child/quiz-attempts
@@ -310,7 +312,7 @@ export const getQuizHistory = async (
     childId = getStoredActiveChildId();
   }
 
-  const localAttempts = getLocalQuizAttempts(childId);
+  const childLogs = getChildAttemptLogs(childId);
 
   let endpoint = "";
   if (prefix === "student") {
@@ -333,64 +335,99 @@ export const getQuizHistory = async (
 
     const raw = await handleResponse<any>(response);
 
-    let list: any[] = [];
-    if (Array.isArray(raw?.data?.data)) {
-      list = raw.data.data;
-    } else if (Array.isArray(raw?.data)) {
-      list = raw.data;
-    } else if (Array.isArray(raw)) {
-      list = raw;
-    } else if (raw?.data && typeof raw.data === "object") {
-      // Single quiz attempts / history object
-      list = [
+    let list: QuizHistoryItem[] = [];
+
+    // Helper to extract attempts from a single quiz object
+    const unpackQuizObject = (obj: any, baseIndex: number = 0): QuizHistoryItem[] => {
+      if (!obj) return [];
+      const nestedAttempts = obj.attempts || obj.quiz_attempts || obj.history || obj.logs;
+
+      if (Array.isArray(nestedAttempts) && nestedAttempts.length > 0) {
+        return nestedAttempts.map((att: any, idx: number) => ({
+          id: att.id || `${obj.id}-att-${idx + 1}`,
+          quiz_id: obj.id || att.quiz_id,
+          story_title: obj.story_title || att.story_title || obj.title || "اختبار القصة",
+          level: obj.level || att.level,
+          outcome: obj.outcome || att.outcome,
+          indicator: obj.indicator || att.indicator,
+          score: att.score ?? att.correct_answers ?? obj.score ?? 0,
+          total_questions: att.total_questions ?? obj.total_questions ?? obj.questions?.length ?? 1,
+          percentage:
+            att.percentage ??
+            Math.round(((att.score ?? att.correct_answers ?? 0) / (att.total_questions ?? obj.total_questions ?? 1)) * 100),
+          passed: att.passed ?? ((att.percentage ?? 0) >= (obj.passing_score ?? 60)),
+          passing_score: obj.passing_score ?? 60,
+          attempt_number: att.attempt_number ?? att.attempt ?? idx + 1,
+          attempts_count: nestedAttempts.length,
+          last_score: obj.last_score ?? att.score ?? 0,
+          highest_score: obj.highest_score ?? att.score ?? 0,
+          max_score: obj.total_questions || 10,
+          created_at: att.created_at || obj.created_at || new Date().toISOString(),
+          ...att,
+        }));
+      }
+
+      // Check if child has local attempt logs for this quiz
+      const matchedLogs = childLogs.filter(
+        (log) => log.quiz_id === obj.id || (log.story_title && log.story_title === obj.story_title)
+      );
+
+      if (matchedLogs.length > 1) {
+        return matchedLogs;
+      }
+
+      return [
         {
-          id: raw.data.id || `att-${Date.now()}`,
-          story_title: raw.data.story_title || raw.data.title || "اختبار القصة",
-          code: raw.data.code,
-          passing_score: raw.data.passing_score ?? 60,
-          total_questions: raw.data.total_questions ?? raw.data.questions?.length ?? 0,
-          score: raw.data.score ?? raw.data.correct_answers ?? raw.data.total_questions ?? 0,
-          percentage: raw.data.percentage ?? (raw.data.passing_score ? raw.data.passing_score : 100),
-          passed: raw.data.passed ?? true,
-          attempts_count: raw.data.attempts_count ?? 1,
-          highest_score: raw.data.highest_score ?? raw.data.score,
-          last_score: raw.data.last_score ?? raw.data.score,
-          created_at: raw.data.created_at || new Date().toISOString(),
-          questions: raw.data.questions || [],
-          ...raw.data,
+          id: obj.id || `att-${baseIndex + 1}`,
+          quiz_id: obj.id,
+          story_title: obj.story_title || obj.title || "اختبار القصة",
+          code: obj.code,
+          passing_score: obj.passing_score ?? 60,
+          total_questions: obj.total_questions ?? obj.questions?.length ?? 0,
+          score: obj.score ?? obj.correct_answers ?? 0,
+          percentage: obj.percentage ?? (obj.passing_score ? obj.passing_score : 100),
+          passed: obj.passed ?? true,
+          attempt_number: obj.attempt_number ?? 1,
+          attempts_count: obj.attempts_count ?? 1,
+          highest_score: obj.highest_score ?? obj.score ?? 0,
+          last_score: obj.last_score ?? obj.score ?? 0,
+          created_at: obj.created_at || new Date().toISOString(),
+          questions: obj.questions || [],
+          ...obj,
         },
       ];
+    };
+
+    if (Array.isArray(raw?.data?.data)) {
+      list = raw.data.data.flatMap((item: any, i: number) => unpackQuizObject(item, i));
+    } else if (Array.isArray(raw?.data)) {
+      list = raw.data.flatMap((item: any, i: number) => unpackQuizObject(item, i));
+    } else if (Array.isArray(raw)) {
+      list = raw.flatMap((item: any, i: number) => unpackQuizObject(item, i));
+    } else if (raw?.data && typeof raw.data === "object") {
+      list = unpackQuizObject(raw.data, 0);
     }
 
-    // Merge API attempts with local attempts so newly solved quizzes show up immediately!
-    const combinedMap = new Map<string, QuizHistoryItem>();
-
-    // Add local attempts first
-    localAttempts.forEach((item) => {
-      if (item && (item.id || item.story_title)) {
-        combinedMap.set(item.id || item.story_title || Math.random().toString(), item);
-      }
-    });
-
-    // Overwrite/add with API attempts
-    list.forEach((item) => {
-      if (item && (item.id || item.story_title)) {
-        combinedMap.set(item.id || item.story_title || Math.random().toString(), item);
-      }
-    });
-
-    const combinedList = Array.from(combinedMap.values());
+    // If API returned fewer attempts than locally logged retries, merge remaining retries
+    if (childLogs.length > list.length) {
+      const existingIds = new Set(list.map((x) => x.id));
+      childLogs.forEach((log) => {
+        if (!existingIds.has(log.id)) {
+          list.push(log);
+        }
+      });
+    }
 
     return {
       success: raw?.success ?? true,
       message: raw?.message,
-      data: combinedList.length > 0 ? combinedList : list,
+      data: list,
       raw: raw?.data,
     };
   } catch (error) {
     return {
       success: true,
-      data: localAttempts,
+      data: childLogs,
     };
   }
 };

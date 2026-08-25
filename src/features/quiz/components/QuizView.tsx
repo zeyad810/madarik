@@ -28,7 +28,7 @@ import {
   getCurrentTimestamp,
   calculateElapsedSeconds,
 } from "../utils";
-import { saveQuizAttemptLocally } from "../api";
+import { recordChildAttempt } from "../api";
 import type {
   SelectedAnswersMap,
   CheckedAnswersMap,
@@ -158,14 +158,14 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
 
       setQuizResult(finalResult);
 
-      // Save attempt locally for the active student/child so history updates immediately
+      // Record this attempt so every retry is saved as a new attempt
       const studentId =
         (activeChild?.id ? activeChild.id : null) ||
         (activeAccountId && activeAccountId !== "parent" ? activeAccountId : null);
 
       const calculatedCorrect = Object.values(checkedAnswers).filter((x) => x.isCorrect).length;
-      const attemptRecord: QuizHistoryItem = {
-        id: resultData?.id || `att-${Date.now()}`,
+      recordChildAttempt(studentId, {
+        id: `att_${quizId}_${Date.now()}`,
         quiz_id: quizId,
         story_id: storyId,
         story_title: quiz?.story_title || storyTitle || "اختبار القصة",
@@ -176,14 +176,9 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
           Math.round(((resultData?.correct_answers ?? calculatedCorrect) / (totalQuestions || 1)) * 100),
         passed: resultData?.passed ?? true,
         passing_score: quiz?.passing_score ?? 60,
-        attempts_count: 1,
-        highest_score: resultData?.correct_answers ?? resultData?.score ?? calculatedCorrect,
-        last_score: resultData?.correct_answers ?? resultData?.score ?? calculatedCorrect,
-        max_score: totalQuestions || 10,
+        level: typeof (quiz as any)?.level === "string" ? (quiz as any).level : (quiz as any)?.level?.name || "المستوى 3",
         created_at: new Date().toISOString(),
-      };
-
-      saveQuizAttemptLocally(studentId, attemptRecord);
+      });
 
       setSubmissionState("submitted");
       clearTimer();
