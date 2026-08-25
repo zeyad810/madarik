@@ -2,7 +2,6 @@
 
 import React, { useMemo } from "react";
 import { usePathname } from "next/navigation";
-import { Home } from "lucide-react";
 import { Breadcrumb } from "./Breadcrumb";
 import { BreadcrumbList } from "./BreadcrumbList";
 import { BreadcrumbItem } from "./BreadcrumbItem";
@@ -19,7 +18,7 @@ export const AutoBreadcrumbs: React.FC<AutoBreadcrumbsProps> = ({
   routeDictionary = DEFAULT_ROUTE_DICTIONARY,
   rootLabel = "الرئيسية",
   rootHref = "/",
-  rootIcon = <Home className="size-4" />,
+  rootIcon,
   transformLabel,
   excludeSegments = DEFAULT_EXCLUDE_SEGMENTS,
   maxItems = 4,

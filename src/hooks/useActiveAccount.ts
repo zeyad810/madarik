@@ -194,6 +194,9 @@ export function useActiveAccount(): UseActiveAccountReturn {
 
   // Active user_type: child user_type if child is selected, else session user_type
   const activeUserType = useMemo(() => {
+    if (isFreeRole(sessionUserType)) {
+      return "free";
+    }
     if (matchedChild) {
       return matchedChild.user_type || DEFAULT_CHILD_ROLE;
     }

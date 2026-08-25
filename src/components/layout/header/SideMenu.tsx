@@ -32,6 +32,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
   const {
     activeAccount,
     children,
+    userRole,
     isAuthenticated,
     createAccountHref,
     resetAccount,
@@ -46,37 +47,45 @@ const SideMenu: React.FC<SideMenuProps> = ({
     return pathname.startsWith(href);
   };
 
-  const visibleMenuItems = SIDE_MENU_ITEMS.filter((item) => {
-    // If free customer / free user, hide results and attempts log
-    if (isFreeCustomer) {
-      if (
+  const visibleMenuItems = React.useMemo(() => {
+    return SIDE_MENU_ITEMS.filter((item) => {
+      const isResultsItem =
         item.id === "results" ||
         item.id === "attempts-log" ||
         item.href.startsWith("/results") ||
-        item.href.startsWith("/attempts")
-      ) {
-        return false;
-      }
-    }
+        item.href.startsWith("/attempts");
 
-    if (isStudent) {
-      return (
-        item.id === "home" ||
-        item.id === "available-stories" ||
-        item.id === "attempts-log" ||
-        item.id === "results" ||
-        item.id === "profile" ||
-        item.id === "settings" ||
-        item.href === "/" ||
-        item.href.startsWith("/stories") ||
-        item.href.startsWith("/results") ||
-        item.href.startsWith("/attempts") ||
-        item.href.startsWith("/profile") ||
-        item.href.startsWith("/settings")
-      );
-    }
-    return true;
-  });
+      // Results/attempts log is strictly for authenticated student, parent, child
+      // and NEVER for free_customer, visitor, or unauthenticated/loading state
+      if (isResultsItem) {
+        if (!isAuthenticated || isFreeCustomer) {
+          return false;
+        }
+        const hasHistoryRole =
+          userRole === "student" || userRole === "parent" || userRole === "child";
+        if (!hasHistoryRole) {
+          return false;
+        }
+      }
+
+      if (isStudent) {
+        return (
+          item.id === "available-stories" ||
+          item.id === "attempts-log" ||
+          item.id === "results" ||
+          item.id === "profile" ||
+          item.id === "settings" ||
+          item.href.startsWith("/stories") ||
+          item.href.startsWith("/results") ||
+          item.href.startsWith("/attempts") ||
+          item.href.startsWith("/profile") ||
+          item.href.startsWith("/settings")
+        );
+      }
+      return true;
+    });
+  }, [isAuthenticated, isFreeCustomer, isStudent, userRole]);
+
 
   const currentAvatarSrc =
     activeAccount?.type === "child"
