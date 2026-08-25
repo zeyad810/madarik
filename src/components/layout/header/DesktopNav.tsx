@@ -11,7 +11,7 @@ import { useActiveAccount } from "@/hooks/useActiveAccount";
 const DesktopNav: React.FC = () => {
   const pathname = usePathname();
   const { status } = useSession();
-  const { createAccountHref, user_type, userRole, isStudent } = useActiveAccount();
+  const { createAccountHref, user_type, userRole, isStudent, isFreeCustomer } = useActiveAccount();
 
   const isLinkActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -19,6 +19,17 @@ const DesktopNav: React.FC = () => {
   };
 
   const visibleNavLinks = DESKTOP_NAV_LINKS.filter((link) => {
+    // If free customer / user, hide results ("نتائجي")
+    if (isFreeCustomer) {
+      if (
+        link.id === "results" ||
+        link.href.startsWith("/results") ||
+        link.href.startsWith("/attempts")
+      ) {
+        return false;
+      }
+    }
+
     if (isStudent) {
       return (
         link.id === "library" ||
