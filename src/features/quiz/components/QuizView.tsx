@@ -151,12 +151,17 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
         : response;
 
       const elapsedSeconds = calculateElapsedSeconds(startTimeRef.current);
+      const finalTime =
+        typeof resultData?.duration_seconds === "number" && resultData.duration_seconds > 0
+          ? resultData.duration_seconds
+          : typeof resultData?.time_taken === "number" && resultData.time_taken > 0
+          ? resultData.time_taken
+          : elapsedSeconds;
+
       const finalResult = {
         ...resultData,
-        time_taken:
-          resultData?.duration_seconds ??
-          resultData?.time_taken ??
-          elapsedSeconds,
+        time_taken: finalTime,
+        duration_seconds: finalTime,
       };
 
       setQuizResult(finalResult);
