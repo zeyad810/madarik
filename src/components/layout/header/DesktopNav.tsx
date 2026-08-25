@@ -38,17 +38,9 @@ const DesktopNav: React.FC = () => {
         }
       }
 
-      if (isStudent) {
-        return (
-          link.id === "library" ||
-          link.id === "results" ||
-          link.href.startsWith("/stories") ||
-          link.href.startsWith("/results")
-        );
-      }
       return true;
     });
-  }, [isAuthenticated, isFreeCustomer, isStudent, userRole]);
+  }, [isAuthenticated, isFreeCustomer, userRole]);
 
   return (
     <>

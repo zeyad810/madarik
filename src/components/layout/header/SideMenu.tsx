@@ -70,11 +70,13 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
       if (isStudent) {
         return (
+          item.id === "home" ||
           item.id === "available-stories" ||
           item.id === "attempts-log" ||
           item.id === "results" ||
           item.id === "profile" ||
           item.id === "settings" ||
+          item.href === "/" ||
           item.href.startsWith("/stories") ||
           item.href.startsWith("/results") ||
           item.href.startsWith("/attempts") ||
