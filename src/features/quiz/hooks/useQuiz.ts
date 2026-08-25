@@ -24,12 +24,6 @@ export function useQuiz<TData = QuizResponse>(
   const role = isAuthenticated ? (userRole || "visitor") : "visitor";
   const token = session?.accessToken || session?.token || null;
 
-  if (typeof window !== "undefined") {
-    console.log("[useQuiz] status:", status, "| role:", role, "| token:", token ? "✅ present" : "❌ missing");
-    console.log("[useQuiz] raw session keys:", session ? Object.keys(session) : "no session");
-  }
-
-
   return useQuery({
     queryKey: quizQueryKeys.detail(role, quizId ?? ""),
     queryFn: () => getQuiz(quizId!, role, token),

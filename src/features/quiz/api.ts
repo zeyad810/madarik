@@ -11,6 +11,7 @@ import {
   SubmitQuizPayload,
   SubmitQuizResponse,
   QuizHistoryResponse,
+  QuizHistoryItem,
 } from "./types";
 import { getQuizApiPrefix } from "./utils";
 import { getStoredAuthToken } from "@/lib/auth";
@@ -23,11 +24,6 @@ function buildHeaders(token?: string | null): Record<string, string> {
     Accept: "application/json",
   };
   const resolvedToken = token || getStoredAuthToken();
-  if (typeof window !== "undefined") {
-    console.log("[buildHeaders] token passed:", token ? "✅ present" : "❌ null/undefined");
-    console.log("[buildHeaders] resolvedToken:", resolvedToken ? "✅ present" : "❌ null/undefined");
-    if (resolvedToken) console.log("[buildHeaders] token prefix:", resolvedToken.slice(0, 20) + "...");
-  }
   if (resolvedToken) {
     headers["Authorization"] = `Bearer ${resolvedToken}`;
   }
@@ -153,6 +149,55 @@ export const checkQuizAnswer = async (
   }
 };
 
+// ── Local Attempts Persistence Helpers ───────────────────────────────────────
+
+export const LOCAL_ATTEMPTS_KEY = "madarik_quiz_attempts";
+
+export function saveQuizAttemptLocally(
+  childId: string | null | undefined,
+  attempt: QuizHistoryItem
+): void {
+  if (typeof window === "undefined") return;
+  try {
+    const key = childId ? `${LOCAL_ATTEMPTS_KEY}_${childId}` : LOCAL_ATTEMPTS_KEY;
+    const existingRaw = localStorage.getItem(key);
+    const existingList: QuizHistoryItem[] = existingRaw ? JSON.parse(existingRaw) : [];
+
+    // Filter out if same id or same quiz on the same timestamp
+    const filtered = existingList.filter(
+      (x) => x.id !== attempt.id && !(x.quiz_id === attempt.quiz_id && x.created_at === attempt.created_at)
+    );
+    const updated = [attempt, ...filtered];
+    localStorage.setItem(key, JSON.stringify(updated));
+
+    // Also update global recent list
+    const globalRaw = localStorage.getItem(LOCAL_ATTEMPTS_KEY);
+    const globalList: QuizHistoryItem[] = globalRaw ? JSON.parse(globalRaw) : [];
+    const globalFiltered = globalList.filter((x) => x.id !== attempt.id);
+    localStorage.setItem(
+      LOCAL_ATTEMPTS_KEY,
+      JSON.stringify([attempt, ...globalFiltered].slice(0, 30))
+    );
+  } catch {
+    // ignore
+  }
+}
+
+export function getLocalQuizAttempts(childId?: string | null): QuizHistoryItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const key = childId ? `${LOCAL_ATTEMPTS_KEY}_${childId}` : LOCAL_ATTEMPTS_KEY;
+    const raw = localStorage.getItem(key) || localStorage.getItem(LOCAL_ATTEMPTS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {
+    // ignore
+  }
+  return [];
+}
+
 // ── POST Submit Quiz ──────────────────────────────────────────────────────────
 
 /**
@@ -161,24 +206,17 @@ export const checkQuizAnswer = async (
  * - free_customer:  POST free/quiz/{id}
  * - parent / child: POST parent/quiz/{id}
  * - student:        POST student/quiz/{id}
- *
- * Payload format:
- * {
- *   "started_at": "2026-08-19T10:00:00Z",
- *   "answers": {
- *     "question_id_1": "answer_1",
- *     "question_id_2": "answer_2"
- *   }
- * }
  */
 export const submitQuiz = async (
   quizId: string,
   role: string = "visitor",
   payload: SubmitQuizPayload,
-  token?: string | null
+  token?: string | null,
+  childId?: string | null
 ): Promise<SubmitQuizResponse> => {
   const prefix = getQuizApiPrefix(role);
   const endpoint = `${API_BASE_URL}/${prefix}/quiz/${quizId}`;
+  const resolvedChildId = childId || getStoredActiveChildId();
 
   // Format answers map: { [question_id]: answer }
   let answersMap: Record<string, string> = {};
@@ -192,10 +230,15 @@ export const submitQuiz = async (
     answersMap = { ...payload.answers };
   }
 
-  const formattedBody = {
+  const formattedBody: Record<string, any> = {
     started_at: payload.started_at || new Date().toISOString(),
     answers: answersMap,
   };
+
+  if (resolvedChildId) {
+    formattedBody.child_id = resolvedChildId;
+    formattedBody.student_id = resolvedChildId;
+  }
 
   try {
     const response = await fetch(endpoint, {
@@ -225,12 +268,29 @@ export const submitQuiz = async (
   }
 };
 
+function getStoredActiveChildId(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("madarik_active_account");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const id = parsed?.state?.activeAccountId;
+      if (id && id !== "parent") {
+        return id;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 // ── GET Quiz History / Attempts ───────────────────────────────────────────────
 
 /**
  * Fetches past quiz attempts for the authenticated role.
  * - student:        GET student/attempts-log
- * - parent / child: GET parent/children/{id}/quiz-attempts
+ * - parent / child: GET parent/children/{id}/quiz-attempts (using active child ID)
  * - free_customer:  GET free/child/quiz-attempts
  * - visitor:        returns empty (no history)
  */
@@ -245,13 +305,19 @@ export const getQuizHistory = async (
     return { success: true, data: [] };
   }
 
+  let childId = targetIdOrQuizId;
+  if (!childId && (prefix === "parent" || prefix === "free" || role === "child")) {
+    childId = getStoredActiveChildId();
+  }
+
+  const localAttempts = getLocalQuizAttempts(childId);
+
   let endpoint = "";
   if (prefix === "student") {
     endpoint = `${API_BASE_URL}/student/attempts-log`;
-  } else if (prefix === "parent") {
-    // If targetId is a childId
-    endpoint = targetIdOrQuizId
-      ? `${API_BASE_URL}/parent/children/${targetIdOrQuizId}/quiz-attempts`
+  } else if (prefix === "parent" || role === "child") {
+    endpoint = childId
+      ? `${API_BASE_URL}/parent/children/${childId}/quiz-attempts`
       : `${API_BASE_URL}/parent/child/quiz-attempts`;
   } else if (prefix === "free") {
     endpoint = `${API_BASE_URL}/free/child/quiz-attempts`;
@@ -266,21 +332,66 @@ export const getQuizHistory = async (
     });
 
     const raw = await handleResponse<any>(response);
-    const list = Array.isArray(raw?.data?.data)
-      ? raw.data.data
-      : Array.isArray(raw?.data)
-      ? raw.data
-      : Array.isArray(raw)
-      ? raw
-      : [];
+
+    let list: any[] = [];
+    if (Array.isArray(raw?.data?.data)) {
+      list = raw.data.data;
+    } else if (Array.isArray(raw?.data)) {
+      list = raw.data;
+    } else if (Array.isArray(raw)) {
+      list = raw;
+    } else if (raw?.data && typeof raw.data === "object") {
+      // Single quiz attempts / history object
+      list = [
+        {
+          id: raw.data.id || `att-${Date.now()}`,
+          story_title: raw.data.story_title || raw.data.title || "اختبار القصة",
+          code: raw.data.code,
+          passing_score: raw.data.passing_score ?? 60,
+          total_questions: raw.data.total_questions ?? raw.data.questions?.length ?? 0,
+          score: raw.data.score ?? raw.data.correct_answers ?? raw.data.total_questions ?? 0,
+          percentage: raw.data.percentage ?? (raw.data.passing_score ? raw.data.passing_score : 100),
+          passed: raw.data.passed ?? true,
+          attempts_count: raw.data.attempts_count ?? 1,
+          highest_score: raw.data.highest_score ?? raw.data.score,
+          last_score: raw.data.last_score ?? raw.data.score,
+          created_at: raw.data.created_at || new Date().toISOString(),
+          questions: raw.data.questions || [],
+          ...raw.data,
+        },
+      ];
+    }
+
+    // Merge API attempts with local attempts so newly solved quizzes show up immediately!
+    const combinedMap = new Map<string, QuizHistoryItem>();
+
+    // Add local attempts first
+    localAttempts.forEach((item) => {
+      if (item && (item.id || item.story_title)) {
+        combinedMap.set(item.id || item.story_title || Math.random().toString(), item);
+      }
+    });
+
+    // Overwrite/add with API attempts
+    list.forEach((item) => {
+      if (item && (item.id || item.story_title)) {
+        combinedMap.set(item.id || item.story_title || Math.random().toString(), item);
+      }
+    });
+
+    const combinedList = Array.from(combinedMap.values());
 
     return {
       success: raw?.success ?? true,
       message: raw?.message,
-      data: list,
+      data: combinedList.length > 0 ? combinedList : list,
+      raw: raw?.data,
     };
   } catch (error) {
-    return { success: true, data: [] };
+    return {
+      success: true,
+      data: localAttempts,
+    };
   }
 };
 
