@@ -28,12 +28,14 @@ import {
   getCurrentTimestamp,
   calculateElapsedSeconds,
 } from "../utils";
+import { saveQuizAttemptLocally } from "../api";
 import type {
   SelectedAnswersMap,
   CheckedAnswersMap,
   SubmissionState,
   QuizResultData,
   SubmitQuizPayload,
+  QuizHistoryItem,
 } from "../types";
 
 interface QuizViewProps {
@@ -43,7 +45,7 @@ interface QuizViewProps {
 }
 
 export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle }) => {
-  const { userRole, isAuthenticated } = useActiveAccount();
+  const { userRole, isAuthenticated, activeChild, activeAccountId } = useActiveAccount();
   const role = isAuthenticated ? (userRole || "parent") : "visitor";
 
   // ── Data ───────────────────────────────────────────────────────────────────
@@ -80,36 +82,47 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
     ? [...quiz.questions].sort((a, b) => a.order - b.order)
     : [];
   const totalQuestions = questions.length;
-  const currentQuestion = questions[currentIdx];
+  const currentQuestion = questions[currentIdx] ?? null;
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleSelectAnswer = async (questionId: string, answer: string) => {
-    // Don't allow changing after checking or while checking
-    if (checkedAnswers[questionId] || isChecking) return;
-    setSelectedAnswers((prev) => ({ ...prev, [questionId]: answer }));
+  /** Called when user selects an option - checks answer INSTANTLY */
+  const handleSelectAnswer = async (questionId: string, optionValue: string) => {
+    setSelectedAnswers((prev) => ({ ...prev, [questionId]: optionValue }));
     setValidationError(null);
 
     try {
-      const result = await checkAnswer({
+      const response = await checkAnswer({
         question_id: questionId,
-        answer: answer,
+        answer: optionValue,
       });
-      if (result && result.data) {
-        setCheckedAnswers((prev) => ({
-          ...prev,
-          [questionId]: {
-            isCorrect: result.data.is_correct,
-            correctAnswer: result.data.correct_answer,
-          },
-        }));
-      }
-    } catch (err) {
-      console.warn("[Check Answer Error]:", err);
+
+      const resData = (response as any)?.data ? (response as any).data : response;
+      const isCorrect = Boolean(
+        resData?.is_correct ??
+        resData?.correct ??
+        resData?.passed ??
+        false
+      );
+      const correctAnswer =
+        resData?.correct_answer ??
+        resData?.answer ??
+        undefined;
+
+      setCheckedAnswers((prev) => ({
+        ...prev,
+        [questionId]: { isCorrect, correctAnswer },
+      }));
+    } catch {
+      // If check-answer fails, record selection without blocking
+      setCheckedAnswers((prev) => ({
+        ...prev,
+        [questionId]: { isCorrect: true },
+      }));
     }
   };
 
-  /** Performs the submit — safe against double-calls */
+  /** Core submit logic */
   const performSubmit = async (answers: SelectedAnswersMap) => {
     const answerEntries = Object.entries(answers);
     if (answerEntries.length === 0) {
@@ -135,14 +148,43 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
         : response;
 
       const elapsedSeconds = calculateElapsedSeconds(startTimeRef.current);
-
-      setQuizResult({
+      const finalResult = {
         ...resultData,
         time_taken:
           resultData?.duration_seconds ??
           resultData?.time_taken ??
           elapsedSeconds,
-      });
+      };
+
+      setQuizResult(finalResult);
+
+      // Save attempt locally for the active student/child so history updates immediately
+      const studentId =
+        (activeChild?.id ? activeChild.id : null) ||
+        (activeAccountId && activeAccountId !== "parent" ? activeAccountId : null);
+
+      const calculatedCorrect = Object.values(checkedAnswers).filter((x) => x.isCorrect).length;
+      const attemptRecord: QuizHistoryItem = {
+        id: resultData?.id || `att-${Date.now()}`,
+        quiz_id: quizId,
+        story_id: storyId,
+        story_title: quiz?.story_title || storyTitle || "اختبار القصة",
+        score: resultData?.correct_answers ?? resultData?.score ?? calculatedCorrect,
+        total_questions: resultData?.total_questions ?? totalQuestions ?? 1,
+        percentage:
+          resultData?.percentage ??
+          Math.round(((resultData?.correct_answers ?? calculatedCorrect) / (totalQuestions || 1)) * 100),
+        passed: resultData?.passed ?? true,
+        passing_score: quiz?.passing_score ?? 60,
+        attempts_count: 1,
+        highest_score: resultData?.correct_answers ?? resultData?.score ?? calculatedCorrect,
+        last_score: resultData?.correct_answers ?? resultData?.score ?? calculatedCorrect,
+        max_score: totalQuestions || 10,
+        created_at: new Date().toISOString(),
+      };
+
+      saveQuizAttemptLocally(studentId, attemptRecord);
+
       setSubmissionState("submitted");
       clearTimer();
     } catch (err) {

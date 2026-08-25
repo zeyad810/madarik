@@ -6,16 +6,44 @@ import { handleResponse } from "@/services/api";
 
 export const AUTH_TOKEN_KEY = "auth_token";
 
+export function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(^|;\\s*)(${name})=([^;]*)`));
+  if (match) {
+    try {
+      const decoded = decodeURIComponent(match[3]);
+      // Remove optional surrounding quotes
+      return decoded.replace(/^"|"$/g, "");
+    } catch {
+      return match[3];
+    }
+  }
+  return null;
+}
+
 export function getStoredAuthToken(session?: any): string | null {
   if (session?.accessToken) return session.accessToken;
   if (session?.token) return session.token;
   if (session?.user?.accessToken) return session.user.accessToken;
   if (session?.user?.token) return session.user.token;
   if (typeof window !== "undefined") {
+    // 1. Check Cookies
+    const cookieToken =
+      getCookie("token") ||
+      getCookie("auth_token") ||
+      getCookie("accessToken") ||
+      getCookie("jwt") ||
+      getCookie("madarik_token") ||
+      getCookie("next-auth.session-token") ||
+      getCookie("__Secure-next-auth.session-token");
+    if (cookieToken) return cookieToken;
+
+    // 2. Check LocalStorage
     const local =
       localStorage.getItem(AUTH_TOKEN_KEY) ||
       localStorage.getItem("token") ||
-      localStorage.getItem("accessToken");
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("auth_token");
     if (local) return local;
   }
   return null;

@@ -105,6 +105,8 @@ export interface QuizHistoryItem {
   level?: string;
   outcome?: string;
   indicator?: string;
+  code?: string;
+  questions?: any[];
   score: number;
   total_questions: number;
   percentage?: number;
@@ -122,6 +124,7 @@ export interface QuizHistoryResponse {
   success: boolean;
   message?: string;
   data: QuizHistoryItem[];
+  raw?: any;
 }
 
 // ── Local State Shapes ────────────────────────────────────────────────────────
