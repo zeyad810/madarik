@@ -63,6 +63,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
   const [validationError, setValidationError] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const isSubmittingRef = useRef(false); // prevents double-submit
+  const isAdvancingRef = useRef(false); // prevents multiple step jumps on timer expire
   const startTimeRef = useRef<number | null>(null); // tracks elapsed time initialized in effect
 
   // Initialize start time on mount
@@ -176,15 +177,21 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
   /** Called by QuizTimer when the 90-second question timer runs out */
   const handleQuestionTimerExpire = () => {
     if (submissionState !== "idle") return;
+    if (isAdvancingRef.current) return;
+    isAdvancingRef.current = true;
+    setTimeout(() => {
+      isAdvancingRef.current = false;
+    }, 600);
 
-    if (currentIdx < totalQuestions - 1) {
-      // Advance to the next question automatically
-      setCurrentIdx((prev) => prev + 1);
-      setValidationError(null);
-    } else {
-      // Last question reached -> automatically submit the quiz
-      performSubmit(selectedAnswers);
-    }
+    setValidationError(null);
+    setCurrentIdx((curr) => {
+      if (curr < totalQuestions - 1) {
+        return curr + 1;
+      } else {
+        performSubmit(selectedAnswers);
+        return curr;
+      }
+    });
   };
 
   /** Move to next question */

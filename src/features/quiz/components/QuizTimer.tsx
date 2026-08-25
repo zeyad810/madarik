@@ -20,28 +20,31 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({
   const [remainingSeconds, setRemainingSeconds] = useState<number>(durationSeconds);
   const onExpireRef = useRef(onExpire);
   onExpireRef.current = onExpire;
+  const hasFiredRef = useRef(false);
 
-  // Reset timer on question change
+  // Setup fresh timer on questionId change
   useEffect(() => {
+    hasFiredRef.current = false;
     setRemainingSeconds(durationSeconds);
-  }, [questionId, durationSeconds]);
 
-  // Tick every second
-  useEffect(() => {
+    const expiresAt = Date.now() + durationSeconds * 1000;
+
     const interval = setInterval(() => {
-      setRemainingSeconds((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setTimeout(() => {
-            onExpireRef.current();
-          }, 0);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+      const remaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+      setRemainingSeconds(remaining);
 
-    return () => clearInterval(interval);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        if (!hasFiredRef.current) {
+          hasFiredRef.current = true;
+          onExpireRef.current();
+        }
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [questionId, durationSeconds]);
 
   const totalDuration = durationSeconds;
