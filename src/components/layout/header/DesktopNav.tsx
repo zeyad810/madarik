@@ -11,35 +11,44 @@ import { useActiveAccount } from "@/hooks/useActiveAccount";
 const DesktopNav: React.FC = () => {
   const pathname = usePathname();
   const { status } = useSession();
-  const { createAccountHref, user_type, userRole, isStudent, isFreeCustomer } = useActiveAccount();
+  const { createAccountHref, userRole, isStudent, isFreeCustomer, isAuthenticated } = useActiveAccount();
 
   const isLinkActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
 
-  const visibleNavLinks = DESKTOP_NAV_LINKS.filter((link) => {
-    // If free customer / user, hide results ("نتائجي")
-    if (isFreeCustomer) {
-      if (
+  const visibleNavLinks = React.useMemo(() => {
+    return DESKTOP_NAV_LINKS.filter((link) => {
+      const isResultsLink =
         link.id === "results" ||
         link.href.startsWith("/results") ||
-        link.href.startsWith("/attempts")
-      ) {
-        return false;
-      }
-    }
+        link.href.startsWith("/attempts");
 
-    if (isStudent) {
-      return (
-        link.id === "library" ||
-        link.id === "results" ||
-        link.href.startsWith("/stories") ||
-        link.href.startsWith("/results")
-      );
-    }
-    return true;
-  });
+      // Results link ("نتائجي") is strictly for authenticated student, parent, child
+      // and NEVER for free_customer, visitor, or unauthenticated/loading state
+      if (isResultsLink) {
+        if (!isAuthenticated || isFreeCustomer) {
+          return false;
+        }
+        const hasHistoryRole =
+          userRole === "student" || userRole === "parent" || userRole === "child";
+        if (!hasHistoryRole) {
+          return false;
+        }
+      }
+
+      if (isStudent) {
+        return (
+          link.id === "library" ||
+          link.id === "results" ||
+          link.href.startsWith("/stories") ||
+          link.href.startsWith("/results")
+        );
+      }
+      return true;
+    });
+  }, [isAuthenticated, isFreeCustomer, isStudent, userRole]);
 
   return (
     <>
