@@ -18,20 +18,13 @@ import { ChildReportStats } from "./ChildReportStats";
 import { ChildQuizResultsTable } from "./ChildQuizResultsTable";
 import { ChildReadingHistory } from "./ChildReadingHistory";
 import { ChildReportDetailSkeleton } from "@/components/ui/skeletons";
-import { useActiveAccount } from "@/hooks/useActiveAccount";
-import { SubscriptionRequiredFallback } from "@/components/guards";
 
 interface ChildReportProps {
   childId: string;
 }
 
 export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
-  const { isFreeCustomer } = useActiveAccount();
   const { child, isLoading } = useChildReport(childId);
-
-  if (isFreeCustomer) {
-    return <SubscriptionRequiredFallback />;
-  }
 
   const storiesCount = child ? getChildStoriesCount(child) : 0;
   const quizzesCount = child ? getChildQuizzesCount(child) : 0;
