@@ -155,29 +155,36 @@ export const getStoryById = async (
     };
   } catch (error) {
     if (prefix !== "public") {
-      try {
-        const fallbackResponse = await fetch(
-          `${API_BASE_URL}/public/stories/${id}`,
-          {
+      const fallbackUrls = [
+        `${API_BASE_URL}/free/stories/${id}`,
+        `${API_BASE_URL}/public/free-stories/${id}`,
+        `${API_BASE_URL}/public/stories/${id}`,
+      ];
+
+      for (const url of fallbackUrls) {
+        try {
+          const fallbackResponse = await fetch(url, {
             method: "GET",
             headers,
             next: { revalidate: 60 },
-          }
-        );
-        const fallbackRaw = await handleResponse<any>(fallbackResponse);
-        const fallbackStoryData: Story = fallbackRaw?.data?.data
-          ? fallbackRaw.data.data
-          : fallbackRaw?.data
-          ? fallbackRaw.data
-          : fallbackRaw;
+          });
+          const fallbackRaw = await handleResponse<any>(fallbackResponse);
+          const fallbackStoryData: Story = fallbackRaw?.data?.data
+            ? fallbackRaw.data.data
+            : fallbackRaw?.data
+            ? fallbackRaw.data
+            : fallbackRaw;
 
-        return {
-          success: fallbackRaw?.success ?? true,
-          message: fallbackRaw?.message ?? "",
-          data: fallbackStoryData,
-        };
-      } catch {
-        // ignore
+          if (fallbackStoryData && fallbackStoryData.id) {
+            return {
+              success: fallbackRaw?.success ?? true,
+              message: fallbackRaw?.message ?? "",
+              data: fallbackStoryData,
+            };
+          }
+        } catch {
+          // continue to next fallback
+        }
       }
     }
     throw error;

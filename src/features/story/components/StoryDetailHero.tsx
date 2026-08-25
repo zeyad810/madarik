@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,8 +10,10 @@ import {
   GraduationCap,
   Sparkles,
   Target,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 import { Story, getStoryQuizId } from "../types";
 import { FreeRosetteBadge } from "@/features/products/components/FreeRosetteBadge";
 
@@ -20,6 +22,7 @@ interface StoryDetailHeroProps {
 }
 
 export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
   // Safe Cover Image Resolution
   const rawCover = story.cover_photo_url || story.thumbnail_url;
   const isBrokenCover = !rawCover || rawCover.includes("via.placeholder.com");
@@ -191,27 +194,46 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             )}
 
             {/* 3. تحميل PDF (Solid Yellow/Amber Button) */}
-            {story.pdf_url ? (
-              <a
-                href={story.pdf_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-                className="py-2.5 sm:py-3 px-6 rounded-full bg-[#EAB308] hover:bg-[#CA8A04] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer select-none active:scale-95"
-              >
+            <button
+              type="button"
+              disabled={isDownloading}
+              onClick={async () => {
+                if (!story.pdf_url) {
+                  toast.error("ملف PDF غير متوفر حالياً لهذه القصة");
+                  return;
+                }
+
+                try {
+                  setIsDownloading(true);
+                  const res = await fetch(story.pdf_url);
+                  if (!res.ok) throw new Error("Fetch error");
+                  const blob = await res.blob();
+                  const blobUrl = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.style.display = "none";
+                  a.href = blobUrl;
+                  a.download = `${story.title || "قصة"}.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(blobUrl);
+                  toast.success("تم تحميل ملف PDF بنجاح");
+                } catch {
+                  // Fallback: open directly in a new tab if CORS or direct download fails
+                  window.open(story.pdf_url, "_blank", "noopener,noreferrer");
+                } finally {
+                  setIsDownloading(false);
+                }
+              }}
+              className="py-2.5 sm:py-3 px-6 rounded-full bg-[#EAB308] hover:bg-[#CA8A04] disabled:opacity-75 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer select-none active:scale-95"
+            >
+              {isDownloading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
                 <Download className="w-4 h-4" />
-                <span>تحميل PDF</span>
-              </a>
-            ) : (
-              <button
-                type="button"
-                onClick={() => alert("ملف PDF غير متوفر حالياً لهذه القصة")}
-                className="py-2.5 sm:py-3 px-6 rounded-full bg-[#EAB308] hover:bg-[#CA8A04] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer select-none active:scale-95"
-              >
-                <Download className="w-4 h-4" />
-                <span>تحميل PDF</span>
-              </button>
-            )}
+              )}
+              <span>{isDownloading ? "جاري التحميل..." : "تحميل PDF"}</span>
+            </button>
           </div>
         </div>
 
