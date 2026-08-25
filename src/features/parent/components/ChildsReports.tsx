@@ -6,16 +6,9 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PlusCircle } from "lucide-react";
 import { useChildReports } from "../hooks";
 import { ChildReportCard, ChildReportCardSkeleton } from "./ChildReportCard";
-import { useActiveAccount } from "@/hooks/useActiveAccount";
-import { SubscriptionRequiredFallback } from "@/components/guards";
 
 export const ChildsReports: React.FC = () => {
-  const { isFreeCustomer } = useActiveAccount();
   const { reports, isLoading } = useChildReports();
-
-  if (isFreeCustomer) {
-    return <SubscriptionRequiredFallback />;
-  }
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16!" dir="rtl">

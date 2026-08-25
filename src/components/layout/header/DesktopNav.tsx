@@ -32,8 +32,10 @@ const DesktopNav: React.FC = () => {
 
     if (isStudent) {
       return (
+        link.id === "home" ||
         link.id === "library" ||
         link.id === "results" ||
+        link.href === "/" ||
         link.href.startsWith("/stories") ||
         link.href.startsWith("/results")
       );
