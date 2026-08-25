@@ -15,12 +15,12 @@ export default function StoryReaderPage({ params }: StoryReaderPageProps) {
   const resolvedParams = use(params);
   const storyId = resolvedParams.id;
 
-  const { data: storyResponse, isLoading, isError } = useStoryById(storyId);
-  const story = storyResponse?.data;
   const { isAuthenticated, isParentRole, isParentActive } = useActiveAccount();
-
   const shouldPromptChildSelection =
     isAuthenticated && isParentRole && isParentActive;
+
+  const { data: storyResponse, isLoading, isError } = useStoryById(storyId);
+  const story = storyResponse?.data;
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-[#F8FAFC]">

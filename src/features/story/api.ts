@@ -1,5 +1,11 @@
 import { API_BASE_URL, handleResponse } from "@/services/api";
-import { FreeStoriesResponse, StoryDetailResponse, Story } from "./types";
+import {
+  FreeStoriesResponse,
+  StoryDetailResponse,
+  Story,
+  FinishStoryPayload,
+  FinishStoryResponse,
+} from "./types";
 import { getStoredAuthToken } from "@/lib/auth";
 
 /**
@@ -169,6 +175,115 @@ export const getStoryById = async (
           success: fallbackRaw?.success ?? true,
           message: fallbackRaw?.message ?? "",
           data: fallbackStoryData,
+        };
+      } catch {
+        // ignore
+      }
+    }
+    throw error;
+  }
+};
+
+/**
+ * Mark a story as finished / completed:
+ * - parent / child: POST /parent/stories/{id}/finish (Endpoint: https://madarik.themiify.com/api/v1/parent/stories/{id}/finish)
+ * - student:        POST /student/stories/{id}/finish (Endpoint: https://madarik.themiify.com/api/v1/student/stories/{id}/finish)
+ */
+export const finishStory = async (
+  storyId: string,
+  role: string = "visitor",
+  payload?: FinishStoryPayload,
+  token?: string | null
+): Promise<FinishStoryResponse> => {
+  const resolvedToken = token || getStoredAuthToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (resolvedToken) {
+    headers["Authorization"] = `Bearer ${resolvedToken}`;
+  }
+
+  const prefix = getStoryApiPrefix(role);
+  const endpoint =
+    prefix === "student"
+      ? `${API_BASE_URL}/student/stories/${storyId}/finish`
+      : `${API_BASE_URL}/parent/stories/${storyId}/finish`;
+
+  const bodyData: Record<string, any> = {};
+  const effectiveChildId = payload?.child_id || payload?.student_id;
+  if (effectiveChildId) {
+    bodyData.child_id = effectiveChildId;
+    bodyData.student_id = effectiveChildId;
+  }
+  if (payload?.started_at) {
+    bodyData.started_at = payload.started_at;
+  }
+  if (payload?.finished_at) {
+    bodyData.finished_at = payload.finished_at;
+  }
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(bodyData),
+    });
+
+    // If session was not active (ERR-017 / 404), initialize the reading session first then retry
+    if (!response.ok && response.status === 404 && effectiveChildId) {
+      try {
+        await fetch(
+          `${API_BASE_URL}/parent/stories/${storyId}?child_id=${encodeURIComponent(effectiveChildId)}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              ...(resolvedToken ? { Authorization: `Bearer ${resolvedToken}` } : {}),
+            },
+          }
+        );
+
+        // Retry finish request
+        const retryResponse = await fetch(endpoint, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(bodyData),
+        });
+        const retryRaw = await handleResponse<any>(retryResponse);
+        return {
+          success: retryRaw?.success ?? true,
+          message: retryRaw?.message ?? "",
+          data: retryRaw?.data ?? retryRaw,
+        };
+      } catch {
+        // Continue to standard handleResponse
+      }
+    }
+
+    const raw = await handleResponse<any>(response);
+    return {
+      success: raw?.success ?? true,
+      message: raw?.message ?? "",
+      data: raw?.data ?? raw,
+    };
+  } catch (error) {
+    // If student endpoint fails with 404/error, try parent endpoint fallback if applicable
+    if (prefix === "visitor" || prefix === "free") {
+      try {
+        const altResponse = await fetch(
+          `${API_BASE_URL}/parent/stories/${storyId}/finish`,
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify(bodyData),
+          }
+        );
+        const altRaw = await handleResponse<any>(altResponse);
+        return {
+          success: altRaw?.success ?? true,
+          message: altRaw?.message ?? "",
+          data: altRaw?.data ?? altRaw,
         };
       } catch {
         // ignore

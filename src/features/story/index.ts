@@ -2,6 +2,7 @@ export * from "./types";
 export * from "./api";
 export * from "./hooks/useFreeStories";
 export * from "./hooks/useStoryById";
+export * from "./hooks/useFinishStory";
 export * from "./components/StoryHeroBanner";
 export * from "./components/StoryFilters";
 export * from "./components/StoryEmptyState";

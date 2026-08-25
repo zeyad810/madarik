@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,54 +9,72 @@ import {
   ArrowRight,
   ArrowLeft,
   BookOpen,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Story, StoryBlock, getStoryQuizId } from "../types";
+import { useFinishStory } from "../hooks/useFinishStory";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
-
 
 interface StoryReaderViewProps {
   story: Story;
 }
 
 export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
+  // Finish story mutation hook
+  const { mutate: markStoryFinished, isPending: isFinishing, isSuccess: isFinished } =
+    useFinishStory(story.id);
+
+  // Track if story has been marked finished in this session
+  const hasFinishedRef = useRef(false);
+
   // Extract and organize blocks into pages
-  const blocks: StoryBlock[] = story.blocks && story.blocks.length > 0
-    ? [...story.blocks].sort((a, b) => a.order - b.order)
-    : [
-        {
-          id: "1",
-          order: 1,
-          block_type: "text",
-          content:
-            "في يوم من الأيام، كان هناك أرنب سريع يفتخر بسرعته أمام جميع الحيوانات. كان يتباهى دائماً ويقول: 'لا أحد يستطيع أن يسبقني!'",
-        },
-        {
-          id: "2",
-          order: 2,
-          block_type: "image",
-          content: "/assets/sea_story.png",
-        },
-        {
-          id: "3",
-          order: 3,
-          block_type: "text",
-          content:
-            "ذات يوم، سمعت السلحفاة كلام الأرنب، فقالت له بهدوء: 'أنا أتحداك في سباق!' ضحك الأرنب كثيراً وقال: 'أنتِ؟ تتحدينني؟! هذا مستحيل!' لكن السلحفاة كانت واثقة من نفسها.",
-        },
-        {
-          id: "4",
-          order: 4,
-          block_type: "text",
-          content:
-            "بدأ السباق، وانطلق الأرنب بسرعة كبيرة جداً حتى ابتعد كثيراً عن السلحفاة. نظر خلفه ولم يرها، فقرر أن يستريح تحت شجرة. قال لنفسه: 'السلحفاة بطيئة جداً، لدي وقت كافٍ للنوم.'",
-        },
-      ];
+  const blocks: StoryBlock[] =
+    story.blocks && story.blocks.length > 0
+      ? [...story.blocks].sort((a, b) => a.order - b.order)
+      : [
+          {
+            id: "1",
+            order: 1,
+            block_type: "text",
+            content:
+              "في يوم من الأيام، كان هناك أرنب سريع يفتخر بسرعته أمام جميع الحيوانات. كان يتباهى دائماً ويقول: 'لا أحد يستطيع أن يسبقني!'",
+          },
+          {
+            id: "2",
+            order: 2,
+            block_type: "image",
+            content: "/assets/sea_story.png",
+          },
+          {
+            id: "3",
+            order: 3,
+            block_type: "text",
+            content:
+              "ذات يوم، سمعت السلحفاة كلام الأرنب، فقالت له بهدوء: 'أنا أتحداك في سباق!' ضحك الأرنب كثيراً وقال: 'أنتِ؟ تتحدينني؟! هذا مستحيل!' لكن السلحفاة كانت واثقة من نفسها.",
+          },
+          {
+            id: "4",
+            order: 4,
+            block_type: "text",
+            content:
+              "بدأ السباق، وانطلق الأرنب بسرعة كبيرة جداً حتى ابتعد كثيراً عن السلحفاة. نظر خلفه ولم يرها، فقرر أن يستريح تحت شجرة. قال لنفسه: 'السلحفاة بطيئة جداً، لدي وقت كافٍ للنوم.'",
+          },
+        ];
 
   // Divide blocks into pages (e.g. 2-3 blocks per page, or 1 page if short)
   const ITEMS_PER_PAGE = 3;
   const totalPages = Math.max(1, Math.ceil(blocks.length / ITEMS_PER_PAGE));
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Trigger finish when reaching the last page of multi-page story
+  useEffect(() => {
+    if (totalPages > 1 && currentPage === totalPages && !hasFinishedRef.current) {
+      hasFinishedRef.current = true;
+      markStoryFinished();
+    }
+  }, [currentPage, totalPages, markStoryFinished]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentBlocks = blocks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -105,11 +123,49 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
         </div>
 
         {/* Left Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Direct Finish Reading Button */}
+          <button
+            type="button"
+            onClick={() => {
+              hasFinishedRef.current = true;
+              markStoryFinished();
+            }}
+            disabled={isFinishing || isFinished}
+            className={`py-2.5 px-5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md ${
+              isFinished
+                ? "bg-emerald-600 text-white cursor-default"
+                : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer"
+            }`}
+          >
+            {isFinishing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>جاري الإنهاء...</span>
+              </>
+            ) : isFinished ? (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>تمت القراءة بنجاح ✓</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>إنهاء القراءة</span>
+              </>
+            )}
+          </button>
+
           {getStoryQuizId(story) && (
             <Link
               href={`/stories/${story.id}/quiz`}
-              className="py-2.5 px-5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer"
+              onClick={() => {
+                if (!hasFinishedRef.current) {
+                  hasFinishedRef.current = true;
+                  markStoryFinished();
+                }
+              }}
+              className="py-2.5 px-5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer hover:scale-105 active:scale-95"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>حل الاختبار</span>
@@ -141,16 +197,18 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
       </div>
 
       {/* 3. Story Content Box */}
-      <div className="rounded-3xl p-6 sm:p-10 md:p-12">
+      <div className="rounded-3xl p-6 sm:p-10 md:p-12 bg-white shadow-sm border border-slate-100">
         {/* Story Section Heading */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-8">
           <h2 className="text-xl sm:text-2xl font-black text-mad-text-primary flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-[#7939E3]" />
             <span>محتوى القصة</span>
           </h2>
-          <span className="text-xs sm:text-sm font-bold text-[#7939E3] bg-purple-50 px-4 py-1.5 rounded-full">
-            صفحة {currentPage} من {totalPages}
-          </span>
+          {totalPages > 1 && (
+            <span className="text-xs sm:text-sm font-bold text-[#7939E3] bg-purple-50 px-4 py-1.5 rounded-full">
+              صفحة {currentPage} من {totalPages}
+            </span>
+          )}
         </div>
 
         {/* Animated Page Content */}
@@ -201,14 +259,15 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
               );
             })}
 
-            {/* Lesson Learned Card (shown on the last page) */}
+            {/* Lesson Learned & Completion Section (shown on the last page or on 1-page story) */}
             {currentPage === totalPages && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="flex flex-col gap-4"
+                className="flex flex-col gap-4 mt-4"
               >
+                {/* Lesson Learned Card */}
                 <div className="bg-[#FAF5FF] border-2 border-[#E9D5FF] rounded-3xl p-6 sm:p-8 text-right">
                   <h3 className="text-lg sm:text-xl font-black text-[#7939E3] mb-3">
                     الدرس المستفاد
@@ -217,6 +276,25 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                     {lessonLearnedText}
                   </p>
                 </div>
+
+                {/* Completion Status Badge (when finished or finishing) */}
+                {(isFinished || isFinishing) && (
+                  <div className="flex items-center justify-center p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 gap-2.5">
+                    {isFinishing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
+                        <span className="text-sm font-bold">جاري تسجيل إنهاء القصة...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 text-emerald-600 shrink-0" />
+                        <span className="text-sm font-bold">
+                          أحسنت! لقد أكملت قراءة القصة بنجاح وتم تسجيل تقدمك 🎉
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )}
 
                 {/* Start Quiz CTA */}
                 {getStoryQuizId(story) && (
@@ -243,43 +321,110 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
           </motion.div>
         </AnimatePresence>
 
-        {/* 4. Page Pagination Controls */}
-        <div className="flex items-center justify-center gap-6 mt-12 pt-8 border-t border-slate-100">
-          {/* Next Page Button (Left arrow in RTL) */}
-          <button
-            type="button"
-            onClick={nextPage}
-            disabled={currentPage === totalPages}
-            aria-label="الصفحة التالية"
-            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
-              currentPage === totalPages
-                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                : "bg-[#7939E3] hover:bg-[#6824D6] text-white hover:scale-105 cursor-pointer"
-            }`}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+        {/* 4. Bottom Controls: Finish Button for 1-Page Stories OR Pagination for Multi-Page */}
+        {totalPages === 1 ? (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-8 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                hasFinishedRef.current = true;
+                markStoryFinished();
+              }}
+              disabled={isFinishing || isFinished}
+              className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md ${
+                isFinished
+                  ? "bg-emerald-600 text-white cursor-default"
+                  : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer shadow-emerald-500/20"
+              }`}
+            >
+              {isFinishing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>جاري تسجيل إنهاء القصة...</span>
+                </>
+              ) : isFinished ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>تمت القراءة بنجاح ✓</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>إنهاء قراءة القصة</span>
+                </>
+              )}
+            </button>
 
-          {/* Page Numbers */}
-          <span className="text-sm font-black text-slate-700 select-none">
-            {currentPage} / {totalPages}
-          </span>
+            {getStoryQuizId(story) && (
+              <Link
+                href={`/stories/${story.id}/quiz`}
+                onClick={() => {
+                  if (!hasFinishedRef.current) {
+                    hasFinishedRef.current = true;
+                    markStoryFinished();
+                  }
+                }}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md hover:scale-105 active:scale-95"
+              >
+                <CheckCircle2 className="w-5 h-5" />
+                <span>الانتقال للاختبار</span>
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-12 pt-8 border-t border-slate-100">
+            <div className="flex items-center gap-3 order-2 sm:order-1">
+              {currentPage < totalPages && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage(totalPages)}
+                  className="text-xs font-bold text-[#7939E3] hover:text-[#6824D6] hover:underline cursor-pointer py-1 px-3"
+                >
+                  الانتقال للصفحة الأخيرة ←
+                </button>
+              )}
+            </div>
 
-          {/* Previous Page Button (Right arrow in RTL) */}
-          <button
-            type="button"
-            onClick={prevPage}
-            disabled={currentPage === 1}
-            aria-label="الصفحة السابقة"
-            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
-              currentPage === 1
-                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                : "bg-[#7939E3] hover:bg-[#6824D6] text-white hover:scale-105 cursor-pointer"
-            }`}
-          >
-            <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
+            <div className="flex items-center justify-center gap-6 order-1 sm:order-2">
+              {/* Next Page Button (Left arrow in RTL) */}
+              <button
+                type="button"
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+                aria-label="الصفحة التالية"
+                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
+                  currentPage === totalPages
+                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    : "bg-[#7939E3] hover:bg-[#6824D6] text-white hover:scale-105 cursor-pointer"
+                }`}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+
+              {/* Page Numbers */}
+              <span className="text-sm font-black text-slate-700 select-none">
+                {currentPage} / {totalPages}
+              </span>
+
+              {/* Previous Page Button (Right arrow in RTL) */}
+              <button
+                type="button"
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                aria-label="الصفحة السابقة"
+                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
+                  currentPage === 1
+                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    : "bg-[#7939E3] hover:bg-[#6824D6] text-white hover:scale-105 cursor-pointer"
+                }`}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="w-24 hidden sm:block order-3" />
+          </div>
+        )}
       </div>
     </div>
   );
