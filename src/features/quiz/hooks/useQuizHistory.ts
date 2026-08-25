@@ -14,7 +14,7 @@ export function useQuizHistory(
   targetId?: string | null | undefined
 ): UseQueryResult<QuizHistoryResponse, Error> {
   const { data: session, status } = useSession();
-  const { userRole, isAuthenticated, activeChild } = useActiveAccount();
+  const { userRole, isAuthenticated, activeChild, activeAccountId } = useActiveAccount();
 
   const role = isAuthenticated ? (userRole || "parent") : "visitor";
   const token = session?.accessToken || session?.token || null;
@@ -22,8 +22,12 @@ export function useQuizHistory(
     role as (typeof ROLES_WITH_HISTORY)[number]
   );
 
-  // If parent and no targetId provided, use activeChild.id
-  const resolvedTargetId = targetId || (activeChild?.id ? activeChild.id : null);
+  // Resolve child ID: active child > activeAccountId > explicit targetId
+  const childId =
+    (activeChild?.id ? activeChild.id : null) ||
+    (activeAccountId && activeAccountId !== "parent" ? activeAccountId : null);
+
+  const resolvedTargetId = childId || targetId || null;
 
   return useQuery({
     queryKey: quizQueryKeys.history(role, resolvedTargetId ?? "all"),

@@ -68,104 +68,9 @@ export const AttemptsLogView: React.FC = () => {
   const [selectedIndicator, setSelectedIndicator] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Normalize attempts data with fallbacks for sample/API variations
+  // Normalize attempts data from API and local storage
   const normalizedAttempts: QuizHistoryItem[] = useMemo(() => {
-    if (rawAttempts.length > 0) {
-      return rawAttempts;
-    }
-    // Fallback sample data if no attempts logged yet
-    return [
-      {
-        id: "att-1",
-        story_title: "السلحفاة والأرنب",
-        level: "المستوى 3",
-        outcome: "يفهم القصة",
-        indicator: "يحلل الأحداث",
-        attempts_count: 1,
-        last_score: 90,
-        highest_score: 90,
-        max_score: 100,
-        score: 90,
-        total_questions: 10,
-        percentage: 90,
-        created_at: "2026-07-12T10:00:00Z",
-      },
-      {
-        id: "att-2",
-        story_title: "الأسد والفأر",
-        level: "المستوى 3",
-        outcome: "يلخص القصة",
-        indicator: "يستنتج المعاني",
-        attempts_count: 3,
-        last_score: 75,
-        highest_score: 30,
-        max_score: 100,
-        score: 75,
-        total_questions: 10,
-        percentage: 75,
-        created_at: "2026-07-12T10:00:00Z",
-      },
-      {
-        id: "att-3",
-        story_title: "السلحفاة والأرنب",
-        level: "المستوى 3",
-        outcome: "يفهم القصة",
-        indicator: "يحلل الأحداث",
-        attempts_count: 1,
-        last_score: 90,
-        highest_score: 10,
-        max_score: 100,
-        score: 90,
-        total_questions: 10,
-        percentage: 90,
-        created_at: "2026-07-12T10:00:00Z",
-      },
-      {
-        id: "att-4",
-        story_title: "الأسد والفأر",
-        level: "المستوى 3",
-        outcome: "يلخص القصة",
-        indicator: "يستنتج المعاني",
-        attempts_count: 3,
-        last_score: 75,
-        highest_score: 60,
-        max_score: 100,
-        score: 75,
-        total_questions: 10,
-        percentage: 75,
-        created_at: "2026-07-12T10:00:00Z",
-      },
-      {
-        id: "att-5",
-        story_title: "السلحفاة والأرنب",
-        level: "المستوى 3",
-        outcome: "يفهم القصة",
-        indicator: "يحلل الأحداث",
-        attempts_count: 1,
-        last_score: 90,
-        highest_score: 90,
-        max_score: 100,
-        score: 90,
-        total_questions: 10,
-        percentage: 90,
-        created_at: "2026-07-12T10:00:00Z",
-      },
-      {
-        id: "att-6",
-        story_title: "الأسد والفأر",
-        level: "المستوى 3",
-        outcome: "يلخص القصة",
-        indicator: "يستنتج المعاني",
-        attempts_count: 3,
-        last_score: 75,
-        highest_score: 85,
-        max_score: 100,
-        score: 75,
-        total_questions: 10,
-        percentage: 75,
-        created_at: "2026-07-12T10:00:00Z",
-      },
-    ];
+    return rawAttempts;
   }, [rawAttempts]);
 
   // Unique filter values
@@ -378,6 +283,23 @@ export const AttemptsLogView: React.FC = () => {
 
           {/* Table Rows */}
           <div className="flex flex-col gap-3 mt-2">
+            {paginatedAttempts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+                <div className="size-16 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 mb-2">
+                  <Trophy className="size-8 text-[#FBBF24]" />
+                </div>
+                <h4 className="text-lg font-black text-slate-800">لا توجد محاولات مسجلة بعد</h4>
+                <p className="text-sm font-semibold text-slate-400 max-w-sm">
+                  عندما يحل الطفل أو الطالب الاختبارات ستظهر جميع محاولاته ونتائجه هنا تلقائياً.
+                </p>
+                <Link
+                  href="/stories"
+                  className="mt-3 py-2.5 px-6 rounded-full bg-[#7939E3] hover:bg-[#6D28D9] text-white font-bold text-sm shadow-md transition-all cursor-pointer active:scale-95"
+                >
+                  تصفح القصص وابدأ اختباراً
+                </Link>
+              </div>
+            ) : (
             <AnimatePresence mode="popLayout">
               {paginatedAttempts.map((row, idx) => {
                 const storyName = row.story_title || row.story?.title || "القصة";
@@ -478,6 +400,7 @@ export const AttemptsLogView: React.FC = () => {
                 );
               })}
             </AnimatePresence>
+            )}
           </div>
 
           {/* ─────────────────── PAGINATION ─────────────────── */}
