@@ -212,7 +212,7 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
           </Swiper>
         </div>
       ) : (
-        <div className="w-full flex items-center justify-center gap-3.5 sm:gap-4 mb-8 flex-wrap p-1">
+        <div className="w-full flex items-center justify-center gap-3.5 sm:gap-4 mb-8 p-1">
           {profiles.map(renderProfileCard)}
         </div>
       )}

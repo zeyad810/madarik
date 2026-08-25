@@ -27,13 +27,20 @@ export const registerUser = async (
 export const verifyRegisterOtp = async (
   payload: VerifyRegisterPayload,
 ): Promise<VerifyRegisterResponse> => {
+  const code = payload.code || payload.otp || "";
+  const phone = payload.phone ? payload.phone.trim() : "";
+
   const response = await fetch(`${API_BASE_URL}/auth/register/verify`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      phone,
+      code,
+      otp: code,
+    }),
   });
 
   return await handleResponse<VerifyRegisterResponse>(response);

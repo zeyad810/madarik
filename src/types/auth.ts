@@ -74,7 +74,8 @@ export interface RegisterResponse {
 
 export interface VerifyRegisterPayload {
   phone: string;
-  otp: string;
+  code?: string;
+  otp?: string;
 }
 
 export interface VerifyRegisterResponse {
