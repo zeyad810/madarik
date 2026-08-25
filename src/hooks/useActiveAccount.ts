@@ -4,7 +4,7 @@ import { useMemo, useCallback, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ActiveAccount, AuthUser, Child } from "@/types/auth";
 import { useAccountStore } from "@/store/useAccountStore";
-import { normalizeRole, isStudentRole } from "@/lib/roles";
+import { normalizeRole, isStudentRole, isFreeRole } from "@/lib/roles";
 
 // ============================================================================
 // Constants & Configuration
@@ -45,6 +45,8 @@ export interface UseActiveAccountReturn {
   isParentRole: boolean;
   /** True if the active account or user is a student */
   isStudent: boolean;
+  /** True if the active account or user is a free customer / free user */
+  isFreeCustomer: boolean;
   /** Switch the active account globally and persist to localStorage */
   switchAccount: (targetId: string, targetUserType?: string) => void;
   /** Helper to generate clean account URLs (state is globally preserved) */
@@ -270,6 +272,7 @@ export function useActiveAccount(): UseActiveAccountReturn {
     children,
     isParentRole,
     isStudent: isStudentRole(activeUserType),
+    isFreeCustomer: isFreeRole(activeUserType) || isFreeRole(sessionUserType),
     switchAccount,
     createAccountHref,
     resetAccount,

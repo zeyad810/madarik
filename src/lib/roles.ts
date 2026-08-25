@@ -68,4 +68,22 @@ export function isStudentRole(role: string | undefined | null): boolean {
   return normalizeRole(role) === "student";
 }
 
+/**
+ * Checks whether a role corresponds to a free customer.
+ */
+export function isFreeRole(role: string | undefined | null): boolean {
+  if (!role) return false;
+  const clean = role.trim().toLowerCase().replace(/[-_\s]+/g, "_");
+  return (
+    clean === "free" ||
+    clean === "free_customer" ||
+    clean === "freecustomer" ||
+    clean === "free_user" ||
+    clean === "customer" ||
+    clean === "عميل_مجاني" ||
+    clean === "مجاني" ||
+    clean === "عميل"
+  );
+}
+
 

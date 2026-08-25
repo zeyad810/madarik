@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Story, StoryBlock, getStoryQuizId } from "../types";
 import { useFinishStory } from "../hooks/useFinishStory";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 
 interface StoryReaderViewProps {
@@ -22,6 +23,9 @@ interface StoryReaderViewProps {
 }
 
 export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
+  const { isFreeCustomer, isAuthenticated } = useActiveAccount();
+  const canFinish = isAuthenticated && !isFreeCustomer;
+
   // Finish story mutation hook
   const { mutate: markStoryFinished, isPending: isFinishing, isSuccess: isFinished } =
     useFinishStory(story.id);
@@ -68,13 +72,13 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   const totalPages = Math.max(1, Math.ceil(blocks.length / ITEMS_PER_PAGE));
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Trigger finish when reaching the last page of multi-page story
+  // Trigger finish when reaching the last page of multi-page story (only for non-free accounts)
   useEffect(() => {
-    if (totalPages > 1 && currentPage === totalPages && !hasFinishedRef.current) {
+    if (canFinish && totalPages > 1 && currentPage === totalPages && !hasFinishedRef.current) {
       hasFinishedRef.current = true;
       markStoryFinished();
     }
-  }, [currentPage, totalPages, markStoryFinished]);
+  }, [canFinish, currentPage, totalPages, markStoryFinished]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentBlocks = blocks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -124,43 +128,45 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
 
         {/* Left Action Buttons */}
         <div className="flex flex-wrap items-center gap-3">
-          {/* Direct Finish Reading Button */}
-          <button
-            type="button"
-            onClick={() => {
-              hasFinishedRef.current = true;
-              markStoryFinished();
-            }}
-            disabled={isFinishing || isFinished}
-            className={`py-2.5 px-5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md ${
-              isFinished
-                ? "bg-emerald-600 text-white cursor-default"
-                : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer"
-            }`}
-          >
-            {isFinishing ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>جاري الإنهاء...</span>
-              </>
-            ) : isFinished ? (
-              <>
-                <CheckCircle2 className="w-4 h-4" />
-                <span>تمت القراءة بنجاح ✓</span>
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="w-4 h-4" />
-                <span>إنهاء القراءة</span>
-              </>
-            )}
-          </button>
+          {/* Direct Finish Reading Button (Hidden for Free Customers) */}
+          {canFinish && (
+            <button
+              type="button"
+              onClick={() => {
+                hasFinishedRef.current = true;
+                markStoryFinished();
+              }}
+              disabled={isFinishing || isFinished}
+              className={`py-2.5 px-5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md ${
+                isFinished
+                  ? "bg-emerald-600 text-white cursor-default"
+                  : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer"
+              }`}
+            >
+              {isFinishing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>جاري الإنهاء...</span>
+                </>
+              ) : isFinished ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>تمت القراءة بنجاح ✓</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>إنهاء القراءة</span>
+                </>
+              )}
+            </button>
+          )}
 
           {getStoryQuizId(story) && (
             <Link
               href={`/stories/${story.id}/quiz`}
               onClick={() => {
-                if (!hasFinishedRef.current) {
+                if (canFinish && !hasFinishedRef.current) {
                   hasFinishedRef.current = true;
                   markStoryFinished();
                 }
@@ -277,8 +283,8 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                   </p>
                 </div>
 
-                {/* Completion Status Badge (when finished or finishing) */}
-                {(isFinished || isFinishing) && (
+                {/* Completion Status Badge (when finished or finishing, non-free accounts only) */}
+                {canFinish && (isFinished || isFinishing) && (
                   <div className="flex items-center justify-center p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 gap-2.5">
                     {isFinishing ? (
                       <>
@@ -323,54 +329,58 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
 
         {/* 4. Bottom Controls: Finish Button for 1-Page Stories OR Pagination for Multi-Page */}
         {totalPages === 1 ? (
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-8 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={() => {
-                hasFinishedRef.current = true;
-                markStoryFinished();
-              }}
-              disabled={isFinishing || isFinished}
-              className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md ${
-                isFinished
-                  ? "bg-emerald-600 text-white cursor-default"
-                  : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer shadow-emerald-500/20"
-              }`}
-            >
-              {isFinishing ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>جاري تسجيل إنهاء القصة...</span>
-                </>
-              ) : isFinished ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>تمت القراءة بنجاح ✓</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>إنهاء قراءة القصة</span>
-                </>
-              )}
-            </button>
-
-            {getStoryQuizId(story) && (
-              <Link
-                href={`/stories/${story.id}/quiz`}
-                onClick={() => {
-                  if (!hasFinishedRef.current) {
+          (canFinish || getStoryQuizId(story)) && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-8 border-t border-slate-100">
+              {canFinish && (
+                <button
+                  type="button"
+                  onClick={() => {
                     hasFinishedRef.current = true;
                     markStoryFinished();
-                  }
-                }}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md hover:scale-105 active:scale-95"
-              >
-                <CheckCircle2 className="w-5 h-5" />
-                <span>الانتقال للاختبار</span>
-              </Link>
-            )}
-          </div>
+                  }}
+                  disabled={isFinishing || isFinished}
+                  className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md ${
+                    isFinished
+                      ? "bg-emerald-600 text-white cursor-default"
+                      : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer shadow-emerald-500/20"
+                  }`}
+                >
+                  {isFinishing ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>جاري تسجيل إنهاء القصة...</span>
+                    </>
+                  ) : isFinished ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>تمت القراءة بنجاح ✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>إنهاء قراءة القصة</span>
+                    </>
+                  )}
+                </button>
+              )}
+
+              {getStoryQuizId(story) && (
+                <Link
+                  href={`/stories/${story.id}/quiz`}
+                  onClick={() => {
+                    if (canFinish && !hasFinishedRef.current) {
+                      hasFinishedRef.current = true;
+                      markStoryFinished();
+                    }
+                  }}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md hover:scale-105 active:scale-95"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>الانتقال للاختبار</span>
+                </Link>
+              )}
+            </div>
+          )
         ) : (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-12 pt-8 border-t border-slate-100">
             <div className="flex items-center gap-3 order-2 sm:order-1">

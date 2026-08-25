@@ -36,6 +36,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
     createAccountHref,
     resetAccount,
     isStudent,
+    isFreeCustomer,
   } = useActiveAccount();
 
   const isItemActive = (href: string) => {
@@ -46,6 +47,18 @@ const SideMenu: React.FC<SideMenuProps> = ({
   };
 
   const visibleMenuItems = SIDE_MENU_ITEMS.filter((item) => {
+    // If free customer / free user, hide results and attempts log
+    if (isFreeCustomer) {
+      if (
+        item.id === "results" ||
+        item.id === "attempts-log" ||
+        item.href.startsWith("/results") ||
+        item.href.startsWith("/attempts")
+      ) {
+        return false;
+      }
+    }
+
     if (isStudent) {
       return (
         item.id === "available-stories" ||
