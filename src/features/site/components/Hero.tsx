@@ -66,7 +66,7 @@ const Hero: React.FC<HeroProps> = ({
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-[16px] font-bold text-white leading-tight"
+              className="text-[15px] font-bold text-white leading-tight"
             >
               {title}
             </motion.h1>
@@ -75,7 +75,7 @@ const Hero: React.FC<HeroProps> = ({
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-[14px] font-normal text-white/90 leading-relaxed max-w-2xl"
+              className="text-[13px] font-normal text-white/90 leading-relaxed max-w-2xl"
             >
               {description}
             </motion.p>
@@ -95,8 +95,8 @@ const Hero: React.FC<HeroProps> = ({
                   transition={{ duration: 0.4, delay: 0.3 + idx * 0.1 }}
                   className="flex items-start justify-start flex-col gap-0.5"
                 >
-                  <p className="text-[14px] font-bold text-mad-third">{stat.value}</p>
-                  <p className="text-[14px] font-medium text-white/90">{stat.label}</p>
+                  <p className="text-[13px] font-bold text-mad-third">{stat.value}</p>
+                  <p className="text-[12px] font-medium text-white/90">{stat.label}</p>
                 </motion.div>
               ))}
             </motion.div>
@@ -154,7 +154,7 @@ const Hero: React.FC<HeroProps> = ({
         backgroundImage: `url(${bgImageSrc})`,
       }}
     >
-      <div className="container mx-auto flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-12 px-4 sm:px-6 lg:px-12 z-10">
+      <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 px-4 sm:px-6 lg:px-12 z-10">
         {/* Content Side */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
@@ -166,7 +166,7 @@ const Hero: React.FC<HeroProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            className="mad-title-1 font-bold text-white leading-tight"
+            className="mad-title-2 font-bold text-white leading-tight"
           >
             {title}
           </motion.h1>
@@ -175,7 +175,7 @@ const Hero: React.FC<HeroProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="mad-h5 font-normal text-white/90 leading-relaxed max-w-2xl"
+            className="mad-h6 font-normal text-white/90 leading-relaxed max-w-2xl"
           >
             {description}
           </motion.p>
@@ -196,8 +196,8 @@ const Hero: React.FC<HeroProps> = ({
                 whileHover={{ scale: 1.05 }}
                 className="flex items-start justify-start flex-col gap-1 transition-transform"
               >
-                <p className="mad-h3 font-bold text-mad-third">{stat.value}</p>
-                <p className="mad-h6 font-medium text-white/90">{stat.label}</p>
+                <p className="mad-h4 font-bold text-mad-third">{stat.value}</p>
+                <p className="mad-body-2 font-medium text-white/90">{stat.label}</p>
               </motion.div>
             ))}
           </motion.div>
