@@ -147,10 +147,10 @@ export const QuizResult: React.FC<QuizResultProps> = ({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
-          className="bg-white rounded-[28px] p-6 shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-slate-100 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-0 divide-y md:divide-y-0 md:divide-x md:divide-x-reverse divide-slate-100"
+          className="bg-white rounded-[28px] p-6 shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-slate-100 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-0"
         >
           {/* 1. Correct Answers */}
-          <div className="flex flex-col items-center gap-2 px-4 py-2">
+          <div className="flex flex-col items-center gap-2 px-4 py-2 md:border-l md:border-slate-100">
             <Image
               src="/iamges/q-correct-answer.png"
               alt="الإجابات الصحيحة"
@@ -167,7 +167,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
           </div>
 
           {/* 2. Best Score */}
-          <div className="flex flex-col items-center gap-2 px-4 py-2">
+          <div className="flex flex-col items-center gap-2 px-4 py-2 md:border-l md:border-slate-100">
             <Image
               src="/iamges/q-best-answer.png"
               alt="أفضل نتيجة"
@@ -182,7 +182,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
           </div>
 
           {/* 3. Earned Points */}
-          <div className="flex flex-col items-center gap-2 px-4 py-2">
+          <div className="flex flex-col items-center gap-2 px-4 py-2 md:border-l md:border-slate-100">
             <Image
               src="/iamges/q-earned-point.png"
               alt="النقاط المكتسبة"

@@ -68,14 +68,14 @@ export const QuizProgress: React.FC<QuizProgressProps> = ({
   const items = getProgressItems(total, current, questionIds);
 
   return (
-    <div className="flex flex-col items-center gap-2" dir="ltr">
+    <div className="flex flex-col items-center gap-3 w-full" dir="rtl">
       {/* Question counter label */}
-      <span className="text-sm font-bold text-[#7939E3] mb-1" dir="rtl">
+      <h3 className="text-base sm:text-lg font-black text-[#7939E3] text-center">
         السؤال {current + 1} من {total}
-      </span>
+      </h3>
 
-      {/* Step indicators */}
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      {/* Step indicators (Left to Right) */}
+      <div className="flex items-center gap-1.5 sm:gap-2" dir="ltr">
         {/* Avatar at start */}
         <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#7939E3] shrink-0 shadow-xs">
           <Image
