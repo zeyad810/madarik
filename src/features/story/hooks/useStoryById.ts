@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuery, type UseQueryOptions, type UseQueryResult } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";

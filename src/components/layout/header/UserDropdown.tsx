@@ -7,7 +7,11 @@ import { signOut } from "next-auth/react";
 import { Bell, Search, LogOut, User } from "lucide-react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 
-export const UserDropdown: React.FC = () => {
+interface UserDropdownProps {
+  onOpenSearch?: () => void;
+}
+
+export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
   const {
     activeId,
     activeAccount,
@@ -51,6 +55,8 @@ export const UserDropdown: React.FC = () => {
     <div className="flex items-center gap-3" dir="rtl">
       {/* 1. Search Button */}
       <button
+        type="button"
+        onClick={onOpenSearch}
         aria-label="البحث"
         className="flex size-10 items-center justify-center rounded-full bg-white text-mad-main shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
       >
