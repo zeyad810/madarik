@@ -98,8 +98,8 @@ export const QuizOption: React.FC<QuizOptionProps> = ({
               : isCorrectAnswer
               ? "bg-[#22C55E] text-white"
               : isSelected
-              ? "bg-[#7939E3] text-white"
-              : "bg-[#F1F5F9] text-slate-500 group-hover:bg-purple-100 group-hover:text-[#7939E3]"
+              ? "bg-[#7939E3] text-white shadow-xs"
+              : "bg-[#F3E8FF] text-[#7939E3] group-hover:bg-[#E9D5FF]"
           }`}
         >
           {isCorrectResult || isCorrectAnswer ? (

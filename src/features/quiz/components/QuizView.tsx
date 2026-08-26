@@ -382,9 +382,8 @@ export const QuizView: React.FC<QuizViewProps> = ({
       {/* ─────────────────── 3-COLUMN MAIN CONTENT (RTL) ─────────────────── */}
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* 1. RIGHT COLUMN (in RTL, 1st child is on the RIGHT) — Character Illustration */}
+          {/* 1. RIGHT COLUMN — Character Illustration (Desktop only) */}
           <aside className="lg:col-span-3 hidden lg:flex flex-col items-center justify-center pt-2">
-            {/* 3D Character Illustration (Enlarged) */}
             <div className="relative w-full flex justify-center items-center">
               <Image
                 src="/iamges/q-boyThinking.png"
@@ -392,16 +391,59 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 width={360}
                 height={500}
                 style={{ width: "auto", height: "auto" }}
-                className="object-contain w-full max-w-[320px] xl:max-w-[360px] max-h-[460px] xl:max-h-[520px] drop-shadow-xl transition-all duration-300"
+                className="object-contain w-full max-w-[300px] xl:max-w-[340px] max-h-[460px] drop-shadow-xl transition-all duration-300"
                 priority
               />
             </div>
           </aside>
 
-          {/* 2. CENTER COLUMN — Stepper + Main Quiz Card + Actions */}
-          <section className="lg:col-span-6 flex flex-col items-center w-full">
-            {/* Top Stepper Timeline */}
-            <div className="w-full mb-3">
+          {/* 2. CENTER COLUMN — Main Quiz Experience */}
+          <section className="lg:col-span-6 flex flex-col items-center w-full max-w-2xl mx-auto">
+            {/* Top Exit Button Row (Right aligned in RTL) */}
+            <div className="w-full flex justify-start mb-4">
+              <Link
+                href={`/stories/${storyId}`}
+                className="p-2.5 rounded-2xl border border-red-100 bg-red-50/50 text-red-500 hover:bg-red-100 hover:border-red-200 transition-all flex items-center justify-center shadow-xs rotate-180"
+                title="خروج من الاختبار"
+                aria-label="خروج من الاختبار"
+              >
+                <LogOut className="w-5 h-5 rotate-180" />
+              </Link>
+            </div>
+
+            {/* 2 Metric Cards: Time & Points (Side by Side) */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mb-6">
+              {/* Card 1: Remaining Time */}
+              <div className="bg-white rounded-[24px] p-4 sm:p-5 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col items-center justify-center min-h-[145px]">
+                <QuizTimer
+                  questionId={currentQuestion?.id || String(currentIdx)}
+                  durationSeconds={90}
+                  onExpire={handleQuestionTimerExpire}
+                />
+              </div>
+
+              {/* Card 2: Points */}
+              <div className="bg-white rounded-[24px] p-4 sm:p-5 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col items-center justify-between gap-1.5 min-h-[145px]">
+                <Image
+                  src="/iamges/q-trophy-circle.png"
+                  alt="النقاط"
+                  width={46}
+                  height={46}
+                  style={{ width: "auto", height: "auto" }}
+                  className="drop-shadow-xs"
+                />
+                <span className="text-xs font-bold text-slate-400">نقاطك</span>
+                <span className="text-2xl sm:text-3xl font-black text-[#7939E3] leading-none">
+                  {currentPoints}
+                </span>
+                <span className="text-[11px] font-bold text-[#10B981] mt-0.5">
+                  +20 نقطة للإجابة الصحيحة
+                </span>
+              </div>
+            </div>
+
+            {/* Stepper Timeline */}
+            <div className="w-full mb-5">
               <QuizProgress
                 total={totalQuestions}
                 current={currentIdx}
@@ -411,7 +453,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             </div>
 
             {/* Main Question Card */}
-            <div className="w-full bg-white rounded-[28px] p-6 sm:p-8 shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col gap-5">
+            <div className="w-full bg-white rounded-[28px] p-5 sm:p-8 shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col gap-5">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentQuestion?.id}
@@ -449,14 +491,14 @@ export const QuizView: React.FC<QuizViewProps> = ({
             </div>
 
             {/* Bottom Navigation Buttons */}
-            <div className="flex items-center justify-center gap-4 mt-6 w-full">
-              {/* Next or Finish Button */}
+            <div className="flex items-center justify-between gap-4 mt-6 w-full">
+              {/* Next or Finish Button (on right in RTL) */}
               {isLastQuestion ? (
                 <button
                   type="button"
                   onClick={handleFinish}
                   disabled={isNavigating}
-                  className="flex items-center justify-center gap-2 py-3 px-8 rounded-full bg-[#7939E3] hover:bg-[#6D28D9] text-white font-bold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
+                  className="flex-1 sm:flex-none sm:min-w-[160px] flex items-center justify-center gap-2 py-3 px-7 rounded-full bg-[#7939E3] hover:bg-[#6D28D9] text-white font-bold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
                 >
                   {isNavigating ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -469,7 +511,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   type="button"
                   onClick={handleNext}
                   disabled={isNavigating}
-                  className="flex items-center justify-center gap-2 py-3 px-8 rounded-full bg-[#7939E3] hover:bg-[#6D28D9] text-white font-bold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
+                  className="flex-1 sm:flex-none sm:min-w-[160px] flex items-center justify-center gap-2 py-3 px-7 rounded-full bg-[#7939E3] hover:bg-[#6D28D9] text-white font-bold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
                 >
                   {isNavigating ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -479,60 +521,25 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 </button>
               )}
 
-              {/* Previous Button */}
-              {currentIdx > 0 && (
+              {/* Previous Button (on left in RTL) */}
+              {currentIdx > 0 ? (
                 <button
                   type="button"
                   onClick={handlePrev}
                   disabled={isNavigating}
-                  className="flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-sm transition-all cursor-pointer"
+                  className="flex-1 sm:flex-none sm:min-w-[140px] flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-sm transition-all cursor-pointer shadow-2xs"
                 >
                   <ArrowRight className="w-4 h-4" />
                   <span>السابق</span>
                 </button>
+              ) : (
+                <div />
               )}
             </div>
           </section>
 
-          {/* 3. LEFT COLUMN (in RTL, 3rd child is on the LEFT) — Score & Timer & Exit */}
-          <aside className="lg:col-span-3 flex flex-col gap-4">
-            {/* Score Card */}
-            <div className="bg-white rounded-[24px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col items-center gap-2">
-              <Image
-                src="/iamges/q-trophy-circle.png"
-                alt="النقاط"
-                width={56}
-                height={56}
-                style={{ width: "auto", height: "auto" }}
-                className="drop-shadow-xs"
-              />
-              <span className="text-xs font-bold text-slate-500">نقاطك</span>
-              <span className="text-4xl font-black text-[#7939E3]">
-                {currentPoints}
-              </span>
-              <span className="text-xs font-bold text-[#10B981] bg-[#ECFDF5] px-3 py-1 rounded-full border border-emerald-100">
-                +20 نقطة للإجابة الصحيحة
-              </span>
-            </div>
-
-            {/* Timer Card (Per-question timer: 90 seconds = 1.5 mins) */}
-            <div className="bg-white rounded-[24px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col items-center justify-center">
-              <QuizTimer
-                questionId={currentQuestion?.id || String(currentIdx)}
-                durationSeconds={90}
-                onExpire={handleQuestionTimerExpire}
-              />
-            </div>
-
-            {/* Exit Quiz Button */}
-            <Link
-              href={`/stories/${storyId}`}
-              className="w-full py-3 px-4 rounded-full border border-red-200 bg-white text-red-500 hover:bg-red-50 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>خروج من الاختبار</span>
-            </Link>
-          </aside>
+          {/* 3. LEFT COLUMN — Spacer on Desktop */}
+          <aside className="lg:col-span-3 hidden lg:block" />
         </div>
       </main>
     </div>
