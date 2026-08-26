@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
+
 import { useQuizHistory } from "../hooks/useQuizHistory";
 import { QuizHistoryItem } from "../types";
 
@@ -27,12 +29,13 @@ const ITEMS_PER_PAGE = 8;
  * Returns an expressive emoji based on percentage/score.
  */
 function getScoreEmoji(percentage: number): string {
-  if (percentage >= 85) return "😍";
-  if (percentage >= 70) return "😜";
-  if (percentage >= 50) return "🥹";
-  if (percentage >= 30) return "🥺";
-  return "🥱";
+  if (percentage >= 90) return "/iamges/love-Em.svg";
+  if (percentage >= 85) return "/iamges/happy-Em.svg";
+  if (percentage >= 70) return "/iamges/smile-Em.svg";
+  if (percentage >= 40) return "/iamges/shocked-Em.svg";
+  return "/iamges/sad-Em.svg";
 }
+
 
 /**
  * Formats date string to DD/MM/YYYY.
@@ -172,62 +175,30 @@ export const AttemptsLogView: React.FC = () => {
   return (
     <div
       dir="rtl"
-      className="min-h-screen flex flex-col justify-between bg-white relative overflow-hidden select-none"
+      className="min-h-screen flex flex-col justify-between relative overflow-hidden select-none bg-white"
     >
-      {/* ─────────────────── TOP BREADCRUMB & HEADER ─────────────────── */}
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-        {/* Breadcrumb Navigation */}
-        <div className="flex items-center justify-end gap-2 text-xs font-bold text-slate-400 mb-6">
-          <Link href="/" className="text-[#7939E3] hover:underline">
-            الرئيسية
-          </Link>
-          <span>&gt;</span>
-          <span className="text-slate-400">سجل المحاولات</span>
-        </div>
+      {/* ─────────────────── TOP BREADCRUMB ─────────────────── */}
+      <div className="relative z-20 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-0">
+        <AutoBreadcrumbs
+          rootIcon={null}
+          dynamicLabels={{ attempts: "سجل المحاولات" }}
+        />
+      </div>
 
-        {/* Floating Star Icons & Heading */}
-        <div className="relative flex flex-col items-center justify-center text-center mt-2 mb-8">
-          {/* Decorative Stars from public/iamges */}
-          <div className="absolute -top-4 right-[28%] hidden sm:block pointer-events-none">
-            <Image
-              src="/iamges/yellow_star_3d.png"
-              alt="star"
-              width={24}
-              height={24}
-              className="drop-shadow-xs animate-pulse"
-            />
-          </div>
-          <div className="absolute top-2 left-[28%] hidden sm:block pointer-events-none">
-            <Image
-              src="/iamges/yellow_star_3d.png"
-              alt="star"
-              width={26}
-              height={26}
-              className="drop-shadow-xs"
-            />
-          </div>
-          <div className="absolute top-12 left-[8%] hidden md:block pointer-events-none">
-            <Image
-              src="/iamges/yellow_star_3d.png"
-              alt="star"
-              width={34}
-              height={34}
-              className="drop-shadow-xs animate-pulse"
-            />
-          </div>
+      {/* ─────────────────── STAR-BG SECTION (below breadcrumb) ─────────────────── */}
+      <div
+        className="flex-1 flex flex-col"
+        style={{ backgroundImage: "url('/iamges/star-bg.png')", backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}
+      >
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-4">
 
+        {/* Heading */}
+        <div className="flex flex-col items-center justify-center text-center mt-2 mb-8">
           <span className="text-xs sm:text-sm font-black text-[#7939E3] mb-1 tracking-wide">
             محاولاتي في الاختبارات
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1E1B4B] flex items-center justify-center gap-3">
-            <span>سجل المحاولات</span>
-            <Image
-              src="/iamges/yellow_star_3d.png"
-              alt="star"
-              width={36}
-              height={36}
-              className="inline-block drop-shadow-sm"
-            />
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1E1B4B]">
+            سجل المحاولات
           </h1>
         </div>
 
@@ -259,72 +230,68 @@ export const AttemptsLogView: React.FC = () => {
         ) : (
           /* ── Filter Dropdowns & Main Table ── */
           <>
-            {/* 3 FILTER DROPDOWNS */}
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-8">
-              {/* 1. Level Filter */}
-              <div className="relative min-w-[140px] sm:min-w-[170px]">
-                <select
-                  value={selectedLevel}
-                  onChange={(e) => {
-                    setSelectedLevel(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="w-full appearance-none bg-white border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-2xl py-2.5 px-4 pr-4 pl-9 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-center"
-                >
-                  <option value="all">المستوى (الكل)</option>
-                  {levelsList.map((lvl) => (
-                    <option key={lvl} value={lvl}>
-                      {lvl}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-
-              {/* 2. Outcome Filter */}
-              <div className="relative min-w-[140px] sm:min-w-[170px]">
-                <select
-                  value={selectedOutcome}
-                  onChange={(e) => {
-                    setSelectedOutcome(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="w-full appearance-none bg-white border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-2xl py-2.5 px-4 pr-4 pl-9 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-center"
-                >
-                  <option value="all">الناتج (الكل)</option>
-                  {outcomesList.map((out) => (
-                    <option key={out} value={out}>
-                      {out}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-
-              {/* 3. Indicator Filter */}
-              <div className="relative min-w-[140px] sm:min-w-[170px]">
-                <select
-                  value={selectedIndicator}
-                  onChange={(e) => {
-                    setSelectedIndicator(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="w-full appearance-none bg-white border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-2xl py-2.5 px-4 pr-4 pl-9 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-center"
-                >
-                  <option value="all">المؤشر (الكل)</option>
-                  {indicatorsList.map((ind) => (
-                    <option key={ind} value={ind}>
-                      {ind}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            </div>
-
             {/* MAIN TABLE CONTAINER */}
             <main className="w-full pb-12 flex-1 flex flex-col items-center">
-              <div className="w-full bg-[#FAF8FF]/60 rounded-[36px] p-4 sm:p-6 lg:p-8 border border-purple-100/60 shadow-[0_10px_40px_rgba(121,57,227,0.04)]">
+
+              {/* FILTERS — right aligned, ABOVE the table card */}
+              <div className="w-full flex flex-wrap items-center justify-start gap-3 sm:gap-4 mb-4">
+                  {/* 1. Level Filter */}
+                  <div className="relative min-w-32.5 sm:min-w-37.5">
+                    <select
+                      value={selectedLevel}
+                      onChange={(e) => {
+                        setSelectedLevel(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-4 pr-4 pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right"
+                    >
+                      <option value="all">المستوى</option>
+                      {levelsList.map((lvl) => (
+                        <option key={lvl} value={lvl}>{lvl}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+
+                  {/* 2. Outcome Filter */}
+                  <div className="relative min-w-32.5 sm:min-w-37.5">
+                    <select
+                      value={selectedOutcome}
+                      onChange={(e) => {
+                        setSelectedOutcome(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-4 pr-4 pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right"
+                    >
+                      <option value="all">الناتج</option>
+                      {outcomesList.map((out) => (
+                        <option key={out} value={out}>{out}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+
+                  {/* 3. Indicator Filter */}
+                  <div className="relative min-w-32.5 sm:min-w-37.5">
+                    <select
+                      value={selectedIndicator}
+                      onChange={(e) => {
+                        setSelectedIndicator(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-4 pr-4 pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right"
+                    >
+                      <option value="all">المؤشر</option>
+                      {indicatorsList.map((ind) => (
+                        <option key={ind} value={ind}>{ind}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* TABLE CARD */}
+              <div className="w-full bg-[#FAF8FF]/60 rounded-[28px] p-4 sm:p-6 lg:p-8 border border-purple-100/60 shadow-[0_10px_40px_rgba(121,57,227,0.04)]">
                 {/* Table Header */}
                 <div className="hidden lg:grid grid-cols-12 gap-2 text-center text-xs font-bold text-slate-400 px-6 py-3 select-none">
                   <span className="col-span-2 text-right pr-2">القصة</span>
@@ -365,15 +332,28 @@ export const AttemptsLogView: React.FC = () => {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.98 }}
                           transition={{ duration: 0.25, delay: idx * 0.04 }}
-                          className={`rounded-full px-5 sm:px-7 py-3.5 sm:py-4 transition-all duration-200 shadow-xs flex flex-col lg:grid lg:grid-cols-12 items-center gap-2.5 lg:gap-2 text-center text-xs sm:text-sm font-bold ${
+                          className={`rounded-[18px] px-5 sm:px-7 py-3.5 sm:py-4 transition-all duration-200 flex flex-col lg:grid lg:grid-cols-12 items-center gap-2.5 lg:gap-2 text-center text-xs sm:text-sm font-bold ${
                             isPurpleRow
                               ? "bg-[#6D28D9] text-white hover:bg-[#6020C7]"
                               : "bg-white text-slate-800 border border-purple-100 hover:border-purple-200"
                           }`}
+                          style={{
+                            boxShadow: isPurpleRow
+                              ? "0px 4px 8px 0px #FFFFFF40 inset, 4px 0px 16px 0px #FFFFFF40 inset, 0px 4px 16px 0px #00000029"
+                              : "0px 4px 8px 0px #6D28D90F inset, 4px 0px 16px 0px #6D28D90F inset, 0px 4px 32px 0px #00000014",
+                          }}
                         >
                           {/* 1. Story Title */}
                           <div className="lg:col-span-2 flex items-center justify-center lg:justify-start gap-2 w-full truncate text-right">
-                            <span className="shrink-0 text-base">📖</span>
+                            <span className="shrink-0 text-base">
+                              <Image
+                                src="/iamges/book-story.svg"
+                                alt="story"
+                                width={20}
+                                height={20}
+                                className="w-4 h-4"
+                              />
+                            </span>
                             <span className="truncate font-black">
                               {storyName}
                             </span>
@@ -381,7 +361,15 @@ export const AttemptsLogView: React.FC = () => {
 
                           {/* 2. Level */}
                           <div className="lg:col-span-1 flex items-center justify-center gap-1">
-                            <span className="text-yellow-400 text-sm">🏆</span>
+                            <span className="text-yellow-400 text-sm">
+                              <Image
+                                src="/iamges/yellow-trophy-with-star-it.svg"
+                                alt="trophy"
+                                width={20}
+                                height={20}
+                                className="w-4 h-4"
+                              />
+                            </span>
                             <span
                               className={
                                 isPurpleRow ? "text-white" : "text-[#7939E3] font-black"
@@ -417,8 +405,14 @@ export const AttemptsLogView: React.FC = () => {
 
                           {/* 7. Highest Score + Emoji */}
                           <div className="lg:col-span-2 flex items-center justify-center gap-1.5 font-black text-sm">
+                            <Image
+                              src={highestEmoji}
+                              alt="emoji"
+                              width={24}
+                              height={24}
+                              className="w-6 h-6 shrink-0"
+                            />
                             <span>%{highestScore}</span>
-                            <span className="text-base">{highestEmoji}</span>
                           </div>
 
                           {/* 8. Max Score */}
@@ -428,8 +422,16 @@ export const AttemptsLogView: React.FC = () => {
 
                           {/* 9. Attempt Date */}
                           <div className="lg:col-span-1 flex items-center justify-center lg:justify-end gap-1.5 text-xs text-left">
+                            <span className="text-sm">
+                              <Image
+                                src="/iamges/calender.svg"
+                                alt="calendar"
+                                width={20}
+                                height={20}
+                                className="w-4 h-4"
+                              />
+                            </span>
                             <span>{dateDisplay}</span>
-                            <span className="text-sm">📅</span>
                           </div>
                         </motion.div>
                       );
@@ -456,7 +458,7 @@ export const AttemptsLogView: React.FC = () => {
                         onClick={() => setCurrentPage(page)}
                         className={`size-8 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
                           currentPage === page
-                            ? "bg-[#FBBF24] text-white shadow-xs"
+                            ? "bg-mad-third text-white shadow-xs"
                             : "text-slate-600 hover:bg-slate-100"
                         }`}
                       >
@@ -478,6 +480,7 @@ export const AttemptsLogView: React.FC = () => {
             </main>
           </>
         )}
+      </div>
       </div>
     </div>
   );
