@@ -101,6 +101,7 @@ export default function QuizPage({ params }: QuizPageProps) {
       quizId={quizId}
       storyId={story.id}
       storyTitle={story.title}
+      storyLevel={story.level}
     />
   );
 }
