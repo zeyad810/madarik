@@ -2,7 +2,7 @@
 // Quiz Feature — Types
 // ────────────────────────────────────────────────────────────────────────────
 
-export type QuizQuestionType = "mcq" | "true_false" | string;
+export type QuizQuestionType = "mcq" | "tf" | "true_false" | string;
 
 export interface QuizQuestion {
   id: string;

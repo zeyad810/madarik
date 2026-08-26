@@ -29,6 +29,7 @@ import {
   roleHasHistory,
   getCurrentTimestamp,
   calculateElapsedSeconds,
+  getQuestionTypeLabel,
 } from "../utils";
 import type {
   SelectedAnswersMap,
@@ -43,9 +44,15 @@ interface QuizViewProps {
   quizId: string;
   storyId: string;
   storyTitle?: string;
+  storyLevel?: any;
 }
 
-export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle }) => {
+export const QuizView: React.FC<QuizViewProps> = ({
+  quizId,
+  storyId,
+  storyTitle,
+  storyLevel,
+}) => {
   const { userRole, isAuthenticated, activeChild, activeAccountId } = useActiveAccount();
   const role = isAuthenticated ? (userRole || "parent") : "visitor";
   const queryClient = useQueryClient();
@@ -357,10 +364,16 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
 
           <div className="flex items-center gap-2">
             <span className="bg-[#E8F8F0] text-[#10B981] font-bold text-xs px-3.5 py-1 rounded-full border border-[#A7F3D0]">
-              مستوى 1
+              {(() => {
+                const lvl =
+                  typeof storyLevel === "string"
+                    ? storyLevel
+                    : storyLevel?.name || (quiz as any)?.level || "مستوى 1";
+                return String(lvl).startsWith("مستوى") ? lvl : `مستوى ${lvl}`;
+              })()}
             </span>
-            <span className="bg-[#F3E8FF] text-[#7939E3] font-bold text-xs px-3.5 py-1 rounded-full border border-[#E9D5FF]">
-              اختيار متعدد
+            <span className="bg-[#F3E8FF] text-[#7939E3] font-bold text-xs px-3.5 py-1 rounded-full border border-[#E9D5FF] transition-all">
+              {getQuestionTypeLabel(currentQuestion?.type)}
             </span>
           </div>
         </div>

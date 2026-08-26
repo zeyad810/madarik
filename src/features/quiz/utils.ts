@@ -85,3 +85,20 @@ export function calculateElapsedSeconds(startMs: number | null): number {
   if (!startMs) return 0;
   return Math.max(1, Math.round((Date.now() - startMs) / 1000));
 }
+
+/**
+ * Returns Arabic human-readable label for a question type.
+ */
+export function getQuestionTypeLabel(type?: string): string {
+  if (!type) return "اختيار متعدد";
+  const normalized = type.toLowerCase().trim();
+  if (
+    normalized === "tf" ||
+    normalized === "true_false" ||
+    normalized === "true-false" ||
+    normalized === "boolean"
+  ) {
+    return "صح أو خطأ";
+  }
+  return "اختيار متعدد";
+}
