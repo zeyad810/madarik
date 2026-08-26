@@ -116,6 +116,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                       src={slide.bgImage}
                       alt={slide.title}
                       fill
+                      sizes="100vw"
                       priority={index === 0}
                       className="object-cover object-center w-full h-full opacity-35"
                     />
@@ -202,8 +203,9 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                           src={slide.sideImage}
                           alt={slide.sideImageAlt || slide.title}
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 540px"
                           className="object-contain"
-                          priority={index === 0}
+                          loading={index === 0 ? "eager" : "lazy"}
                         />
                       </div>
                     </motion.div>
