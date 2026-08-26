@@ -181,7 +181,7 @@ export const AttemptsLogView: React.FC = () => {
       <div className="relative z-20 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-0">
         <AutoBreadcrumbs
           rootIcon={null}
-          dynamicLabels={{ attempts: "سجل المحاولات" }}
+          dynamicLabels={{ attempts: "سجل المحاولات", history: "نتائجي", results: "نتائجي" }}
         />
       </div>
 

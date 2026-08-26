@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, LogOut, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
-import Loading from "@/app/loading";
+import QuizLoading from "@/app/(site)/stories/[id]/quiz/loading";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { useQuiz } from "../hooks/useQuiz";
 import { useCheckQuizAnswer } from "../hooks/useCheckQuizAnswer";
@@ -51,7 +51,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
   const queryClient = useQueryClient();
 
   // ── Data ───────────────────────────────────────────────────────────────────
-  const { data: quizResponse, isLoading, isError } = useQuiz(quizId);
+  const { data: quizResponse, isLoading, isPending, isError } = useQuiz(quizId);
   const quiz = quizResponse?.data;
 
   // ── Quiz State ─────────────────────────────────────────────────────────────
@@ -257,8 +257,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
   const isNavigating = isChecking || submissionState === "submitting";
 
   // ── States: Loading & Submitting ──────────────────────────────────────────
-  if (isLoading || submissionState === "submitting") {
-    return <Loading />;
+  if (isLoading || isPending || submissionState === "submitting" || (!quiz && !isError)) {
+    return <QuizLoading />;
   }
 
   // ── States: Error ──────────────────────────────────────────────────────────
@@ -273,6 +273,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
           alt="خطأ"
           width={250}
           height={250}
+          style={{ width: "auto", height: "auto" }}
+          priority
         />
         <p className="text-slate-700 font-bold text-center">
           تعذر تحميل الاختبار. يرجى المحاولة لاحقاً.
