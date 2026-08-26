@@ -8,7 +8,13 @@ import { DESKTOP_NAV_LINKS } from "./constants";
 import UserDropdown from "./UserDropdown";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 
-const DesktopNav: React.FC = () => {
+import { Search } from "lucide-react";
+
+interface DesktopNavProps {
+  onOpenSearch?: () => void;
+}
+
+const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
   const pathname = usePathname();
   const { status } = useSession();
   const { createAccountHref, userRole, isStudent, isFreeCustomer, isAuthenticated } = useActiveAccount();
@@ -69,9 +75,19 @@ const DesktopNav: React.FC = () => {
         {status === "loading" ? (
           <div className="h-10 w-32 bg-white/20 animate-pulse rounded-full" />
         ) : status === "authenticated" ? (
-          <UserDropdown />
+          <UserDropdown onOpenSearch={onOpenSearch} />
         ) : (
           <>
+            {/* Desktop Visitor Search Button */}
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              aria-label="البحث عن القصص"
+              className="flex size-10 items-center justify-center rounded-full bg-white text-mad-main shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+            >
+              <Search className="size-5 stroke-[2.2]" />
+            </button>
+
             <Link
               href="/register"
               className="rounded-full border border-white/90 px-6 py-2 text-sm font-bold text-white transition-all hover:bg-white hover:text-mad-main active:scale-95 shadow-sm"

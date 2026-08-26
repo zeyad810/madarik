@@ -6,8 +6,8 @@ import { Menu } from "lucide-react";
 import Logo from "./Logo";
 import DesktopNav from "./DesktopNav";
 import MobileControls from "./MobileControls";
-import MobileSearchBar from "./MobileSearchBar";
 import SideMenu from "./SideMenu";
+import HeaderSearchModal from "./HeaderSearchModal";
 
 const Header: React.FC = () => {
   const pathname = usePathname();
@@ -16,7 +16,6 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("home");
-  const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Scroll listener for sticky header styling (only active on Home page)
@@ -40,20 +39,24 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";
-    } else {
+    } else if (!isSearchOpen) {
       document.body.style.overflow = "";
     }
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isSearchOpen]);
 
-  // Handle ESC key to close open drawers
+  // Global Keyboard shortcuts: ESC to close, Ctrl+K / Cmd+K to open search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsMenuOpen(false);
         setIsSearchOpen(false);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -96,29 +99,26 @@ const Header: React.FC = () => {
           {/* ==========================================
               2. DESKTOP NAV LINKS & AUTH BUTTONS
              ========================================== */}
-          <DesktopNav />
+          <DesktopNav onOpenSearch={() => setIsSearchOpen(true)} />
 
           {/* ==========================================
               3. MOBILE CONTROLS (Search & Menu Icons)
              ========================================== */}
           <MobileControls
             isSearchOpen={isSearchOpen}
-            onToggleSearch={() => setIsSearchOpen(!isSearchOpen)}
+            onToggleSearch={() => setIsSearchOpen(true)}
             onOpenMenu={() => setIsMenuOpen(true)}
           />
         </div>
-
-        {/* ==========================================
-            4. EXPANDABLE MOBILE SEARCH BAR
-           ========================================== */}
-        {isSearchOpen && (
-          <MobileSearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onClose={() => setIsSearchOpen(false)}
-          />
-        )}
       </header>
+
+      {/* ==========================================
+          4. INTERACTIVE SEARCH MODAL (Desktop & Mobile)
+         ========================================== */}
+      <HeaderSearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
 
       {/* ==========================================
           5. SIDE MENU DRAWER (Mobile & Desktop)

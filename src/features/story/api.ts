@@ -41,9 +41,11 @@ function buildHeaders(token?: string | null): Record<string, string> {
  */
 export const getFreeStories = async (
   role: string = "visitor",
-  token?: string | null
+  token?: string | null,
+  search?: string
 ): Promise<FreeStoriesResponse> => {
-  const endpoint = `${API_BASE_URL}/stories`;
+  const queryParam = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
+  const endpoint = `${API_BASE_URL}/stories${queryParam}`;
 
   const response = await fetch(endpoint, {
     method: "GET",
