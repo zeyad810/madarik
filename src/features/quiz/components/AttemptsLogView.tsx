@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ function getScoreEmoji(percentage: number): string {
  * Formats date string to DD/MM/YYYY.
  */
 function formatDate(dateStr?: string): string {
-  if (!dateStr) return "12/7/2026";
+  if (!dateStr) return "-";
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
@@ -67,9 +67,11 @@ export const AttemptsLogView: React.FC = () => {
   const rawAttempts = historyResponse?.data || [];
 
   // Always fetch fresh data on mount
-  React.useEffect(() => {
-    refetch();
-  }, [refetch]);
+  useEffect(() => {
+    if (isAllowed) {
+      refetch();
+    }
+  }, [isAllowed, refetch]);
 
   // Filter States
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
@@ -87,9 +89,10 @@ export const AttemptsLogView: React.FC = () => {
     const set = new Set<string>();
     normalizedAttempts.forEach((item) => {
       const lvl =
-        typeof item.level === "string"
+        item.level_name ||
+        (typeof item.level === "string"
           ? item.level
-          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level;
+          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level);
       if (lvl) set.add(lvl);
     });
     return Array.from(set);
@@ -98,7 +101,7 @@ export const AttemptsLogView: React.FC = () => {
   const outcomesList = useMemo(() => {
     const set = new Set<string>();
     normalizedAttempts.forEach((item) => {
-      const out = item.outcome || item.story?.outcome;
+      const out = item.outcome_name || item.outcome || item.story?.outcome;
       if (out) set.add(out);
     });
     return Array.from(set);
@@ -107,7 +110,7 @@ export const AttemptsLogView: React.FC = () => {
   const indicatorsList = useMemo(() => {
     const set = new Set<string>();
     normalizedAttempts.forEach((item) => {
-      const ind = item.indicator || item.story?.indicator;
+      const ind = item.indicator_name || item.indicator || item.story?.indicator;
       if (ind) set.add(ind);
     });
     return Array.from(set);
@@ -117,11 +120,12 @@ export const AttemptsLogView: React.FC = () => {
   const filteredAttempts = useMemo(() => {
     return normalizedAttempts.filter((item) => {
       const lvl =
-        typeof item.level === "string"
+        item.level_name ||
+        (typeof item.level === "string"
           ? item.level
-          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level;
-      const out = item.outcome || item.story?.outcome;
-      const ind = item.indicator || item.story?.indicator;
+          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level);
+      const out = item.outcome_name || item.outcome || item.story?.outcome;
+      const ind = item.indicator_name || item.indicator || item.story?.indicator;
 
       if (selectedLevel !== "all" && lvl !== selectedLevel) return false;
       if (selectedOutcome !== "all" && out !== selectedOutcome) return false;
@@ -212,6 +216,7 @@ export const AttemptsLogView: React.FC = () => {
                 alt="لم تقم بحل أي اختبار بعد"
                 width={320}
                 height={270}
+                style={{ width: "auto", height: "auto" }}
                 className="object-contain max-h-72 drop-shadow-sm"
                 priority
               />
@@ -295,7 +300,7 @@ export const AttemptsLogView: React.FC = () => {
                 {/* Table Header */}
                 <div className="hidden lg:grid grid-cols-12 gap-2 text-center text-xs font-bold text-slate-400 px-6 py-3 select-none">
                   <span className="col-span-2 text-right pr-2">القصة</span>
-                  <span className="col-span-1">المستوى</span>
+                  <span className="col-span-2">المستوى</span>
                   <span className="col-span-1">الناتج</span>
                   <span className="col-span-2">المؤشر</span>
                   <span className="col-span-1">عدد المحاولات</span>
@@ -311,16 +316,17 @@ export const AttemptsLogView: React.FC = () => {
                     {paginatedAttempts.map((row, idx) => {
                       const storyName = row.story_title || row.story?.title || "القصة";
                       const levelName =
-                        typeof row.level === "string"
+                        row.level_name ||
+                        (typeof row.level === "string"
                           ? row.level
-                          : (row.level as any)?.name || (row.story?.level as any)?.name || row.story?.level || "المستوى 3";
-                      const outcomeName = row.outcome || row.story?.outcome || "يفهم القصة";
-                      const indicatorName = row.indicator || row.story?.indicator || "يحلل الأحداث";
+                          : (row.level as any)?.name || (row.story?.level as any)?.name || row.story?.level || "-");
+                      const outcomeName = row.outcome_name || row.outcome || row.story?.outcome || "-";
+                      const indicatorName = row.indicator_name || row.indicator || row.story?.indicator || "-";
                       const attemptsCount = row.attempts_count || row.attempt_number || 1;
                       const lastScore = row.last_score ?? row.score ?? 0;
                       const highestScore = row.highest_score ?? row.score ?? 0;
                       const maxScore = 100;
-                      const dateDisplay = formatDate(row.created_at);
+                      const dateDisplay = formatDate(row.last_attempt_at || row.created_at);
 
                       const highestEmoji = getScoreEmoji(highestScore);
                       const isPurpleRow = idx % 2 === 0;
@@ -360,7 +366,7 @@ export const AttemptsLogView: React.FC = () => {
                           </div>
 
                           {/* 2. Level */}
-                          <div className="lg:col-span-1 flex items-center justify-center gap-1">
+                          <div className="lg:col-span-2 flex items-center justify-center gap-1">
                             <span className="text-yellow-400 text-sm">
                               <Image
                                 src="/iamges/yellow-trophy-with-star-it.svg"
@@ -404,7 +410,7 @@ export const AttemptsLogView: React.FC = () => {
                           </div>
 
                           {/* 7. Highest Score + Emoji */}
-                          <div className="lg:col-span-2 flex items-center justify-center gap-1.5 font-black text-sm">
+                          <div className="lg:col-span-1 flex items-center justify-center gap-1.5 font-black text-sm">
                             <Image
                               src={highestEmoji}
                               alt="emoji"

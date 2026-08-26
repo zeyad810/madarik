@@ -95,6 +95,9 @@ export interface QuizHistoryItem {
   quiz_id?: string;
   story_id?: string;
   story_title?: string;
+  level_name?: string;
+  outcome_name?: string;
+  indicator_name?: string;
   story?: {
     id: string;
     title: string;
@@ -116,7 +119,9 @@ export interface QuizHistoryItem {
   attempt_number?: number;
   last_score?: number;
   highest_score?: number;
+  highest_score_emoji?: string;
   max_score?: number | string;
+  last_attempt_at?: string;
   created_at: string;
 }
 

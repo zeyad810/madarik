@@ -391,6 +391,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 alt="فكر جيدا"
                 width={360}
                 height={500}
+                style={{ width: "auto", height: "auto" }}
                 className="object-contain w-full max-w-[320px] xl:max-w-[360px] max-h-[460px] xl:max-h-[520px] drop-shadow-xl transition-all duration-300"
                 priority
               />
