@@ -59,7 +59,7 @@ const Fqa: React.FC<FqaProps> = ({
         </motion.div>
 
         {/* Content Layout Grid */}
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
           {/* Illustration Image Column (Right in RTL layout) */}
           <motion.div
@@ -98,35 +98,31 @@ const Fqa: React.FC<FqaProps> = ({
                     viewport={{ once: true }}
                     transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
                     whileHover={{ y: -2 }}
-                    className={`group w-full rounded-2xl md:rounded-3xl p-5 md:p-6 transition-all duration-300 cursor-pointer select-none ${
-                      isOpen
+                    className={`group w-full rounded-2xl md:rounded-3xl p-5 md:p-6 transition-all duration-300 cursor-pointer select-none ${isOpen
                         ? "bg-white/80 backdrop-blur-md border-t-4 border-t-mad-main border-y border-l border-white/90 shadow-[0_12px_32px_rgba(109,40,217,0.08)]"
                         : "bg-white/60 backdrop-blur-md border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:bg-white/85 hover:border-purple-200/80 hover:shadow-[0_10px_30px_rgba(109,40,217,0.08)]"
-                    }`}
+                      }`}
                     onClick={() => toggleItem(item.id)}
                   >
                     {/* Question Header Row */}
                     <div className="flex items-center justify-between gap-4 w-full">
                       <h3
-                        className={`mad-body-1 md:mad-h6 font-bold text-right transition-colors duration-200 ${
-                          isOpen
+                        className={`mad-body-1 md:mad-h6 font-bold text-right transition-colors duration-200 ${isOpen
                             ? "text-mad-main"
                             : "text-mad-text-primary group-hover:text-mad-main-light"
-                        }`}
+                          }`}
                       >
                         {item.question}
                       </h3>
                       <span
-                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
-                          isOpen
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${isOpen
                             ? "bg-mad-main text-white shadow-md"
                             : "bg-[#f4f0ff]/80 backdrop-blur-xs text-mad-main-light group-hover:bg-purple-100 group-hover:scale-105"
-                        }`}
+                          }`}
                       >
                         <svg
-                          className={`w-4 h-4 fill-current transition-transform duration-300 ${
-                            isOpen ? "rotate-180" : ""
-                          }`}
+                          className={`w-4 h-4 fill-current transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+                            }`}
                           viewBox="0 0 24 24"
                         >
                           {isOpen ? (
