@@ -26,10 +26,14 @@ export const DEFAULT_ROUTE_DICTIONARY: Record<string, string> = {
   reports: "التقارير",
   certificates: "الشهادات",
 
-  // Stories
+  // Stories & Quiz
   stories: "القصص",
   story: "القصة",
   read: "قراءة القصة",
+  quiz: "اختبار القصة",
+  history: "سجل المحاولات",
+  results: "سجل المحاولات",
+  attempts: "سجل المحاولات",
 
   // Courses & LMS
   courses: "المسارات التعليمية",

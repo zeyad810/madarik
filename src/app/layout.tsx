@@ -43,6 +43,7 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
+      data-scroll-behavior="smooth"
       className={`${ibmPlexSansArabic.variable} ${ibmPlexSansArabic.className} h-full antialiased`}
     >
       <body className={`${ibmPlexSansArabic.className} min-h-full flex flex-col font-sans`}>

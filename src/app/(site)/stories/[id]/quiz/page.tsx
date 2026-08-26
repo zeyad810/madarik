@@ -11,7 +11,7 @@
 import React, { use } from "react";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
-import Loading from "@/app/loading";
+import QuizLoading from "./loading";
 import { useStoryById } from "@/features/story/hooks/useStoryById";
 import { QuizView } from "@/features/quiz/components/QuizView";
 import { getStoryQuizId } from "@/features/story/types";
@@ -26,20 +26,20 @@ export default function QuizPage({ params }: QuizPageProps) {
   const resolvedParams = use(params);
   const storyId = resolvedParams.id;
 
-  const { data: storyResponse, isLoading, isError } = useStoryById(storyId);
+  const { data: storyResponse, isLoading, isPending, isError } = useStoryById(storyId);
   const story = storyResponse?.data;
   const quizId = getStoryQuizId(story);
-  const { isAuthenticated, isParentRole, isParentActive } = useActiveAccount();
+  const { isAuthenticated, isParentRole, isParentActive, isLoading: isAccountLoading } = useActiveAccount();
 
   const shouldPromptChildSelection =
     isAuthenticated && isParentRole && isParentActive;
 
-  // Loading the story — use standard site loading
-  if (isLoading) {
-    return <Loading />;
+  // Loading the story / auth state / query pending — show skeleton loading
+  if (isLoading || isPending || isAccountLoading || (!story && !isError)) {
+    return <QuizLoading />;
   }
 
-  // Story not found or error
+  // Story not found or error (only after all loading is complete)
   if (isError || !story) {
     return (
       <div
