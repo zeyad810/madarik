@@ -28,36 +28,39 @@ export default function QuizLoading() {
       {/* ── 3-COLUMN MAIN CONTENT ── */}
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* 1. RIGHT COLUMN — Character Illustration */}
+          {/* 1. RIGHT COLUMN — Character Illustration (Desktop) */}
           <aside className="lg:col-span-3 hidden lg:flex flex-col items-center justify-center pt-2">
             <div className="w-[280px] h-[400px] rounded-[32px] bg-slate-100 animate-pulse" />
           </aside>
 
           {/* 2. CENTER COLUMN — Main Quiz */}
           <section className="lg:col-span-6 flex flex-col items-center w-full max-w-2xl mx-auto">
-            {/* Exit button placeholder */}
-            <div className="w-full flex justify-end mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-red-50 animate-pulse" />
-            </div>
-
-            {/* 2 Metric Cards Skeleton */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mb-6">
-              <div className="bg-white rounded-[24px] p-5 shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-3 min-h-[145px]">
-                <div className="h-3 w-16 rounded-full bg-slate-200 animate-pulse" />
-                <div className="size-16 rounded-full bg-purple-100 animate-pulse" />
+            {/* Mobile-Only Top Cards (Hidden on Desktop) */}
+            <div className="w-full flex flex-col lg:hidden">
+              {/* Exit button placeholder */}
+              <div className="w-full flex justify-start mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-red-50 animate-pulse" />
               </div>
-              <div className="bg-white rounded-[24px] p-5 shadow-sm border border-slate-100 flex flex-col items-center justify-between gap-2 min-h-[145px]">
-                <div className="size-10 rounded-full bg-yellow-100 animate-pulse" />
-                <div className="h-3 w-12 rounded-full bg-slate-200 animate-pulse" />
-                <div className="h-6 w-10 rounded-full bg-purple-200 animate-pulse" />
-                <div className="h-2.5 w-24 rounded-full bg-emerald-100 animate-pulse" />
+
+              {/* 2 Metric Cards Skeleton (Mobile only) */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mb-6">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-3 min-h-36.25">
+                  <div className="h-3 w-16 rounded-full bg-slate-200 animate-pulse" />
+                  <div className="size-16 rounded-full bg-purple-100 animate-pulse" />
+                </div>
+                <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 flex flex-col items-center justify-between gap-2 min-h-36.25">
+                  <div className="size-10 rounded-full bg-yellow-100 animate-pulse" />
+                  <div className="h-3 w-12 rounded-full bg-slate-200 animate-pulse" />
+                  <div className="h-6 w-10 rounded-full bg-purple-200 animate-pulse" />
+                  <div className="h-2.5 w-24 rounded-full bg-emerald-100 animate-pulse" />
+                </div>
               </div>
             </div>
 
             {/* Stepper Timeline Skeleton */}
             <div className="w-full mb-5 flex flex-col items-center gap-3">
               <div className="h-4 w-28 rounded-full bg-purple-200 animate-pulse" />
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" dir="ltr">
                 <div className="size-8 rounded-full bg-purple-100 animate-pulse" />
                 <div className="h-0.5 w-6 bg-slate-200" />
                 <div className="size-7 rounded-full bg-purple-200 animate-pulse" />
@@ -69,7 +72,7 @@ export default function QuizLoading() {
             </div>
 
             {/* Question Card Skeleton */}
-            <div className="w-full bg-white rounded-[28px] border border-slate-100 p-6 sm:p-8 shadow-sm flex flex-col gap-6">
+            <div className="w-full bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-sm flex flex-col gap-6">
               <div className="mx-auto h-7 w-64 rounded-full bg-purple-100 animate-pulse" />
               <div className="mx-auto h-6 w-[80%] rounded-full bg-slate-200 animate-pulse" />
 
@@ -85,14 +88,31 @@ export default function QuizLoading() {
             </div>
 
             {/* Bottom Actions Skeleton */}
-            <div className="flex items-center justify-between gap-4 mt-6 w-full">
+            <div className="flex items-center justify-center gap-4 mt-6 w-full">
               <div className="h-11 w-36 rounded-full bg-purple-200 animate-pulse" />
               <div className="h-11 w-32 rounded-full bg-slate-100 animate-pulse" />
             </div>
           </section>
 
-          {/* 3. LEFT COLUMN — Spacer */}
-          <aside className="lg:col-span-3 hidden lg:block" />
+          {/* 3. LEFT COLUMN — Desktop Sidebar Skeleton */}
+          <aside className="lg:col-span-3 hidden lg:flex flex-col gap-4">
+            {/* Points card skeleton */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center gap-3">
+              <div className="size-14 rounded-full bg-yellow-100 animate-pulse" />
+              <div className="h-3 w-14 rounded-full bg-slate-200 animate-pulse" />
+              <div className="h-8 w-16 rounded-full bg-purple-200 animate-pulse" />
+              <div className="h-4 w-36 rounded-full bg-emerald-100 animate-pulse" />
+            </div>
+
+            {/* Timer card skeleton */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-3">
+              <div className="h-3 w-20 rounded-full bg-slate-200 animate-pulse" />
+              <div className="size-24 rounded-full bg-purple-100 animate-pulse" />
+            </div>
+
+            {/* Exit button skeleton */}
+            <div className="w-full h-11 rounded-full bg-red-50 border border-red-100 animate-pulse" />
+          </aside>
         </div>
       </main>
     </div>

@@ -167,9 +167,7 @@ export const QuizProgress: React.FC<QuizProgressProps> = ({
             width={28}
             height={28}
             style={{ width: "auto", height: "auto" }}
-            className={`transition-opacity duration-300 ${
-              current >= total - 1 ? "opacity-100" : "opacity-40"
-            }`}
+            className={`transition-opacity duration-300`}
           />
         </div>
       </div>
