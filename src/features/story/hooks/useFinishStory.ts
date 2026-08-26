@@ -39,6 +39,9 @@ export function useFinishStory(
       queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
       queryClient.invalidateQueries({ queryKey: ["child-reports"] });
       queryClient.invalidateQueries({ queryKey: ["student"] });
+      queryClient.invalidateQueries({ queryKey: ["student-reports"] });
+      queryClient.invalidateQueries({ queryKey: ["attempts"] });
+      queryClient.invalidateQueries({ queryKey: ["results"] });
 
       if (options?.onSuccess) {
         (options.onSuccess as Function)(data, variables, context);

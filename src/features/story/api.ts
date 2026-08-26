@@ -212,10 +212,11 @@ export const finishStory = async (
   }
 
   const prefix = getStoryApiPrefix(role);
-  const endpoint =
-    prefix === "student"
-      ? `${API_BASE_URL}/student/stories/${storyId}/finish`
-      : `${API_BASE_URL}/parent/stories/${storyId}/finish`;
+  const isStudent = prefix === "student" || role.toLowerCase().trim() === "student";
+
+  const endpoint = isStudent
+    ? `${API_BASE_URL}/student/stories/${storyId}/finish`
+    : `${API_BASE_URL}/parent/stories/${storyId}/finish`;
 
   const bodyData: Record<string, any> = {};
   const effectiveChildId = payload?.child_id || payload?.student_id;
@@ -238,18 +239,21 @@ export const finishStory = async (
     });
 
     // If session was not active (ERR-017 / 404), initialize the reading session first then retry
-    if (!response.ok && response.status === 404 && effectiveChildId) {
+    if (!response.ok && response.status === 404) {
       try {
-        await fetch(
-          `${API_BASE_URL}/parent/stories/${storyId}?child_id=${encodeURIComponent(effectiveChildId)}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              ...(resolvedToken ? { Authorization: `Bearer ${resolvedToken}` } : {}),
-            },
-          }
-        );
+        const initEndpoint = isStudent
+          ? `${API_BASE_URL}/student/stories/${storyId}`
+          : effectiveChildId
+          ? `${API_BASE_URL}/parent/stories/${storyId}?child_id=${encodeURIComponent(effectiveChildId)}`
+          : `${API_BASE_URL}/parent/stories/${storyId}`;
+
+        await fetch(initEndpoint, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            ...(resolvedToken ? { Authorization: `Bearer ${resolvedToken}` } : {}),
+          },
+        });
 
         // Retry finish request
         const retryResponse = await fetch(endpoint, {
@@ -275,8 +279,8 @@ export const finishStory = async (
       data: raw?.data ?? raw,
     };
   } catch (error) {
-    // If student endpoint fails with 404/error, try parent endpoint fallback if applicable
-    if (prefix === "visitor" || prefix === "free") {
+    // If visitor/free fallback
+    if (!isStudent && (prefix === "visitor" || prefix === "free")) {
       try {
         const altResponse = await fetch(
           `${API_BASE_URL}/parent/stories/${storyId}/finish`,
