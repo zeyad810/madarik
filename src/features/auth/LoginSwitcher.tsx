@@ -88,10 +88,12 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
 
   // Prepare profiles list (Parent + Children)
   const profiles = useMemo(() => {
+    const isParentActive = !user?.status || user?.status === "active";
     const parentProfile = {
       id: "parent",
       name: "ولي الأمر",
       avatar: "/assets/user_avatar.png",
+      isActive: isParentActive,
     };
 
     const childProfiles = children.map((child, index) => ({
@@ -103,23 +105,30 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
         (child.gender === "female"
           ? "/assets/girl_avatar.png"
           : "/assets/boy_avatar.png"),
+      isActive: !child.status || child.status === "active",
     }));
 
     return [parentProfile, ...childProfiles];
-  }, [children]);
+  }, [children, user?.status]);
 
-  const renderProfileCard = (profile: { id: string; name: string; avatar: string }) => {
+  const renderProfileCard = (profile: { id: string; name: string; avatar: string; isActive?: boolean }) => {
     const isSelected = selectedId === profile.id;
+    const isActive = profile.isActive !== false;
 
     return (
       <button
         key={profile.id}
         type="button"
-        onClick={() => setSelectedId(profile.id)}
-        className={`w-full min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 cursor-pointer outline-none focus:outline-none ${
-          isSelected
-            ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm"
-            : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50"
+        disabled={!isActive}
+        onClick={() => {
+          if (isActive) setSelectedId(profile.id);
+        }}
+        className={`w-full min-w-[105px] sm:min-w-[116px] py-4 sm:py-5 px-3 rounded-[22px] flex flex-col items-center justify-center gap-3 transition-all duration-150 outline-none focus:outline-none ${
+          !isActive
+            ? "border-2 border-gray-100 bg-gray-50/70 opacity-50 cursor-not-allowed"
+            : isSelected
+            ? "border-2 border-[#7C3AED] bg-[#FAF8FF] shadow-sm cursor-pointer"
+            : "border-2 border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50 cursor-pointer"
         }`}
       >
         <div
