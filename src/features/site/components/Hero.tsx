@@ -136,7 +136,7 @@ const Hero: React.FC<HeroProps> = ({
               height={165}
               style={{ width: "100%", height: "auto" }}
               className="max-h-41.25 object-contain drop-shadow-xl"
-              priority
+              loading="eager"
             />
           </motion.div>
         </div>
@@ -244,7 +244,7 @@ const Hero: React.FC<HeroProps> = ({
               height={648}
               style={{ width: "100%", height: "auto" }}
               className="max-h-95 md:max-h-none max-w-[620px] xl:max-w-[750px] object-contain drop-shadow-2xl"
-              priority
+              loading="eager"
             />
           </motion.div>
         </motion.div>
