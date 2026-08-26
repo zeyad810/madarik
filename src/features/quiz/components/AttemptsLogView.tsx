@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ function getScoreEmoji(percentage: number): string {
  * Formats date string to DD/MM/YYYY.
  */
 function formatDate(dateStr?: string): string {
-  if (!dateStr) return "12/7/2026";
+  if (!dateStr) return "-";
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
@@ -67,9 +67,11 @@ export const AttemptsLogView: React.FC = () => {
   const rawAttempts = historyResponse?.data || [];
 
   // Always fetch fresh data on mount
-  React.useEffect(() => {
-    refetch();
-  }, [refetch]);
+  useEffect(() => {
+    if (isAllowed) {
+      refetch();
+    }
+  }, [isAllowed, refetch]);
 
   // Filter States
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
@@ -87,9 +89,10 @@ export const AttemptsLogView: React.FC = () => {
     const set = new Set<string>();
     normalizedAttempts.forEach((item) => {
       const lvl =
-        typeof item.level === "string"
+        item.level_name ||
+        (typeof item.level === "string"
           ? item.level
-          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level;
+          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level);
       if (lvl) set.add(lvl);
     });
     return Array.from(set);
@@ -98,7 +101,7 @@ export const AttemptsLogView: React.FC = () => {
   const outcomesList = useMemo(() => {
     const set = new Set<string>();
     normalizedAttempts.forEach((item) => {
-      const out = item.outcome || item.story?.outcome;
+      const out = item.outcome_name || item.outcome || item.story?.outcome;
       if (out) set.add(out);
     });
     return Array.from(set);
@@ -107,7 +110,7 @@ export const AttemptsLogView: React.FC = () => {
   const indicatorsList = useMemo(() => {
     const set = new Set<string>();
     normalizedAttempts.forEach((item) => {
-      const ind = item.indicator || item.story?.indicator;
+      const ind = item.indicator_name || item.indicator || item.story?.indicator;
       if (ind) set.add(ind);
     });
     return Array.from(set);
@@ -117,11 +120,12 @@ export const AttemptsLogView: React.FC = () => {
   const filteredAttempts = useMemo(() => {
     return normalizedAttempts.filter((item) => {
       const lvl =
-        typeof item.level === "string"
+        item.level_name ||
+        (typeof item.level === "string"
           ? item.level
-          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level;
-      const out = item.outcome || item.story?.outcome;
-      const ind = item.indicator || item.story?.indicator;
+          : (item.level as any)?.name || (item.story?.level as any)?.name || item.story?.level);
+      const out = item.outcome_name || item.outcome || item.story?.outcome;
+      const ind = item.indicator_name || item.indicator || item.story?.indicator;
 
       if (selectedLevel !== "all" && lvl !== selectedLevel) return false;
       if (selectedOutcome !== "all" && out !== selectedOutcome) return false;
@@ -212,6 +216,7 @@ export const AttemptsLogView: React.FC = () => {
                 alt="لم تقم بحل أي اختبار بعد"
                 width={320}
                 height={270}
+                style={{ width: "auto", height: "auto" }}
                 className="object-contain max-h-72 drop-shadow-sm"
                 priority
               />
@@ -232,61 +237,60 @@ export const AttemptsLogView: React.FC = () => {
           <>
             {/* MAIN TABLE CONTAINER */}
             <main className="w-full pb-12 flex-1 flex flex-col items-center">
+              {/* FILTERS — 3 columns side-by-side without wrap */}
+              <div className="w-full grid grid-cols-3 sm:flex sm:flex-row sm:items-center sm:justify-start gap-2 sm:gap-3 mb-4">
+                {/* 1. Level Filter */}
+                <div className="relative w-full sm:w-auto sm:min-w-36">
+                  <select
+                    value={selectedLevel}
+                    onChange={(e) => {
+                      setSelectedLevel(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-2 pr-2.5 pl-5.5 sm:px-4 sm:pr-4 sm:pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right truncate"
+                  >
+                    <option value="all">المستوى</option>
+                    {levelsList.map((lvl) => (
+                      <option key={lvl} value={lvl}>{lvl}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 absolute left-1.5 sm:left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
 
-              {/* FILTERS — right aligned, ABOVE the table card */}
-              <div className="w-full flex flex-wrap items-center justify-start gap-3 sm:gap-4 mb-4">
-                  {/* 1. Level Filter */}
-                  <div className="relative min-w-32.5 sm:min-w-37.5">
-                    <select
-                      value={selectedLevel}
-                      onChange={(e) => {
-                        setSelectedLevel(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                      className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-4 pr-4 pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right"
-                    >
-                      <option value="all">المستوى</option>
-                      {levelsList.map((lvl) => (
-                        <option key={lvl} value={lvl}>{lvl}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
+                {/* 2. Outcome Filter */}
+                <div className="relative w-full sm:w-auto sm:min-w-36">
+                  <select
+                    value={selectedOutcome}
+                    onChange={(e) => {
+                      setSelectedOutcome(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-2 pr-2.5 pl-5.5 sm:px-4 sm:pr-4 sm:pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right truncate"
+                  >
+                    <option value="all">الناتج</option>
+                    {outcomesList.map((out) => (
+                      <option key={out} value={out}>{out}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 absolute left-1.5 sm:left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
 
-                  {/* 2. Outcome Filter */}
-                  <div className="relative min-w-32.5 sm:min-w-37.5">
-                    <select
-                      value={selectedOutcome}
-                      onChange={(e) => {
-                        setSelectedOutcome(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                      className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-4 pr-4 pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right"
-                    >
-                      <option value="all">الناتج</option>
-                      {outcomesList.map((out) => (
-                        <option key={out} value={out}>{out}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-
-                  {/* 3. Indicator Filter */}
-                  <div className="relative min-w-32.5 sm:min-w-37.5">
-                    <select
-                      value={selectedIndicator}
-                      onChange={(e) => {
-                        setSelectedIndicator(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                      className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-4 pr-4 pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right"
-                    >
-                      <option value="all">المؤشر</option>
-                      {indicatorsList.map((ind) => (
-                        <option key={ind} value={ind}>{ind}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                {/* 3. Indicator Filter */}
+                <div className="relative w-full sm:w-auto sm:min-w-36">
+                  <select
+                    value={selectedIndicator}
+                    onChange={(e) => {
+                      setSelectedIndicator(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-2 pr-2.5 pl-5.5 sm:px-4 sm:pr-4 sm:pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right truncate"
+                  >
+                    <option value="all">المؤشر</option>
+                    {indicatorsList.map((ind) => (
+                      <option key={ind} value={ind}>{ind}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 absolute left-1.5 sm:left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
@@ -295,7 +299,7 @@ export const AttemptsLogView: React.FC = () => {
                 {/* Table Header */}
                 <div className="hidden lg:grid grid-cols-12 gap-2 text-center text-xs font-bold text-slate-400 px-6 py-3 select-none">
                   <span className="col-span-2 text-right pr-2">القصة</span>
-                  <span className="col-span-1">المستوى</span>
+                  <span className="col-span-2">المستوى</span>
                   <span className="col-span-1">الناتج</span>
                   <span className="col-span-2">المؤشر</span>
                   <span className="col-span-1">عدد المحاولات</span>
@@ -311,16 +315,17 @@ export const AttemptsLogView: React.FC = () => {
                     {paginatedAttempts.map((row, idx) => {
                       const storyName = row.story_title || row.story?.title || "القصة";
                       const levelName =
-                        typeof row.level === "string"
+                        row.level_name ||
+                        (typeof row.level === "string"
                           ? row.level
-                          : (row.level as any)?.name || (row.story?.level as any)?.name || row.story?.level || "المستوى 3";
-                      const outcomeName = row.outcome || row.story?.outcome || "يفهم القصة";
-                      const indicatorName = row.indicator || row.story?.indicator || "يحلل الأحداث";
+                          : (row.level as any)?.name || (row.story?.level as any)?.name || row.story?.level || "-");
+                      const outcomeName = row.outcome_name || row.outcome || row.story?.outcome || "-";
+                      const indicatorName = row.indicator_name || row.indicator || row.story?.indicator || "-";
                       const attemptsCount = row.attempts_count || row.attempt_number || 1;
                       const lastScore = row.last_score ?? row.score ?? 0;
                       const highestScore = row.highest_score ?? row.score ?? 0;
                       const maxScore = 100;
-                      const dateDisplay = formatDate(row.created_at);
+                      const dateDisplay = formatDate(row.last_attempt_at || row.created_at);
 
                       const highestEmoji = getScoreEmoji(highestScore);
                       const isPurpleRow = idx % 2 === 0;
@@ -332,7 +337,7 @@ export const AttemptsLogView: React.FC = () => {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.98 }}
                           transition={{ duration: 0.25, delay: idx * 0.04 }}
-                          className={`rounded-[18px] px-5 sm:px-7 py-3.5 sm:py-4 transition-all duration-200 flex flex-col lg:grid lg:grid-cols-12 items-center gap-2.5 lg:gap-2 text-center text-xs sm:text-sm font-bold ${
+                          className={`rounded-[24px] lg:rounded-[18px] p-5 sm:p-6 lg:px-7 lg:py-4 transition-all duration-200 text-xs sm:text-sm font-bold ${
                             isPurpleRow
                               ? "bg-[#6D28D9] text-white hover:bg-[#6020C7]"
                               : "bg-white text-slate-800 border border-purple-100 hover:border-purple-200"
@@ -343,95 +348,209 @@ export const AttemptsLogView: React.FC = () => {
                               : "0px 4px 8px 0px #6D28D90F inset, 4px 0px 16px 0px #6D28D90F inset, 0px 4px 32px 0px #00000014",
                           }}
                         >
-                          {/* 1. Story Title */}
-                          <div className="lg:col-span-2 flex items-center justify-center lg:justify-start gap-2 w-full truncate text-right">
-                            <span className="shrink-0 text-base">
+                          {/* ═══════════════ MOBILE VIEW (lg:hidden) ═══════════════ */}
+                          <div className="flex flex-col gap-4 lg:hidden w-full text-right">
+                            {/* 1. Header: Story Title + Level Badge */}
+                            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <Image
+                                  src="/iamges/book-story.svg"
+                                  alt="story"
+                                  width={18}
+                                  height={18}
+                                  className="shrink-0 w-4 h-4"
+                                />
+                                <span className="font-black text-sm sm:text-base truncate">
+                                  {storyName}
+                                </span>
+                              </div>
+
+                              <div
+                                className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                                  isPurpleRow
+                                    ? "bg-white/20 text-white"
+                                    : "bg-[#F3E8FF] text-[#7939E3]"
+                                }`}
+                              >
+                                <Image
+                                  src="/iamges/yellow-trophy-with-star-it.svg"
+                                  alt="trophy"
+                                  width={14}
+                                  height={14}
+                                  className="w-3.5 h-3.5"
+                                />
+                                <span>{levelName}</span>
+                              </div>
+                            </div>
+
+                            {/* 2. Middle Row: Meta details */}
+                            <div className="flex flex-col gap-2.5 text-xs">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                  <Image
+                                    src="/iamges/calender.svg"
+                                    alt="calendar"
+                                    width={14}
+                                    height={14}
+                                    className="w-3.5 h-3.5"
+                                  />
+                                  <span className={isPurpleRow ? "text-white/90" : "text-slate-600"}>
+                                    {dateDisplay}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className={isPurpleRow ? "text-white/70" : "text-slate-400"}>المحاولات: </span>
+                                  <span className="font-black">{attemptsCount}</span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <div className="truncate max-w-[55%]">
+                                  <span className={isPurpleRow ? "text-white/70" : "text-slate-400"}>المؤشر: </span>
+                                  <span className={isPurpleRow ? "text-white" : "text-slate-700"}>{indicatorName}</span>
+                                </div>
+                                <div className="truncate max-w-[45%] text-left">
+                                  <span className={isPurpleRow ? "text-white/70" : "text-slate-400"}>الناتج: </span>
+                                  <span className={isPurpleRow ? "text-white" : "text-slate-700"}>{outcomeName}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* 3. Bottom Row: Scores (3 Columns) */}
+                            <div className="grid grid-cols-3 items-center justify-between text-center pt-3 border-t border-white/10">
+                              {/* Max Score */}
+                              <div className="flex flex-col items-center justify-center">
+                                <span className={`text-[11px] font-bold ${isPurpleRow ? "text-white/70" : "text-slate-400"}`}>
+                                  العظمى
+                                </span>
+                                <span className="text-sm sm:text-base font-black">
+                                  %{maxScore}
+                                </span>
+                              </div>
+
+                              {/* Highest Score */}
+                              <div className="flex flex-col items-center justify-center">
+                                <div className="flex items-center justify-center gap-1 font-black text-sm sm:text-base">
+                                  <Image
+                                    src={highestEmoji}
+                                    alt="emoji"
+                                    width={20}
+                                    height={20}
+                                    className="w-4.5 h-4.5 shrink-0"
+                                  />
+                                  <span className={isPurpleRow ? "text-yellow-300" : "text-[#7939E3]"}>
+                                    %{highestScore}
+                                  </span>
+                                </div>
+                                <span className={`text-[11px] font-bold ${isPurpleRow ? "text-white/70" : "text-slate-400"}`}>
+                                  أعلى نتيجة
+                                </span>
+                              </div>
+
+                              {/* Last Score */}
+                              <div className="flex flex-col items-center justify-center">
+                                <span className={`text-[11px] font-bold ${isPurpleRow ? "text-white/70" : "text-slate-400"}`}>
+                                  آخر نتيجة
+                                </span>
+                                <span className="text-sm sm:text-base font-black">
+                                  %{lastScore}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ═══════════════ DESKTOP VIEW (hidden lg:grid) ═══════════════ */}
+                          <div className="hidden lg:grid lg:grid-cols-12 items-center gap-2 text-center w-full">
+                            {/* 1. Story Title */}
+                            <div className="lg:col-span-2 flex items-center justify-start gap-2 w-full truncate text-right">
+                              <span className="shrink-0 text-base">
+                                <Image
+                                  src="/iamges/book-story.svg"
+                                  alt="story"
+                                  width={20}
+                                  height={20}
+                                  className="w-4 h-4"
+                                />
+                              </span>
+                              <span className="truncate font-black">
+                                {storyName}
+                              </span>
+                            </div>
+
+                            {/* 2. Level */}
+                            <div className="lg:col-span-2 flex items-center justify-center gap-1">
+                              <span className="text-yellow-400 text-sm">
+                                <Image
+                                  src="/iamges/yellow-trophy-with-star-it.svg"
+                                  alt="trophy"
+                                  width={20}
+                                  height={20}
+                                  className="w-4 h-4"
+                                />
+                              </span>
+                              <span
+                                className={
+                                  isPurpleRow ? "text-white" : "text-[#7939E3] font-black"
+                                }
+                              >
+                                {levelName}
+                              </span>
+                            </div>
+
+                            {/* 3. Outcome */}
+                            <div className="lg:col-span-1">
+                              <span className={isPurpleRow ? "text-white/90" : "text-slate-700"}>
+                                {outcomeName}
+                              </span>
+                            </div>
+
+                            {/* 4. Indicator */}
+                            <div className="lg:col-span-2">
+                              <span className={isPurpleRow ? "text-white/90" : "text-slate-700"}>
+                                {indicatorName}
+                              </span>
+                            </div>
+
+                            {/* 5. Attempts Count */}
+                            <div className="lg:col-span-1 font-black">
+                              {attemptsCount}
+                            </div>
+
+                            {/* 6. Last Score */}
+                            <div className="lg:col-span-1 font-black">
+                              %{lastScore}
+                            </div>
+
+                            {/* 7. Highest Score + Emoji */}
+                            <div className="lg:col-span-1 flex items-center justify-center gap-1.5 font-black text-sm">
                               <Image
-                                src="/iamges/book-story.svg"
-                                alt="story"
-                                width={20}
-                                height={20}
-                                className="w-4 h-4"
+                                src={highestEmoji}
+                                alt="emoji"
+                                width={24}
+                                height={24}
+                                className="w-6 h-6 shrink-0"
                               />
-                            </span>
-                            <span className="truncate font-black">
-                              {storyName}
-                            </span>
-                          </div>
+                              <span>%{highestScore}</span>
+                            </div>
 
-                          {/* 2. Level */}
-                          <div className="lg:col-span-1 flex items-center justify-center gap-1">
-                            <span className="text-yellow-400 text-sm">
-                              <Image
-                                src="/iamges/yellow-trophy-with-star-it.svg"
-                                alt="trophy"
-                                width={20}
-                                height={20}
-                                className="w-4 h-4"
-                              />
-                            </span>
-                            <span
-                              className={
-                                isPurpleRow ? "text-white" : "text-[#7939E3] font-black"
-                              }
-                            >
-                              {levelName}
-                            </span>
-                          </div>
+                            {/* 8. Max Score */}
+                            <div className="lg:col-span-1 font-black">
+                              %{maxScore}
+                            </div>
 
-                          {/* 3. Outcome */}
-                          <div className="lg:col-span-1">
-                            <span className={isPurpleRow ? "text-white/90" : "text-slate-700"}>
-                              {outcomeName}
-                            </span>
-                          </div>
-
-                          {/* 4. Indicator */}
-                          <div className="lg:col-span-2">
-                            <span className={isPurpleRow ? "text-white/90" : "text-slate-700"}>
-                              {indicatorName}
-                            </span>
-                          </div>
-
-                          {/* 5. Attempts Count */}
-                          <div className="lg:col-span-1 font-black">
-                            {attemptsCount}
-                          </div>
-
-                          {/* 6. Last Score */}
-                          <div className="lg:col-span-1 font-black">
-                            %{lastScore}
-                          </div>
-
-                          {/* 7. Highest Score + Emoji */}
-                          <div className="lg:col-span-2 flex items-center justify-center gap-1.5 font-black text-sm">
-                            <Image
-                              src={highestEmoji}
-                              alt="emoji"
-                              width={24}
-                              height={24}
-                              className="w-6 h-6 shrink-0"
-                            />
-                            <span>%{highestScore}</span>
-                          </div>
-
-                          {/* 8. Max Score */}
-                          <div className="lg:col-span-1 font-black">
-                            %{maxScore}
-                          </div>
-
-                          {/* 9. Attempt Date */}
-                          <div className="lg:col-span-1 flex items-center justify-center lg:justify-end gap-1.5 text-xs text-left">
-                            <span className="text-sm">
-                              <Image
-                                src="/iamges/calender.svg"
-                                alt="calendar"
-                                width={20}
-                                height={20}
-                                className="w-4 h-4"
-                              />
-                            </span>
-                            <span>{dateDisplay}</span>
+                            {/* 9. Attempt Date */}
+                            <div className="lg:col-span-1 flex items-center justify-end gap-1.5 text-xs text-left">
+                              <span className="text-sm">
+                                <Image
+                                  src="/iamges/calender.svg"
+                                  alt="calendar"
+                                  width={20}
+                                  height={20}
+                                  className="w-4 h-4"
+                                />
+                              </span>
+                              <span>{dateDisplay}</span>
+                            </div>
                           </div>
                         </motion.div>
                       );

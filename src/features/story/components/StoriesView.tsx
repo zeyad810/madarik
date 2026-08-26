@@ -33,20 +33,8 @@ export const StoriesView: React.FC = () => {
 
   // Filter States
   const [activeTab, setActiveTab] = useState<StoryFilterType>("all");
-  const [selectedAge, setSelectedAge] = useState<string>("all");
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
   const [visibleCount, setVisibleCount] = useState<number>(INITIAL_VISIBLE_COUNT);
-
-  // Extract unique age categories dynamically from API data
-  const availableAges = useMemo(() => {
-    const set = new Set<string>();
-    allStories.forEach((s) => {
-      if (s.age_category && s.age_category !== "0-0") {
-        set.add(`${s.age_category} سنة`);
-      }
-    });
-    return Array.from(set);
-  }, [allStories]);
 
   // Extract unique levels dynamically from API data
   const availableLevels = useMemo(() => {
@@ -55,7 +43,7 @@ export const StoriesView: React.FC = () => {
       const levelName =
         typeof s.level === "object" && s.level ? s.level.name : s.level;
       if (levelName) {
-        set.add(levelName);
+        set.add(String(levelName).trim());
       }
     });
     return Array.from(set);
@@ -64,28 +52,25 @@ export const StoriesView: React.FC = () => {
   // Handle Tab Switch
   const handleTabChange = (tab: StoryFilterType) => {
     setActiveTab(tab);
-    setSelectedAge("all");
-    setSelectedLevel("all");
+    if (tab === "all") {
+      setSelectedLevel("all");
+    }
     setVisibleCount(INITIAL_VISIBLE_COUNT);
   };
 
-  // Filtered stories based on tab, age, and level selection
+  // Filtered stories based on tab and level selection
   const filteredStories = useMemo(() => {
-    return allStories.filter((story) => {
-      if (activeTab === "age" && selectedAge !== "all") {
-        const storyAge = `${story.age_category} سنة`;
-        return storyAge === selectedAge;
-      }
-      if (activeTab === "level" && selectedLevel !== "all") {
+    if (activeTab === "level" && selectedLevel !== "all") {
+      return allStories.filter((story) => {
         const levelName =
           typeof story.level === "object" && story.level
             ? story.level.name
             : story.level;
-        return levelName === selectedLevel;
-      }
-      return true;
-    });
-  }, [allStories, activeTab, selectedAge, selectedLevel]);
+        return String(levelName).trim() === String(selectedLevel).trim();
+      });
+    }
+    return allStories;
+  }, [allStories, activeTab, selectedLevel]);
 
   const hasMore = visibleCount < filteredStories.length;
 
@@ -95,7 +80,6 @@ export const StoriesView: React.FC = () => {
 
   const handleResetFilters = () => {
     setActiveTab("all");
-    setSelectedAge("all");
     setSelectedLevel("all");
     setVisibleCount(INITIAL_VISIBLE_COUNT);
     if (searchQuery) {
@@ -122,16 +106,16 @@ export const StoriesView: React.FC = () => {
           onClearSearch={handleClearSearch}
         />
 
-        {/* Filter Tabs & Chips */}
+        {/* Filter Tabs & Level Dropdown */}
         <StoryFilters
           activeTab={activeTab}
           onTabChange={handleTabChange}
-          availableAges={availableAges}
-          selectedAge={selectedAge}
-          onAgeChange={setSelectedAge}
           availableLevels={availableLevels}
           selectedLevel={selectedLevel}
-          onLevelChange={setSelectedLevel}
+          onLevelChange={(lvl) => {
+            setSelectedLevel(lvl);
+            setVisibleCount(INITIAL_VISIBLE_COUNT);
+          }}
         />
 
         {/* Loading State */}
@@ -148,10 +132,7 @@ export const StoriesView: React.FC = () => {
             buttonText={searchQuery ? "عرض جميع القصص" : "العودة للرئيسية"}
             buttonHref="/stories"
             onResetFilters={
-              searchQuery ||
-              activeTab !== "all" ||
-              selectedAge !== "all" ||
-              selectedLevel !== "all"
+              searchQuery || activeTab !== "all" || selectedLevel !== "all"
                 ? handleResetFilters
                 : undefined
             }

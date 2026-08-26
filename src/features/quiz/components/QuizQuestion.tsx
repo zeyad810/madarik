@@ -41,43 +41,6 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
         {question.question_text}
       </h2>
 
-      {/* Check result feedback banner */}
-      {isChecked && (
-        <div
-          className={`rounded-2xl px-5 py-3.5 flex items-center gap-3 text-sm font-bold shadow-xs ${
-            checkResult?.isCorrect
-              ? "bg-[#ECFDF5] text-[#065F46] border-2 border-[#10B981]"
-              : "bg-[#FEF2F2] text-[#991B1B] border-2 border-[#EF4444]"
-          }`}
-        >
-          <Image
-            src={
-              checkResult?.isCorrect
-                ? "/iamges/q-check-mark.png"
-                : "/iamges/q-check-mark-cross.png"
-            }
-            alt=""
-            width={24}
-            height={24}
-          />
-          <div className="flex flex-col text-right">
-            <span className="text-base font-black">
-              {checkResult?.isCorrect
-                ? "أحسنت! إجابتك صحيحة 🎉"
-                : "للأسف، إجابتك غير صحيحة ✗"}
-            </span>
-            {!checkResult?.isCorrect && checkResult?.correctAnswer && (
-              <span className="text-xs font-bold text-[#B91C1C] mt-0.5">
-                الإجابة الصحيحة هي:{" "}
-                <span className="font-black underline underline-offset-2">
-                  {checkResult.correctAnswer}
-                </span>
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Options */}
       <div className="flex flex-col gap-3">
         {question.options.map((option, idx) => (

@@ -89,16 +89,33 @@ export function calculateElapsedSeconds(startMs: number | null): number {
 /**
  * Returns Arabic human-readable label for a question type.
  */
-export function getQuestionTypeLabel(type?: string): string {
-  if (!type) return "اختيار متعدد";
-  const normalized = type.toLowerCase().trim();
+export function getQuestionTypeLabel(
+  type?: string,
+  options?: string[]
+): string {
+  const normalized = (type || "").toLowerCase().trim();
   if (
     normalized === "tf" ||
     normalized === "true_false" ||
     normalized === "true-false" ||
-    normalized === "boolean"
+    normalized === "truefalse" ||
+    normalized === "boolean" ||
+    normalized === "tf_question" ||
+    normalized.includes("صح") ||
+    normalized.includes("خطأ")
   ) {
     return "صح أو خطأ";
   }
+
+  // Also verify options: if options are 2 items containing 'صح' / 'صواب' / 'خطأ'
+  if (
+    Array.isArray(options) &&
+    options.length === 2 &&
+    (options.some((opt) => String(opt).trim() === "صح" || String(opt).trim() === "صواب") ||
+     options.some((opt) => String(opt).trim() === "خطأ"))
+  ) {
+    return "صح أو خطأ";
+  }
+
   return "اختيار متعدد";
 }

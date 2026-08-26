@@ -198,24 +198,16 @@ export const getQuizHistory = async (
   }
 
   let childId = targetIdOrQuizId;
-  if (!childId && (r === "parent" || r === "child" || isFreeRole(r))) {
+  if (!childId) {
     childId = getStoredActiveChildId();
   }
 
-  let endpoint = "";
-  if (r === "student") {
-    endpoint = `${API_BASE_URL}/student/attempts-log`;
-  } else if (r === "parent" || r === "child") {
-    endpoint = childId
-      ? `${API_BASE_URL}/parent/children/${childId}/quiz-attempts`
-      : `${API_BASE_URL}/parent/child/quiz-attempts`;
-  } else if (isFreeRole(r)) {
-    // Unified endpoint for free_customer
-    endpoint = `${API_BASE_URL}/free/child/quiz-attempts`;
-  } else {
-    // Fallback for any other authenticated role
-    endpoint = `${API_BASE_URL}/student/attempts-log`;
+  const queryParams = new URLSearchParams();
+  if (childId) {
+    queryParams.set("child_id", childId);
   }
+  const queryString = queryParams.toString();
+  const endpoint = `${API_BASE_URL}/quiz-attempts${queryString ? `?${queryString}` : ""}`;
 
   try {
     const response = await fetch(endpoint, {
@@ -241,7 +233,7 @@ export const getQuizHistory = async (
 
     rawList.forEach((obj: any, idx: number) => {
       if (!obj) return;
-      const key = obj.id || obj.code || obj.story_title || obj.title || `item-${idx}`;
+      const key = obj.quiz_id || obj.id || obj.code || obj.story_title || obj.title || `item-${idx}`;
 
       const totalQ = obj.total_questions ?? obj.questions?.length ?? 1;
       const score = obj.score ?? obj.correct_answers ?? obj.last_score ?? 0;
@@ -259,26 +251,36 @@ export const getQuizHistory = async (
         obj.attempt_number ??
         1;
 
+      const levelVal = obj.level_name || obj.level || obj.story?.level || "";
+      const outcomeVal = obj.outcome_name || obj.outcome || obj.story?.outcome || "";
+      const indicatorVal = obj.indicator_name || obj.indicator || obj.story?.indicator || "";
+      const dateVal = obj.last_attempt_at || obj.created_at || obj.updated_at || new Date().toISOString();
+
       const normalized: QuizHistoryItem = {
-        id: obj.id || `quiz-${idx}`,
+        id: obj.quiz_id || obj.id || `quiz-${idx}`,
         quiz_id: obj.quiz_id || obj.id,
         story_id: obj.story_id,
         story_title: obj.story_title || obj.title || obj.story?.title || "اختبار القصة",
         code: obj.code,
-        level: obj.level || obj.story?.level || "المستوى 3",
-        outcome: obj.outcome || obj.story?.outcome || "يفهم القصة",
-        indicator: obj.indicator || obj.story?.indicator || "يحلل الأحداث",
-        passing_score: obj.passing_score ?? 60,
+        level: levelVal,
+        outcome: outcomeVal,
+        indicator: indicatorVal,
+        level_name: obj.level_name || levelVal,
+        outcome_name: obj.outcome_name || outcomeVal,
+        indicator_name: obj.indicator_name || indicatorVal,
+        passing_score: obj.passing_score ?? 10,
         total_questions: totalQ,
         score: score,
         percentage: obj.percentage ?? Math.round(((highestScore || score) / (totalQ || 1)) * 100),
-        passed: obj.passed ?? ((highestScore || score) >= (obj.passing_score ?? 60)),
+        passed: obj.passed ?? ((highestScore || score) >= (obj.passing_score ?? 10)),
         attempts_count: attemptsCount,
         attempt_number: attemptsCount,
         last_score: lastScore,
         highest_score: highestScore,
+        highest_score_emoji: obj.highest_score_emoji,
         max_score: 100,
-        created_at: obj.created_at || obj.updated_at || new Date().toISOString(),
+        last_attempt_at: obj.last_attempt_at,
+        created_at: dateVal,
         questions: obj.questions || [],
         ...obj,
       };

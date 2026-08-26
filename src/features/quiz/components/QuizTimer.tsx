@@ -58,7 +58,7 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({
   return (
     <div className="flex flex-col items-center gap-2">
       {/* Label */}
-      <span className="text-xs font-bold text-slate-500">الوقت المتبقي للسؤال</span>
+      <span className="text-xs font-bold text-slate-500">الوقت المتبقي</span>
 
       {/* Circular progress */}
       <div className="relative w-24 h-24 my-1">
