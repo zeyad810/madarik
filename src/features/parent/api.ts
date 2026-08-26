@@ -1,5 +1,6 @@
 import { API_BASE_URL, handleResponse } from "@/services/api";
 import { getStoredAuthToken } from "@/lib/auth";
+import type { Child } from "@/types/auth";
 import {
   AddChildPayload,
   AddChildResponse,
@@ -75,13 +76,14 @@ export const createChild = async (
 };
 
 /**
- * PUT /parent/children/{id}
- * Updates an existing child profile for the authenticated parent.
- * Endpoint: https://madarik.themiify.com/api/v1/parent/children/{id}
+ * Updates an existing child profile for the authenticated parent or free customer.
+ * - Free Customer: PATCH /free/child/{id} (FreeCustomerController::updateChild)
+ * - Subscribed Parent: PUT /parent/children/{id} (AccountController::updateChild)
  */
 export const updateChild = async (
   payload: UpdateChildPayload,
-  token?: string | null
+  token?: string | null,
+  isFree?: boolean
 ): Promise<UpdateChildResponse> => {
   const { id, ...bodyData } = payload;
   const hasFile = payload.avatarFile instanceof File;
@@ -98,7 +100,7 @@ export const updateChild = async (
     if (bodyData.status) formData.append("status", bodyData.status);
     formData.append("avatar", payload.avatarFile);
     formData.append("avatar_img", payload.avatarFile);
-    formData.append("_method", "PUT");
+    formData.append("_method", isFree ? "PATCH" : "PUT");
     body = formData;
   } else {
     body = JSON.stringify({
@@ -111,8 +113,14 @@ export const updateChild = async (
     });
   }
 
-  const response = await fetch(`${API_BASE_URL}/parent/children/${id}`, {
-    method: isMultipart ? "POST" : "PUT",
+  const endpoint = isFree
+    ? `${API_BASE_URL}/free/child/${id}`
+    : `${API_BASE_URL}/parent/children/${id}`;
+
+  const method = isMultipart ? "POST" : isFree ? "PATCH" : "PUT";
+
+  const response = await fetch(endpoint, {
+    method,
     headers: buildHeaders(token, isMultipart),
     body,
   });
@@ -133,6 +141,21 @@ export const getParentChildren = async (
   });
 
   return await handleResponse<ParentChildrenResponse>(response);
+};
+
+/**
+ * GET /free/child
+ * Fetches the child profile for the authenticated free customer.
+ */
+export const getFreeChild = async (
+  token?: string | null
+): Promise<{ success?: boolean; message?: string; data?: Child; child?: Child }> => {
+  const response = await fetch(`${API_BASE_URL}/free/child`, {
+    method: "GET",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<{ success?: boolean; message?: string; data?: Child; child?: Child }>(response);
 };
 
 /**

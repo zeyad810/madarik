@@ -42,8 +42,15 @@ export const AddChildView: React.FC = () => {
 
   // Target child raw object when in edit mode
   const targetChild = useMemo(() => {
-    if (!isEditMode || !childId) return null;
-    return parentChildren?.find((c) => String(c.id) === String(childId)) || null;
+    if (!isEditMode) return null;
+    if (childId) {
+      const found = parentChildren?.find((c) => String(c.id) === String(childId));
+      if (found) return found;
+    }
+    if (parentChildren && parentChildren.length === 1) {
+      return parentChildren[0];
+    }
+    return null;
   }, [isEditMode, childId, parentChildren]);
 
   // Target child mapped to ManagedChild format for status modal & card matching
@@ -181,7 +188,6 @@ export const AddChildView: React.FC = () => {
         {
           onSuccess: () => {
             router.push("/parents/childMangement");
-            router.refresh();
           },
           onError: (error) => {
             if (error instanceof Error) {
@@ -201,7 +207,6 @@ export const AddChildView: React.FC = () => {
         {
           onSuccess: () => {
             router.push("/parents/childMangement");
-            router.refresh();
           },
           onError: (error) => {
             if (error instanceof Error) {
