@@ -1,6 +1,15 @@
 // ────────────────────────────────────────────────────────────────────────────
-// Quiz Feature — API Layer
+// Quiz Feature — API Layer (Unified Endpoints)
 // All fetch logic is centralized here. Uses services/api.ts (no Axios).
+//
+// Unified endpoints (all roles share the same URL):
+//   GET  /quiz/{id}
+//   POST /quiz/{id}/check-answer
+//   POST /quiz/{id}            (submit)
+//   GET  /free/child/quiz-attempts  (free_customer history only)
+//
+// visitor / free_customer → result displayed, no history saved
+// parent / child / student → full history saved by backend
 // ────────────────────────────────────────────────────────────────────────────
 
 import { API_BASE_URL, handleResponse } from "@/services/api";
@@ -13,7 +22,6 @@ import {
   QuizHistoryResponse,
   QuizHistoryItem,
 } from "./types";
-import { getQuizApiPrefix } from "./utils";
 import { getStoredAuthToken } from "@/lib/auth";
 
 // ── Header builder ────────────────────────────────────────────────────────────
@@ -30,58 +38,49 @@ function buildHeaders(token?: string | null): Record<string, string> {
   return headers;
 }
 
-// ── GET Quiz ──────────────────────────────────────────────────────────────────
+// ── Role helpers ──────────────────────────────────────────────────────────────
 
 /**
- * Fetches the quiz by quiz ID with user role and authentication header.
- * - visitor:        GET public/quiz/{id}
- * - free_customer:  GET free/quiz/{id}
- * - parent / child: GET parent/quiz/{id}
- * - student:        GET student/quiz/{id}
+ * Returns true for roles that should NOT persist history.
+ * visitor  → unauthenticated
+ * free / free_customer → show result only
+ */
+function isGuestRole(role: string): boolean {
+  const r = (role || "").toLowerCase().trim();
+  return ["visitor", "free", "free_customer", "freecustomer", "customer", "user", "public"].includes(r);
+}
+
+function isFreeRole(role: string): boolean {
+  const r = (role || "").toLowerCase().trim();
+  return ["free", "free_customer", "freecustomer", "customer", "user"].includes(r);
+}
+
+// ── GET /quiz/{id} ────────────────────────────────────────────────────────────
+
+/**
+ * Fetches the quiz by quiz ID.
+ * Unified endpoint: GET /quiz/{id} (all roles)
  */
 export const getQuiz = async (
   quizId: string,
   role: string = "visitor",
   token?: string | null
 ): Promise<QuizResponse> => {
-  const prefix = getQuizApiPrefix(role);
-  const endpoint = `${API_BASE_URL}/${prefix}/quiz/${quizId}`;
+  const endpoint = `${API_BASE_URL}/quiz/${quizId}`;
 
-  try {
-    const response = await fetch(endpoint, {
-      method: "GET",
-      headers: buildHeaders(token),
-    });
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: buildHeaders(token),
+  });
 
-    return await handleResponse<QuizResponse>(response);
-  } catch (error) {
-    // If role-specific endpoint 404s, gracefully fallback to public quiz
-    if (prefix !== "public") {
-      try {
-        const fallbackResponse = await fetch(
-          `${API_BASE_URL}/public/quiz/${quizId}`,
-          {
-            method: "GET",
-            headers: buildHeaders(token),
-          }
-        );
-        return await handleResponse<QuizResponse>(fallbackResponse);
-      } catch {
-        // rethrow original error
-      }
-    }
-    throw error;
-  }
+  return await handleResponse<QuizResponse>(response);
 };
 
-// ── POST Check Answer ─────────────────────────────────────────────────────────
+// ── POST /quiz/{id}/check-answer ──────────────────────────────────────────────
 
 /**
- * Checks a single answer instantly at the moment of selection.
- * - visitor:        POST public/quiz/{id}/check-answer
- * - free_customer:  POST quiz/{id}/check-answer (fallback: free/quiz/{id}/check-answer)
- * - parent / child: POST parent/quiz/{id}/check-answer
- * - student:        POST student/quiz/{id}/check-answer
+ * Checks a single answer instantly.
+ * Unified endpoint: POST /quiz/{id}/check-answer (all roles)
  */
 export const checkQuizAnswer = async (
   quizId: string,
@@ -89,74 +88,30 @@ export const checkQuizAnswer = async (
   payload: CheckAnswerPayload,
   token?: string | null
 ): Promise<CheckAnswerResponse> => {
-  const prefix = getQuizApiPrefix(role);
-  let endpoint = `${API_BASE_URL}/${prefix}/quiz/${quizId}/check-answer`;
-
-  if (prefix === "free") {
-    // user specified POST quiz/{id}/check-answer for free customer
-    endpoint = `${API_BASE_URL}/quiz/${quizId}/check-answer`;
-  }
+  const endpoint = `${API_BASE_URL}/quiz/${quizId}/check-answer`;
 
   const bodyData = {
     question_id: payload.question_id,
     answer: payload.answer,
   };
 
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: buildHeaders(token),
-      body: JSON.stringify(bodyData),
-    });
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: buildHeaders(token),
+    body: JSON.stringify(bodyData),
+  });
 
-    return await handleResponse<CheckAnswerResponse>(response);
-  } catch (error) {
-    // For free_customer, try fallback to free/quiz/{id}/check-answer or public
-    if (prefix === "free") {
-      try {
-        const altResponse = await fetch(
-          `${API_BASE_URL}/free/quiz/${quizId}/check-answer`,
-          {
-            method: "POST",
-            headers: buildHeaders(token),
-            body: JSON.stringify(bodyData),
-          }
-        );
-        return await handleResponse<CheckAnswerResponse>(altResponse);
-      } catch {
-        // ignore
-      }
-    }
-
-    // Fallback to public check-answer
-    if (prefix !== "public") {
-      try {
-        const pubResponse = await fetch(
-          `${API_BASE_URL}/public/quiz/${quizId}/check-answer`,
-          {
-            method: "POST",
-            headers: buildHeaders(token),
-            body: JSON.stringify(bodyData),
-          }
-        );
-        return await handleResponse<CheckAnswerResponse>(pubResponse);
-      } catch {
-        // ignore
-      }
-    }
-
-    throw error;
-  }
+  return await handleResponse<CheckAnswerResponse>(response);
 };
 
-// ── POST Submit Quiz ──────────────────────────────────────────────────────────
+// ── POST /quiz/{id} (Submit Quiz) ─────────────────────────────────────────────
 
 /**
- * Submits the complete quiz with all answers and returns detailed statistics.
- * - visitor:        POST public/quiz/{id}
- * - free_customer:  POST free/quiz/{id}
- * - parent / child: POST parent/quiz/{id}
- * - student:        POST student/quiz/{id}
+ * Submits the complete quiz with all answers.
+ * Unified endpoint: POST /quiz/{id} (all roles)
+ *
+ * visitor / free_customer → backend shows result but does NOT save history
+ * parent / child / student → backend saves history automatically
  */
 export const submitQuiz = async (
   quizId: string,
@@ -165,8 +120,7 @@ export const submitQuiz = async (
   token?: string | null,
   childId?: string | null
 ): Promise<SubmitQuizResponse> => {
-  const prefix = getQuizApiPrefix(role);
-  const endpoint = `${API_BASE_URL}/${prefix}/quiz/${quizId}`;
+  const endpoint = `${API_BASE_URL}/quiz/${quizId}`;
   const resolvedChildId = childId || getStoredActiveChildId();
 
   // Format answers map: { [question_id]: answer }
@@ -186,37 +140,19 @@ export const submitQuiz = async (
     answers: answersMap,
   };
 
-  if (resolvedChildId) {
+  // Only attach child/student ID for authenticated non-guest roles
+  if (!isGuestRole(role) && resolvedChildId) {
     formattedBody.child_id = resolvedChildId;
     formattedBody.student_id = resolvedChildId;
   }
 
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: buildHeaders(token),
-      body: JSON.stringify(formattedBody),
-    });
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: buildHeaders(token),
+    body: JSON.stringify(formattedBody),
+  });
 
-    return await handleResponse<SubmitQuizResponse>(response);
-  } catch (error) {
-    if (prefix !== "public") {
-      try {
-        const pubResponse = await fetch(
-          `${API_BASE_URL}/public/quiz/${quizId}`,
-          {
-            method: "POST",
-            headers: buildHeaders(token),
-            body: JSON.stringify(formattedBody),
-          }
-        );
-        return await handleResponse<SubmitQuizResponse>(pubResponse);
-      } catch {
-        // ignore
-      }
-    }
-    throw error;
-  }
+  return await handleResponse<SubmitQuizResponse>(response);
 };
 
 function getStoredActiveChildId(): string | null {
@@ -239,45 +175,46 @@ function getStoredActiveChildId(): string | null {
 // ── GET Quiz History / Attempts ───────────────────────────────────────────────
 
 /**
- * Fetches past quiz attempts for the authenticated role 100% dynamically from Backend.
- * Each story/quiz is represented as a single unique row showing:
- * - attempts_count (total number of attempts)
- * - last_score (latest score)
- * - highest_score (highest score)
- * - created_at (latest attempt date)
+ * Fetches past quiz attempts.
  *
- * - student:        GET student/attempts-log
- * - parent / child: GET parent/children/{id}/quiz-attempts (using active child ID)
- * - free_customer:  GET free/child/quiz-attempts
- * - visitor:        returns empty (no history)
+ * visitor       → empty (no history)
+ * free_customer → GET /free/child/quiz-attempts
+ * parent/child  → GET /parent/children/{id}/quiz-attempts  (existing behavior kept)
+ * student       → GET /student/attempts-log                (existing behavior kept)
+ *
+ * NOTE: Only free_customer endpoint changed to the new unified path.
+ * parent & student endpoints remain as-is since backend didn't change those.
  */
 export const getQuizHistory = async (
   targetIdOrQuizId?: string | null,
   role: string = "visitor",
   token?: string | null
 ): Promise<QuizHistoryResponse> => {
-  const prefix = getQuizApiPrefix(role);
+  const r = (role || "").toLowerCase().trim();
 
-  if (prefix === "public") {
+  // Visitors and unauthenticated users get no history
+  if (r === "visitor" || r === "public") {
     return { success: true, data: [] };
   }
 
   let childId = targetIdOrQuizId;
-  if (!childId && (prefix === "parent" || prefix === "free" || role === "child")) {
+  if (!childId && (r === "parent" || r === "child" || isFreeRole(r))) {
     childId = getStoredActiveChildId();
   }
 
   let endpoint = "";
-  if (prefix === "student") {
+  if (r === "student") {
     endpoint = `${API_BASE_URL}/student/attempts-log`;
-  } else if (prefix === "parent" || role === "child") {
+  } else if (r === "parent" || r === "child") {
     endpoint = childId
       ? `${API_BASE_URL}/parent/children/${childId}/quiz-attempts`
       : `${API_BASE_URL}/parent/child/quiz-attempts`;
-  } else if (prefix === "free") {
+  } else if (isFreeRole(r)) {
+    // Unified endpoint for free_customer
     endpoint = `${API_BASE_URL}/free/child/quiz-attempts`;
   } else {
-    endpoint = `${API_BASE_URL}/${prefix}/attempts-log`;
+    // Fallback for any other authenticated role
+    endpoint = `${API_BASE_URL}/student/attempts-log`;
   }
 
   try {
@@ -364,4 +301,3 @@ export const getQuizHistory = async (
     };
   }
 };
-

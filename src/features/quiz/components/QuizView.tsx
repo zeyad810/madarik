@@ -269,11 +269,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizId, storyId, storyTitle 
         className="min-h-screen flex flex-col items-center justify-center gap-6 bg-[#FAFAFC] px-4"
       >
         <Image
-          src="/iamges/q-quiz-done.png"
+          src="/iamges/q-fail-quiz.png"
           alt="خطأ"
-          width={100}
-          height={100}
-          className="opacity-50"
+          width={250}
+          height={250}
         />
         <p className="text-slate-700 font-bold text-center">
           تعذر تحميل الاختبار. يرجى المحاولة لاحقاً.
