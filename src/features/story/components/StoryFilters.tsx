@@ -1,14 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { StoryFilterType } from "../types";
 
 interface StoryFiltersProps {
   activeTab: StoryFilterType;
   onTabChange: (tab: StoryFilterType) => void;
-  availableAges: string[];
-  selectedAge: string;
-  onAgeChange: (age: string) => void;
   availableLevels: string[];
   selectedLevel: string;
   onLevelChange: (level: string) => void;
@@ -17,20 +16,53 @@ interface StoryFiltersProps {
 export const StoryFilters: React.FC<StoryFiltersProps> = ({
   activeTab,
   onTabChange,
-  availableAges,
-  selectedAge,
-  onAgeChange,
   availableLevels,
   selectedLevel,
   onLevelChange,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelectLevel = (level: string) => {
+    onLevelChange(level);
+    onTabChange("level");
+    setIsOpen(false);
+  };
+
+  const handleAllClick = () => {
+    onTabChange("all");
+    onLevelChange("all");
+    setIsOpen(false);
+  };
+
+  // Label text for level tab button
+  const levelButtonLabel =
+    activeTab === "level" && selectedLevel !== "all"
+      ? selectedLevel
+      : "حسب المستوى";
+
   return (
-    <div dir="rtl" className="w-full flex flex-col items-start gap-4 mb-8">
-      {/* Primary Filter Tabs */}
-      <div className="inline-flex items-center bg-[#F4F4F6] p-1.5 rounded-full shadow-inner border border-slate-200/60">
+    <div dir="rtl" className="w-full flex items-center justify-start gap-4 mb-8">
+      {/* Primary Filter Tabs Bar */}
+      <div className="inline-flex items-center bg-[#F4F4F6] p-1.5 rounded-full shadow-inner border border-slate-200/60 relative">
+        {/* Tab 1: الكل */}
         <button
           type="button"
-          onClick={() => onTabChange("all")}
+          onClick={handleAllClick}
           className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none ${
             activeTab === "all"
               ? "bg-[#7939E3] text-white shadow-md"
@@ -40,92 +72,79 @@ export const StoryFilters: React.FC<StoryFiltersProps> = ({
           الكل
         </button>
 
-        <button
-          type="button"
-          onClick={() => onTabChange("age")}
-          className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none ${
-            activeTab === "age"
-              ? "bg-[#7939E3] text-white shadow-md"
-              : "text-mad-text-secondary hover:text-mad-text-primary"
-          }`}
-        >
-          حسب الفئة العمرية
-        </button>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsOpen((prev) => !prev)}
+            className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none ${
+              activeTab === "level"
+                ? "bg-[#7939E3] text-white shadow-md"
+                : "text-mad-text-secondary hover:text-mad-text-primary"
+            }`}
+          >
+            <span>{levelButtonLabel}</span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                isOpen ? "rotate-180" : ""
+              } ${activeTab === "level" ? "text-white" : "text-slate-400"}`}
+            />
+          </button>
 
-        <button
-          type="button"
-          onClick={() => onTabChange("level")}
-          className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none ${
-            activeTab === "level"
-              ? "bg-[#7939E3] text-white shadow-md"
-              : "text-mad-text-secondary hover:text-mad-text-primary"
-          }`}
-        >
-          حسب المستوى
-        </button>
+          {/* Animated Dropdown Menu directly under the Level tab */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="absolute top-full mt-2.5 right-0 z-50 min-w-52 bg-white rounded-2xl p-2 shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-purple-100/80 flex flex-col gap-1 backdrop-blur-md"
+              >
+                {/* Option 1: جميع المستويات */}
+                <button
+                  type="button"
+                  onClick={() => handleSelectLevel("all")}
+                  className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-right cursor-pointer select-none ${
+                    selectedLevel === "all" && activeTab === "level"
+                      ? "bg-purple-50 text-[#7939E3]"
+                      : "text-slate-700 hover:bg-slate-50"
+                  }`}
+                >
+                  <span>جميع المستويات</span>
+                  {selectedLevel === "all" && activeTab === "level" && (
+                    <Check className="w-4 h-4 text-[#7939E3] shrink-0" />
+                  )}
+                </button>
+
+                <div className="h-px bg-slate-100 my-0.5" />
+
+                {/* Available Levels */}
+                {availableLevels.map((lvl) => {
+                  const isSelected =
+                    activeTab === "level" && selectedLevel === lvl;
+                  return (
+                    <button
+                      key={lvl}
+                      type="button"
+                      onClick={() => handleSelectLevel(lvl)}
+                      className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-right cursor-pointer select-none ${
+                        isSelected
+                          ? "bg-purple-50 text-[#7939E3]"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span>{lvl}</span>
+                      {isSelected && (
+                        <Check className="w-4 h-4 text-[#7939E3] shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-
-      {/* Secondary Age Chips if age tab is selected */}
-      {activeTab === "age" && availableAges.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 animate-fadeIn">
-          <button
-            type="button"
-            onClick={() => onAgeChange("all")}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer select-none ${
-              selectedAge === "all"
-                ? "bg-purple-100 text-[#7939E3] border-[#7939E3]"
-                : "bg-white text-slate-600 border-slate-200 hover:border-purple-300"
-            }`}
-          >
-            جميع الفئات
-          </button>
-          {availableAges.map((age) => (
-            <button
-              key={age}
-              type="button"
-              onClick={() => onAgeChange(age)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer select-none ${
-                selectedAge === age
-                  ? "bg-purple-100 text-[#7939E3] border-[#7939E3]"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-purple-300"
-              }`}
-            >
-              {age}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Secondary Level Chips if level tab is selected */}
-      {activeTab === "level" && availableLevels.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 animate-fadeIn">
-          <button
-            type="button"
-            onClick={() => onLevelChange("all")}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer select-none ${
-              selectedLevel === "all"
-                ? "bg-purple-100 text-[#7939E3] border-[#7939E3]"
-                : "bg-white text-slate-600 border-slate-200 hover:border-purple-300"
-            }`}
-          >
-            جميع المستويات
-          </button>
-          {availableLevels.map((lvl) => (
-            <button
-              key={lvl}
-              type="button"
-              onClick={() => onLevelChange(lvl)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer select-none ${
-                selectedLevel === lvl
-                  ? "bg-purple-100 text-[#7939E3] border-[#7939E3]"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-purple-300"
-              }`}
-            >
-              {lvl}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
