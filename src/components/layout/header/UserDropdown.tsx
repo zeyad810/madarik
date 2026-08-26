@@ -95,15 +95,22 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
             className="absolute top-full left-0 mt-3 w-80 bg-white rounded-[28px] shadow-2xl border border-gray-100 p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
           >
             {/* Parent Row */}
-            <div
+            <button
+              type="button"
+              disabled={!isParentActive}
               onClick={() => {
-                switchAccount("parent");
-                setIsOpen(false);
+                if (isParentActive) {
+                  switchAccount("parent");
+                  setIsOpen(false);
+                }
               }}
-              className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${activeId === "parent"
-                  ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs"
-                  : "border-transparent hover:bg-gray-50"
-                }`}
+              className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all border text-right ${
+                activeId === "parent"
+                  ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs cursor-pointer"
+                  : !isParentActive
+                  ? "border-transparent bg-gray-50 opacity-50 cursor-not-allowed"
+                  : "border-transparent hover:bg-gray-50 cursor-pointer"
+              }`}
             >
               <div className="flex items-center gap-3">
                 <div className="size-12 rounded-full ring-2 ring-purple-600 p-0.5 overflow-hidden shrink-0 bg-purple-50">
@@ -120,14 +127,15 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
                 </span>
               </div>
               <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full ${isParentActive
+                className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                  isParentActive
                     ? "bg-[#DCFCE7] text-[#16A34A]"
                     : "bg-[#F3F4F6] text-[#9CA3AF]"
-                  }`}
+                }`}
               >
                 {parentStatusLabel}
               </span>
-            </div>
+            </button>
 
             {/* Children Rows */}
             {children.length > 0 ? (
@@ -150,24 +158,29 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
                   index % 3 === 0
                     ? "ring-blue-500"
                     : index % 3 === 1
-                      ? "ring-pink-500"
-                      : "ring-purple-400";
+                    ? "ring-pink-500"
+                    : "ring-purple-400";
 
                 return (
                   <React.Fragment key={child.id}>
                     <div className="my-1" />
 
-                    <div
+                    <button
+                      type="button"
+                      disabled={!isActive}
                       onClick={() => {
-                        switchAccount(child.id);
-                        setIsOpen(false);
+                        if (isActive) {
+                          switchAccount(child.id, child.user_type);
+                          setIsOpen(false);
+                        }
                       }}
-                      className={`flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border ${isSelected
-                          ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs"
+                      className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all border text-right ${
+                        isSelected
+                          ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs cursor-pointer"
                           : !isActive
-                            ? "border-transparent opacity-60 hover:opacity-90 hover:bg-gray-50"
-                            : "border-transparent hover:bg-gray-50"
-                        }`}
+                          ? "border-transparent bg-gray-50 opacity-50 cursor-not-allowed"
+                          : "border-transparent hover:bg-gray-50 cursor-pointer"
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
@@ -183,14 +196,16 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
                         </div>
                         <div className="flex flex-col">
                           <span
-                            className={`font-bold text-base ${!isActive ? "text-gray-600" : "text-gray-900"
-                              }`}
+                            className={`font-bold text-base ${
+                              !isActive ? "text-gray-500" : "text-gray-900"
+                            }`}
                           >
                             {child.name}
                           </span>
                           <span
-                            className={`text-xs font-medium ${!isActive ? "text-gray-400" : "text-gray-500"
-                              }`}
+                            className={`text-xs font-medium ${
+                              !isActive ? "text-gray-400" : "text-gray-500"
+                            }`}
                           >
                             عدد الاوسمة : {badges}
                           </span>
@@ -198,14 +213,15 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
                       </div>
 
                       <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full ${isActive
+                        className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                          isActive
                             ? "bg-[#DCFCE7] text-[#16A34A]"
                             : "bg-[#F3F4F6] text-[#9CA3AF]"
-                          }`}
+                        }`}
                       >
                         {statusLabel}
                       </span>
-                    </div>
+                    </button>
                   </React.Fragment>
                 );
               })
