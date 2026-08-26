@@ -24,8 +24,7 @@ interface StoryReaderViewProps {
 }
 
 export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
-  const { isFreeCustomer, isAuthenticated } = useActiveAccount();
-  const canFinish = isAuthenticated && !isFreeCustomer;
+  const { isAuthenticated } = useActiveAccount();
 
   // Finish story mutation hook
   const { mutate: markStoryFinished, isPending: isFinishing, isSuccess: isFinished } =
@@ -69,18 +68,40 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
           },
         ];
 
-  // Divide blocks into pages (e.g. 2-3 blocks per page, or 1 page if short)
+  // Divide blocks into pages (e.g. 3 blocks per page, or 1 page if short)
   const ITEMS_PER_PAGE = 3;
   const totalPages = Math.max(1, Math.ceil(blocks.length / ITEMS_PER_PAGE));
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Trigger finish when reaching the last page of multi-page story (only for non-free accounts)
+  // Handler for manually finishing story (for 1-page story button or top bar button)
+  const handleFinishStory = () => {
+    if (hasFinishedRef.current || isFinishing || isFinished) return;
+    hasFinishedRef.current = true;
+    markStoryFinished(undefined, {
+      onSuccess: (res) => {
+        toast.success(res?.message || "تم تسجيل إنهاء قراءة القصة بنجاح 🎉");
+      },
+      onError: (err: any) => {
+        hasFinishedRef.current = false;
+        toast.error(err?.message || "حدث خطأ أثناء تسجيل إنهاء القصة");
+      },
+    });
+  };
+
+  // Auto-trigger finish ONLY when reaching the last page of a multi-page story (> 1 page)
   useEffect(() => {
-    if (canFinish && totalPages > 1 && currentPage === totalPages && !hasFinishedRef.current) {
+    if (totalPages > 1 && currentPage === totalPages && !hasFinishedRef.current) {
       hasFinishedRef.current = true;
-      markStoryFinished();
+      markStoryFinished(undefined, {
+        onSuccess: (res) => {
+          toast.success(res?.message || "تم تسجيل إنهاء قراءة القصة بنجاح 🎉");
+        },
+        onError: (err: any) => {
+          console.error("Auto finish story error:", err);
+        },
+      });
     }
-  }, [canFinish, currentPage, totalPages, markStoryFinished]);
+  }, [currentPage, totalPages, markStoryFinished]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentBlocks = blocks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -130,47 +151,41 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
 
         {/* Left Action Buttons */}
         <div className="flex flex-wrap items-center gap-3">
-          {/* Direct Finish Reading Button (Hidden for Free Customers) */}
-          {canFinish && (
-            <button
-              type="button"
-              onClick={() => {
-                hasFinishedRef.current = true;
-                markStoryFinished();
-              }}
-              disabled={isFinishing || isFinished}
-              className={`py-2.5 px-5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md ${
-                isFinished
-                  ? "bg-emerald-600 text-white cursor-default"
-                  : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer"
-              }`}
-            >
-              {isFinishing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>جاري الإنهاء...</span>
-                </>
-              ) : isFinished ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>تمت القراءة بنجاح ✓</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>إنهاء القراءة</span>
-                </>
-              )}
-            </button>
-          )}
+          {/* Direct Finish Reading Button */}
+          <button
+            type="button"
+            onClick={handleFinishStory}
+            disabled={isFinishing || isFinished}
+            className={`py-2.5 px-5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md ${
+              isFinished
+                ? "bg-emerald-600 text-white cursor-default"
+                : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer shadow-emerald-500/20"
+            }`}
+          >
+            {isFinishing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>جاري الإنهاء...</span>
+              </>
+            ) : isFinished ? (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>تمت القراءة بنجاح ✓</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>إنهاء القراءة</span>
+              </>
+            )}
+          </button>
 
           {getStoryQuizId(story) && (
             <Link
               href={`/stories/${story.id}/quiz`}
               onClick={() => {
-                if (canFinish && !hasFinishedRef.current) {
-                  hasFinishedRef.current = true;
-                  markStoryFinished();
+                if (!hasFinishedRef.current && !isFinished) {
+                  handleFinishStory();
                 }
               }}
               className="py-2.5 px-5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md cursor-pointer hover:scale-105 active:scale-95"
@@ -304,8 +319,8 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                   </p>
                 </div>
 
-                {/* Completion Status Badge (when finished or finishing, non-free accounts only) */}
-                {canFinish && (isFinished || isFinishing) && (
+                {/* Completion Status Badge */}
+                {(isFinished || isFinishing) && (
                   <div className="flex items-center justify-center p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 gap-2.5">
                     {isFinishing ? (
                       <>
@@ -323,7 +338,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                   </div>
                 )}
 
-                {/* Start Quiz CTA */}
+                {/* Start Quiz CTA (when quiz exists and story is finished) */}
                 {getStoryQuizId(story) && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -336,7 +351,12 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                     </p>
                     <Link
                       href={`/stories/${story.id}/quiz`}
-                      className="inline-flex items-center gap-2 py-3 px-8 rounded-full bg-white text-[#6D28D9] font-black text-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 active:scale-95"
+                      onClick={() => {
+                        if (!hasFinishedRef.current && !isFinished) {
+                          handleFinishStory();
+                        }
+                      }}
+                      className="inline-flex items-center gap-2 py-3 px-8 rounded-full bg-white text-[#6D28D9] font-black text-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 active:scale-95 cursor-pointer"
                     >
                       <CheckCircle2 className="w-4 h-4" />
                       ابدأ الاختبار
@@ -350,58 +370,51 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
 
         {/* 4. Bottom Controls: Finish Button for 1-Page Stories OR Pagination for Multi-Page */}
         {totalPages === 1 ? (
-          (canFinish || getStoryQuizId(story)) && (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-8 border-t border-slate-100">
-              {canFinish && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    hasFinishedRef.current = true;
-                    markStoryFinished();
-                  }}
-                  disabled={isFinishing || isFinished}
-                  className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md ${
-                    isFinished
-                      ? "bg-emerald-600 text-white cursor-default"
-                      : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer shadow-emerald-500/20"
-                  }`}
-                >
-                  {isFinishing ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>جاري تسجيل إنهاء القصة...</span>
-                    </>
-                  ) : isFinished ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5" />
-                      <span>تمت القراءة بنجاح ✓</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-5 h-5" />
-                      <span>إنهاء قراءة القصة</span>
-                    </>
-                  )}
-                </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-8 border-t border-slate-100">
+            {/* Dedicated "Finish Story" Button for 1-Page Stories */}
+            <button
+              type="button"
+              onClick={handleFinishStory}
+              disabled={isFinishing || isFinished}
+              className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md ${
+                isFinished
+                  ? "bg-emerald-600 text-white cursor-default shadow-emerald-600/20"
+                  : "bg-emerald-500 hover:bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer shadow-emerald-500/25 ring-2 ring-emerald-400/40"
+              }`}
+            >
+              {isFinishing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>جاري تسجيل إنهاء القصة...</span>
+                </>
+              ) : isFinished ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>تم إنهاء القصة بنجاح ✓</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>إنهاء القصة</span>
+                </>
               )}
+            </button>
 
-              {getStoryQuizId(story) && (
-                <Link
-                  href={`/stories/${story.id}/quiz`}
-                  onClick={() => {
-                    if (canFinish && !hasFinishedRef.current) {
-                      hasFinishedRef.current = true;
-                      markStoryFinished();
-                    }
-                  }}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md hover:scale-105 active:scale-95"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>الانتقال للاختبار</span>
-                </Link>
-              )}
-            </div>
-          )
+            {getStoryQuizId(story) && (
+              <Link
+                href={`/stories/${story.id}/quiz`}
+                onClick={() => {
+                  if (!hasFinishedRef.current && !isFinished) {
+                    handleFinishStory();
+                  }
+                }}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>الانتقال للاختبار</span>
+              </Link>
+            )}
+          </div>
         ) : (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-12 pt-8 border-t border-slate-100">
             <div className="flex items-center gap-3 order-2 sm:order-1">
@@ -460,3 +473,4 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
     </div>
   );
 };
+

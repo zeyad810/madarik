@@ -15,19 +15,21 @@ export function useFinishStory(
 ) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
-  const { userRole, isAuthenticated, activeChild, activeAccountId } = useActiveAccount();
+  const { userRole, isAuthenticated, activeChild, activeAccountId, isStudent } = useActiveAccount();
 
   const role = isAuthenticated ? (userRole || "visitor") : "visitor";
   const token = session?.accessToken || session?.token || null;
-  const childId =
+  const resolvedChildId =
     (activeChild?.id ? activeChild.id : null) ||
-    (activeAccountId && activeAccountId !== "parent" ? activeAccountId : null);
+    (activeAccountId && activeAccountId !== "parent" ? activeAccountId : null) ||
+    (isStudent && session?.user?.id ? session.user.id : null);
 
   return useMutation<FinishStoryResponse, ApiError | Error, FinishStoryPayload | void>({
     mutationFn: (payload) => {
       const mergedPayload: FinishStoryPayload = {
-        child_id: childId,
-        student_id: childId,
+        ...(isStudent
+          ? { student_id: resolvedChildId || undefined }
+          : { child_id: resolvedChildId || undefined }),
         ...(payload || {}),
       };
       return finishStory(storyId, role, mergedPayload, token);
@@ -40,6 +42,8 @@ export function useFinishStory(
       queryClient.invalidateQueries({ queryKey: ["child-reports"] });
       queryClient.invalidateQueries({ queryKey: ["student"] });
       queryClient.invalidateQueries({ queryKey: ["student-reports"] });
+      queryClient.invalidateQueries({ queryKey: ["reading-activities"] });
+      queryClient.invalidateQueries({ queryKey: ["reading-activity"] });
       queryClient.invalidateQueries({ queryKey: ["attempts"] });
       queryClient.invalidateQueries({ queryKey: ["results"] });
 
@@ -50,3 +54,4 @@ export function useFinishStory(
     ...options,
   });
 }
+

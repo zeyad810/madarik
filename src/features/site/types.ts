@@ -271,9 +271,23 @@ export interface ProductSectionProps {
 // Contact Us Types
 // ==========================================
 export interface ContactFormData {
-  fullName: string;
-  email: string;
+  name: string;
+  email?: string;
+  phone?: string;
   message: string;
+}
+
+export interface SendContactPayload {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  message: string;
+}
+
+export interface SendContactResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
 }
 
 export interface ContactInfoItem {

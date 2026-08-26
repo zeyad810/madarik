@@ -1,17 +1,41 @@
 import { API_BASE_URL, handleResponse } from "@/services/api";
 import { ApiResponse } from "@/types";
-import { PublicLandingData, PublicPackagesData } from "./types";
+import {
+  PublicLandingData,
+  PublicPackagesData,
+  SendContactPayload,
+  SendContactResponse,
+} from "./types";
 
 export const getPublicLandingData = async (): Promise<ApiResponse<PublicLandingData>> => {
   const response = await fetch(`${API_BASE_URL}/public`);
   const data = await handleResponse<ApiResponse<PublicLandingData>>(response);
-  console.log("Public landing API response:", data);
   return data;
 };
 
 export const getPublicPackages = async (): Promise<ApiResponse<PublicPackagesData>> => {
   const response = await fetch(`${API_BASE_URL}/public/packages`);
   const data = await handleResponse<ApiResponse<PublicPackagesData>>(response);
-  console.log("Public packages API response:", data);
   return data;
 };
+
+export const sendContactMessage = async (
+  payload: SendContactPayload
+): Promise<ApiResponse<SendContactResponse | null>> => {
+  const response = await fetch(`${API_BASE_URL}/public/contact`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      email: payload.email?.trim() || null,
+      phone: payload.phone?.trim() || null,
+      message: payload.message.trim(),
+    }),
+  });
+
+  return await handleResponse<ApiResponse<SendContactResponse | null>>(response);
+};
+

@@ -19,6 +19,8 @@ export { default as HashScroller } from "./components/HashScroller";
 
 // Hooks
 export * from "./hooks/usePublicLanding";
+export * from "./hooks/usePublicPackages";
+export * from "./hooks/useSendContactMessage";
 export * from "./hooks/useHashScroll";
 
 // Services & API

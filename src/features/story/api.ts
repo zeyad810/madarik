@@ -118,8 +118,8 @@ export const getStoryById = async (
  * Mark a story as finished.
  * Unified endpoint: POST /stories/{id}/finish
  *
- * visitor / free_customer → skip (returns dummy success, no API call)
- * parent / child / student → calls the endpoint with child_id / student_id
+ * visitor (unauthenticated) → returns local success without making API call
+ * authenticated user (parent with child, student, child, free user) → calls endpoint with Bearer token & child_id/student_id
  */
 export const finishStory = async (
   storyId: string,
@@ -127,19 +127,18 @@ export const finishStory = async (
   payload?: FinishStoryPayload,
   token?: string | null
 ): Promise<FinishStoryResponse> => {
-  // Guests don't persist finish events
-  if (isGuestRole(role)) {
+  const resolvedToken = token || getStoredAuthToken();
+
+  // If no auth token is available (visitor without session), return local success
+  if (!resolvedToken) {
     return { success: true, message: "تم إنهاء القصة" };
   }
 
-  const resolvedToken = token || getStoredAuthToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Accept: "application/json",
+    Authorization: `Bearer ${resolvedToken}`,
   };
-  if (resolvedToken) {
-    headers["Authorization"] = `Bearer ${resolvedToken}`;
-  }
 
   const endpoint = `${API_BASE_URL}/stories/${storyId}/finish`;
 
@@ -147,7 +146,9 @@ export const finishStory = async (
   const effectiveChildId = payload?.child_id || payload?.student_id;
   if (effectiveChildId) {
     bodyData.child_id = effectiveChildId;
-    bodyData.student_id = effectiveChildId;
+  }
+  if (payload?.student_id && payload.student_id !== payload.child_id) {
+    bodyData.student_id = payload.student_id;
   }
   if (payload?.started_at) {
     bodyData.started_at = payload.started_at;
@@ -165,7 +166,8 @@ export const finishStory = async (
   const raw = await handleResponse<any>(response);
   return {
     success: raw?.success ?? true,
-    message: raw?.message ?? "",
+    message: raw?.message ?? "تم تسجيل إنهاء القراءة بنجاح",
     data: raw?.data ?? raw,
   };
 };
+
