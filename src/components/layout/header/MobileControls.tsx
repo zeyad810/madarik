@@ -1,5 +1,9 @@
+"use client";
+
 import React from "react";
+import { useSession } from "next-auth/react";
 import { Menu, Search } from "lucide-react";
+import { NotificationDropdown } from "@/features/notifications";
 
 interface MobileControlsProps {
   isSearchOpen: boolean;
@@ -11,9 +15,12 @@ const MobileControls: React.FC<MobileControlsProps> = ({
   onToggleSearch,
   onOpenMenu,
 }) => {
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
   return (
-    <div className="flex lg:hidden items-center gap-3">
-      {/* Mobile Search Button (White Circle) */}
+    <div className="flex lg:hidden items-center gap-2.5">
+      {/* Mobile Search Button */}
       <button
         onClick={onToggleSearch}
         aria-label="بحث"
@@ -22,7 +29,10 @@ const MobileControls: React.FC<MobileControlsProps> = ({
         <Search className="size-5" strokeWidth={2.5} />
       </button>
 
-      {/* Mobile Menu Toggle Button (White Circle next to Search icon) */}
+      {/* Mobile Notification Dropdown (when authenticated) */}
+      {isAuthenticated && <NotificationDropdown />}
+
+      {/* Mobile Menu Toggle Button */}
       <button
         onClick={onOpenMenu}
         aria-label="افتح القائمة"
@@ -35,3 +45,4 @@ const MobileControls: React.FC<MobileControlsProps> = ({
 };
 
 export default MobileControls;
+

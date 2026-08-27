@@ -11,9 +11,15 @@ import type { ContactFormData } from "../types";
 
 interface ContactFormCardProps {
   onSubmit?: (data: ContactFormData) => Promise<void> | void;
+  buttonText?: string;
+  formFields?: Record<string, { label?: string; placeholder?: string }>;
 }
 
-export const ContactFormCard: React.FC<ContactFormCardProps> = ({ onSubmit }) => {
+export const ContactFormCard: React.FC<ContactFormCardProps> = ({
+  onSubmit,
+  buttonText,
+  formFields,
+}) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const sendContactMutation = useSendContactMessage();
 
@@ -33,6 +39,16 @@ export const ContactFormCard: React.FC<ContactFormCardProps> = ({ onSubmit }) =>
   });
 
   const isLoading = isSubmitting || sendContactMutation.isPending;
+
+  const nameLabel = formFields?.name?.label || "الاسم الكامل";
+  const namePlaceholder = formFields?.name?.placeholder || "يرجى كتابة اسمكم الكريم هنا";
+  const emailLabel = formFields?.email?.label || "البريد الإلكتروني";
+  const emailPlaceholder = formFields?.email?.placeholder || "user@website.com";
+  const phoneLabel = formFields?.phone?.label || "رقم الهاتف";
+  const phonePlaceholder = formFields?.phone?.placeholder || "05xxxxxxxx";
+  const messageLabel = formFields?.message?.label || "رسالتكم";
+  const messagePlaceholder = formFields?.message?.placeholder || "كيف يمكننا مساعدتكم؟ (10 أحرف على الأقل)";
+  const submitButtonText = buttonText || "إرسال الرسالة الآن";
 
   const handleFormSubmit = async (data: ContactFormValues) => {
     try {
@@ -101,12 +117,12 @@ export const ContactFormCard: React.FC<ContactFormCardProps> = ({ onSubmit }) =>
               htmlFor="name"
               className="block text-right text-mad-text-primary font-bold mad-label-1 mb-1.5 sm:mb-2"
             >
-              الاسم الكامل <span className="text-mad-danger">*</span>
+              {nameLabel} <span className="text-mad-danger">*</span>
             </label>
             <input
               id="name"
               type="text"
-              placeholder="يرجى كتابة اسمكم الكريم هنا"
+              placeholder={namePlaceholder}
               {...register("name")}
               className={`w-full h-10 lg:h-12 px-4 sm:px-5 rounded-xl sm:rounded-2xl border text-right text-mad-text-primary mad-body-2 bg-mad-white-50 transition-all duration-200 focus:outline-none placeholder:text-mad-white-400 ${
                 errors.name
@@ -129,13 +145,13 @@ export const ContactFormCard: React.FC<ContactFormCardProps> = ({ onSubmit }) =>
                 htmlFor="email"
                 className="block text-right text-mad-text-primary font-bold mad-label-1 mb-1.5 sm:mb-2"
               >
-                البريد الإلكتروني
+                {emailLabel}
               </label>
               <input
                 id="email"
                 type="email"
                 dir="ltr"
-                placeholder="user@website.com"
+                placeholder={emailPlaceholder}
                 {...register("email")}
                 className={`w-full h-10 lg:h-12 px-4 sm:px-5 rounded-xl sm:rounded-2xl border text-right text-mad-text-primary mad-body-2 bg-mad-white-50 transition-all duration-200 focus:outline-none placeholder:text-mad-white-400 ${
                   errors.email
@@ -156,13 +172,13 @@ export const ContactFormCard: React.FC<ContactFormCardProps> = ({ onSubmit }) =>
                 htmlFor="phone"
                 className="block text-right text-mad-text-primary font-bold mad-label-1 mb-1.5 sm:mb-2"
               >
-                رقم الهاتف
+                {phoneLabel}
               </label>
               <input
                 id="phone"
                 type="tel"
                 dir="ltr"
-                placeholder="05xxxxxxxx"
+                placeholder={phonePlaceholder}
                 {...register("phone")}
                 className={`w-full h-10 lg:h-12 px-4 sm:px-5 rounded-xl sm:rounded-2xl border text-right text-mad-text-primary mad-body-2 bg-mad-white-50 transition-all duration-200 focus:outline-none placeholder:text-mad-white-400 ${
                   errors.phone
@@ -184,12 +200,12 @@ export const ContactFormCard: React.FC<ContactFormCardProps> = ({ onSubmit }) =>
               htmlFor="message"
               className="block text-right text-mad-text-primary font-bold mad-label-1 mb-1.5 sm:mb-2"
             >
-              رسالتكم <span className="text-mad-danger">*</span>
+              {messageLabel} <span className="text-mad-danger">*</span>
             </label>
             <textarea
               id="message"
               rows={3}
-              placeholder="كيف يمكننا مساعدتكم؟ (10 أحرف على الأقل)"
+              placeholder={messagePlaceholder}
               {...register("message")}
               className={`w-full flex-1 min-h-[90px] p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-right text-mad-text-primary mad-body-2 bg-mad-white-50 transition-all duration-200 focus:outline-none placeholder:text-mad-white-400 resize-none ${
                 errors.message
@@ -217,7 +233,7 @@ export const ContactFormCard: React.FC<ContactFormCardProps> = ({ onSubmit }) =>
                   <span>جاري الإرسال...</span>
                 </>
               ) : (
-                <span>إرسال الرسالة الآن</span>
+                <span>{submitButtonText}</span>
               )}
             </button>
           </div>

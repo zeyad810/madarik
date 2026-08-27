@@ -18,7 +18,7 @@ const Fqa: React.FC<FqaProps> = ({
     select: (res) => res.data?.faq_section,
   });
 
-  const id = propId ?? faqData?.id;
+  const id = propId ?? faqData?.id ?? "faq_section";
   const title = propTitle ?? faqData?.title ?? "";
   const subtitle = propSubtitle ?? faqData?.subtitle ?? "";
   const items: FaqItem[] = propItems ?? (faqData?.items ?? []);
@@ -34,6 +34,9 @@ const Fqa: React.FC<FqaProps> = ({
 
   return (
     <section dir="rtl" id={id} className="relative w-full bg-linear-to-b from-[#fbfaff] via-white to-white section-spacing px-4 md:px-8 overflow-hidden">
+      {/* Anchor targets for #faq and #faqs */}
+      <span id="faq" className="sr-only absolute -top-24 pointer-events-none" />
+      <span id="faqs" className="sr-only absolute -top-24 pointer-events-none" />
       {/* Background Ambient Glows for Glassmorphism Effect */}
       <div className="absolute top-1/4 right-10 w-96 h-96 bg-purple-200/35 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-96 h-96 bg-purple-300/25 rounded-full blur-3xl pointer-events-none" />

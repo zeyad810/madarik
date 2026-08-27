@@ -2,28 +2,23 @@
 
 import React, { useState } from "react";
 import { ArrowUpLeft, Check, Loader2 } from "lucide-react";
-import { usePublicLanding } from "@/features/site/hooks/usePublicLanding";
+import { DEFAULT_NEWSLETTER } from "./constants";
 import { NewsletterData } from "./types";
 
 interface NewsletterProps {
+  id?: string;
   data?: NewsletterData;
   onSubscribe?: (email: string) => Promise<void> | void;
 }
 
 const Newsletter: React.FC<NewsletterProps> = ({
-  data: propData,
+  id = "newsletter",
+  data,
   onSubscribe,
 }) => {
-  const { data: newsletterData } = usePublicLanding({
-    select: (res) => res.data?.newsletter_section,
-  });
-
-  const title = propData?.title ?? newsletterData?.title ?? "النشرة البريدية";
-  const description =
-    propData?.description ??
-    newsletterData?.subtitle ??
-    "اشترك معنا لتصلك أحدث القصص والميزات والنصائح التربوية المميزة يومياً.";
-  const placeholder = propData?.placeholder ?? "البريد الإلكتروني";
+  const title = data?.title ?? DEFAULT_NEWSLETTER.title;
+  const description = data?.description ?? DEFAULT_NEWSLETTER.description;
+  const placeholder = data?.placeholder ?? DEFAULT_NEWSLETTER.placeholder;
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
@@ -47,7 +42,7 @@ const Newsletter: React.FC<NewsletterProps> = ({
   };
 
   return (
-    <div id={newsletterData?.id} className="w-full text-center">
+    <div id={id} className="w-full text-center">
       {/* Title */}
       <h2 className="text-xl sm:text-5xl font-extrabold text-white leading-tight">
         {title}

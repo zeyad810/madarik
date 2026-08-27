@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import { motion } from "framer-motion";
 import Newsletter from "./Newsletter";
@@ -20,19 +19,19 @@ import {
   DEFAULT_CONTACT_INFO,
   DEFAULT_SOCIAL_LINKS,
   DEFAULT_COPYRIGHT,
+  DEFAULT_NEWSLETTER,
 } from "./constants";
-import { usePublicLanding } from "@/features/site/hooks/usePublicLanding";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 const Footer: React.FC<FooterProps> = ({
-  id: propId,
-  newsletter,
+  id = "footer",
+  newsletter = DEFAULT_NEWSLETTER,
   onSubscribe,
-  brandDescription: propBrandDescription,
+  brandDescription = DEFAULT_BRAND_DESCRIPTION,
   quickLinks: propQuickLinks,
-  importantLinks: propImportantLinks,
-  contactInfo: propContactInfo,
-  socialLinks: propSocialLinks,
+  importantLinks = DEFAULT_IMPORTANT_LINKS,
+  contactInfo = DEFAULT_CONTACT_INFO,
+  socialLinks = DEFAULT_SOCIAL_LINKS,
   copyrightText = DEFAULT_COPYRIGHT,
   bgImageSrc = "/iamges/FooterBg.png",
   mobileBgImageSrc = "/iamges/FooterBgMob.png",
@@ -44,29 +43,8 @@ const Footer: React.FC<FooterProps> = ({
     userRole === "child" ||
     activeAccount?.type === "child";
 
-  const { data: footerData } = usePublicLanding({
-    select: (res) => res.data?.footer_section,
-  });
-  const { data: contactData } = usePublicLanding({
-    select: (res) => res.data?.contact_section,
-  });
-
-  const id = propId ?? footerData?.id;
-
-  const brandDescription =
-    propBrandDescription ??
-    footerData?.description ??
-    DEFAULT_BRAND_DESCRIPTION;
-
   const rawQuickLinks: FooterLinkItem[] =
-    propQuickLinks ??
-    (footerData?.quick_links && footerData.quick_links.length > 0
-      ? footerData.quick_links.map((link, idx) => ({
-          id: link.url || `quick-${idx}`,
-          label: link.label,
-          href: link.url,
-        }))
-      : DEFAULT_QUICK_LINKS);
+    propQuickLinks ?? DEFAULT_QUICK_LINKS;
 
   const quickLinks: FooterLinkItem[] = React.useMemo(() => {
     if (!isChildOrStudent) return rawQuickLinks;
@@ -81,68 +59,6 @@ const Footer: React.FC<FooterProps> = ({
     );
   }, [rawQuickLinks, isChildOrStudent]);
 
-  const importantLinks: FooterLinkItem[] =
-    propImportantLinks ??
-    (footerData?.important_links && footerData.important_links.length > 0
-      ? footerData.important_links.map((link, idx) => ({
-          id: link.url || `imp-${idx}`,
-          label: link.label,
-          href: link.url,
-        }))
-      : DEFAULT_IMPORTANT_LINKS);
-
-  const contactInfo: ContactInfo =
-    propContactInfo ??
-    (contactData?.contact_info
-      ? {
-          email: contactData.contact_info.email || DEFAULT_CONTACT_INFO.email,
-          phone: contactData.contact_info.phone || DEFAULT_CONTACT_INFO.phone,
-          location:
-            contactData.contact_info.address || DEFAULT_CONTACT_INFO.location,
-        }
-      : DEFAULT_CONTACT_INFO);
-
-  const socialLinks: SocialLink[] =
-    propSocialLinks ??
-    (() => {
-      if (!contactData?.social_media) return DEFAULT_SOCIAL_LINKS;
-
-      const dynamicLinks: SocialLink[] = [];
-      if (contactData.social_media.linkedin) {
-        dynamicLinks.push({
-          id: "linkedin",
-          name: "LinkedIn",
-          href: contactData.social_media.linkedin,
-          type: "linkedin",
-        });
-      }
-      if (contactData.social_media.instagram) {
-        dynamicLinks.push({
-          id: "instagram",
-          name: "Instagram",
-          href: contactData.social_media.instagram,
-          type: "instagram",
-        });
-      }
-      if (contactData.social_media.twitter) {
-        dynamicLinks.push({
-          id: "twitter",
-          name: "Twitter",
-          href: contactData.social_media.twitter,
-          type: "twitter",
-        });
-      }
-      if (contactData.social_media.facebook) {
-        dynamicLinks.push({
-          id: "facebook",
-          name: "Facebook",
-          href: contactData.social_media.facebook,
-          type: "facebook",
-        });
-      }
-
-      return dynamicLinks.length > 0 ? dynamicLinks : DEFAULT_SOCIAL_LINKS;
-    })();
   return (
     <>
       <style>{`
@@ -186,7 +102,7 @@ const Footer: React.FC<FooterProps> = ({
             transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
             className="mt-10 sm:mt-16 lg:mt-24 flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-10 pb-6 sm:pb-8"
           >
-            {/* Brand & Logo Section (Centered on Mobile, Left-aligned column on Desktop) */}
+            {/* Brand & Logo Section */}
             <div className="w-full lg:col-span-4 flex flex-col items-center lg:items-start">
               <BrandSection
                 description={brandDescription}
@@ -194,7 +110,7 @@ const Footer: React.FC<FooterProps> = ({
               />
             </div>
 
-            {/* Mobile 2-Column Row (روابط سريعة | تواصل معنا) / Desktop Columns */}
+            {/* Mobile 2-Column Row / Desktop Columns */}
             <div className="w-full lg:col-span-8 grid grid-cols-2 lg:grid-cols-8 gap-6 sm:gap-8">
               <div className="lg:col-span-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <FooterNav
@@ -209,7 +125,7 @@ const Footer: React.FC<FooterProps> = ({
           </motion.div>
 
           {/* ==========================================
-              3. COPYRIGHT BAR (Legal links on mobile ONLY + Centered Text)
+              3. COPYRIGHT BAR
              ========================================== */}
           <CopyrightBar
             copyrightText={copyrightText}

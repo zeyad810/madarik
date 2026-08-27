@@ -66,7 +66,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
     select: (res) => res.data?.banners_section,
   });
 
-  const id = propId ?? bannerSection?.id;
+  const id = propId ?? bannerSection?.id ?? "banners_section";
   const slides: BannerSlideItem[] =
     propSlides ??
     (bannerSection?.items && bannerSection.items.length > 0
@@ -78,14 +78,23 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
           sideImage: item.side_image_url,
           sideImageAlt: item.title,
           buttonLink: item.link_url || "/register",
-          buttonText: "إشترك الآن",
+          buttonText:
+            (item as unknown as { button_text?: string; cta_text?: string })
+              .button_text ||
+            (item as unknown as { button_text?: string; cta_text?: string })
+              .cta_text ||
+            "إشترك الآن",
         }))
       : DEFAULT_SLIDES);
 
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <div id={id} dir="rtl" className={`container w-full px-4 py-6 md:py-8 ${className}`}>
+    <div id={id} dir="rtl" className={`container relative w-full px-4 py-6 md:py-8 ${className}`}>
+      {/* Anchor targets for #banners and #banner-slider */}
+      <span id="banners" className="sr-only absolute -top-24 pointer-events-none" />
+      <span id="banner-slider" className="sr-only absolute -top-24 pointer-events-none" />
+
       <div className="relative w-full overflow-hidden rounded-3xl bg-linear-to-r from-mad-purple-800 via-mad-main to-mad-purple-950 shadow-xl group">
         <Swiper
           modules={[Autoplay, Pagination, Navigation, EffectFade]}
@@ -242,14 +251,14 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
           <>
             <button
               type="button"
-              aria-label="Previous Slide"
+              aria-label="الشريحة السابقة"
               className="custom-banner-prev absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
             >
               <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
             </button>
             <button
               type="button"
-              aria-label="Next Slide"
+              aria-label="الشريحة التالية"
               className="custom-banner-next absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
             >
               <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />

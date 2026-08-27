@@ -253,7 +253,11 @@ const Pricing: React.FC<PricingProps> = ({
       : "max-w-5xl sm:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <section dir="rtl" id={id} className="w-full bg-white py-16 sm:py-20 lg:py-24 overflow-hidden">
+    <section dir="rtl" id={id} className="relative w-full bg-white py-16 sm:py-20 lg:py-24 overflow-hidden">
+      {/* Anchor targets for #pricing and #packages */}
+      <span id="pricing" className="sr-only absolute -top-24 pointer-events-none" />
+      <span id="packages" className="sr-only absolute -top-24 pointer-events-none" />
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <SectionHeader

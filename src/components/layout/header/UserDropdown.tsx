@@ -4,8 +4,9 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Bell, Search, LogOut, User } from "lucide-react";
+import { Search, LogOut, User } from "lucide-react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { NotificationDropdown } from "@/features/notifications";
 
 interface UserDropdownProps {
   onOpenSearch?: () => void;
@@ -65,13 +66,8 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
         <Search className="size-5 stroke-[2.2]" />
       </button>
 
-      {/* 2. Notification Bell Button */}
-      <button
-        aria-label="الإشعارات"
-        className="flex size-10 items-center justify-center rounded-full bg-white text-mad-main shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
-      >
-        <Bell className="size-5 stroke-[2.2]" />
-      </button>
+      {/* 2. Notification Bell Dropdown */}
+      <NotificationDropdown />
 
       {/* 3. Avatar Button & Dropdown Container */}
       <div className="relative" ref={dropdownRef}>
