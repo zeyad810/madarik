@@ -115,7 +115,7 @@ export const StoriesView: React.FC = () => {
   const showPagination = hasClickedLoadMore || page > 1;
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-slate-50/50">
+    <div className="w-full min-h-screen flex flex-col">
       {/* 1. Top Purple Hero Banner */}
       <StoryHeroBanner />
 

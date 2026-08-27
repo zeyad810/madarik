@@ -29,7 +29,6 @@ export const FreeRosetteBadge: React.FC<FreeRosetteBadgeProps> = ({
         width={78}
         height={54}
         className="w-16 sm:w-18 h-auto drop-shadow-md"
-        priority
       />
     </div>
   );

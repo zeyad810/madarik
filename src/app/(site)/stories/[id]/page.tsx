@@ -30,7 +30,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
     : [];
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-slate-50/50">
+    <div className="w-full min-h-screen flex flex-col">
       {/* Page Content */}
       <div className="container mx-auto px-4 sm:px-6 md:px-8 py-8 flex-1 flex flex-col">
         {/* Loading State */}
