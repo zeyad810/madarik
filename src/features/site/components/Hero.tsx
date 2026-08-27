@@ -149,7 +149,7 @@ const Hero: React.FC<HeroProps> = ({
     <section
       dir="rtl"
       id={id}
-      className="w-full min-h-screen lg:h-[1400px] lg:min-h-[1400px] pt-32 sm:pt-40 lg:pt-52 pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat flex items-start justify-center relative overflow-hidden"
+      className="w-full min-h-screen lg:h-[1400px] lg:min-h-[1400px] pt-32 sm:pt-40 lg:pt-40 pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat flex items-start justify-center relative overflow-hidden"
       style={{
         backgroundImage: `url(${bgImageSrc})`,
       }}

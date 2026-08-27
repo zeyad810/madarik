@@ -30,6 +30,7 @@ export interface NewsletterData {
 }
 
 export interface FooterProps {
+  id?: string;
   newsletter?: NewsletterData;
   onSubscribe?: (email: string) => Promise<void> | void;
   brandDescription?: string;

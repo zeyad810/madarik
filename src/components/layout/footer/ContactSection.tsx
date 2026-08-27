@@ -17,23 +17,29 @@ const ContactSection: React.FC<ContactSectionProps> = ({
 
       <div className="flex flex-col gap-3 text-xs sm:text-sm text-white/90 font-normal">
         {/* Email */}
-        <a
-          href={`mailto:${contactInfo.email}`}
-          className="hover:text-white transition-colors dir-ltr text-right"
-        >
-          {contactInfo.email}
-        </a>
+        {contactInfo?.email && (
+          <a
+            href={`mailto:${contactInfo.email}`}
+            className="hover:text-white transition-colors dir-ltr text-right"
+          >
+            {contactInfo.email}
+          </a>
+        )}
 
         {/* Phone */}
-        <a
-          href={`tel:${contactInfo.phone.replace(/\s+/g, "")}`}
-          className="hover:text-white transition-colors dir-ltr text-right"
-        >
-          {contactInfo.phone}
-        </a>
+        {contactInfo?.phone && (
+          <a
+            href={`tel:${contactInfo.phone.replace(/\s+/g, "")}`}
+            className="hover:text-white transition-colors dir-ltr text-right"
+          >
+            {contactInfo.phone}
+          </a>
+        )}
 
         {/* Location */}
-        <p className="leading-relaxed text-right">{contactInfo.location}</p>
+        {contactInfo?.location && (
+          <p className="leading-relaxed text-right">{contactInfo.location}</p>
+        )}
       </div>
     </div>
   );
