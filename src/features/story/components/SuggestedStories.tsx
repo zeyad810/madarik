@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import ProductCard from "@/features/products/ProductCard";
 import { Product } from "@/features/products/types";
-import { Story } from "../types";
+import { Story, getSafeImageUrl } from "../types";
 
 interface SuggestedStoriesProps {
   stories: Story[];
@@ -18,20 +18,23 @@ export const SuggestedStories: React.FC<SuggestedStoriesProps> = ({
   currentStoryId,
   className = "",
 }) => {
-  // Filter out current story if provided and take up to 4 suggested stories
-  const filteredStories = stories
+  // Sort by newest (created_at descending if available) and filter out current story, take top 10
+  const filteredStories = [...stories]
     .filter((s) => s.id !== currentStoryId)
-    .slice(0, 4);
+    .sort((a, b) => {
+      if (a.created_at && b.created_at) {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+      return 0;
+    })
+    .slice(0, 10);
 
   if (filteredStories.length === 0) return null;
 
   const products: Product[] = filteredStories.map((story) => {
-    const rawImg = story.cover_photo_url || story.thumbnail_url;
-    const isBrokenPlaceholder =
-      !rawImg || rawImg.includes("via.placeholder.com");
-    const safeImageSrc = isBrokenPlaceholder
-      ? "/assets/sea_story.png"
-      : rawImg;
+    const safeImageSrc = getSafeImageUrl(
+      story.cover_photo_url || story.thumbnail_url
+    );
 
     return {
       id: story.id,
@@ -42,6 +45,8 @@ export const SuggestedStories: React.FC<SuggestedStoriesProps> = ({
         "قصة تعليمية ممتعة وملهمة للأطفال",
       imageSrc: safeImageSrc,
       imageAlt: story.title,
+      availability: story.availability,
+      isFree: story.availability === "free" || !story.availability,
       ageRange:
         story.age_category && story.age_category !== "0-0"
           ? `${story.age_category} سنة`

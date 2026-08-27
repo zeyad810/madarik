@@ -11,6 +11,7 @@ import "swiper/css/pagination";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import ProductCard from "@/features/products/ProductCard";
 import { Product } from "@/features/products/types";
+import { getSafeImageUrl } from "@/features/story/types";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import { ProductSectionProps } from "../types";
 
@@ -33,12 +34,9 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   const products: Product[] =
     propProducts ??
     (storiesData?.items?.map((story) => {
-      const rawImg = story.cover_photo_url || story.thumbnail_url;
-      const isBrokenPlaceholder =
-        !rawImg || rawImg.includes("via.placeholder.com");
-      const safeImageSrc = isBrokenPlaceholder
-        ? "/assets/sea_story.png"
-        : rawImg;
+      const safeImageSrc = getSafeImageUrl(
+        story.cover_photo_url || story.thumbnail_url
+      );
 
       return {
         id: story.id,

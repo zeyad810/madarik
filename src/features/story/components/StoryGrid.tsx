@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import ProductCard from "@/features/products/ProductCard";
 import { Product } from "@/features/products/types";
-import { Story, getStoryLevelName } from "../types";
+import { Story, getStoryLevelName, getSafeImageUrl } from "../types";
 
 import { StoriesPagination } from "./StoriesPagination";
 
@@ -40,12 +40,9 @@ export const StoryGrid: React.FC<StoryGridProps> = ({
   // Map Story to Product card format
   const mappedProducts: Product[] = useMemo(() => {
     return displayedStories.map((story) => {
-      const rawImg = story.cover_photo_url || story.thumbnail_url;
-      const isBrokenPlaceholder =
-        !rawImg || rawImg.includes("via.placeholder.com");
-      const safeImageSrc = isBrokenPlaceholder
-        ? "/assets/sea_story.png"
-        : rawImg;
+      const safeImageSrc = getSafeImageUrl(
+        story.cover_photo_url || story.thumbnail_url
+      );
 
       const levelStr = getStoryLevelName(story.level, "المستوى الأول");
 

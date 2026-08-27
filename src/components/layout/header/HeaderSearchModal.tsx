@@ -16,7 +16,12 @@ import {
   Users,
 } from "lucide-react";
 import { useStorySearch } from "@/features/story/hooks/useStorySearch";
-import { Story, getStoryLevelName } from "@/features/story/types";
+import {
+  Story,
+  getStoryLevelName,
+  getSafeImageUrl,
+  DEFAULT_BROKEN_IMAGE,
+} from "@/features/story/types";
 
 interface HeaderSearchModalProps {
   isOpen: boolean;
@@ -225,13 +230,9 @@ export const HeaderSearchModal: React.FC<HeaderSearchModalProps> = ({
 
                 <div className="space-y-2">
                   {stories.map((story) => {
-                    const rawImg =
-                      story.cover_photo_url || story.thumbnail_url;
-                    const isBrokenPlaceholder =
-                      !rawImg || rawImg.includes("via.placeholder.com");
-                    const safeImageSrc = isBrokenPlaceholder
-                      ? "/assets/sea_story.png"
-                      : rawImg;
+                    const safeImageSrc = getSafeImageUrl(
+                      story.cover_photo_url || story.thumbnail_url
+                    );
 
                     const levelName = getStoryLevelName(
                       story.level,
@@ -252,6 +253,7 @@ export const HeaderSearchModal: React.FC<HeaderSearchModalProps> = ({
                             fill
                             className="object-cover"
                             sizes="72px"
+                            unoptimized={safeImageSrc === DEFAULT_BROKEN_IMAGE}
                           />
                         </div>
 

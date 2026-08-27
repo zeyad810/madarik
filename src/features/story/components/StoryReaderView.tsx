@@ -13,7 +13,13 @@ import {
   Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Story, StoryBlock, getStoryQuizId } from "../types";
+import {
+  Story,
+  StoryBlock,
+  getStoryQuizId,
+  getSafeImageUrl,
+  DEFAULT_BROKEN_IMAGE,
+} from "../types";
 import { useFinishStory } from "../hooks/useFinishStory";
 import { useStartStory } from "../hooks/useStartStory";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
@@ -62,7 +68,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
             id: "2",
             order: 2,
             block_type: "image",
-            content: "/assets/sea_story.png",
+            content: "",
           },
           {
             id: "3",
@@ -80,12 +86,16 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
           },
         ];
 
-  // Divide blocks into pages (e.g. 3 blocks per page, or 1 page if short)
-  const ITEMS_PER_PAGE = 3;
-  const totalPages = Math.max(1, Math.ceil(blocks.length / ITEMS_PER_PAGE));
+  // Divide blocks into pages dynamically based on story.pages_count or blocks count
+  const totalPages = Math.max(
+    1,
+    story.pages_count ??
+      (blocks.length > 0 ? Math.ceil(blocks.length / 2) : 1)
+  );
+  const itemsPerPage = Math.max(1, Math.ceil(blocks.length / totalPages));
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Handler for manually finishing story (for 1-page story button or top bar button)
+  // Handler for manually finishing story (for 1-page story button or bottom action button)
   const handleFinishStory = () => {
     if (hasFinishedRef.current || isFinishing || isFinished) return;
     hasFinishedRef.current = true;
@@ -100,8 +110,8 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
     });
   };
 
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentBlocks = blocks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentBlocks = blocks.slice(startIndex, startIndex + itemsPerPage);
 
   const nextPage = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
@@ -110,10 +120,6 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   const prevPage = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
-
-  const lessonLearnedText =
-    story.lesson_learned ||
-    "المثابرة والصبر أهم من السرعة. العمل الجاد والمستمر يؤدي دائماً إلى النجاح، حتى لو كنت أبطأ من الآخرين.";
 
   return (
     <div dir="rtl" className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6">
@@ -232,23 +238,20 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
           >
             {currentBlocks.map((block) => {
               if (block.block_type === "image") {
-                const imgUrl =
-                  block.content && !block.content.includes("via.placeholder.com")
-                    ? block.content
-                    : story.cover_photo_url &&
-                      !story.cover_photo_url.includes("via.placeholder.com")
-                    ? story.cover_photo_url
-                    : "/assets/sea_story.png";
+                const imgUrl = getSafeImageUrl(
+                  block.content || story.cover_photo_url
+                );
 
                 return (
                   <div key={block.id} className="flex flex-col items-center my-4 w-full">
-                    <div className="relative w-full aspect-video sm:aspect-21/9 max-h-110 rounded-3xl overflow-hidden shadow-md border border-slate-100">
+                    <div className="relative w-full aspect-video sm:aspect-21/9 max-h-110 rounded-3xl overflow-hidden shadow-md border border-slate-100 bg-slate-50">
                       <Image
                         src={imgUrl}
                         alt={story.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 950px"
                         className="object-cover"
+                        unoptimized={imgUrl === DEFAULT_BROKEN_IMAGE}
                       />
                     </div>
                     <span className="text-xs text-slate-400 font-semibold mt-2.5">
@@ -268,24 +271,14 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
               );
             })}
 
-            {/* Lesson Learned Section & Finish Action (shown on last page or 1-page story) */}
+            {/* Finish Action (shown on last page or 1-page story) */}
             {currentPage === totalPages && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="flex flex-col gap-6 mt-6"
+                className="flex flex-col gap-4 mt-6"
               >
-                {/* Lesson Learned Card */}
-                <div className="bg-[#FAF5FF] border border-[#E9D5FF] rounded-3xl p-6 sm:p-8 text-right">
-                  <h3 className="text-lg sm:text-xl font-black text-[#7939E3] mb-3">
-                    الدرس المستفاد
-                  </h3>
-                  <p className="text-sm sm:text-base text-[#475569] font-bold leading-relaxed">
-                    {lessonLearnedText}
-                  </p>
-                </div>
-
                 {/* Bottom Action Button for Finishing the Story */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
                   <button
@@ -326,7 +319,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
                       }}
                       className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#6D28D9] hover:bg-[#5B20B5] text-white font-black text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all shadow-md hover:scale-105 active:scale-95 cursor-pointer"
                     >
-                      <CheckCircle2 className="w-5 h-5" />
+                      <CheckCircle2 className="w-4 h-4" />
                       <span>الانتقال للاختبار</span>
                     </Link>
                   )}
@@ -335,6 +328,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
             )}
           </motion.div>
         </AnimatePresence>
+      </div>
 
         {/* 4. Bottom Controls / Navigation Buttons using undo/redo SVGs matching Image 2 */}
         {totalPages > 1 && (
@@ -383,7 +377,8 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
           </div>
         )}
       </div>
-    </div>
   );
 };
+
+export default StoryReaderView;
 

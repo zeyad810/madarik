@@ -14,7 +14,12 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { Story, getStoryQuizId } from "../types";
+import {
+  Story,
+  getStoryQuizId,
+  getSafeImageUrl,
+  DEFAULT_BROKEN_IMAGE,
+} from "../types";
 import { FreeRosetteBadge } from "@/features/products/components/FreeRosetteBadge";
 import { useStartStory } from "../hooks/useStartStory";
 
@@ -25,19 +30,18 @@ interface StoryDetailHeroProps {
 export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const { mutate: triggerStartStory } = useStartStory(story.id);
-  // Safe Cover Image Resolution
-  const rawCover = story.cover_photo_url || story.thumbnail_url;
-  const isBrokenCover = !rawCover || rawCover.includes("via.placeholder.com");
-  const coverImage = isBrokenCover ? "/assets/sea_story.png" : rawCover;
 
-  // Safe Banner Image Resolution
-  const rawBanner = story.cover_photo_url;
-  const isBrokenBanner = !rawBanner || rawBanner.includes("via.placeholder.com");
-  const bannerImage = isBrokenBanner ? "/assets/sea_story.png" : rawBanner;
+  // Safe image state with default broken image fallback
+  const [coverSrc, setCoverSrc] = useState(() =>
+    getSafeImageUrl(story.thumbnail_url || story.cover_photo_url)
+  );
+  const [bannerSrc, setBannerSrc] = useState(() =>
+    getSafeImageUrl(story.cover_photo_url || story.thumbnail_url)
+  );
 
   const totalPages =
-    story.total_pages ??
-    (story.blocks && story.blocks.length > 0 ? story.blocks.length : 12);
+    story.pages_count ??
+    (story.blocks && story.blocks.length > 0 ? story.blocks.length : 1);
 
   const ageText =
     story.age_category && story.age_category !== "0-0"
@@ -53,7 +57,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
 
   return (
     <div dir="rtl" className="w-full flex flex-col gap-6 sm:gap-8">
-      {/* 1. Top Wide Story Banner Image (Pure Image Banner as in Figma) */}
+      {/* 1. Top Wide Story Banner Image */}
       <motion.div
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -61,12 +65,14 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
         className="w-full relative rounded-3xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-100 aspect-16/6 sm:aspect-21/7 md:aspect-24/7 max-h-85"
       >
         <Image
-          src={bannerImage}
+          src={bannerSrc}
           alt={story.title}
           fill
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1200px"
           className="object-cover object-center"
+          onError={() => setBannerSrc(DEFAULT_BROKEN_IMAGE)}
+          unoptimized={bannerSrc === DEFAULT_BROKEN_IMAGE}
         />
       </motion.div>
 
@@ -245,14 +251,16 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
         </div>
 
         {/* Left Side Story Illustration (Square / Rounded) */}
-        <div className="w-full lg:w-85 xl:w-95 aspect-square relative rounded-[28px] overflow-hidden shadow-md border border-slate-100 shrink-0">
+        <div className="w-full lg:w-85 xl:w-95 aspect-square relative rounded-[28px] overflow-hidden shadow-md border border-slate-100 shrink-0 bg-slate-50">
           <Image
-            src={coverImage}
+            src={coverSrc}
             alt={story.title}
             fill
             sizes="(max-width: 1024px) 100vw, 380px"
             className="object-cover"
             priority
+            onError={() => setCoverSrc(DEFAULT_BROKEN_IMAGE)}
+            unoptimized={coverSrc === DEFAULT_BROKEN_IMAGE}
           />
         </div>
       </motion.div>

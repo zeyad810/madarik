@@ -11,12 +11,16 @@ interface LogoProps {
   alt?: string;
   width?: number;
   height?: number;
+  priority?: boolean;
 }
 
 const Logo: React.FC<LogoProps> = ({
   className = "",
   src = "/logo.png",
-  alt = "شعار منصة مدارك القراءة"
+  alt = "شعار منصة مدارك القراءة",
+  width = 100,
+  height = 100,
+  priority = false,
 }) => {
   const { isStudent } = useActiveAccount();
 
@@ -28,10 +32,10 @@ const Logo: React.FC<LogoProps> = ({
       <Image
         src={src}
         alt={alt}
-        width={100}
-        height={100}
+        width={width}
+        height={height}
         className="w-auto h-auto object-contain"
-        priority
+        priority={priority}
       />
     </Link>
   );

@@ -65,21 +65,40 @@ export interface Story {
   blocks?: StoryBlock[];
   created_at?: string;
   updated_at?: string;
-  lesson_learned?: string | null;
-  total_pages?: number | null;
+  pages_count?: number | null;
+  has_quiz?: boolean;
   quiz_id?: string | null;
   quiz?: StoryQuiz | null;
 }
 
 export const getStoryQuizId = (story?: Story | null): string | null => {
   if (!story) return null;
+  if (story.has_quiz === false) return null;
   if (typeof story.quiz_id === "string" && story.quiz_id.trim()) {
     return story.quiz_id.trim();
   }
   if (story.quiz && typeof story.quiz === "object" && story.quiz.id) {
     return story.quiz.id;
   }
+  if (story.has_quiz && story.quiz_id) {
+    return String(story.quiz_id);
+  }
   return null;
+};
+
+export const DEFAULT_BROKEN_IMAGE = "/iamges/broken-image.svg";
+
+export const getSafeImageUrl = (url?: string | null): string => {
+  if (!url || typeof url !== "string") return DEFAULT_BROKEN_IMAGE;
+  const trimmed = url.trim();
+  if (
+    !trimmed ||
+    trimmed.includes("via.placeholder.com") ||
+    trimmed.includes("placeholder.com")
+  ) {
+    return DEFAULT_BROKEN_IMAGE;
+  }
+  return trimmed;
 };
 
 export const getStoryLevelName = (

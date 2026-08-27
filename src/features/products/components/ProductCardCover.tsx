@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { FreeRosetteBadge } from "./FreeRosetteBadge";
+import { getSafeImageUrl, DEFAULT_BROKEN_IMAGE } from "@/features/story/types";
 
 interface ProductCardCoverProps {
   imageSrc: string;
@@ -21,25 +22,23 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
   ageRange,
   levelTag,
 }) => {
-  // If backend returns a dead/offline placeholder URL, fallback gracefully
-  const isBrokenPlaceholder =
-    !imageSrc || imageSrc.includes("via.placeholder.com");
-  const fallbackSrc = "/assets/sea_story.png";
-  const [currentSrc, setCurrentSrc] = useState(
-    isBrokenPlaceholder ? fallbackSrc : imageSrc
-  );
+  const [imgSrc, setImgSrc] = useState(() => getSafeImageUrl(imageSrc));
+
+  useEffect(() => {
+    setImgSrc(getSafeImageUrl(imageSrc));
+  }, [imageSrc]);
 
   return (
-    <div className="relative w-full h-55 bg-slate-100 overflow-hidden select-none">
+    <div className="relative w-full h-55 bg-gradient-to-br from-purple-50 to-slate-100 overflow-hidden select-none">
       {/* Story Cover Image */}
       <Image
-        src={currentSrc}
+        src={imgSrc}
         alt={imageAlt}
         fill
         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
         className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-        priority
-        onError={() => setCurrentSrc(fallbackSrc)}
+        onError={() => setImgSrc(DEFAULT_BROKEN_IMAGE)}
+        unoptimized={imgSrc === DEFAULT_BROKEN_IMAGE}
       />
 
       {/* Overlay Dark Gradient Vignette for Text Contrast */}
