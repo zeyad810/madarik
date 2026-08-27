@@ -144,6 +144,17 @@ export interface StoryFiltersState {
   selectedLevel?: string;
 }
 
+export interface StartStoryPayload {
+  child_id?: string | null;
+  student_id?: string | null;
+}
+
+export interface StartStoryResponse {
+  success?: boolean;
+  message?: string;
+  data?: any;
+}
+
 export interface FinishStoryPayload {
   child_id?: string | null;
   student_id?: string | null;

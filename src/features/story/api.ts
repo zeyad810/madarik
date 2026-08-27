@@ -134,11 +134,60 @@ export const getStoryById = async (
   };
 };
 
-// ── POST /stories/{id}/finish ──────────────────────────────────────────────────
+// ── POST /stories/{id}/start ───────────────────────────────────────────────────
+
+/**
+ * Mark a story as started.
+ * Unified endpoint: POST /stories/{id}/start
+ *
+ * visitor (unauthenticated) → returns local success without making API call
+ * authenticated user (parent with child, student, child) → calls endpoint with Bearer token & child_id
+ */
+export const startStory = async (
+  storyId: string,
+  role: string = "visitor",
+  payload?: StartStoryPayload,
+  token?: string | null
+): Promise<StartStoryResponse> => {
+  const resolvedToken = token || getStoredAuthToken();
+
+  if (!resolvedToken) {
+    return { success: true, message: "تم تسجيل بداية القراءة" };
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${resolvedToken}`,
+  };
+
+  const endpoint = `${API_BASE_URL}/stories/${storyId}/start`;
+
+  const bodyData: Record<string, any> = {};
+  const effectiveChildId = payload?.child_id || payload?.student_id;
+  if (effectiveChildId) {
+    bodyData.child_id = effectiveChildId;
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(bodyData),
+  });
+
+  const raw = await handleResponse<any>(response);
+  return {
+    success: raw?.success ?? true,
+    message: raw?.message ?? "تم تسجيل بداية القراءة بنجاح",
+    data: raw?.data ?? raw,
+  };
+};
+
+// ── PATCH /stories/{id}/finish ─────────────────────────────────────────────────
 
 /**
  * Mark a story as finished.
- * Unified endpoint: POST /stories/{id}/finish
+ * Unified endpoint: PATCH /stories/{id}/finish
  *
  * visitor (unauthenticated) → returns local success without making API call
  * authenticated user (parent with child, student, child, free user) → calls endpoint with Bearer token & child_id/student_id
@@ -180,7 +229,7 @@ export const finishStory = async (
   }
 
   const response = await fetch(endpoint, {
-    method: "POST",
+    method: "PATCH",
     headers,
     body: JSON.stringify(bodyData),
   });

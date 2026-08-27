@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Story, getStoryQuizId } from "../types";
 import { FreeRosetteBadge } from "@/features/products/components/FreeRosetteBadge";
+import { useStartStory } from "../hooks/useStartStory";
 
 interface StoryDetailHeroProps {
   story: Story;
@@ -23,6 +24,7 @@ interface StoryDetailHeroProps {
 
 export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
   const [isDownloading, setIsDownloading] = useState(false);
+  const { mutate: triggerStartStory } = useStartStory(story.id);
   // Safe Cover Image Resolution
   const rawCover = story.cover_photo_url || story.thumbnail_url;
   const isBrokenCover = !rawCover || rawCover.includes("via.placeholder.com");
@@ -174,6 +176,11 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             {/* 1. ابدأ رحلة القراءة الآن (Outline Purple Button) */}
             <Link
               href={`/stories/${story.id}/read`}
+              onClick={() => {
+                triggerStartStory(undefined, {
+                  onError: (err) => console.error("Start reading error:", err),
+                });
+              }}
               className="py-2.5 sm:py-3 px-6 rounded-full border-2 border-[#7939E3] text-[#7939E3] hover:bg-[#7939E3] hover:text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer select-none active:scale-95"
             >
               <BookOpen className="w-4 h-4" />
