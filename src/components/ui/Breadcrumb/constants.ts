@@ -16,7 +16,13 @@ export const DEFAULT_ROUTE_DICTIONARY: Record<string, string> = {
   contact: "اتصل بنا",
   faqs: "الأسئلة الشائعة",
   pricing: "الباقات والأسعار",
+  packages: "اختيار الباقة",
   subscription: "الاشتراك",
+  subscriptions: "الاشتراكات والدفع",
+  "subscription-status": "حالة اشتراكي",
+  status: "حالة اشتراكي",
+  renew: "تجديد الاشتراك",
+  "package-history": "تاريخ وسجل الباقات",
 
   // Parents & Children
   parents: "أولياء الأمور",

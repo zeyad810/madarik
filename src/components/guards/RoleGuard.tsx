@@ -28,13 +28,17 @@ export function RoleGuard({
 
   const currentRole = user_type || userRole;
   const hasAccess = hasRoleAccess(currentRole, allowedRoles);
-  const userIsStudent = isStudent || isStudentRole(currentRole);
+  const userIsChildOrStudent =
+    isStudent ||
+    isStudentRole(currentRole) ||
+    currentRole === "child" ||
+    currentRole === "student";
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated && userIsStudent && !hasAccess) {
+    if (!isLoading && isAuthenticated && userIsChildOrStudent && !hasAccess) {
       router.push("/stories");
     }
-  }, [isLoading, isAuthenticated, userIsStudent, hasAccess, router]);
+  }, [isLoading, isAuthenticated, userIsChildOrStudent, hasAccess, router]);
 
   if (isLoading) {
     return <>{loadingFallback}</>;
@@ -45,7 +49,7 @@ export function RoleGuard({
   }
 
   if (!hasAccess) {
-    if (userIsStudent) {
+    if (userIsChildOrStudent) {
       return <>{loadingFallback}</>;
     }
     return <>{fallback}</>;

@@ -17,7 +17,22 @@ interface DesktopNavProps {
 const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
   const pathname = usePathname();
   const { status } = useSession();
-  const { createAccountHref, userRole, isStudent, isFreeCustomer, isAuthenticated } = useActiveAccount();
+  const {
+    createAccountHref,
+    userRole,
+    isStudent,
+    isFreeCustomer,
+    isAuthenticated,
+    activeAccount,
+    activeChild,
+  } = useActiveAccount();
+
+  const isChildOrStudent =
+    isStudent ||
+    userRole === "student" ||
+    userRole === "child" ||
+    activeAccount?.type === "child" ||
+    activeChild !== null;
 
   const isLinkActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -25,16 +40,34 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
   };
 
   const visibleNavLinks = React.useMemo(() => {
+    // For unauthenticated visitors, show all navigation links
+    if (!isAuthenticated) {
+      return DESKTOP_NAV_LINKS;
+    }
+
     return DESKTOP_NAV_LINKS.filter((link) => {
+      // 1. Packages / Subscriptions links: hidden from child & student
+      const isPackagesLink =
+        link.id === "packages" ||
+        link.id === "pricing" ||
+        link.id === "subscriptions" ||
+        link.href.startsWith("/packages") ||
+        link.href.startsWith("/subscriptions") ||
+        link.href.startsWith("/subscription-status");
+
+      if (isPackagesLink && isChildOrStudent) {
+        return false;
+      }
+
+      // 2. Results link ("نتائجي") is strictly for authenticated student, parent, child
+      // and NEVER for free_customer
       const isResultsLink =
         link.id === "results" ||
         link.href.startsWith("/results") ||
         link.href.startsWith("/attempts");
 
-      // Results link ("نتائجي") is strictly for authenticated student, parent, child
-      // and NEVER for free_customer, visitor, or unauthenticated/loading state
       if (isResultsLink) {
-        if (!isAuthenticated || isFreeCustomer) {
+        if (isFreeCustomer) {
           return false;
         }
         const hasHistoryRole =
@@ -46,7 +79,21 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
 
       return true;
     });
-  }, [isAuthenticated, isFreeCustomer, userRole]);
+  }, [isAuthenticated, isFreeCustomer, isChildOrStudent, userRole]);
+
+  const isNavLinkDisabled = (link: (typeof DESKTOP_NAV_LINKS)[number]) => {
+    if (!isAuthenticated) {
+      const isAuthRequired =
+        link.id === "results" ||
+        link.href.startsWith("/results") ||
+        link.href.startsWith("/attempts") ||
+        link.id === "profile" ||
+        link.href.startsWith("/profile") ||
+        Boolean(link.allowedRoles && link.allowedRoles.length > 0);
+      return isAuthRequired;
+    }
+    return false;
+  };
 
   return (
     <>
@@ -54,6 +101,21 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
       <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
         {visibleNavLinks.map((link) => {
           const isActive = isLinkActive(link.href);
+          const isDisabled = isNavLinkDisabled(link);
+
+          if (isDisabled) {
+            return (
+              <span
+                key={link.id}
+                aria-disabled="true"
+                title="يتطلب تسجيل الدخول"
+                className="font-semibold text-sm xl:text-base text-white/40 cursor-not-allowed select-none py-1 transition-opacity"
+              >
+                {link.label}
+              </span>
+            );
+          }
+
           return (
             <Link
               key={link.id}

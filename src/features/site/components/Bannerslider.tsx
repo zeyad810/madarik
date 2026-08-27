@@ -14,6 +14,7 @@ import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 
 import { BannerSliderProps, BannerSlideItem } from "../types";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 
 const DEFAULT_SLIDES: BannerSlideItem[] = [
   {
@@ -52,8 +53,8 @@ const DEFAULT_SLIDES: BannerSlideItem[] = [
 ];
 
 const Bannerslider: React.FC<BannerSliderProps> = ({
-  id,
-  slides = DEFAULT_SLIDES,
+  id: propId,
+  slides: propSlides,
   autoplayDelay = 5000,
   showNavigation = true,
   showPagination = true,
@@ -61,6 +62,26 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
   heightClass = "h-[500px]",
   onSlideChange,
 }) => {
+  const { data: bannerSection } = usePublicLanding({
+    select: (res) => res.data?.banners_section,
+  });
+
+  const id = propId ?? bannerSection?.id;
+  const slides: BannerSlideItem[] =
+    propSlides ??
+    (bannerSection?.items && bannerSection.items.length > 0
+      ? bannerSection.items.map((item, idx) => ({
+          id: item.id || idx,
+          title: item.title,
+          description: item.description,
+          bgImage: item.image_url,
+          sideImage: item.side_image_url,
+          sideImageAlt: item.title,
+          buttonLink: item.link_url || "/register",
+          buttonText: "إشترك الآن",
+        }))
+      : DEFAULT_SLIDES);
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (

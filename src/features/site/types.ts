@@ -514,17 +514,68 @@ export interface PublicFaqSection {
   items: PublicFaqApiItem[];
 }
 
+export interface PublicContactInfo {
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface PublicSocialMedia {
+  twitter?: string;
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+}
+
 export interface PublicContactSection {
   id?: string;
   title: string;
   subtitle: string;
-  button_text: string;
+  button_text?: string;
+  description?: string;
+  form_fields?: Record<string, { label?: string; placeholder?: string }>;
+  contact_info?: PublicContactInfo;
+  social_media?: PublicSocialMedia;
 }
 
 export interface PublicNewsletterSection {
   id?: string;
   title: string;
   subtitle: string;
+}
+
+export interface PublicBannerItem {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  side_image_url?: string;
+  link_url?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  status?: string;
+  display_order?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PublicBannersSection {
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  items: PublicBannerItem[];
+}
+
+export interface PublicFooterLink {
+  url: string;
+  label: string;
+}
+
+export interface PublicFooterSection {
+  id?: string;
+  description?: string;
+  quick_links?: PublicFooterLink[];
+  important_links?: PublicFooterLink[];
 }
 
 export interface PublicLandingData {
@@ -545,6 +596,8 @@ export interface PublicLandingData {
   faq_section: PublicFaqSection;
   contact_section: PublicContactSection;
   newsletter_section: PublicNewsletterSection;
+  banners_section?: PublicBannersSection;
+  footer_section?: PublicFooterSection;
 }
 
 export type PublicLandingResponse = ApiResponse<PublicLandingData>;

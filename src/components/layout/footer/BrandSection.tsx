@@ -70,6 +70,8 @@ const BrandSection: React.FC<BrandSectionProps> = ({
           <Link
             key={social.id}
             href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={social.name}
             className="flex size-9 sm:size-10 items-center justify-center rounded-full bg-white text-mad-main shadow-md transition-all hover:bg-white/90 hover:scale-110 active:scale-95"
           >

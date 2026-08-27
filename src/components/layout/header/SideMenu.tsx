@@ -17,6 +17,7 @@ import {
   UserPlus,
   Check,
   Sparkles,
+  Lock,
 } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
@@ -74,8 +75,34 @@ const SideMenu: React.FC<SideMenuProps> = ({
     return pathname.startsWith(href);
   };
 
+  const isChildOrStudent =
+    isStudent ||
+    userRole === "student" ||
+    userRole === "child" ||
+    activeAccount?.type === "child";
+
   const visibleMenuItems = useMemo(() => {
+    // For unauthenticated visitors, show all side menu items
+    if (!isAuthenticated) {
+      return SIDE_MENU_ITEMS;
+    }
+
     return SIDE_MENU_ITEMS.filter((item) => {
+      // 1. Hide any package or subscription item from child & student
+      const isPackageOrSub =
+        item.id === "packages" ||
+        item.id === "pricing" ||
+        item.id === "subscriptions" ||
+        item.id === "sub-status" ||
+        item.id === "sub-history" ||
+        item.href.includes("/packages") ||
+        item.href.includes("/subscriptions") ||
+        item.href.includes("/subscription-status");
+
+      if (isPackageOrSub && isChildOrStudent) {
+        return false;
+      }
+
       const isResultsItem =
         item.id === "results" ||
         item.id === "attempts-log" ||
@@ -83,9 +110,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
         item.href.startsWith("/attempts");
 
       // Results/attempts log is strictly for authenticated student, parent, child
-      // and NEVER for free_customer, visitor, or unauthenticated/loading state
+      // and NEVER for free_customer
       if (isResultsItem) {
-        if (!isAuthenticated || isFreeCustomer) {
+        if (isFreeCustomer) {
           return false;
         }
         const hasHistoryRole =
@@ -95,7 +122,19 @@ const SideMenu: React.FC<SideMenuProps> = ({
         }
       }
 
-      if (isStudent) {
+      // Check item.allowedRoles
+      if (item.allowedRoles && item.allowedRoles.length > 0) {
+        const hasAccess =
+          item.allowedRoles.includes(userRole) ||
+          (isFreeCustomer &&
+            (item.allowedRoles.includes("free") ||
+              item.allowedRoles.includes("free_customer")));
+        if (!hasAccess) {
+          return false;
+        }
+      }
+
+      if (isChildOrStudent) {
         return (
           item.id === "home" ||
           item.id === "available-stories" ||
@@ -113,7 +152,26 @@ const SideMenu: React.FC<SideMenuProps> = ({
       }
       return true;
     });
-  }, [isAuthenticated, isFreeCustomer, isStudent, userRole]);
+  }, [isAuthenticated, isFreeCustomer, isChildOrStudent, userRole]);
+
+  const isItemDisabled = (item: (typeof SIDE_MENU_ITEMS)[number]) => {
+    if (!isAuthenticated) {
+      const isAuthRequired =
+        Boolean(item.allowedRoles && item.allowedRoles.length > 0) ||
+        item.id === "profile" ||
+        item.href.startsWith("/profile") ||
+        item.id === "attempts-log" ||
+        item.href.startsWith("/attempts") ||
+        item.id === "results" ||
+        item.href.startsWith("/results") ||
+        item.id === "children-mgmt" ||
+        item.id === "children-reports" ||
+        item.id === "sub-status" ||
+        item.id === "sub-history";
+      return isAuthRequired;
+    }
+    return false;
+  };
 
   const currentAvatarSrc =
     activeAccount?.type === "child"
@@ -438,7 +496,33 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 <nav className="flex flex-col">
                   {visibleMenuItems.map((item, i) => {
                     const isActive = isItemActive(item.href);
+                    const isDisabled = isItemDisabled(item);
                     const itemDelay = i * 0.035 + 0.02;
+
+                    if (isDisabled) {
+                      return (
+                        <motion.div
+                          key={item.id}
+                          initial={{ opacity: 0, x: 12 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{
+                            delay: itemDelay,
+                            duration: 0.28,
+                            ease: "easeOut",
+                          }}
+                        >
+                          <div
+                            aria-disabled="true"
+                            title="يتطلب تسجيل الدخول"
+                            className="flex items-center justify-between px-6 py-3 text-right text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed select-none transition-all"
+                          >
+                            <span>{item.label}</span>
+                            <Lock className="size-4 text-gray-400/80 shrink-0" />
+                          </div>
+                        </motion.div>
+                      );
+                    }
+
                     const itemContent = (
                       <motion.div
                         key={item.id}
@@ -467,7 +551,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                       </motion.div>
                     );
 
-                    if (item.allowedRoles && item.allowedRoles.length > 0) {
+                    if (isAuthenticated && item.allowedRoles && item.allowedRoles.length > 0) {
                       return (
                         <RoleGuard
                           key={item.id}
