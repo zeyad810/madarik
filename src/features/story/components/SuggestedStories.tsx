@@ -3,6 +3,10 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import ProductCard from "@/features/products/ProductCard";
 import { Product } from "@/features/products/types";
 import { Story, getSafeImageUrl } from "../types";
@@ -63,7 +67,7 @@ export const SuggestedStories: React.FC<SuggestedStoriesProps> = ({
 
   return (
     <section dir="rtl" className={`w-full py-12 ${className}`}>
-      {/* Section Header with Book & Star illustration */}
+      {/* Section Header */}
       <div className="flex flex-col items-center text-center mb-10 max-w-2xl mx-auto">
         <div className="relative w-16 h-16 mb-4">
           <Image
@@ -85,21 +89,55 @@ export const SuggestedStories: React.FC<SuggestedStoriesProps> = ({
         </p>
       </div>
 
-      {/* Grid of Product Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
-        {products.map((item, idx) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: idx * 0.1 }}
-            className="w-full flex justify-center"
-          >
-            <ProductCard product={item} />
-          </motion.div>
-        ))}
-      </div>
+      {/* Swiper Slider */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="w-full"
+      >
+        <Swiper
+          modules={[Autoplay, Pagination]}
+          dir="rtl"
+          spaceBetween={16}
+          slidesPerView={1.2}
+          watchOverflow
+          observer
+          observeParents
+          autoplay={{ delay: 4000, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+          breakpoints={{
+            375: {
+              slidesPerView: 1.2,
+              spaceBetween: 12,
+            },
+            600: {
+              slidesPerView: 2,
+              spaceBetween: 12,
+            },
+            768: {
+              slidesPerView: 2,
+              spaceBetween: 16,
+            },
+            1024: {
+              slidesPerView: 3,
+              spaceBetween: 20,
+            },
+            1360: {
+              slidesPerView: 4,
+              spaceBetween: 24,
+            },
+          }}
+          className="w-full pb-14!"
+        >
+          {products.map((item) => (
+            <SwiperSlide key={item.id} className="h-auto! flex justify-center">
+              <ProductCard product={item} className="max-w-none h-full" />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </motion.div>
     </section>
   );
 };
