@@ -8,6 +8,7 @@ interface ProductCardCoverProps {
   imageSrc: string;
   imageAlt: string;
   isFree?: boolean;
+  availability?: "free" | "paid" | string;
   ageRange?: string;
   levelTag?: string;
 }
@@ -16,6 +17,7 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
   imageSrc,
   imageAlt,
   isFree = true,
+  availability,
   ageRange,
   levelTag,
 }) => {
@@ -43,8 +45,8 @@ export const ProductCardCover: React.FC<ProductCardCoverProps> = ({
       {/* Overlay Dark Gradient Vignette for Text Contrast */}
       <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-black/10 pointer-events-none" />
 
-      {/* Free Rosette Ribbon Badge (Top Left) */}
-      {isFree && <FreeRosetteBadge />}
+      {/* Rosette Ribbon Badge (Top Left) - Paid or Free */}
+      <FreeRosetteBadge availability={availability} isFree={isFree} />
 
       {/* Age Range Badge (Top Right) - e.g. "5-9 سنة" */}
       {ageRange && (

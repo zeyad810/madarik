@@ -19,8 +19,17 @@ export const StoriesView: React.FC = () => {
   const router = useRouter();
   const searchQuery = searchParams.get("search") || "";
 
+  // Pagination & Load More States
+  const [page, setPage] = useState<number>(1);
+  const [hasClickedLoadMore, setHasClickedLoadMore] = useState<boolean>(false);
+
+  // Filter States
+  const [activeTab, setActiveTab] = useState<StoryFilterType>("all");
+  const [selectedLevel, setSelectedLevel] = useState<string>("all");
+
   const { data: storiesResponse, isLoading, isError } = useFreeStories({
     search: searchQuery || undefined,
+    page,
   });
 
   const allStories = useMemo<Story[]>(() => {
@@ -31,10 +40,9 @@ export const StoriesView: React.FC = () => {
     return [];
   }, [storiesResponse]);
 
-  // Filter States
-  const [activeTab, setActiveTab] = useState<StoryFilterType>("all");
-  const [selectedLevel, setSelectedLevel] = useState<string>("all");
-  const [visibleCount, setVisibleCount] = useState<number>(INITIAL_VISIBLE_COUNT);
+  const paginationMeta = storiesResponse?.pagination;
+  const totalPages = paginationMeta?.last_page || 1;
+  const totalStories = paginationMeta?.total || allStories.length;
 
   // Extract unique levels dynamically from API data
   const availableLevels = useMemo(() => {
@@ -55,7 +63,8 @@ export const StoriesView: React.FC = () => {
     if (tab === "all") {
       setSelectedLevel("all");
     }
-    setVisibleCount(INITIAL_VISIBLE_COUNT);
+    setPage(1);
+    setHasClickedLoadMore(false);
   };
 
   // Filtered stories based on tab and level selection
@@ -72,24 +81,38 @@ export const StoriesView: React.FC = () => {
     return allStories;
   }, [allStories, activeTab, selectedLevel]);
 
-  const hasMore = visibleCount < filteredStories.length;
-
+  // Handle "عرض المزيد": loads page 2 and activates full pagination for next interactions
   const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + LOAD_MORE_STEP);
+    setHasClickedLoadMore(true);
+    setPage(2);
+    // Smooth scroll to top of story container
+    window.scrollTo({ top: 350, behavior: "smooth" });
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 350, behavior: "smooth" });
   };
 
   const handleResetFilters = () => {
     setActiveTab("all");
     setSelectedLevel("all");
-    setVisibleCount(INITIAL_VISIBLE_COUNT);
+    setPage(1);
+    setHasClickedLoadMore(false);
     if (searchQuery) {
       router.push("/stories");
     }
   };
 
   const handleClearSearch = () => {
+    setPage(1);
+    setHasClickedLoadMore(false);
     router.push("/stories");
   };
+
+  // Determine whether to show "عرض المزيد" or pagination
+  const showLoadMore = totalPages > 1 && page === 1 && !hasClickedLoadMore;
+  const showPagination = hasClickedLoadMore || page > 1;
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-slate-50/50">
@@ -101,7 +124,7 @@ export const StoriesView: React.FC = () => {
         {/* Active Search Query Pill */}
         <StorySearchBanner
           searchQuery={searchQuery}
-          totalResults={allStories.length}
+          totalResults={totalStories}
           isLoading={isLoading}
           onClearSearch={handleClearSearch}
         />
@@ -114,7 +137,8 @@ export const StoriesView: React.FC = () => {
           selectedLevel={selectedLevel}
           onLevelChange={(lvl) => {
             setSelectedLevel(lvl);
-            setVisibleCount(INITIAL_VISIBLE_COUNT);
+            setPage(1);
+            setHasClickedLoadMore(false);
           }}
         />
 
@@ -139,13 +163,16 @@ export const StoriesView: React.FC = () => {
           />
         )}
 
-        {/* Stories Grid */}
+        {/* Stories Grid with Load More (Page 1) and Pagination (after Load More) */}
         {!isLoading && filteredStories.length > 0 && (
           <StoryGrid
             stories={filteredStories}
-            visibleCount={visibleCount}
-            hasMore={hasMore}
+            showLoadMore={showLoadMore}
             onLoadMore={handleLoadMore}
+            showPagination={showPagination}
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
           />
         )}
       </div>

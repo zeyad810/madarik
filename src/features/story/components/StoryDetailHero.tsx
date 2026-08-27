@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Story, getStoryQuizId } from "../types";
 import { FreeRosetteBadge } from "@/features/products/components/FreeRosetteBadge";
+import { useStartStory } from "../hooks/useStartStory";
 
 interface StoryDetailHeroProps {
   story: Story;
@@ -23,6 +24,7 @@ interface StoryDetailHeroProps {
 
 export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
   const [isDownloading, setIsDownloading] = useState(false);
+  const { mutate: triggerStartStory } = useStartStory(story.id);
   // Safe Cover Image Resolution
   const rawCover = story.cover_photo_url || story.thumbnail_url;
   const isBrokenCover = !rawCover || rawCover.includes("via.placeholder.com");
@@ -75,12 +77,10 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="relative w-full bg-white rounded-4xl border border-slate-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.05)] p-6 sm:p-8 md:p-10 flex flex-col-reverse lg:flex-row items-center justify-between gap-8 overflow-hidden"
       >
-        {/* Rosette Badge (Top Left in Card) */}
-        {(story.availability === "free" || !story.availability) && (
-          <div className="absolute top-4 left-4 z-20 pointer-events-none">
-            <FreeRosetteBadge />
-          </div>
-        )}
+        {/* Rosette Badge (Top Left in Card) - Paid or Free */}
+        <div className="absolute top-4 left-4 z-20 pointer-events-none">
+          <FreeRosetteBadge availability={story.availability} />
+        </div>
 
         {/* Right Info Section */}
         <div className="flex-1 w-full flex flex-col justify-between text-right">
@@ -176,6 +176,11 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             {/* 1. ابدأ رحلة القراءة الآن (Outline Purple Button) */}
             <Link
               href={`/stories/${story.id}/read`}
+              onClick={() => {
+                triggerStartStory(undefined, {
+                  onError: (err) => console.error("Start reading error:", err),
+                });
+              }}
               className="py-2.5 sm:py-3 px-6 rounded-full border-2 border-[#7939E3] text-[#7939E3] hover:bg-[#7939E3] hover:text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer select-none active:scale-95"
             >
               <BookOpen className="w-4 h-4" />
