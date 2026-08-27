@@ -205,6 +205,8 @@ const PackageCard = ({
   );
 };
 
+import { useActiveAccount } from "@/hooks/useActiveAccount";
+
 // ==========================================
 // Main Component
 // ==========================================
@@ -215,9 +217,20 @@ const Pricing: React.FC<PricingProps> = ({
   packages: propPackages,
   onCtaClick,
 }) => {
+  const { userRole, isStudent, activeAccount } = useActiveAccount();
+  const isChildOrStudent =
+    isStudent ||
+    userRole === "student" ||
+    userRole === "child" ||
+    activeAccount?.type === "child";
+
   const { data: packagesData } = usePublicPackages({
     select: (res) => res.data,
   });
+
+  if (isChildOrStudent) {
+    return null;
+  }
 
   const id = propId ?? packagesData?.id;
   const title = propTitle ?? packagesData?.title ?? "اختر الباقة المناسبة لطفلك";

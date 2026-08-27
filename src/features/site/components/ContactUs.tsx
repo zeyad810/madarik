@@ -13,8 +13,8 @@ const ContactUs: React.FC<ContactUsProps> = ({
   id: propId,
   title: propTitle,
   description: propDescription,
-  contactInfo = defaultContactData.contactInfo,
-  socialLinks = defaultContactData.socialLinks,
+  contactInfo: propContactInfo,
+  socialLinks: propSocialLinks,
   onSubmit,
 }) => {
   const { data: contactData } = usePublicLanding({
@@ -24,6 +24,26 @@ const ContactUs: React.FC<ContactUsProps> = ({
   const id = propId ?? contactData?.id;
   const title = propTitle ?? contactData?.title ?? defaultContactData.title;
   const description = propDescription ?? contactData?.subtitle ?? defaultContactData.description;
+
+  const contactInfo =
+    propContactInfo ??
+    (contactData?.contact_info
+      ? {
+          email: contactData.contact_info.email ?? defaultContactData.contactInfo.email,
+          phone: contactData.contact_info.phone ?? defaultContactData.contactInfo.phone,
+          address: contactData.contact_info.address ?? defaultContactData.contactInfo.address,
+        }
+      : defaultContactData.contactInfo);
+
+  const socialLinks =
+    propSocialLinks ??
+    (contactData?.social_media
+      ? {
+          instagram: contactData.social_media.instagram ?? defaultContactData.socialLinks.instagram,
+          twitter: contactData.social_media.twitter ?? defaultContactData.socialLinks.twitter,
+          facebook: contactData.social_media.facebook ?? defaultContactData.socialLinks.facebook,
+        }
+      : defaultContactData.socialLinks);
 
   return (
     <section

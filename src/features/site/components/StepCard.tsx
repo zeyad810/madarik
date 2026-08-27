@@ -16,7 +16,6 @@ export const StepCard: React.FC<StepCardProps> = ({ step, index = 0 }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.12, ease: "easeOut" }}
-      whileHover={{ scale: 1.02, transition: { duration: 0.25 } }}
       className="relative flex items-center w-full min-h-35 sm:min-h-41.25 md:min-h-43.75"
     >
       {/* Capsule Frame Container composed of Two Divs */}
