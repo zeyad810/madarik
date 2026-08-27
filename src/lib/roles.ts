@@ -69,6 +69,23 @@ export function isStudentRole(role: string | undefined | null): boolean {
 }
 
 /**
+ * Checks whether a role corresponds to a child.
+ */
+export function isChildRole(role: string | undefined | null): boolean {
+  if (!role) return false;
+  return normalizeRole(role) === "child";
+}
+
+/**
+ * Checks whether a role corresponds to a child or a student.
+ */
+export function isChildOrStudentRole(role: string | undefined | null): boolean {
+  if (!role) return false;
+  const normalized = normalizeRole(role);
+  return normalized === "child" || normalized === "student";
+}
+
+/**
  * Checks whether a role corresponds to a free customer.
  */
 export function isFreeRole(role: string | undefined | null): boolean {
@@ -85,5 +102,6 @@ export function isFreeRole(role: string | undefined | null): boolean {
     clean === "عميل"
   );
 }
+
 
 

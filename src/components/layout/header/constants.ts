@@ -34,7 +34,6 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
     href: "/packages/history",
     allowedRoles: ["parent", "free", "free_customer"],
   },
-  { id: "profile", label: "الملف الشخصي", href: "/profile" },
 ];
 
 export const DESKTOP_NAV_LINKS: NavLinkItem[] = [

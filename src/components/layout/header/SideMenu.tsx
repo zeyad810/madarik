@@ -61,6 +61,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
     resetAccount,
     isStudent,
     isParentRole,
+    isParentActive,
+    isChildOrStudent,
     isFreeCustomer,
     switchAccount,
   } = useActiveAccount();
@@ -74,12 +76,6 @@ const SideMenu: React.FC<SideMenuProps> = ({
     }
     return pathname.startsWith(href);
   };
-
-  const isChildOrStudent =
-    isStudent ||
-    userRole === "student" ||
-    userRole === "child" ||
-    activeAccount?.type === "child";
 
   const visibleMenuItems = useMemo(() => {
     // For unauthenticated visitors, show all side menu items
@@ -140,14 +136,10 @@ const SideMenu: React.FC<SideMenuProps> = ({
           item.id === "available-stories" ||
           item.id === "attempts-log" ||
           item.id === "results" ||
-          item.id === "profile" ||
-          item.id === "settings" ||
           item.href === "/" ||
           item.href.startsWith("/stories") ||
           item.href.startsWith("/results") ||
-          item.href.startsWith("/attempts") ||
-          item.href.startsWith("/profile") ||
-          item.href.startsWith("/settings")
+          item.href.startsWith("/attempts")
         );
       }
       return true;
@@ -183,10 +175,10 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
   const parentName =
     activeAccount?.rawParent?.name || (isParentRole ? "ولي الأمر" : "المستخدم");
-  const isParentActive =
+  const isParentStatusActive =
     !activeAccount?.rawParent?.status ||
     activeAccount?.rawParent?.status === "active";
-  const parentStatusLabel = isParentActive ? "نشط" : "معطل";
+  const parentStatusLabel = isParentStatusActive ? "نشط" : "معطل";
 
   const hasMultipleProfiles = isParentRole || children.length > 0;
 
@@ -332,9 +324,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
                         {/* 1. Parent Profile Row */}
                         <button
                           type="button"
-                          disabled={!isParentActive}
+                          disabled={!isParentStatusActive}
                           onClick={() => {
-                            if (isParentActive) {
+                            if (isParentStatusActive) {
                               switchAccount("parent");
                               setIsSwitcherOpen(false);
                             }
@@ -342,7 +334,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                           className={`w-full p-2.5 rounded-2xl transition-all border text-right flex items-center justify-between gap-3 ${
                             activeId === "parent"
                               ? "bg-purple-50/90 border-mad-main shadow-xs ring-1 ring-mad-main/30 cursor-pointer"
-                              : !isParentActive
+                              : !isParentStatusActive
                               ? "bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed"
                               : "bg-white border-gray-100 hover:border-purple-200 hover:bg-purple-50/40 cursor-pointer"
                           }`}
@@ -370,7 +362,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                           <div className="flex items-center gap-1.5 shrink-0">
                             <span
                               className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                                isParentActive
+                                isParentStatusActive
                                   ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
                                   : "bg-gray-100 text-gray-500"
                               }`}
@@ -575,15 +567,17 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 <div className="h-11 w-full bg-gray-200 animate-pulse rounded-xl" />
               ) : isAuthenticated && activeAccount ? (
                 <div className="flex flex-col gap-2">
-                  {/* Profile Page Link */}
-                  <Link
-                    href="/profile"
-                    onClick={onClose}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-purple-50 text-gray-700 hover:text-mad-main font-bold text-center text-xs sm:text-sm transition-all flex items-center justify-center gap-2 border border-gray-200 hover:border-purple-200 shadow-xs"
-                  >
-                    <User className="size-4 text-mad-main" />
-                    <span>الملف الشخصي</span>
-                  </Link>
+                  {/* Profile Page Link - Parent only */}
+                  {isParentActive && !isChildOrStudent && (
+                    <Link
+                      href="/profile"
+                      onClick={onClose}
+                      className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-purple-50 text-gray-700 hover:text-mad-main font-bold text-center text-xs sm:text-sm transition-all flex items-center justify-center gap-2 border border-gray-200 hover:border-purple-200 shadow-xs"
+                    >
+                      <User className="size-4 text-mad-main" />
+                      <span>الملف الشخصي</span>
+                    </Link>
+                  )}
 
                   {/* Logout Button */}
                   <button

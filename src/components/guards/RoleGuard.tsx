@@ -4,7 +4,12 @@ import React, { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AccessDeniedFallback } from "./AccessDeniedFallback";
-import { hasRoleAccess, isStudentRole } from "@/lib/roles";
+import {
+  hasRoleAccess,
+  isStudentRole,
+  isChildRole,
+  isChildOrStudentRole,
+} from "@/lib/roles";
 
 interface RoleGuardProps {
   allowedRoles: string[];
@@ -15,7 +20,7 @@ interface RoleGuardProps {
 
 /**
  * RoleGuard restricts rendering to users with specific roles (e.g., 'parent', 'free', 'free_customer').
- * If a student attempts to access a protected non-student page, they are immediately redirected to /stories.
+ * If a child or student attempts to access a protected non-child page, they are immediately redirected to /stories.
  */
 export function RoleGuard({
   allowedRoles,
@@ -24,12 +29,24 @@ export function RoleGuard({
   children,
 }: RoleGuardProps) {
   const router = useRouter();
-  const { user_type, userRole, isLoading, isAuthenticated, isStudent } = useActiveAccount();
+  const {
+    user_type,
+    userRole,
+    isLoading,
+    isAuthenticated,
+    isStudent,
+    isChild,
+    isChildOrStudent,
+  } = useActiveAccount();
 
   const currentRole = user_type || userRole;
   const hasAccess = hasRoleAccess(currentRole, allowedRoles);
   const userIsChildOrStudent =
+    isChildOrStudent ||
+    isChild ||
     isStudent ||
+    isChildOrStudentRole(currentRole) ||
+    isChildRole(currentRole) ||
     isStudentRole(currentRole) ||
     currentRole === "child" ||
     currentRole === "student";
@@ -50,7 +67,11 @@ export function RoleGuard({
 
   if (!hasAccess) {
     if (userIsChildOrStudent) {
-      return <>{loadingFallback}</>;
+      return (
+        <div className="w-full min-h-[60vh] flex items-center justify-center">
+          <div className="size-10 border-4 border-mad-main border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
     }
     return <>{fallback}</>;
   }
