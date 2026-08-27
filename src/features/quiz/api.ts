@@ -236,9 +236,9 @@ export const getQuizHistory = async (
       const key = obj.quiz_id || obj.id || obj.code || obj.story_title || obj.title || `item-${idx}`;
 
       const totalQ = obj.total_questions ?? obj.questions?.length ?? 1;
-      const score = obj.score ?? obj.correct_answers ?? obj.last_score ?? 0;
-      const lastScore = obj.last_score ?? score;
-      const highestScore = obj.highest_score ?? score;
+      const score = obj.score ?? obj.correct_answers ?? obj.last_score_percentage ?? obj.last_score ?? 0;
+      const lastScore = obj.last_score_percentage ?? obj.last_score ?? score;
+      const highestScore = obj.highest_score_percentage ?? obj.highest_score ?? score;
       const attemptsCount =
         obj.attempts_count ??
         obj.total_attempts ??
@@ -269,14 +269,17 @@ export const getQuizHistory = async (
         outcome_name: obj.outcome_name || outcomeVal,
         indicator_name: obj.indicator_name || indicatorVal,
         passing_score: obj.passing_score ?? 10,
+        passing_score_percentage: obj.passing_score_percentage ?? 50,
         total_questions: totalQ,
         score: score,
-        percentage: obj.percentage ?? Math.round(((highestScore || score) / (totalQ || 1)) * 100),
+        percentage: obj.highest_score_percentage ?? obj.percentage ?? Math.round(((highestScore || score) / (totalQ || 1)) * 100),
         passed: obj.passed ?? ((highestScore || score) >= (obj.passing_score ?? 10)),
         attempts_count: attemptsCount,
         attempt_number: attemptsCount,
         last_score: lastScore,
         highest_score: highestScore,
+        last_score_percentage: obj.last_score_percentage ?? lastScore,
+        highest_score_percentage: obj.highest_score_percentage ?? highestScore,
         highest_score_emoji: obj.highest_score_emoji,
         max_score: 100,
         last_attempt_at: obj.last_attempt_at,

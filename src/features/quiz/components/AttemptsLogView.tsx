@@ -298,7 +298,7 @@ export const AttemptsLogView: React.FC = () => {
               <div className="w-full bg-[#FAF8FF]/60 rounded-[28px] p-4 sm:p-6 lg:p-8 border border-purple-100/60 shadow-[0_10px_40px_rgba(121,57,227,0.04)]">
                 {/* Table Header */}
                 <div className="hidden lg:grid grid-cols-12 gap-2 text-center text-xs font-bold text-slate-400 px-6 py-3 select-none">
-                  <span className="col-span-2 text-right pr-2">القصة</span>
+                  <span className="col-span-1 text-right pr-2">القصة</span>
                   <span className="col-span-2">المستوى</span>
                   <span className="col-span-1">الناتج</span>
                   <span className="col-span-2">المؤشر</span>
@@ -322,8 +322,8 @@ export const AttemptsLogView: React.FC = () => {
                       const outcomeName = row.outcome_name || row.outcome || row.story?.outcome || "-";
                       const indicatorName = row.indicator_name || row.indicator || row.story?.indicator || "-";
                       const attemptsCount = row.attempts_count || row.attempt_number || 1;
-                      const lastScore = row.last_score ?? row.score ?? 0;
-                      const highestScore = row.highest_score ?? row.score ?? 0;
+                      const lastScore = row.last_score_percentage ?? row.last_score ?? row.score ?? 0;
+                      const highestScore = row.highest_score_percentage ?? row.highest_score ?? row.score ?? 0;
                       const maxScore = 100;
                       const dateDisplay = formatDate(row.last_attempt_at || row.created_at);
 
@@ -337,7 +337,7 @@ export const AttemptsLogView: React.FC = () => {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.98 }}
                           transition={{ duration: 0.25, delay: idx * 0.04 }}
-                          className={`rounded-[24px] lg:rounded-[18px] p-5 sm:p-6 lg:px-7 lg:py-4 transition-all duration-200 text-xs sm:text-sm font-bold ${
+                          className={`rounded-3xl lg:rounded-[18px] p-5 sm:p-6 lg:px-7 lg:py-4 transition-all duration-200 text-xs sm:text-sm font-bold ${
                             isPurpleRow
                               ? "bg-[#6D28D9] text-white hover:bg-[#6020C7]"
                               : "bg-white text-slate-800 border border-purple-100 hover:border-purple-200"

@@ -119,6 +119,9 @@ export interface QuizHistoryItem {
   attempt_number?: number;
   last_score?: number;
   highest_score?: number;
+  last_score_percentage?: number;
+  highest_score_percentage?: number;
+  passing_score_percentage?: number;
   highest_score_emoji?: string;
   max_score?: number | string;
   last_attempt_at?: string;
