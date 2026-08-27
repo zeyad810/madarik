@@ -112,10 +112,22 @@ export const getStoryIndicatorName = (
   return fallback;
 };
 
+export interface StoryPaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from?: number | null;
+  to?: number | null;
+  next_page_url?: string | null;
+  prev_page_url?: string | null;
+}
+
 export interface FreeStoriesResponse {
   success: boolean;
   message?: string;
   data: Story[];
+  pagination?: StoryPaginationMeta;
 }
 
 export interface StoryDetailResponse {
@@ -130,6 +142,17 @@ export interface StoryFiltersState {
   filterType: StoryFilterType;
   selectedAge?: string;
   selectedLevel?: string;
+}
+
+export interface StartStoryPayload {
+  child_id?: string | null;
+  student_id?: string | null;
+}
+
+export interface StartStoryResponse {
+  success?: boolean;
+  message?: string;
+  data?: any;
 }
 
 export interface FinishStoryPayload {

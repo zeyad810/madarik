@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Story, StoryBlock, getStoryQuizId } from "../types";
 import { useFinishStory } from "../hooks/useFinishStory";
+import { useStartStory } from "../hooks/useStartStory";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 import toast from "react-hot-toast";
@@ -26,13 +27,24 @@ interface StoryReaderViewProps {
 export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   const { isAuthenticated } = useActiveAccount();
 
-  // Finish story mutation hook
+  const { mutate: markStoryStarted } = useStartStory(story.id);
   const { mutate: markStoryFinished, isPending: isFinishing, isSuccess: isFinished } =
     useFinishStory(story.id);
 
-  // Track if story has been marked finished in this session
+  // Track if story has been marked started / finished in this session
+  const hasStartedRef = useRef(false);
   const hasFinishedRef = useRef(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+  // Auto-record start of reading on reader view mount (once)
+  useEffect(() => {
+    if (!hasStartedRef.current) {
+      hasStartedRef.current = true;
+      markStoryStarted(undefined, {
+        onError: (err) => console.error("Start reading session error:", err),
+      });
+    }
+  }, [markStoryStarted]);
 
   // Extract and organize blocks into pages
   const blocks: StoryBlock[] =
@@ -115,8 +127,14 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
         {/* Right Info: Badges & Story Title */}
         <div className="text-right">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-            <span className="bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC] text-xs font-bold px-3.5 py-0.5 rounded-full select-none">
-              مجانية
+            <span
+              className={`text-xs font-bold px-3.5 py-0.5 rounded-full select-none ${
+                story.availability === "paid"
+                  ? "bg-[#FEF9C3] text-[#A16207] border border-[#FDE047]"
+                  : "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+              }`}
+            >
+              {story.availability === "paid" ? "مدفوعة" : "مجانية"}
             </span>
             {story.code && (
               <span className="bg-[#EBF7F5] text-[#0D9488] text-xs font-bold px-3.5 py-0.5 rounded-full select-none">

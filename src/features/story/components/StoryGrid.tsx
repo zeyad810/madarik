@@ -6,26 +6,36 @@ import ProductCard from "@/features/products/ProductCard";
 import { Product } from "@/features/products/types";
 import { Story, getStoryLevelName } from "../types";
 
+import { StoriesPagination } from "./StoriesPagination";
+
 interface StoryGridProps {
   stories: Story[];
   visibleCount?: number;
-  hasMore?: boolean;
+  showLoadMore?: boolean;
   onLoadMore?: () => void;
+  showPagination?: boolean;
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export const StoryGrid: React.FC<StoryGridProps> = ({
   stories,
   visibleCount,
-  hasMore = false,
+  showLoadMore = false,
   onLoadMore,
+  showPagination = false,
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
 }) => {
-  // Slice stories if visibleCount is passed
+  // Slice stories if visibleCount is passed and pagination is not active
   const displayedStories = useMemo(() => {
-    if (typeof visibleCount === "number") {
+    if (typeof visibleCount === "number" && !showPagination) {
       return stories.slice(0, visibleCount);
     }
     return stories;
-  }, [stories, visibleCount]);
+  }, [stories, visibleCount, showPagination]);
 
   // Map Story to Product card format
   const mappedProducts: Product[] = useMemo(() => {
@@ -53,6 +63,7 @@ export const StoryGrid: React.FC<StoryGridProps> = ({
             ? `${story.age_category} سنة`
             : "جميع الأعمار",
         isFree: story.availability === "free" || !story.availability,
+        availability: story.availability || "free",
         levelTag: levelStr,
         storyCodeTag: story.code ?? "Story 000-XXX",
         ctaText: "ابدأ القراءة",
@@ -66,14 +77,14 @@ export const StoryGrid: React.FC<StoryGridProps> = ({
   }
 
   return (
-    <>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 justify-items-center mb-12">
+    <div className="w-full flex flex-col items-center">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 justify-items-center mb-8">
         {mappedProducts.map((product, idx) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: (idx % 4) * 0.08 }}
+            transition={{ duration: 0.35, delay: (idx % 4) * 0.06 }}
             className="w-full flex justify-center"
           >
             <ProductCard product={product} />
@@ -81,11 +92,11 @@ export const StoryGrid: React.FC<StoryGridProps> = ({
         ))}
       </div>
 
-      {/* Load More Button ("عرض المزيد") */}
-      {hasMore && onLoadMore && (
+      {/* 1. "عرض المزيد" Button (Shown once for Page 1 before switching to pagination) */}
+      {showLoadMore && !showPagination && onLoadMore && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
           className="flex justify-center my-6"
         >
           <button
@@ -97,7 +108,16 @@ export const StoryGrid: React.FC<StoryGridProps> = ({
           </button>
         </motion.div>
       )}
-    </>
+
+      {/* 2. Numbered Pagination Bar (Shown after "عرض المزيد" is clicked or when pagination is enabled) */}
+      {showPagination && totalPages > 1 && onPageChange && (
+        <StoriesPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
+      )}
+    </div>
   );
 };
 
