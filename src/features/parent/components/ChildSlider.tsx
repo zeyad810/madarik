@@ -27,14 +27,10 @@ export const ChildSlider: React.FC<ChildSliderProps> = ({
   return (
     <div className="w-full py-4 relative select-none" dir="rtl">
       <Swiper
-        modules={[Navigation, Pagination]}
+        modules={[Navigation]}
         spaceBetween={20}
         slidesPerView={1.15}
         dir="rtl"
-        pagination={{
-          clickable: true,
-          dynamicBullets: true,
-        }}
         breakpoints={{
           480: {
             slidesPerView: 1.5,

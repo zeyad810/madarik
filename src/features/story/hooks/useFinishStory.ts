@@ -36,7 +36,8 @@ export function useFinishStory(
     },
     onSuccess: (data, variables, context) => {
       // Invalidate relevant queries to refresh reading activities, reports, and badges
-      queryClient.invalidateQueries({ queryKey: storyQueryKeys.all });
+      // Note: We DO NOT invalidate story detail query here because fetching GET /stories/{id}
+      // triggers the backend to start a new reading activity session.
       queryClient.invalidateQueries({ queryKey: parentQueryKeys.reports() });
       queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
       queryClient.invalidateQueries({ queryKey: ["child-reports"] });

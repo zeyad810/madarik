@@ -2,60 +2,25 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Calendar,
-  Trophy,
-  BookOpen,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-  Loader2,
-  AlertCircle,
-} from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 
 import { useQuizHistory } from "../hooks/useQuizHistory";
 import { QuizHistoryItem } from "../types";
+import {
+  AttemptsAccessDenied,
+  AttemptsEmptyState,
+  AttemptsFilterBar,
+  AttemptsTableRow,
+  AttemptsPagination,
+} from "./attempts";
 
 const ITEMS_PER_PAGE = 8;
 
-/**
- * Returns an expressive emoji based on percentage/score.
- */
-function getScoreEmoji(percentage: number): string {
-  if (percentage >= 90) return "/iamges/love-Em.svg";
-  if (percentage >= 85) return "/iamges/happy-Em.svg";
-  if (percentage >= 70) return "/iamges/smile-Em.svg";
-  if (percentage >= 40) return "/iamges/shocked-Em.svg";
-  return "/iamges/sad-Em.svg";
-}
-
-
-/**
- * Formats date string to DD/MM/YYYY.
- */
-function formatDate(dateStr?: string): string {
-  if (!dateStr) return "-";
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    const day = d.getDate();
-    const month = d.getMonth() + 1;
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  } catch {
-    return dateStr;
-  }
-}
-
 export const AttemptsLogView: React.FC = () => {
-  const router = useRouter();
   const { status } = useSession();
   const { userRole, isAuthenticated, isLoading: isAccountLoading } = useActiveAccount();
 
@@ -63,7 +28,7 @@ export const AttemptsLogView: React.FC = () => {
   const isAllowed = role === "student" || role === "parent" || role === "child";
 
   // Data fetching
-  const { data: historyResponse, isLoading, isError, refetch } = useQuizHistory();
+  const { data: historyResponse, isLoading, refetch } = useQuizHistory();
   const rawAttempts = historyResponse?.data || [];
 
   // Always fetch fresh data on mount
@@ -79,7 +44,7 @@ export const AttemptsLogView: React.FC = () => {
   const [selectedIndicator, setSelectedIndicator] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Normalize attempts data from API and local storage
+  // Normalize attempts data from API
   const normalizedAttempts: QuizHistoryItem[] = useMemo(() => {
     return rawAttempts;
   }, [rawAttempts]);
@@ -150,30 +115,9 @@ export const AttemptsLogView: React.FC = () => {
     );
   }
 
-  // If visitor or free_customer tries to access history directly
+  // If visitor or unauthorized tries to access history directly
   if (!isAllowed) {
-    return (
-      <div
-        dir="rtl"
-        className="min-h-[70vh] flex flex-col items-center justify-center gap-6 px-4"
-      >
-        <div className="size-20 rounded-full bg-purple-50 flex items-center justify-center text-[#7939E3]">
-          <AlertCircle className="size-10" />
-        </div>
-        <h2 className="text-xl sm:text-2xl font-black text-slate-800 text-center">
-          سجل المحاولات متاح لطلاب ومشتركي المنصة فقط
-        </h2>
-        <p className="text-sm text-slate-500 font-medium text-center max-w-md">
-          يمكنك تصفح وقراءة القصص المتاحة وخوض الاختبارات في أي وقت.
-        </p>
-        <Link
-          href="/stories"
-          className="py-3 px-8 rounded-full bg-[#7939E3] hover:bg-[#6D28D9] text-white font-bold text-sm transition-all shadow-md active:scale-95"
-        >
-          تصفح القصص
-        </Link>
-      </div>
-    );
+    return <AttemptsAccessDenied />;
   }
 
   return (
@@ -189,110 +133,56 @@ export const AttemptsLogView: React.FC = () => {
         />
       </div>
 
-      {/* ─────────────────── STAR-BG SECTION (below breadcrumb) ─────────────────── */}
-      <div
-        className="flex-1 flex flex-col"
-        style={{ backgroundImage: "url('/iamges/star-bg.png')", backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}
-      >
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-4">
-
-        {/* Heading */}
-        <div className="flex flex-col items-center justify-center text-center mt-2 mb-8">
-          <span className="text-xs sm:text-sm font-black text-[#7939E3] mb-1 tracking-wide">
-            محاولاتي في الاختبارات
-          </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1E1B4B]">
-            سجل المحاولات
-          </h1>
+      {/* ─────────────────── MAIN CONTENT SECTION ─────────────────── */}
+      <div className="flex-1 flex flex-col relative">
+        <div className="absolute inset-0 bottom-37 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+          <Image
+            src="/iamges/star-bg.png"
+            alt="stars background"
+            width={1200}
+            height={800}
+            className="w-full max-w-5xl h-auto object-contain opacity-90"
+            priority
+          />
         </div>
 
-        {/* ─────────────────── CONDITIONAL CONTENT ─────────────────── */}
-        {normalizedAttempts.length === 0 ? (
-          /* ── Empty State matching user screenshot ── */
-          <main className="flex-1 flex flex-col items-center justify-center py-6 sm:py-12 text-center gap-4">
-            <div className="relative flex justify-center w-full max-w-sm">
-              <Image
-                src="/iamges/empty-history.png"
-                alt="لم تقم بحل أي اختبار بعد"
-                width={320}
-                height={270}
-                style={{ width: "auto", height: "auto" }}
-                className="object-contain max-h-72 drop-shadow-sm"
-                priority
-              />
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-[#1E1B4B] mt-2">
-              لم تقم بحل أي اختبار بعد
-            </h3>
-            <Link
-              href="/"
-              className="inline-flex items-center justify-center gap-2 py-2.5 px-8 rounded-full border border-[#7939E3] text-[#7939E3] hover:bg-purple-50 transition-all font-bold text-sm shadow-xs active:scale-95 cursor-pointer mt-1"
-            >
-              <span>العودة للرئيسية</span>
-              <span className="text-base leading-none">←</span>
-            </Link>
-          </main>
-        ) : (
-          /* ── Filter Dropdowns & Main Table ── */
-          <>
-            {/* MAIN TABLE CONTAINER */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+          {/* Heading */}
+          <div className="flex flex-col items-center justify-center text-center mt-2 mb-8">
+            <span className="text-xs sm:text-sm font-black text-[#7939E3] mb-1 tracking-wide">
+              محاولاتي في الاختبارات
+            </span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1E1B4B]">
+              سجل المحاولات
+            </h1>
+          </div>
+
+          {/* ─────────────────── CONDITIONAL CONTENT ─────────────────── */}
+          {normalizedAttempts.length === 0 ? (
+            <AttemptsEmptyState />
+          ) : (
             <main className="w-full pb-12 flex-1 flex flex-col items-center">
-              {/* FILTERS — 3 columns side-by-side without wrap */}
-              <div className="w-full grid grid-cols-3 sm:flex sm:flex-row sm:items-center sm:justify-start gap-2 sm:gap-3 mb-4">
-                {/* 1. Level Filter */}
-                <div className="relative w-full sm:w-auto sm:min-w-36">
-                  <select
-                    value={selectedLevel}
-                    onChange={(e) => {
-                      setSelectedLevel(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-2 pr-2.5 pl-5.5 sm:px-4 sm:pr-4 sm:pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right truncate"
-                  >
-                    <option value="all">المستوى</option>
-                    {levelsList.map((lvl) => (
-                      <option key={lvl} value={lvl}>{lvl}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 absolute left-1.5 sm:left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
-                {/* 2. Outcome Filter */}
-                <div className="relative w-full sm:w-auto sm:min-w-36">
-                  <select
-                    value={selectedOutcome}
-                    onChange={(e) => {
-                      setSelectedOutcome(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-2 pr-2.5 pl-5.5 sm:px-4 sm:pr-4 sm:pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right truncate"
-                  >
-                    <option value="all">الناتج</option>
-                    {outcomesList.map((out) => (
-                      <option key={out} value={out}>{out}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 absolute left-1.5 sm:left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
-                {/* 3. Indicator Filter */}
-                <div className="relative w-full sm:w-auto sm:min-w-36">
-                  <select
-                    value={selectedIndicator}
-                    onChange={(e) => {
-                      setSelectedIndicator(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full appearance-none bg-white border border-mad-white-200 text-mad-text-secondary text-xs font-bold rounded-lg py-2 px-2 pr-2.5 pl-5.5 sm:px-4 sm:pr-4 sm:pl-8 shadow-xs hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all cursor-pointer text-right truncate"
-                  >
-                    <option value="all">المؤشر</option>
-                    {indicatorsList.map((ind) => (
-                      <option key={ind} value={ind}>{ind}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 absolute left-1.5 sm:left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
+              {/* FILTERS */}
+              <AttemptsFilterBar
+                selectedLevel={selectedLevel}
+                onLevelChange={(lvl) => {
+                  setSelectedLevel(lvl);
+                  setCurrentPage(1);
+                }}
+                levelsList={levelsList}
+                selectedOutcome={selectedOutcome}
+                onOutcomeChange={(out) => {
+                  setSelectedOutcome(out);
+                  setCurrentPage(1);
+                }}
+                outcomesList={outcomesList}
+                selectedIndicator={selectedIndicator}
+                onIndicatorChange={(ind) => {
+                  setSelectedIndicator(ind);
+                  setCurrentPage(1);
+                }}
+                indicatorsList={indicatorsList}
+              />
 
               {/* TABLE CARD */}
               <div className="w-full bg-[#FAF8FF]/60 rounded-[28px] p-4 sm:p-6 lg:p-8 border border-purple-100/60 shadow-[0_10px_40px_rgba(121,57,227,0.04)]">
@@ -312,294 +202,26 @@ export const AttemptsLogView: React.FC = () => {
                 {/* Table Rows */}
                 <div className="flex flex-col gap-3 mt-2">
                   <AnimatePresence mode="popLayout">
-                    {paginatedAttempts.map((row, idx) => {
-                      const storyName = row.story_title || row.story?.title || "القصة";
-                      const levelName =
-                        row.level_name ||
-                        (typeof row.level === "string"
-                          ? row.level
-                          : (row.level as any)?.name || (row.story?.level as any)?.name || row.story?.level || "-");
-                      const outcomeName = row.outcome_name || row.outcome || row.story?.outcome || "-";
-                      const indicatorName = row.indicator_name || row.indicator || row.story?.indicator || "-";
-                      const attemptsCount = row.attempts_count || row.attempt_number || 1;
-                      const lastScore = row.last_score_percentage ?? row.last_score ?? row.score ?? 0;
-                      const highestScore = row.highest_score_percentage ?? row.highest_score ?? row.score ?? 0;
-                      const maxScore = 100;
-                      const dateDisplay = formatDate(row.last_attempt_at || row.created_at);
-
-                      const highestEmoji = getScoreEmoji(highestScore);
-                      const isPurpleRow = idx % 2 === 0;
-
-                      return (
-                        <motion.div
-                          key={row.id || `${storyName}-${idx}`}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.98 }}
-                          transition={{ duration: 0.25, delay: idx * 0.04 }}
-                          className={`rounded-3xl lg:rounded-[18px] p-5 sm:p-6 lg:px-7 lg:py-4 transition-all duration-200 text-xs sm:text-sm font-bold ${
-                            isPurpleRow
-                              ? "bg-[#6D28D9] text-white hover:bg-[#6020C7]"
-                              : "bg-white text-slate-800 border border-purple-100 hover:border-purple-200"
-                          }`}
-                          style={{
-                            boxShadow: isPurpleRow
-                              ? "0px 4px 8px 0px #FFFFFF40 inset, 4px 0px 16px 0px #FFFFFF40 inset, 0px 4px 16px 0px #00000029"
-                              : "0px 4px 8px 0px #6D28D90F inset, 4px 0px 16px 0px #6D28D90F inset, 0px 4px 32px 0px #00000014",
-                          }}
-                        >
-                          {/* ═══════════════ MOBILE VIEW (lg:hidden) ═══════════════ */}
-                          <div className="flex flex-col gap-4 lg:hidden w-full text-right">
-                            {/* 1. Header: Story Title + Level Badge */}
-                            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <Image
-                                  src="/iamges/book-story.svg"
-                                  alt="story"
-                                  width={18}
-                                  height={18}
-                                  className="shrink-0 w-4 h-4"
-                                />
-                                <span className="font-black text-sm sm:text-base truncate">
-                                  {storyName}
-                                </span>
-                              </div>
-
-                              <div
-                                className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                                  isPurpleRow
-                                    ? "bg-white/20 text-white"
-                                    : "bg-[#F3E8FF] text-[#7939E3]"
-                                }`}
-                              >
-                                <Image
-                                  src="/iamges/yellow-trophy-with-star-it.svg"
-                                  alt="trophy"
-                                  width={14}
-                                  height={14}
-                                  className="w-3.5 h-3.5"
-                                />
-                                <span>{levelName}</span>
-                              </div>
-                            </div>
-
-                            {/* 2. Middle Row: Meta details */}
-                            <div className="flex flex-col gap-2.5 text-xs">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5">
-                                  <Image
-                                    src="/iamges/calender.svg"
-                                    alt="calendar"
-                                    width={14}
-                                    height={14}
-                                    className="w-3.5 h-3.5"
-                                  />
-                                  <span className={isPurpleRow ? "text-white/90" : "text-slate-600"}>
-                                    {dateDisplay}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className={isPurpleRow ? "text-white/70" : "text-slate-400"}>المحاولات: </span>
-                                  <span className="font-black">{attemptsCount}</span>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center justify-between">
-                                <div className="truncate max-w-[55%]">
-                                  <span className={isPurpleRow ? "text-white/70" : "text-slate-400"}>المؤشر: </span>
-                                  <span className={isPurpleRow ? "text-white" : "text-slate-700"}>{indicatorName}</span>
-                                </div>
-                                <div className="truncate max-w-[45%] text-left">
-                                  <span className={isPurpleRow ? "text-white/70" : "text-slate-400"}>الناتج: </span>
-                                  <span className={isPurpleRow ? "text-white" : "text-slate-700"}>{outcomeName}</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. Bottom Row: Scores (3 Columns) */}
-                            <div className="grid grid-cols-3 items-center justify-between text-center pt-3 border-t border-white/10">
-                              {/* Max Score */}
-                              <div className="flex flex-col items-center justify-center">
-                                <span className={`text-[11px] font-bold ${isPurpleRow ? "text-white/70" : "text-slate-400"}`}>
-                                  العظمى
-                                </span>
-                                <span className="text-sm sm:text-base font-black">
-                                  %{maxScore}
-                                </span>
-                              </div>
-
-                              {/* Highest Score */}
-                              <div className="flex flex-col items-center justify-center">
-                                <div className="flex items-center justify-center gap-1 font-black text-sm sm:text-base">
-                                  <Image
-                                    src={highestEmoji}
-                                    alt="emoji"
-                                    width={20}
-                                    height={20}
-                                    className="w-4.5 h-4.5 shrink-0"
-                                  />
-                                  <span className={isPurpleRow ? "text-yellow-300" : "text-[#7939E3]"}>
-                                    %{highestScore}
-                                  </span>
-                                </div>
-                                <span className={`text-[11px] font-bold ${isPurpleRow ? "text-white/70" : "text-slate-400"}`}>
-                                  أعلى نتيجة
-                                </span>
-                              </div>
-
-                              {/* Last Score */}
-                              <div className="flex flex-col items-center justify-center">
-                                <span className={`text-[11px] font-bold ${isPurpleRow ? "text-white/70" : "text-slate-400"}`}>
-                                  آخر نتيجة
-                                </span>
-                                <span className="text-sm sm:text-base font-black">
-                                  %{lastScore}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* ═══════════════ DESKTOP VIEW (hidden lg:grid) ═══════════════ */}
-                          <div className="hidden lg:grid lg:grid-cols-12 items-center gap-2 text-center w-full">
-                            {/* 1. Story Title */}
-                            <div className="lg:col-span-2 flex items-center justify-start gap-2 w-full truncate text-right">
-                              <span className="shrink-0 text-base">
-                                <Image
-                                  src="/iamges/book-story.svg"
-                                  alt="story"
-                                  width={20}
-                                  height={20}
-                                  className="w-4 h-4"
-                                />
-                              </span>
-                              <span className="truncate font-black">
-                                {storyName}
-                              </span>
-                            </div>
-
-                            {/* 2. Level */}
-                            <div className="lg:col-span-2 flex items-center justify-center gap-1">
-                              <span className="text-yellow-400 text-sm">
-                                <Image
-                                  src="/iamges/yellow-trophy-with-star-it.svg"
-                                  alt="trophy"
-                                  width={20}
-                                  height={20}
-                                  className="w-4 h-4"
-                                />
-                              </span>
-                              <span
-                                className={
-                                  isPurpleRow ? "text-white" : "text-[#7939E3] font-black"
-                                }
-                              >
-                                {levelName}
-                              </span>
-                            </div>
-
-                            {/* 3. Outcome */}
-                            <div className="lg:col-span-1">
-                              <span className={isPurpleRow ? "text-white/90" : "text-slate-700"}>
-                                {outcomeName}
-                              </span>
-                            </div>
-
-                            {/* 4. Indicator */}
-                            <div className="lg:col-span-2">
-                              <span className={isPurpleRow ? "text-white/90" : "text-slate-700"}>
-                                {indicatorName}
-                              </span>
-                            </div>
-
-                            {/* 5. Attempts Count */}
-                            <div className="lg:col-span-1 font-black">
-                              {attemptsCount}
-                            </div>
-
-                            {/* 6. Last Score */}
-                            <div className="lg:col-span-1 font-black">
-                              %{lastScore}
-                            </div>
-
-                            {/* 7. Highest Score + Emoji */}
-                            <div className="lg:col-span-1 flex items-center justify-center gap-1.5 font-black text-sm">
-                              <Image
-                                src={highestEmoji}
-                                alt="emoji"
-                                width={24}
-                                height={24}
-                                className="w-6 h-6 shrink-0"
-                              />
-                              <span>%{highestScore}</span>
-                            </div>
-
-                            {/* 8. Max Score */}
-                            <div className="lg:col-span-1 font-black">
-                              %{maxScore}
-                            </div>
-
-                            {/* 9. Attempt Date */}
-                            <div className="lg:col-span-1 flex items-center justify-end gap-1.5 text-xs text-left">
-                              <span className="text-sm">
-                                <Image
-                                  src="/iamges/calender.svg"
-                                  alt="calendar"
-                                  width={20}
-                                  height={20}
-                                  className="w-4 h-4"
-                                />
-                              </span>
-                              <span>{dateDisplay}</span>
-                            </div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
+                    {paginatedAttempts.map((row, idx) => (
+                      <AttemptsTableRow
+                        key={row.id || `${row.story_title || "story"}-${idx}`}
+                        row={row}
+                        idx={idx}
+                      />
+                    ))}
                   </AnimatePresence>
                 </div>
 
                 {/* PAGINATION */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-8 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="size-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-purple-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
-                    >
-                      <ChevronRight className="size-4" />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        type="button"
-                        onClick={() => setCurrentPage(page)}
-                        className={`size-8 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
-                          currentPage === page
-                            ? "bg-mad-third text-white shadow-xs"
-                            : "text-slate-600 hover:bg-slate-100"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-
-                    <button
-                      type="button"
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="size-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-purple-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
-                    >
-                      <ChevronLeft className="size-4" />
-                    </button>
-                  </div>
-                )}
+                <AttemptsPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
               </div>
             </main>
-          </>
-        )}
-      </div>
+          )}
+        </div>
       </div>
     </div>
   );
