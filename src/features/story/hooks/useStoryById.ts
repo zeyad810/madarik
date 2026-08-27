@@ -28,7 +28,8 @@ export const useStoryById = <TData = StoryDetailResponse>(
     queryKey: [...storyQueryKeys.detail(id), role],
     queryFn: () => getStoryById(id, role, token),
     enabled: Boolean(id) && status !== "loading",
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
     ...options,
   });
 };
