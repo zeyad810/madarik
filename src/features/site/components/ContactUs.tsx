@@ -21,7 +21,7 @@ const ContactUs: React.FC<ContactUsProps> = ({
     select: (res) => res.data?.contact_section,
   });
 
-  const id = propId ?? contactData?.id;
+  const id = propId ?? contactData?.id ?? "contact_section";
   const title = propTitle ?? contactData?.title ?? defaultContactData.title;
   const description = propDescription ?? contactData?.subtitle ?? defaultContactData.description;
 
@@ -51,6 +51,10 @@ const ContactUs: React.FC<ContactUsProps> = ({
       id={id}
       className="relative w-full overflow-hidden bg-mad-white-50 section-spacing px-4 md:px-8"
     >
+      {/* Anchor targets for #contact and #contact-us */}
+      <span id="contact" className="sr-only absolute -top-24 pointer-events-none" />
+      <span id="contact-us" className="sr-only absolute -top-24 pointer-events-none" />
+
       <div className="container relative mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* ==================== FORM CARD COLUMN ==================== */}
@@ -61,7 +65,11 @@ const ContactUs: React.FC<ContactUsProps> = ({
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="lg:col-span-6 xl:col-span-6 order-2 lg:order-1 relative"
           >
-            <ContactFormCard onSubmit={onSubmit} />
+            <ContactFormCard
+              onSubmit={onSubmit}
+              buttonText={contactData?.button_text}
+              formFields={contactData?.form_fields}
+            />
           </motion.div>
 
           {/* ==================== INFO & BRANDING COLUMN ==================== */}

@@ -46,7 +46,11 @@ const Features: React.FC<FeaturesProps> = ({
     }) ?? []);
 
   return (
-    <section dir="rtl" id={id} className="w-full section-spacing px-4 md:px-8 bg-white">
+    <section dir="rtl" id={id} className="relative w-full section-spacing px-4 md:px-8 bg-white">
+      {/* Anchor targets for #features and #why-us */}
+      <span id="features" className="sr-only absolute -top-24 pointer-events-none" />
+      <span id="why-us" className="sr-only absolute -top-24 pointer-events-none" />
+
       <div className="container mx-auto flex flex-col items-center">
         {/* Section Header */}
         <SectionHeader

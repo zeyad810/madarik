@@ -3,6 +3,8 @@ import {
   FreeStoriesResponse,
   StoryDetailResponse,
   Story,
+  StartStoryPayload,
+  StartStoryResponse,
   FinishStoryPayload,
   FinishStoryResponse,
 } from "./types";

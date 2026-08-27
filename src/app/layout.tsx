@@ -4,6 +4,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import AuthProvider from "@/providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import { GlobalResetPasswordModal } from "@/features/auth/components/GlobalResetPasswordModal";
+import { NotificationListener } from "@/features/notifications";
 import "./globals.css";
 
 const ibmPlexSansArabic = localFont({
@@ -51,6 +52,7 @@ export default function RootLayout({
           <QueryProvider>
             {children}
             <GlobalResetPasswordModal />
+            <NotificationListener />
           </QueryProvider>
           <Toaster position="top-center" reverseOrder={false} />
         </AuthProvider>

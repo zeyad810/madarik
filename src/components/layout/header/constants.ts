@@ -41,6 +41,6 @@ export const DESKTOP_NAV_LINKS: NavLinkItem[] = [
   { id: "results", label: "نتائجي", href: "/results" },
   { id: "packages", label: "الباقات", href: "/packages" },
   { id: "library", label: "مكتبة القصص", href: "/stories" },
-  { id: "contact", label: "تواصل معنا", href: "/contact" },
-  { id: "faq", label: "الأسئلة الشائعة", href: "/faq" },
+  { id: "contact", label: "تواصل معنا", href: "/#contact_section" },
+  { id: "faq", label: "الأسئلة الشائعة", href: "/#faq_section" },
 ];
