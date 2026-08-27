@@ -84,6 +84,16 @@ export interface VerifyRegisterResponse {
   user?: AuthUser;
 }
 
+export interface ForgotPasswordPayload {
+  phone: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+  dev_otp?: string | null;
+  status?: boolean | string;
+}
+
 export interface ResetPasswordPayload {
   password: string;
   password_confirmation?: string;
@@ -99,3 +109,4 @@ export interface ResetPasswordResponse {
   status?: boolean | string;
   data?: unknown;
 }
+

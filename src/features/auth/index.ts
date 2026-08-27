@@ -1,5 +1,8 @@
 // Components
 export { default as RegisterForm } from "./components/RegisterForm";
+export { default as ForgotPasswordPhoneForm } from "./components/ForgotPasswordPhoneForm";
+export { default as ResetPasswordForm } from "./components/ResetPasswordForm";
+export { default as ForgotPasswordClient } from "./ForgotPasswordClient";
 export { default as AuthHeader } from "./components/AuthHeader";
 export { default as AuthErrorAlert } from "./components/AuthErrorAlert";
 export { default as PasswordField } from "./components/PasswordField";
@@ -15,6 +18,9 @@ export { default as CountrySelect } from "./CountrySelect";
 export * from "./hooks/useRegister";
 export * from "./hooks/useVerifyRegisterOtp";
 export * from "./hooks/useResetFirstPassword";
+export * from "./hooks/useForgotPassword";
+export * from "./hooks/useResetPassword";
+
 
 // API Services
 export * from "./api";

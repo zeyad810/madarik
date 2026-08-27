@@ -6,8 +6,57 @@ import {
   VerifyRegisterResponse,
   ResetPasswordPayload,
   ResetPasswordResponse,
+  ForgotPasswordPayload,
+  ForgotPasswordResponse,
 } from "@/types/auth";
 import { getStoredAuthToken } from "@/lib/auth";
+
+export const forgotPassword = async (
+  payload: ForgotPasswordPayload,
+): Promise<ForgotPasswordResponse> => {
+  const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      phone: payload.phone ? payload.phone.trim() : "",
+    }),
+  });
+
+  return await handleResponse<ForgotPasswordResponse>(response);
+};
+
+export const resetPassword = async (
+  payload: ResetPasswordPayload,
+): Promise<ResetPasswordResponse> => {
+  const code = payload.code || (payload as any).otp || "";
+  const phone = payload.phone ? payload.phone.trim() : "";
+  const password = payload.password || payload.new_password || "";
+  const password_confirmation =
+    payload.password_confirmation ||
+    payload.confirm_password ||
+    payload.new_password_confirmation ||
+    password;
+
+  const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      phone,
+      code,
+      password,
+      password_confirmation,
+    }),
+  });
+
+  return await handleResponse<ResetPasswordResponse>(response);
+};
+
 
 export const registerUser = async (
   payload: RegisterPayload,
