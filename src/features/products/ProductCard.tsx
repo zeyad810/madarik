@@ -33,6 +33,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     imageAltProp ?? product?.imageAlt ?? DEFAULT_PRODUCT.imageAlt ?? title;
   const ageRange = ageRangeProp ?? product?.ageRange ?? DEFAULT_PRODUCT.ageRange;
   const isFree = isFreeProp ?? product?.isFree ?? DEFAULT_PRODUCT.isFree;
+  const availability =
+    product?.availability ?? (isFree ? "free" : "paid");
   const levelTag = levelTagProp ?? product?.levelTag ?? DEFAULT_PRODUCT.levelTag;
   const storyCodeTag =
     storyCodeTagProp ?? product?.storyCodeTag ?? DEFAULT_PRODUCT.storyCodeTag;
@@ -50,6 +52,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         imageSrc={imageSrc}
         imageAlt={imageAlt}
         isFree={isFree}
+        availability={availability}
         ageRange={ageRange}
         levelTag={levelTag}
       />

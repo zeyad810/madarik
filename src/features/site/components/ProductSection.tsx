@@ -54,6 +54,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
             ? `${story.age_category} سنة`
             : "جميع الأعمار",
         isFree: story.availability === "free",
+        availability: story.availability,
         levelTag: story.level,
         storyCodeTag: story.code,
         ctaText: "ابدأ القراءة",

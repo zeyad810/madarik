@@ -75,12 +75,10 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="relative w-full bg-white rounded-4xl border border-slate-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.05)] p-6 sm:p-8 md:p-10 flex flex-col-reverse lg:flex-row items-center justify-between gap-8 overflow-hidden"
       >
-        {/* Rosette Badge (Top Left in Card) */}
-        {(story.availability === "free" || !story.availability) && (
-          <div className="absolute top-4 left-4 z-20 pointer-events-none">
-            <FreeRosetteBadge />
-          </div>
-        )}
+        {/* Rosette Badge (Top Left in Card) - Paid or Free */}
+        <div className="absolute top-4 left-4 z-20 pointer-events-none">
+          <FreeRosetteBadge availability={story.availability} />
+        </div>
 
         {/* Right Info Section */}
         <div className="flex-1 w-full flex flex-col justify-between text-right">

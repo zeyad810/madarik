@@ -42,10 +42,18 @@ function buildHeaders(token?: string | null): Record<string, string> {
 export const getFreeStories = async (
   role: string = "visitor",
   token?: string | null,
-  search?: string
+  search?: string,
+  page?: number
 ): Promise<FreeStoriesResponse> => {
-  const queryParam = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
-  const endpoint = `${API_BASE_URL}/stories${queryParam}`;
+  const params = new URLSearchParams();
+  if (search?.trim()) {
+    params.append("search", search.trim());
+  }
+  if (typeof page === "number" && page > 0) {
+    params.append("page", String(page));
+  }
+  const queryString = params.toString() ? `?${params.toString()}` : "";
+  const endpoint = `${API_BASE_URL}/stories${queryString}`;
 
   const response = await fetch(endpoint, {
     method: "GET",
@@ -58,16 +66,27 @@ export const getFreeStories = async (
 };
 
 /**
- * Helper to safely extract Story[] from either:
+ * Helper to safely extract Story[] and pagination from either:
  * - { success: true, data: Story[] }
- * - { success: true, data: { current_page: 1, data: Story[], total: 8 } }
+ * - { success: true, data: { current_page: 1, data: Story[], total: 26, last_page: 2 } }
  * - Story[]
  */
 function normalizeStoriesResponse(raw: any): FreeStoriesResponse {
   let storyList: Story[] = [];
+  let pagination = undefined;
 
-  if (Array.isArray(raw?.data?.data)) {
+  if (raw?.data && typeof raw.data === "object" && Array.isArray(raw.data.data)) {
     storyList = raw.data.data;
+    pagination = {
+      current_page: Number(raw.data.current_page) || 1,
+      last_page: Number(raw.data.last_page) || 1,
+      per_page: Number(raw.data.per_page) || 20,
+      total: Number(raw.data.total) || storyList.length,
+      from: raw.data.from,
+      to: raw.data.to,
+      next_page_url: raw.data.next_page_url,
+      prev_page_url: raw.data.prev_page_url,
+    };
   } else if (Array.isArray(raw?.data)) {
     storyList = raw.data;
   } else if (Array.isArray(raw)) {
@@ -78,6 +97,7 @@ function normalizeStoriesResponse(raw: any): FreeStoriesResponse {
     success: raw?.success ?? true,
     message: raw?.message ?? "",
     data: storyList,
+    pagination,
   };
 }
 

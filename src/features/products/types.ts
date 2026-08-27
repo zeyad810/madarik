@@ -6,6 +6,7 @@ export interface Product {
   imageAlt?: string;
   ageRange?: string;
   isFree?: boolean;
+  availability?: "free" | "paid" | string;
   levelTag?: string;
   storyCodeTag?: string;
   ctaText?: string;
@@ -20,6 +21,7 @@ export interface ProductCardProps {
   imageAlt?: string;
   ageRange?: string;
   isFree?: boolean;
+  availability?: "free" | "paid" | string;
   levelTag?: string;
   storyCodeTag?: string;
   ctaText?: string;
