@@ -144,6 +144,10 @@ export interface QuizAttempt {
   quiz_id: string;
   score: number;
   highest_score: number;
+  last_score?: number;
+  last_score_percentage?: number;
+  highest_score_percentage?: number;
+  passing_score_percentage?: number;
   total_count: number;
   attempt_number: number;
   completed_at?: string;

@@ -71,8 +71,8 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
           level: levelText,
           resultScore: score,
           attemptsCount: attempt.attempt_number || attempt.total_count || 1,
-          lastScore: score,
-          highestScore: Number(attempt.highest_score) || score,
+          lastScore: Number(attempt.last_score_percentage ?? attempt.last_score) || score,
+          highestScore: Number(attempt.highest_score_percentage ?? attempt.highest_score) || score,
           maxScore: 100,
         };
       });
