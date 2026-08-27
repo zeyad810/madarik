@@ -95,6 +95,21 @@ const SideMenu: React.FC<SideMenuProps> = ({
         }
       }
 
+      // Check item.allowedRoles
+      if (item.allowedRoles && item.allowedRoles.length > 0) {
+        if (!isAuthenticated) {
+          return false;
+        }
+        const hasAccess =
+          item.allowedRoles.includes(userRole) ||
+          (isFreeCustomer &&
+            (item.allowedRoles.includes("free") ||
+              item.allowedRoles.includes("free_customer")));
+        if (!hasAccess) {
+          return false;
+        }
+      }
+
       if (isStudent) {
         return (
           item.id === "home" ||
