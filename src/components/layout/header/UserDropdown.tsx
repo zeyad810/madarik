@@ -18,6 +18,8 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
     switchAccount,
     children,
     isParentRole,
+    isParentActive,
+    isChildOrStudent,
     resetAccount,
   } = useActiveAccount();
 
@@ -25,8 +27,8 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const parentName = activeAccount?.rawParent?.name || (isParentRole ? "ولي الأمر" : "المستخدم");
-  const isParentActive = !activeAccount?.rawParent?.status || activeAccount?.rawParent?.status === "active";
-  const parentStatusLabel = isParentActive ? "نشط" : "معطل";
+  const isParentStatusActive = !activeAccount?.rawParent?.status || activeAccount?.rawParent?.status === "active";
+  const parentStatusLabel = isParentStatusActive ? "نشط" : "معطل";
 
   // Active avatar for the header button
   const currentAvatarSrc =
@@ -97,9 +99,9 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
             {/* Parent Row */}
             <button
               type="button"
-              disabled={!isParentActive}
+              disabled={!isParentStatusActive}
               onClick={() => {
-                if (isParentActive) {
+                if (isParentStatusActive) {
                   switchAccount("parent");
                   setIsOpen(false);
                 }
@@ -107,7 +109,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
               className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all border text-right ${
                 activeId === "parent"
                   ? "bg-[#F7F5FF] border-[#A855F7]/40 shadow-xs cursor-pointer"
-                  : !isParentActive
+                  : !isParentStatusActive
                   ? "border-transparent bg-gray-50 opacity-50 cursor-not-allowed"
                   : "border-transparent hover:bg-gray-50 cursor-pointer"
               }`}
@@ -128,7 +130,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
               </div>
               <span
                 className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                  isParentActive
+                  isParentStatusActive
                     ? "bg-[#DCFCE7] text-[#16A34A]"
                     : "bg-[#F3F4F6] text-[#9CA3AF]"
                 }`}
@@ -227,20 +229,24 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
               })
             ) : null}
 
-            {/* Bottom Divider */}
-            <div className="border-b border-gray-100 my-1 mx-2" />
-
-            {/* Edit Profile Link */}
-            <Link
-              href="/profile"
-              onClick={() => setIsOpen(false)}
-              className="w-full flex items-center justify-between py-3 px-4 text-gray-700 hover:text-mad-main font-bold text-sm hover:bg-purple-50/60 rounded-2xl transition-all cursor-pointer mb-1"
-            >
-              <div className="flex items-center gap-3">
-                <User className="size-5 text-gray-500" />
-                <span>الملف الشخصي</span>
-              </div>
-            </Link>
+            {/* Bottom Divider & Edit Profile Link (Parent only) */}
+            {isParentActive && !isChildOrStudent ? (
+              <>
+                <div className="border-b border-gray-100 my-1 mx-2" />
+                <Link
+                  href="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full flex items-center justify-between py-3 px-4 text-gray-700 hover:text-mad-main font-bold text-sm hover:bg-purple-50/60 rounded-2xl transition-all cursor-pointer mb-1"
+                >
+                  <div className="flex items-center gap-3">
+                    <User className="size-5 text-gray-500" />
+                    <span>الملف الشخصي</span>
+                  </div>
+                </Link>
+              </>
+            ) : (
+              <div className="border-b border-gray-100 my-1 mx-2" />
+            )}
 
             {/* Logout Action */}
             <button

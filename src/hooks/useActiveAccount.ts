@@ -4,7 +4,13 @@ import { useMemo, useCallback, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ActiveAccount, AuthUser, Child } from "@/types/auth";
 import { useAccountStore } from "@/store/useAccountStore";
-import { normalizeRole, isStudentRole, isFreeRole } from "@/lib/roles";
+import {
+  normalizeRole,
+  isStudentRole,
+  isChildRole,
+  isChildOrStudentRole,
+  isFreeRole,
+} from "@/lib/roles";
 
 // ============================================================================
 // Constants & Configuration
@@ -43,8 +49,12 @@ export interface UseActiveAccountReturn {
   children: Child[];
   /** True if the authenticated user has a parent role */
   isParentRole: boolean;
+  /** True if the active account or user is a child */
+  isChild: boolean;
   /** True if the active account or user is a student */
   isStudent: boolean;
+  /** True if the active account or user is a child or a student */
+  isChildOrStudent: boolean;
   /** True if the active account or user is a free customer / free user */
   isFreeCustomer: boolean;
   /** Switch the active account globally and persist to localStorage */
@@ -194,14 +204,30 @@ export function useActiveAccount(): UseActiveAccountReturn {
 
   // Active user_type: child user_type if child is selected, else session user_type
   const activeUserType = useMemo(() => {
-    if (isFreeRole(sessionUserType)) {
-      return "free";
-    }
     if (matchedChild) {
       return matchedChild.user_type || DEFAULT_CHILD_ROLE;
     }
+    if (isFreeRole(sessionUserType)) {
+      return "free";
+    }
     return sessionUserType;
   }, [matchedChild, sessionUserType]);
+
+  const isChild = useMemo(() => {
+    return Boolean(matchedChild) || isChildRole(activeUserType);
+  }, [matchedChild, activeUserType]);
+
+  const isStudent = useMemo(() => {
+    return isStudentRole(activeUserType);
+  }, [activeUserType]);
+
+  const isChildOrStudent = useMemo(() => {
+    return isChild || isStudent || isChildOrStudentRole(activeUserType);
+  }, [isChild, isStudent, activeUserType]);
+
+  const isFreeCustomer = useMemo(() => {
+    return isParentActive && (isFreeRole(activeUserType) || isFreeRole(sessionUserType));
+  }, [isParentActive, activeUserType, sessionUserType]);
 
   // Active account metadata object
   const activeAccount = useMemo<ActiveAccount | null>(() => {
@@ -274,8 +300,10 @@ export function useActiveAccount(): UseActiveAccountReturn {
     isParentActive,
     children,
     isParentRole,
-    isStudent: isStudentRole(activeUserType),
-    isFreeCustomer: isFreeRole(activeUserType) || isFreeRole(sessionUserType),
+    isChild,
+    isStudent,
+    isChildOrStudent,
+    isFreeCustomer,
     switchAccount,
     createAccountHref,
     resetAccount,
