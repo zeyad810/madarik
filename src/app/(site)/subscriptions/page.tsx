@@ -1,21 +1,12 @@
-"use client";
-
 import React from "react";
-import { useActiveAccount } from "@/hooks/useActiveAccount";
-import { PackagesSelectionView, SubscriptionStatusView } from "@/features/packages";
+import { Metadata } from "next";
+import { SubscriptionsHubView } from "@/features/packages";
+
+export const metadata: Metadata = {
+  title: "الاشتراكات والدفع | مدارك القراءة",
+  description: "إدارة اشتراكاتك، تجديد الباقات، والاطلاع على الفواتير وسجل العمليات.",
+};
 
 export default function SubscriptionsDashboardPage() {
-  const { isAuthenticated, isParentRole, isFreeCustomer, isLoading } = useActiveAccount();
-
-  if (isLoading) {
-    return <PackagesSelectionView />;
-  }
-
-  // If visitor or unauthenticated, show the packages selection page only
-  if (!isAuthenticated || (!isParentRole && !isFreeCustomer)) {
-    return <PackagesSelectionView />;
-  }
-
-  // If authenticated subscriber (parent / free customer), show their subscription status
-  return <SubscriptionStatusView />;
+  return <SubscriptionsHubView />;
 }

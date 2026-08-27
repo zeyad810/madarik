@@ -51,9 +51,6 @@ const renderReviewCard = (review: ReviewItem) => (
       <h4 className="mad-label-1 text-mad-main-light font-bold mb-0.5">
         {review.author}
       </h4>
-      <span className="mad-label-3 text-mad-text-secondary font-medium">
-        {review.role}
-      </span>
     </div>
   </motion.div>
 );

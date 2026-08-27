@@ -22,6 +22,7 @@ import {
   DEFAULT_COPYRIGHT,
 } from "./constants";
 import { usePublicLanding } from "@/features/site/hooks/usePublicLanding";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 const Footer: React.FC<FooterProps> = ({
   id: propId,
@@ -36,6 +37,13 @@ const Footer: React.FC<FooterProps> = ({
   bgImageSrc = "/iamges/FooterBg.png",
   mobileBgImageSrc = "/iamges/FooterBgMob.png",
 }) => {
+  const { userRole, isStudent, activeAccount } = useActiveAccount();
+  const isChildOrStudent =
+    isStudent ||
+    userRole === "student" ||
+    userRole === "child" ||
+    activeAccount?.type === "child";
+
   const { data: footerData } = usePublicLanding({
     select: (res) => res.data?.footer_section,
   });
@@ -50,7 +58,7 @@ const Footer: React.FC<FooterProps> = ({
     footerData?.description ??
     DEFAULT_BRAND_DESCRIPTION;
 
-  const quickLinks: FooterLinkItem[] =
+  const rawQuickLinks: FooterLinkItem[] =
     propQuickLinks ??
     (footerData?.quick_links && footerData.quick_links.length > 0
       ? footerData.quick_links.map((link, idx) => ({
@@ -59,6 +67,19 @@ const Footer: React.FC<FooterProps> = ({
           href: link.url,
         }))
       : DEFAULT_QUICK_LINKS);
+
+  const quickLinks: FooterLinkItem[] = React.useMemo(() => {
+    if (!isChildOrStudent) return rawQuickLinks;
+    return rawQuickLinks.filter(
+      (l) =>
+        l.id !== "pricing" &&
+        l.id !== "packages" &&
+        l.id !== "subscriptions" &&
+        !l.href.includes("pricing") &&
+        !l.href.includes("packages") &&
+        !l.href.includes("subscriptions")
+    );
+  }, [rawQuickLinks, isChildOrStudent]);
 
   const importantLinks: FooterLinkItem[] =
     propImportantLinks ??

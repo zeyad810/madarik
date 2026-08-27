@@ -1,12 +1,40 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PackageCard } from "./PackageCard";
 import { usePackagesList } from "../hooks/usePackages";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 export const PackagesSelectionView: React.FC = () => {
-  const { data: packages = [], isLoading } = usePackagesList();
+  const router = useRouter();
+  const { data: packages = [], isLoading: isPkgsLoading } = usePackagesList();
+  const {
+    isAuthenticated,
+    isStudent,
+    userRole,
+    activeAccount,
+    isLoading: isAuthLoading,
+  } = useActiveAccount();
+
+  const isChildOrStudent =
+    isStudent ||
+    userRole === "student" ||
+    userRole === "child" ||
+    activeAccount?.type === "child";
+
+  useEffect(() => {
+    if (!isAuthLoading && isAuthenticated && isChildOrStudent) {
+      router.push("/stories");
+    }
+  }, [isAuthLoading, isAuthenticated, isChildOrStudent, router]);
+
+  if (isChildOrStudent) {
+    return null;
+  }
+
+  const isLoading = isPkgsLoading || isAuthLoading;
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">

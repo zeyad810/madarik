@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { PackagesSelectionView, SubscriptionStatusView } from "@/features/packages";
+import { SubscriptionStatusView, PackagesSelectionView } from "@/features/packages";
 import { RoleGuard } from "@/components/guards";
 
 export const metadata: Metadata = {
