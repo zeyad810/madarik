@@ -61,6 +61,19 @@ export interface ToggleChildStatusResponse {
   status?: string;
 }
 
+export interface SingleChildResponse {
+  success?: boolean;
+  message?: string;
+  data?: Child;
+  child?: Child;
+}
+
+export interface DeleteChildResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
 export interface ParentSettingsPayload {
   name: string;
   phone?: string;
@@ -197,6 +210,13 @@ export interface ChildReportsResponse {
   success: boolean;
   message?: string;
   data: ChildReportItem[];
+}
+
+export interface SingleChildReportResponse {
+  success?: boolean;
+  message?: string;
+  data?: ChildReportItem;
+  report?: ChildReportItem;
 }
 
 export interface QuizResultRow {

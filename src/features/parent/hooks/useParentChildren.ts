@@ -70,7 +70,8 @@ export const useParentChildren = () => {
         return [];
       } else {
         const res = await getParentChildren(token);
-        return res.data || [];
+        const data = (res as any)?.data || (Array.isArray(res) ? res : []);
+        return (Array.isArray(data) ? data : [data].filter(Boolean)) as Child[];
       }
     },
     enabled: status === "authenticated" && !!token,
