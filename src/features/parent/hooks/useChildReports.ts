@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { getParentChildReports } from "../api";
+import { getParentChildReports, getChildReport } from "../api";
 import { parentQueryKeys } from "../constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import type { ChildReportItem } from "../types";
@@ -56,13 +56,34 @@ export const useChildReports = () => {
 };
 
 export const useChildReport = (childId: string) => {
-  const { reports, isLoading, isError, refetch } = useChildReports();
-  const child = reports.find((c) => String(c.id) === String(childId)) || null;
+  const { data: session, status } = useSession();
+  const token = session?.accessToken || session?.token || null;
+  const { reports, isLoading: isReportsLoading, refetch: refetchAll } = useChildReports();
+
+  const singleQuery = useQuery({
+    queryKey: parentQueryKeys.childReport(childId),
+    queryFn: async () => {
+      const res = await getChildReport(childId, token);
+      return (res?.data || res?.report || res) as ChildReportItem;
+    },
+    enabled: status === "authenticated" && !!token && !!childId,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+  });
+
+  const fallbackChild = reports.find((c) => String(c.id) === String(childId)) || null;
+  const child = singleQuery.data || fallbackChild;
+
+  const isLoading =
+    (status === "loading" || singleQuery.isLoading || isReportsLoading) && !child;
+
+  const refetch = async () => {
+    await Promise.all([singleQuery.refetch(), refetchAll()]);
+  };
 
   return {
     child,
     isLoading,
-    isError,
+    isError: singleQuery.isError,
     refetch,
   };
 };

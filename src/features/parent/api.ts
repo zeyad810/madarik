@@ -5,9 +5,12 @@ import {
   AddChildPayload,
   AddChildResponse,
   ChildReportsResponse,
+  DeleteChildResponse,
   ParentChildrenResponse,
   ParentSettingsPayload,
   ParentSettingsResponse,
+  SingleChildReportResponse,
+  SingleChildResponse,
   ToggleChildStatusResponse,
   UpdateChildPayload,
   UpdateChildResponse,
@@ -33,8 +36,8 @@ function buildHeaders(token?: string | null, isMultipart: boolean = false): Reco
 }
 
 /**
- * POST /parent/children
- * Adds a new child profile for the authenticated parent.
+ * POST /children
+ * Adds a new child profile.
  */
 export const createChild = async (
   payload: AddChildPayload,
@@ -66,7 +69,7 @@ export const createChild = async (
     });
   }
 
-  const response = await fetch(`${API_BASE_URL}/parent/children`, {
+  const response = await fetch(`${API_BASE_URL}/children`, {
     method: "POST",
     headers: buildHeaders(token, isMultipart),
     body,
@@ -76,9 +79,8 @@ export const createChild = async (
 };
 
 /**
- * Updates an existing child profile for the authenticated parent or free customer.
- * - Free Customer: PATCH /free/child/{id} (FreeCustomerController::updateChild)
- * - Subscribed Parent: PUT /parent/children/{id} (AccountController::updateChild)
+ * PUT /children/{id}
+ * Updates an existing child profile.
  */
 export const updateChild = async (
   payload: UpdateChildPayload,
@@ -100,7 +102,7 @@ export const updateChild = async (
     if (bodyData.status) formData.append("status", bodyData.status);
     formData.append("avatar", payload.avatarFile);
     formData.append("avatar_img", payload.avatarFile);
-    formData.append("_method", isFree ? "PATCH" : "PUT");
+    formData.append("_method", "PUT");
     body = formData;
   } else {
     body = JSON.stringify({
@@ -113,11 +115,8 @@ export const updateChild = async (
     });
   }
 
-  const endpoint = isFree
-    ? `${API_BASE_URL}/free/child/${id}`
-    : `${API_BASE_URL}/parent/children/${id}`;
-
-  const method = isMultipart ? "POST" : isFree ? "PATCH" : "PUT";
+  const endpoint = `${API_BASE_URL}/children/${id}`;
+  const method = isMultipart ? "POST" : "PUT";
 
   const response = await fetch(endpoint, {
     method,
@@ -129,13 +128,13 @@ export const updateChild = async (
 };
 
 /**
- * GET /parent/children
- * Fetches the children list of the authenticated parent.
+ * GET /children
+ * Fetches the children list.
  */
-export const getParentChildren = async (
+export const getChildren = async (
   token?: string | null
 ): Promise<ParentChildrenResponse> => {
-  const response = await fetch(`${API_BASE_URL}/parent/children`, {
+  const response = await fetch(`${API_BASE_URL}/children`, {
     method: "GET",
     headers: buildHeaders(token),
   });
@@ -143,30 +142,73 @@ export const getParentChildren = async (
   return await handleResponse<ParentChildrenResponse>(response);
 };
 
+export const getParentChildren = getChildren;
+
 /**
  * GET /free/child
- * Fetches the child profile for the authenticated free customer.
+ * Fetches the child profile (falls back to /children or /free/child).
  */
 export const getFreeChild = async (
   token?: string | null
 ): Promise<{ success?: boolean; message?: string; data?: Child; child?: Child }> => {
-  const response = await fetch(`${API_BASE_URL}/free/child`, {
+  try {
+    const response = await fetch(`${API_BASE_URL}/children`, {
+      method: "GET",
+      headers: buildHeaders(token),
+    });
+    return await handleResponse<{ success?: boolean; message?: string; data?: Child; child?: Child }>(response);
+  } catch {
+    const fallbackResponse = await fetch(`${API_BASE_URL}/free/child`, {
+      method: "GET",
+      headers: buildHeaders(token),
+    });
+    return await handleResponse<{ success?: boolean; message?: string; data?: Child; child?: Child }>(fallbackResponse);
+  }
+};
+
+/**
+ * GET /children/{id}
+ * Fetches a single child profile by ID.
+ */
+export const getChild = async (
+  childId: string | number,
+  token?: string | null
+): Promise<SingleChildResponse> => {
+  const response = await fetch(`${API_BASE_URL}/children/${childId}`, {
     method: "GET",
     headers: buildHeaders(token),
   });
 
-  return await handleResponse<{ success?: boolean; message?: string; data?: Child; child?: Child }>(response);
+  return await handleResponse<SingleChildResponse>(response);
+};
+
+export const getChildById = getChild;
+
+/**
+ * GET /children/{id}/report
+ * Fetches comprehensive report for a specific child.
+ */
+export const getChildReport = async (
+  childId: string | number,
+  token?: string | null
+): Promise<SingleChildReportResponse> => {
+  const response = await fetch(`${API_BASE_URL}/children/${childId}/report`, {
+    method: "GET",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<SingleChildReportResponse>(response);
 };
 
 /**
- * PATCH /parent/children/{id}/toggle
+ * PATCH /children/{id}/toggle
  * Toggles the active/deactivated status of a child profile.
  */
 export const toggleChildStatus = async (
   childId: string | number,
   token?: string | null
 ): Promise<ToggleChildStatusResponse> => {
-  const response = await fetch(`${API_BASE_URL}/parent/children/${childId}/toggle`, {
+  const response = await fetch(`${API_BASE_URL}/children/${childId}/toggle`, {
     method: "PATCH",
     headers: buildHeaders(token),
   });
@@ -175,14 +217,29 @@ export const toggleChildStatus = async (
 };
 
 /**
- * GET /parent/children
- * Fetches comprehensive children profiles and reports including activities, quiz attempts, and scores.
- * Endpoint: https://madarik.themiify.com/api/v1/parent/children
+ * DELETE /children/{id}
+ * Deletes a child profile by ID.
+ */
+export const deleteChild = async (
+  childId: string | number,
+  token?: string | null
+): Promise<DeleteChildResponse> => {
+  const response = await fetch(`${API_BASE_URL}/children/${childId}`, {
+    method: "DELETE",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<DeleteChildResponse>(response);
+};
+
+/**
+ * GET /children
+ * Fetches children profiles and reports.
  */
 export const getParentChildReports = async (
   token?: string | null
 ): Promise<ChildReportsResponse> => {
-  const response = await fetch(`${API_BASE_URL}/parent/children`, {
+  const response = await fetch(`${API_BASE_URL}/children`, {
     method: "GET",
     headers: buildHeaders(token),
   });
