@@ -160,7 +160,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       {isOpen && (
         <div
           dir="rtl"
-          className="absolute top-full left-0 mt-3 w-80 sm:w-96 bg-white rounded-[24px] shadow-2xl border border-gray-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
+          className="absolute top-full left-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
         >
           {/* Header */}
           <div className="flex items-center justify-between pb-2.5 px-1 border-b border-gray-100">

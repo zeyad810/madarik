@@ -67,15 +67,22 @@ export const QuizView: React.FC<QuizViewProps> = ({
   const [submissionState, setSubmissionState] = useState<SubmissionState>("idle");
   const [quizResult, setQuizResult] = useState<QuizResultData | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [isAdvancing, setIsAdvancing] = useState(false);
   const isSubmittingRef = useRef(false);
   const isAdvancingRef = useRef(false);
+  const advanceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
-  // Initialize start time on mount
+  // Initialize start time on mount & cleanup timer on unmount
   useEffect(() => {
     if (startTimeRef.current === null) {
       startTimeRef.current = getCurrentTimestamp();
     }
+    return () => {
+      if (advanceTimeoutRef.current) {
+        clearTimeout(advanceTimeoutRef.current);
+      }
+    };
   }, []);
 
   // ── Timer store ────────────────────────────────────────────────────────────
@@ -94,40 +101,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
-  /** Called when user selects an option - checks answer INSTANTLY */
-  const handleSelectAnswer = async (questionId: string, optionValue: string) => {
+  /** Called when user selects an option - records choice without checking yet */
+  const handleSelectAnswer = (questionId: string, optionValue: string) => {
+    if (checkedAnswers[questionId] || isAdvancing) return;
     setSelectedAnswers((prev) => ({ ...prev, [questionId]: optionValue }));
     setValidationError(null);
-
-    try {
-      const response = await checkAnswer({
-        question_id: questionId,
-        answer: optionValue,
-      });
-
-      const resData = (response as any)?.data ? (response as any).data : response;
-      const isCorrect = Boolean(
-        resData?.is_correct ??
-        resData?.correct ??
-        resData?.passed ??
-        false
-      );
-      const correctAnswer =
-        resData?.correct_answer ??
-        resData?.answer ??
-        undefined;
-
-      setCheckedAnswers((prev) => ({
-        ...prev,
-        [questionId]: { isCorrect, correctAnswer },
-      }));
-    } catch {
-      // If check-answer fails, record selection without blocking
-      setCheckedAnswers((prev) => ({
-        ...prev,
-        [questionId]: { isCorrect: true },
-      }));
-    }
   };
 
   /** Core submit logic */
@@ -203,9 +181,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
     });
   };
 
-  /** Move to next question */
-  const handleNext = () => {
+  /** Move to next question: checks answer first, displays feedback (صح/خطأ), then advances */
+  const handleNext = async () => {
     if (!currentQuestion) return;
+    if (isAdvancing || isChecking) return;
+
     const selectedAnswer = selectedAnswers[currentQuestion.id];
 
     if (!selectedAnswer) {
@@ -214,12 +194,58 @@ export const QuizView: React.FC<QuizViewProps> = ({
     }
     setValidationError(null);
 
-    if (currentIdx < totalQuestions - 1) {
-      setCurrentIdx((prev) => prev + 1);
+    // If already checked previously, advance immediately
+    if (checkedAnswers[currentQuestion.id]) {
+      if (currentIdx < totalQuestions - 1) {
+        setCurrentIdx((prev) => prev + 1);
+      }
+      return;
     }
+
+    setIsAdvancing(true);
+
+    try {
+      const response = await checkAnswer({
+        question_id: currentQuestion.id,
+        answer: selectedAnswer,
+      });
+
+      const resData = response?.data || response;
+      const checkRecord = resData as unknown as Record<string, unknown>;
+      const isCorrect = Boolean(
+        checkRecord?.is_correct ??
+        checkRecord?.correct ??
+        checkRecord?.passed ??
+        false
+      );
+      const correctAnswer =
+        (checkRecord?.correct_answer as string | undefined) ??
+        (checkRecord?.answer as string | undefined) ??
+        undefined;
+
+      setCheckedAnswers((prev) => ({
+        ...prev,
+        [currentQuestion.id]: { isCorrect, correctAnswer },
+      }));
+    } catch {
+      setCheckedAnswers((prev) => ({
+        ...prev,
+        [currentQuestion.id]: { isCorrect: true },
+      }));
+    }
+
+    // Give user brief time to see feedback (صح أو خطأ) then transition
+    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current);
+    advanceTimeoutRef.current = setTimeout(() => {
+      if (currentIdx < totalQuestions - 1) {
+        setCurrentIdx((prev) => prev + 1);
+      }
+      setIsAdvancing(false);
+    }, 850);
   };
 
   const handlePrev = () => {
+    if (isAdvancing || isChecking) return;
     if (currentIdx > 0) {
       setCurrentIdx((prev) => prev - 1);
       setValidationError(null);
@@ -228,11 +254,48 @@ export const QuizView: React.FC<QuizViewProps> = ({
 
   const handleFinish = async () => {
     if (!currentQuestion) return;
+    if (isSubmittingRef.current || isAdvancing || isChecking) return;
+
     const selectedAnswer = selectedAnswers[currentQuestion.id];
 
     if (!selectedAnswer) {
       setValidationError("يرجى الإجابة على جميع الأسئلة للمتابعة");
       return;
+    }
+    setValidationError(null);
+
+    setIsAdvancing(true);
+
+    if (!checkedAnswers[currentQuestion.id]) {
+      try {
+        const response = await checkAnswer({
+          question_id: currentQuestion.id,
+          answer: selectedAnswer,
+        });
+
+        const resData = response?.data || response;
+        const checkRecord = resData as unknown as Record<string, unknown>;
+        const isCorrect = Boolean(
+          checkRecord?.is_correct ??
+          checkRecord?.correct ??
+          checkRecord?.passed ??
+          false
+        );
+        const correctAnswer =
+          (checkRecord?.correct_answer as string | undefined) ??
+          (checkRecord?.answer as string | undefined) ??
+          undefined;
+
+        setCheckedAnswers((prev) => ({
+          ...prev,
+          [currentQuestion.id]: { isCorrect, correctAnswer },
+        }));
+      } catch {
+        setCheckedAnswers((prev) => ({
+          ...prev,
+          [currentQuestion.id]: { isCorrect: true },
+        }));
+      }
     }
 
     const updatedAnswers = {
@@ -240,10 +303,16 @@ export const QuizView: React.FC<QuizViewProps> = ({
       [currentQuestion.id]: selectedAnswer,
     };
 
-    await performSubmit(updatedAnswers);
+    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current);
+    advanceTimeoutRef.current = setTimeout(async () => {
+      setIsAdvancing(false);
+      await performSubmit(updatedAnswers);
+    }, 850);
   };
 
   const handleRetry = () => {
+    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current);
+    setIsAdvancing(false);
     setCurrentIdx(0);
     setSelectedAnswers({});
     setCheckedAnswers({});
@@ -256,7 +325,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
   };
 
   const isLastQuestion = currentIdx === totalQuestions - 1;
-  const isNavigating = isChecking || submissionState === "submitting";
+  const isNavigating = isChecking || isAdvancing || submissionState === "submitting";
 
   // ── States: Loading & Submitting ──────────────────────────────────────────
   if (isLoading || isPending || submissionState === "submitting" || (!quiz && !isError)) {
@@ -366,7 +435,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                       question={currentQuestion}
                       selectedAnswer={currentSelected}
                       checkResult={currentChecked}
-                      isChecking={isChecking}
+                      isChecking={isChecking || isAdvancing}
                       onSelectAnswer={handleSelectAnswer}
                     />
                   )}
