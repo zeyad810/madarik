@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { Child } from "@/types/auth";
+import { resolveChildBadgesCount } from "@/lib/children";
 
 export interface SelectChildPromptProps {
   actionType: "read" | "quiz";
@@ -108,11 +109,7 @@ export const SelectChildPrompt: React.FC<SelectChildPromptProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-8">
               {children.map((child, index) => {
                 const isActive = !child.status || child.status === "active";
-                const badges =
-                  child.badges_count ??
-                  child.badges ??
-                  ((child as unknown as Record<string, unknown>).badges as number) ??
-                  0;
+                const badges = resolveChildBadgesCount(child);
                 const avatarSrc =
                   child.avatar_img ||
                   child.avatar ||

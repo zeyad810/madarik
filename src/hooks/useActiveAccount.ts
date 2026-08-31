@@ -11,6 +11,7 @@ import {
   isChildOrStudentRole,
   isFreeRole,
 } from "@/lib/roles";
+import { resolveChildBadgesCount } from "@/lib/children";
 
 // ============================================================================
 // Constants & Configuration
@@ -109,14 +110,6 @@ function resolveChildAvatar(child: Child): string {
 }
 
 /**
- * Resolves the child's badges count safely.
- */
-function resolveChildBadges(child: Child): number {
-  const childRecord = child as unknown as Record<string, unknown>;
-  return child.badges_count ?? child.badges ?? (childRecord.badges as number) ?? 0;
-}
-
-/**
  * Builds normalized ActiveAccount object for a selected child.
  */
 function buildChildActiveAccount(child: Child): ActiveAccount {
@@ -129,7 +122,7 @@ function buildChildActiveAccount(child: Child): ActiveAccount {
     gender: child.gender,
     avatar_img: child.avatar_img || child.avatar,
     avatar: resolveChildAvatar(child),
-    badges: resolveChildBadges(child),
+    badges: resolveChildBadgesCount(child),
     isParent: false,
     rawChild: child,
   };

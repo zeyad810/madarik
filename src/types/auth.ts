@@ -15,6 +15,7 @@ export interface Child {
   updated_at: string;
   badges_count?: number;
   badges?: number;
+  user_badges?: Array<Record<string, unknown>>;
 }
 
 export interface ActiveAccount {

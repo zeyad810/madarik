@@ -22,6 +22,8 @@ import {
 import { SIDE_MENU_ITEMS } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { RoleGuard } from "@/components/guards";
+import { useChild, useParentChildren } from "@/features/parent/hooks";
+import { resolveChildBadgesCount } from "@/lib/children";
 
 // Smooth spring physics — feels like a native drawer
 const DRAWER_SPRING = {
@@ -54,7 +56,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
   const {
     activeId,
     activeAccount,
-    children,
+    children: sessionChildren,
     userRole,
     isAuthenticated,
     createAccountHref,
@@ -66,6 +68,16 @@ const SideMenu: React.FC<SideMenuProps> = ({
     isFreeCustomer,
     switchAccount,
   } = useActiveAccount();
+  const { children } = useParentChildren();
+  const activeChildId =
+    activeAccount?.type === "child" ? activeAccount.id : null;
+  const { child: activeChildDetails } = useChild(activeChildId);
+  const activeChildBadges = resolveChildBadgesCount(
+    activeChildDetails ||
+      children.find((child) => child.id === activeChildId) ||
+      activeAccount?.rawChild ||
+      sessionChildren.find((child) => child.id === activeChildId)
+  );
 
   // State to expand/collapse the account switcher
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
@@ -279,7 +291,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                         </div>
                         <span className="text-xs text-gray-500 font-medium truncate mt-0.5">
                           {activeAccount.type === "child"
-                            ? `طفل (${activeAccount.badges || 0} أوسمة)`
+                            ? `طفل (${activeChildBadges} أوسمة)`
                             : isStudent
                             ? "حساب طالب"
                             : "الحساب الرئيسي (ولي الأمر)"}
@@ -383,12 +395,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                           const isActive =
                             !child.status || child.status === "active";
                           const statusLabel = isActive ? "نشط" : "معطل";
-                          const badges =
-                            child.badges_count ??
-                            child.badges ??
-                            ((child as unknown as Record<string, unknown>)
-                              .badges as number) ??
-                            0;
+                          const badges = resolveChildBadgesCount(child);
                           const avatarSrc =
                             child.avatar_img ||
                             child.avatar ||
