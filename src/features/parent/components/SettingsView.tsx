@@ -24,25 +24,28 @@ export const SettingsView: React.FC = () => {
   const updateSettingsMutation = useUpdateParentSettings();
   const updatePasswordMutation = useUpdateParentPassword();
 
-  // Profile data from server / session
+  // Profile data from server / session (strictly for parent)
   const defaultParent = useMemo(() => {
+    const parentAvatar =
+      serverSettingsData?.data?.avatar_img ||
+      serverSettingsData?.data?.avatar ||
+      activeAccount?.rawParent?.avatar_img ||
+      activeAccount?.rawParent?.avatar ||
+      (activeAccount?.isParent ? activeAccount?.avatar_img || activeAccount?.avatar : null) ||
+      "/assets/user_avatar.png";
+
     return {
       name:
         serverSettingsData?.data?.name ||
         activeAccount?.rawParent?.name ||
-        activeAccount?.name ||
+        (activeAccount?.isParent ? activeAccount?.name : "") ||
         "",
       phone:
         serverSettingsData?.data?.phone ||
         activeAccount?.rawParent?.phone ||
-        (activeAccount as any)?.phone ||
+        (activeAccount?.isParent ? (activeAccount as any)?.phone : "") ||
         "",
-      avatar:
-        serverSettingsData?.data?.avatar_img ||
-        serverSettingsData?.data?.avatar ||
-        activeAccount?.rawParent?.children?.[0]?.avatar_img ||
-        activeAccount?.avatar ||
-        "/assets/user_avatar.png",
+      avatar: parentAvatar,
     };
   }, [serverSettingsData, activeAccount]);
 
@@ -59,18 +62,19 @@ export const SettingsView: React.FC = () => {
     const newName =
       serverSettingsData?.data?.name ||
       activeAccount?.rawParent?.name ||
-      activeAccount?.name ||
+      (activeAccount?.isParent ? activeAccount?.name : "") ||
       "";
     const newPhone =
       serverSettingsData?.data?.phone ||
       activeAccount?.rawParent?.phone ||
-      (activeAccount as any)?.phone ||
+      (activeAccount?.isParent ? (activeAccount as any)?.phone : "") ||
       "";
     const newAvatar =
       serverSettingsData?.data?.avatar_img ||
       serverSettingsData?.data?.avatar ||
-      activeAccount?.rawParent?.children?.[0]?.avatar_img ||
-      activeAccount?.avatar ||
+      activeAccount?.rawParent?.avatar_img ||
+      activeAccount?.rawParent?.avatar ||
+      (activeAccount?.isParent ? activeAccount?.avatar_img || activeAccount?.avatar : null) ||
       "/assets/user_avatar.png";
 
     setProfileData((prev) => ({

@@ -42,6 +42,8 @@ export interface AuthUser {
   phone_verified_at: string | null;
   otp_attempts?: number;
   otp_locked_until?: string | null;
+  avatar_img?: string | null;
+  avatar?: string | null;
   created_at?: string;
   updated_at?: string;
   children?: Child[];

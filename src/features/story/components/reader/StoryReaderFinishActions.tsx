@@ -5,12 +5,12 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface StoryReaderFinishActionsProps {
-  storyId: string;
-  hasQuiz: boolean;
+  storyId?: string;
+  hasQuiz?: boolean;
   isFinishing: boolean;
   isFinished: boolean;
   onFinishStory: () => void;
-  onNavigateToQuiz: () => void;
+  onNavigateToQuiz?: () => void;
 }
 
 export const StoryReaderFinishActions: React.FC<
