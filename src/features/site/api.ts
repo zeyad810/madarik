@@ -1,7 +1,9 @@
 import { API_BASE_URL, handleResponse } from "@/services/api";
+import { getStoredAuthToken } from "@/lib/auth";
 import { ApiResponse } from "@/types";
 import {
   LegalItem,
+  PublicBannerItem,
   PublicLandingData,
   PublicPackagesData,
   SendContactPayload,
@@ -12,6 +14,30 @@ export const getPublicLandingData = async (): Promise<ApiResponse<PublicLandingD
   const response = await fetch(`${API_BASE_URL}/public`);
   const data = await handleResponse<ApiResponse<PublicLandingData>>(response);
   return data;
+};
+
+export const getPublicBanners = async (): Promise<ApiResponse<PublicBannerItem[]>> => {
+  const response = await fetch(`${API_BASE_URL}/public/banners`, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+  return await handleResponse<ApiResponse<PublicBannerItem[]>>(response);
+};
+
+export const getAdminBanners = async (token?: string): Promise<ApiResponse<PublicBannerItem[]>> => {
+  const authToken = token || getStoredAuthToken();
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+  };
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/admin/banners`, {
+    headers,
+  });
+  return await handleResponse<ApiResponse<PublicBannerItem[]>>(response);
 };
 
 export const getPublicPackages = async (): Promise<ApiResponse<PublicPackagesData>> => {
@@ -51,5 +77,6 @@ export const sendContactMessage = async (
 
   return await handleResponse<ApiResponse<SendContactResponse | null>>(response);
 };
+
 
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Story, StoryBlock, getStoryQuizId } from "../types";
 import { useFinishStory } from "../hooks/useFinishStory";
 import { useStartStory } from "../hooks/useStartStory";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 import { StoryReaderHeader } from "./reader/StoryReaderHeader";
 import { StoryReaderContent } from "./reader/StoryReaderContent";
@@ -16,6 +17,7 @@ interface StoryReaderViewProps {
 }
 
 export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
+  const { isAuthenticated } = useActiveAccount();
   const { mutate: markStoryStarted } = useStartStory(story.id);
   const {
     mutate: markStoryFinished,
@@ -29,15 +31,15 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   const isFirstMountRef = useRef(true);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
-  // Record reading start once on mount
+  // Record reading start once on mount (only for authenticated users)
   useEffect(() => {
-    if (!hasStartedRef.current) {
+    if (isAuthenticated && !hasStartedRef.current) {
       hasStartedRef.current = true;
       markStoryStarted(undefined, {
         onError: (err) => console.error("Start reading session error:", err),
       });
     }
-  }, [markStoryStarted]);
+  }, [markStoryStarted, isAuthenticated]);
 
   // Extract story blocks sorted by order
   const blocks: StoryBlock[] = story.blocks && story.blocks.length > 0
@@ -85,6 +87,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   };
 
   const handleFinishStory = () => {
+    if (!isAuthenticated) return;
     if (hasFinishedRef.current || isFinishing || isFinished) return;
     hasFinishedRef.current = true;
     markStoryFinished(undefined, {
@@ -101,7 +104,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   };
 
   const handleNavigateToQuiz = () => {
-    if (!hasFinishedRef.current && !isFinished) {
+    if (isAuthenticated && !hasFinishedRef.current && !isFinished) {
       handleFinishStory();
     }
   };
@@ -171,6 +174,7 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
               hasQuiz={hasQuiz}
               isFinishing={isFinishing}
               isFinished={isFinished}
+              isAuthenticated={isAuthenticated}
               onFinishStory={handleFinishStory}
               onNavigateToQuiz={handleNavigateToQuiz}
             />

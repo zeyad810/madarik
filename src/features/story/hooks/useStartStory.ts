@@ -22,7 +22,16 @@ export function useStartStory(
     (isStudent && session?.user?.id ? session.user.id : null);
 
   return useMutation<StartStoryResponse, ApiError | Error, StartStoryPayload | void>({
-    mutationFn: (payload) => {
+    mutationFn: async (payload) => {
+      // Guard: Do not run start story for unauthenticated guest users
+      if (!isAuthenticated && !token) {
+        return {
+          success: true,
+          message: "Guest mode: story start skipped",
+          data: null as unknown as StartStoryResponse["data"],
+        };
+      }
+
       const mergedPayload: StartStoryPayload = {
         ...(isStudent
           ? { student_id: resolvedChildId || undefined }

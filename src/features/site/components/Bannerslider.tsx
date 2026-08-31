@@ -177,14 +177,16 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                     </motion.h2>
 
                     {/* Description */}
-                    <motion.p
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      className="mad-h5 font-medium text-white/90 leading-relaxed max-w-xl pb-10"
-                    >
-                      {slide.description}
-                    </motion.p>
+                    {slide.description ? (
+                      <motion.p
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="mad-h5 font-medium text-white/90 leading-relaxed max-w-xl pb-10"
+                      >
+                        {slide.description}
+                      </motion.p>
+                    ) : null}
 
                     {/* Button */}
                     {(slide.buttonText || slide.buttonLink || slide.onButtonClick) && (

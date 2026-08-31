@@ -31,10 +31,10 @@ export interface HeroProps {
 export interface BannerSlideItem {
   id: string | number;
   title: string;
-  description: string;
-  bgImage?: string;
-  mobileBgImage?: string;
-  sideImage?: string;
+  description?: string | null;
+  bgImage?: string | null;
+  mobileBgImage?: string | null;
+  sideImage?: string | null;
   sideImageAlt?: string;
   buttonText?: string;
   buttonLink?: string;
@@ -565,9 +565,9 @@ export interface PublicPackagesSection {
 export interface PublicBannerItem {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   image_url: string;
-  side_image_url?: string;
+  side_image_url?: string | null;
   link_url?: string | null;
   start_date?: string | null;
   end_date?: string | null;

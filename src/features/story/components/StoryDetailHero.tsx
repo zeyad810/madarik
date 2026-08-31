@@ -19,12 +19,14 @@ import {
 } from "../types";
 import { FreeRosetteBadge } from "@/features/products/components/FreeRosetteBadge";
 import { useStartStory } from "../hooks/useStartStory";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 interface StoryDetailHeroProps {
   story: Story;
 }
 
 export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
+  const { isAuthenticated } = useActiveAccount();
   const [isDownloading, setIsDownloading] = useState(false);
   const { mutate: triggerStartStory } = useStartStory(story.id);
 
@@ -213,9 +215,11 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             <Link
               href={`/stories/${story.id}/read`}
               onClick={() => {
-                triggerStartStory(undefined, {
-                  onError: (err) => console.error("Start reading error:", err),
-                });
+                if (isAuthenticated) {
+                  triggerStartStory(undefined, {
+                    onError: (err) => console.error("Start reading error:", err),
+                  });
+                }
               }}
               className="py-2.5 sm:py-3 px-6 rounded-full border-2 border-[#7939E3] text-[#7939E3] hover:bg-[#7939E3] hover:text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer select-none active:scale-95"
             >
