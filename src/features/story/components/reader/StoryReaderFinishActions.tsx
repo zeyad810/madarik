@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -16,14 +15,7 @@ interface StoryReaderFinishActionsProps {
 
 export const StoryReaderFinishActions: React.FC<
   StoryReaderFinishActionsProps
-> = ({
-  storyId,
-  hasQuiz,
-  isFinishing,
-  isFinished,
-  onFinishStory,
-  onNavigateToQuiz,
-}) => {
+> = ({ isFinishing, isFinished, onFinishStory }) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}

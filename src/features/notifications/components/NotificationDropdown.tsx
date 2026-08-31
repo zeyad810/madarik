@@ -4,16 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   Bell,
-  CheckCheck,
   ExternalLink,
-  BookOpen,
-  Award,
-  CreditCard,
-  HelpCircle,
-  Info,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
   Loader2,
 } from "lucide-react";
 import {
@@ -22,18 +13,42 @@ import {
   useMarkNotificationAsRead,
   useMarkAllNotificationsAsRead,
 } from "../hooks/useNotifications";
-import { NotificationItem, NotificationType } from "../types";
-import { formatArabicActivityTime } from "@/lib/utils";
+import { NotificationItem } from "../types";
 
 interface NotificationDropdownProps {
   className?: string;
+}
+
+/**
+ * Format relative activity time in Arabic matching the UI design:
+ * "منذ ٥ دقائق", "منذ ساعة", "أمس", etc.
+ */
+function formatRelativeTime(dateStr?: string | null): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "";
+
+  const diffMs = Date.now() - date.getTime();
+  if (diffMs < 0) return "الآن";
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMinutes < 1) return "الآن";
+  if (diffMinutes < 60) return `منذ ${diffMinutes} دقائق`;
+  if (diffHours === 1) return "منذ ساعة";
+  if (diffHours === 2) return "منذ ساعتين";
+  if (diffHours < 24) return `منذ ${diffHours} ساعات`;
+  if (diffDays === 1) return "أمس";
+  if (diffDays === 2) return "منذ يومين";
+  if (diffDays <= 10) return `منذ ${diffDays} أيام`;
+  return `منذ ${diffDays} يوماً`;
 }
 
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [filter, setFilter] = useState<"all" | "unread">("all");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -46,7 +61,8 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     refetch: refetchUnreadCount,
   } = useUnreadNotificationCount();
   const { mutate: markAsRead } = useMarkNotificationAsRead();
-  const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllNotificationsAsRead();
+  const { mutate: markAllAsRead, isPending: isMarkingAll } =
+    useMarkAllNotificationsAsRead();
 
   // Refetch latest notifications whenever dropdown is opened
   useEffect(() => {
@@ -71,68 +87,57 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredNotifications =
-    filter === "unread"
-      ? notifications.filter((n) => !n.is_read)
-      : notifications;
-
-  const renderNotificationIcon = (type?: NotificationType) => {
-    switch (type) {
-      case "story":
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-purple-100 text-purple-600 shrink-0">
-            <BookOpen className="size-4.5" />
-          </div>
-        );
-      case "quiz":
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 shrink-0">
-            <HelpCircle className="size-4.5" />
-          </div>
-        );
-      case "badge":
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 shrink-0">
-            <Award className="size-4.5" />
-          </div>
-        );
-      case "subscription":
-      case "package":
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-blue-100 text-blue-600 shrink-0">
-            <CreditCard className="size-4.5" />
-          </div>
-        );
-      case "success":
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-green-100 text-green-600 shrink-0">
-            <CheckCircle2 className="size-4.5" />
-          </div>
-        );
-      case "warning":
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-yellow-100 text-yellow-600 shrink-0">
-            <AlertTriangle className="size-4.5" />
-          </div>
-        );
-      case "error":
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-red-100 text-red-600 shrink-0">
-            <XCircle className="size-4.5" />
-          </div>
-        );
-      default:
-        return (
-          <div className="flex size-9 items-center justify-center rounded-xl bg-purple-100 text-mad-main shrink-0">
-            <Info className="size-4.5" />
-          </div>
-        );
-    }
-  };
-
   const handleNotificationClick = (item: NotificationItem) => {
     if (!item.is_read) {
       markAsRead(item.id);
+    }
+  };
+
+  /**
+   * Renders the notification icon image from the backend or falls back gracefully.
+   */
+  const renderNotificationIcon = (item: NotificationItem) => {
+    const iconSource =
+      item.icon ||
+      item.icon_url ||
+      item.image ||
+      (item.data?.icon as string | undefined) ||
+      (item.data?.image as string | undefined);
+
+    if (iconSource) {
+      if (
+        typeof iconSource === "string" &&
+        (iconSource.startsWith("http://") ||
+          iconSource.startsWith("https://") ||
+          iconSource.startsWith("/") ||
+          iconSource.startsWith("data:"))
+      ) {
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={iconSource}
+            alt=""
+            className="size-5 sm:size-5.5 object-contain inline-block shrink-0 align-middle ml-1"
+          />
+        );
+      }
+      return (
+        <span className="text-base sm:text-lg leading-none inline-block shrink-0 align-middle ml-1">
+          {iconSource}
+        </span>
+      );
+    }
+
+    // Default icon fallback based on type matching UI design
+    switch (item.type) {
+      case "badge":
+        return <span className="text-base leading-none inline-block shrink-0 ml-1">🥇</span>;
+      case "story":
+        return <span className="text-base leading-none inline-block shrink-0 ml-1">📖</span>;
+      case "quiz":
+        return <span className="text-base leading-none inline-block shrink-0 ml-1">⭐</span>;
+      default:
+        return null;
     }
   };
 
@@ -160,132 +165,99 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       {isOpen && (
         <div
           dir="rtl"
-          className="absolute top-full left-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
+          className="absolute top-full left-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 sm:p-6 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-2.5 px-1 border-b border-gray-100">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-900 text-base">الإشعارات</span>
-              {unreadCount > 0 && (
-                <span className="text-xs bg-purple-100 text-mad-main px-2.5 py-0.5 rounded-full font-bold">
-                  {unreadCount} جديدة
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2.5 text-xs">
-              {unreadCount > 0 && (
-                <button
-                  type="button"
-                  onClick={() => markAllAsRead(notifications)}
-                  disabled={isMarkingAll}
-                  className="text-mad-main hover:text-purple-700 flex items-center gap-1 font-bold cursor-pointer transition-colors disabled:opacity-50"
-                  title="تحديد الكل كمقروء"
-                >
-                  <CheckCheck className="size-4" />
-                  <span>قراءة الكل</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Filter Tabs */}
-          <div className="flex items-center gap-2 my-2.5 px-1">
-            <button
-              type="button"
-              onClick={() => setFilter("all")}
-              className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer ${
-                filter === "all"
-                  ? "bg-mad-main text-white shadow-xs"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              الكل ({notifications.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("unread")}
-              className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer ${
-                filter === "unread"
-                  ? "bg-mad-main text-white shadow-xs"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              غير مقروءة ({unreadCount})
-            </button>
+          <div className="flex items-center justify-between pb-3.5 mb-2 border-b border-gray-100/80">
+            <h3 className="font-bold text-gray-900 text-lg sm:text-xl">الإشعارات</h3>
+            {notifications.length > 0 && (
+              <button
+                type="button"
+                onClick={() => markAllAsRead(notifications)}
+                disabled={isMarkingAll}
+                className="text-xs sm:text-sm text-slate-400 hover:text-[#7939E3] font-medium cursor-pointer transition-colors disabled:opacity-50"
+              >
+                مسح الكل
+              </button>
+            )}
           </div>
 
           {/* Notification Items List */}
-          <div className="max-h-84 overflow-y-auto space-y-1.5 px-0.5 custom-scrollbar">
+          <div className="max-h-96 overflow-y-auto space-y-3.5 px-0.5 custom-scrollbar">
             {isLoading && notifications.length === 0 ? (
-              <div className="py-10 text-center text-gray-400 flex flex-col items-center justify-center gap-2">
+              <div className="py-12 text-center text-gray-400 flex flex-col items-center justify-center gap-2">
                 <Loader2 className="size-6 text-mad-main animate-spin" />
                 <p className="text-xs font-medium text-gray-500">جاري تحميل الإشعارات...</p>
               </div>
-            ) : filteredNotifications.length === 0 ? (
-              <div className="py-10 text-center text-gray-400 flex flex-col items-center justify-center gap-2">
-                <Bell className="size-8 stroke-1 text-gray-300" />
-                <p className="text-sm font-medium">
-                  {filter === "unread"
-                    ? "لا توجد إشعارات غير مقروءة"
-                    : "لا توجد إشعارات حالياً"}
+            ) : notifications.length === 0 ? (
+              /* Empty Notifications State */
+              <div className="py-10 px-4 text-center flex flex-col items-center justify-center">
+                <div className="size-16 sm:size-20 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-4 text-slate-400 shadow-2xs">
+                  <Bell className="size-8 stroke-[1.5] text-slate-400" />
+                </div>
+                <h4 className="text-base sm:text-lg font-bold text-slate-900 mb-1.5">
+                  لا توجد إشعارات جديدة
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-400 text-center max-w-xs leading-relaxed">
+                  ستظهر التنبيهات وأنشطة طفلك هنا فور حدوثها
                 </p>
               </div>
             ) : (
-              filteredNotifications.map((item) => (
+              /* Populated Notifications List */
+              notifications.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => handleNotificationClick(item)}
-                  className={`group relative flex items-start gap-3 p-3 rounded-2xl transition-all border text-right cursor-pointer ${
-                    !item.is_read
-                      ? "bg-[#F7F5FF] border-purple-200/70 hover:bg-purple-100/50"
-                      : "border-transparent bg-white hover:bg-gray-50"
-                  }`}
+                  className="group relative flex flex-col gap-1 pb-3.5 border-b border-gray-100 last:border-b-0 cursor-pointer text-right transition-colors"
                 >
-                  {/* Icon */}
-                  {renderNotificationIcon(item.type)}
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <h4
-                        className={`text-sm leading-tight truncate ${
-                          !item.is_read
-                            ? "font-bold text-gray-900"
-                            : "font-semibold text-gray-700"
-                        }`}
-                      >
-                        {item.title}
+                  {/* Top Row: Title with Icon & Relative Time */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      {/* Unread indicator purple dot */}
+                      {!item.is_read && (
+                        <span className="size-2 rounded-full bg-[#7939E3] shrink-0" />
+                      )}
+                      <h4 className="text-sm sm:text-base font-bold text-gray-900 truncate flex items-center gap-1.5">
+                        <span>{item.title}</span>
+                        {renderNotificationIcon(item)}
                       </h4>
-
-                      <span className="text-[10px] text-gray-400 shrink-0 font-medium">
-                        {item.created_at ? formatArabicActivityTime(item.created_at) : ""}
-                      </span>
                     </div>
 
-                    {item.message ? (
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-                        {item.message}
-                      </p>
-                    ) : null}
-
-                    {item.link ? (
-                      <Link
-                        href={item.link}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!item.is_read) {
-                            markAsRead(item.id);
-                          }
-                          setIsOpen(false);
-                        }}
-                        className="inline-flex items-center gap-1 text-xs text-mad-main font-bold mt-1.5 hover:underline cursor-pointer"
-                      >
-                        <span>عرض التفاصيل</span>
-                        <ExternalLink className="size-3" />
-                      </Link>
-                    ) : null}
+                    <span className="text-xs text-slate-400 shrink-0 font-normal select-none">
+                      {item.created_at ? formatRelativeTime(item.created_at) : ""}
+                    </span>
                   </div>
+
+                  {/* Notification message description */}
+                  {item.message ? (
+                    <p
+                      className={`text-xs sm:text-sm text-slate-500 line-clamp-2 leading-relaxed text-right ${
+                        !item.is_read ? "pr-4" : ""
+                      }`}
+                    >
+                      {item.message}
+                    </p>
+                  ) : null}
+
+                  {/* Action Link (if provided) */}
+                  {item.link ? (
+                    <Link
+                      href={item.link}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!item.is_read) {
+                          markAsRead(item.id);
+                        }
+                        setIsOpen(false);
+                      }}
+                      className={`inline-flex items-center gap-1 text-xs text-[#7939E3] font-bold mt-1 hover:underline cursor-pointer ${
+                        !item.is_read ? "pr-4" : ""
+                      }`}
+                    >
+                      <span>عرض التفاصيل</span>
+                      <ExternalLink className="size-3" />
+                    </Link>
+                  ) : null}
                 </div>
               ))
             )}
