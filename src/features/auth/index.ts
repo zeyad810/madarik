@@ -12,6 +12,7 @@ export { default as LoginForm } from "./LoginForm";
 export { default as LoginSwitcher } from "./LoginSwitcher";
 export { default as Otp } from "./Otp";
 export { default as SidePanle } from "./SidePanle";
+export { default as AuthBackButton } from "./components/AuthBackButton";
 export { default as CountrySelect } from "./CountrySelect";
 
 // Hooks
