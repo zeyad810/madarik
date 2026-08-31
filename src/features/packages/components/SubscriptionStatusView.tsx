@@ -98,11 +98,24 @@ export const SubscriptionStatusView: React.FC = () => {
               {/* 3. Age Category */}
               <div className="flex items-center justify-between py-1 border-b border-gray-50">
                 <span className="text-xs sm:text-sm text-gray-500 font-medium">
-                  الفئة العمرية المحددة:
+                  الفئات العمرية المفتوحة:
                 </span>
-                <span className="rounded-full bg-purple-50 text-mad-main text-xs font-semibold px-3 py-1 border border-purple-100">
-                  {subscription.ageCategory}
-                </span>
+                <div className="flex flex-wrap items-center gap-1.5 justify-end">
+                  {subscription.unlockedAgeCategories && subscription.unlockedAgeCategories.length > 0 ? (
+                    subscription.unlockedAgeCategories.map((age) => (
+                      <span
+                        key={age}
+                        className="rounded-full bg-purple-50 text-mad-main text-xs font-semibold px-2.5 py-0.5 border border-purple-100"
+                      >
+                        {age}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="rounded-full bg-purple-50 text-mad-main text-xs font-semibold px-3 py-1 border border-purple-100">
+                      {subscription.ageCategory}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* 4. Payment Method */}

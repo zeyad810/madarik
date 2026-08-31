@@ -102,22 +102,61 @@ export const getPackagesList = async (): Promise<PackagePlan[]> => {
 
 /**
  * Fetches the user's active subscription status.
+ * Integrates with backend GET /subscription endpoint with fallbacks.
  */
 export const getCurrentSubscription = async (
   token?: string | null
 ): Promise<CurrentSubscription> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/parent/subscription`, {
+    const response = await fetch(`${API_BASE_URL}/subscription`, {
       method: "GET",
       headers: buildHeaders(token),
     });
     if (response.ok) {
-      const result = await handleResponse<ApiResponse<CurrentSubscription>>(response);
-      if (result?.data) {
-        return {
-          ...DEFAULT_CURRENT_SUBSCRIPTION,
-          ...result.data,
+      const result = await handleResponse<{
+        success?: boolean;
+        data?: {
+          is_subscribed?: boolean;
+          subscription?: {
+            id?: string;
+            status?: string;
+            start_date?: string;
+            end_date?: string;
+            package?: {
+              name?: string;
+              price?: number | string;
+              currency?: string;
+              duration_label?: string;
+            };
+          } | null;
+          unlocked_age_categories?: string[];
         };
+      }>(response);
+
+      if (result?.data) {
+        const subData = result.data.subscription;
+        const isSubscribed = Boolean(result.data.is_subscribed);
+        const unlockedAges = result.data.unlocked_age_categories || [];
+
+        if (subData) {
+          const pkg = subData.package;
+          return {
+            id: String(subData.id || "sub_live"),
+            planName: pkg?.name || "باقة الاشتراك الفعالة",
+            subtitle: "اشتراك طفلك الحالي النشط",
+            ageCategory: unlockedAges.join("، ") || "5-15 سنة",
+            unlockedAgeCategories: unlockedAges,
+            isSubscribed,
+            startDate: subData.start_date || "2026-01-01",
+            endDate: subData.end_date || "2026-12-31",
+            autoRenewDate: subData.end_date || "2026-12-31",
+            paymentMethod: "بطاقة ائتمانية (Moyasar)",
+            monthlyPriceText: pkg?.price ? `${pkg.price} ${pkg.currency || "ر.س"}` : "299 ر.س",
+            status: (subData.status as "active" | "frozen" | "expired" | "cancelled") || "active",
+            statusLabel: subData.status === "active" ? "نشط" : subData.status === "frozen" ? "مجمدة" : "غير نشط",
+            isFrozen: subData.status === "frozen",
+          };
+        }
       }
     }
   } catch (error) {

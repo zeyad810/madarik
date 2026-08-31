@@ -1,14 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PackageCard } from "./PackageCard";
 import { CurrentSubscriptionBanner } from "./CurrentSubscriptionBanner";
 import { useCurrentSubscription, usePackagesList } from "../hooks/usePackages";
+import { CheckoutModal } from "@/features/payment";
+import { PackagePlan } from "../types";
 
 export const PackageRenewView: React.FC = () => {
   const { data: subscription, isLoading: isSubLoading } = useCurrentSubscription();
   const { data: packages = [], isLoading: isPkgLoading } = usePackagesList();
+  const [selectedPackageForCheckout, setSelectedPackageForCheckout] = useState<PackagePlan | null>(null);
+
+  const handleSelectPackage = (pkg: PackagePlan) => {
+    if (pkg.ctaType === "whatsapp" || pkg.audience === "school") {
+      const waUrl = pkg.ctaLink || "https://wa.me/966500000000";
+      window.open(waUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+    setSelectedPackageForCheckout(pkg);
+  };
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
@@ -77,6 +89,7 @@ export const PackageRenewView: React.FC = () => {
                 pkg={pkg}
                 index={index}
                 isUpgrade={true}
+                onSelect={handleSelectPackage}
                 ctaOverrideText={
                   pkg.audience === "school" ? "اشترك عبر الواتساب" : "ترقية / تجديد الآن"
                 }
@@ -84,9 +97,17 @@ export const PackageRenewView: React.FC = () => {
             ))}
           </div>
         )}
+
+        {/* Checkout Modal */}
+        <CheckoutModal
+          isOpen={Boolean(selectedPackageForCheckout)}
+          pkg={selectedPackageForCheckout}
+          onClose={() => setSelectedPackageForCheckout(null)}
+        />
       </div>
     </div>
   );
 };
 
 export default PackageRenewView;
+

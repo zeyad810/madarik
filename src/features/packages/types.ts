@@ -25,6 +25,8 @@ export interface CurrentSubscription {
   planName: string;
   subtitle?: string;
   ageCategory: string;
+  unlockedAgeCategories?: string[];
+  isSubscribed?: boolean;
   startDate: string;
   endDate: string;
   autoRenewDate?: string;

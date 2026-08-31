@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PackageCard } from "./PackageCard";
 import { usePackagesList } from "../hooks/usePackages";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { CheckoutModal } from "@/features/payment";
+import { PackagePlan } from "../types";
 
 export const PackagesSelectionView: React.FC = () => {
   const router = useRouter();
@@ -17,6 +19,8 @@ export const PackagesSelectionView: React.FC = () => {
     activeAccount,
     isLoading: isAuthLoading,
   } = useActiveAccount();
+
+  const [selectedPackageForCheckout, setSelectedPackageForCheckout] = useState<PackagePlan | null>(null);
 
   const isChildOrStudent =
     isStudent ||
@@ -35,6 +39,20 @@ export const PackagesSelectionView: React.FC = () => {
   }
 
   const isLoading = isPkgsLoading || isAuthLoading;
+
+  const handleSelectPackage = (pkg: PackagePlan) => {
+    if (pkg.ctaType === "whatsapp" || pkg.audience === "school") {
+      const waUrl = pkg.ctaLink || "https://wa.me/966500000000";
+      window.open(waUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    if (isAuthenticated) {
+      setSelectedPackageForCheckout(pkg);
+    } else {
+      router.push(`/register?package=${pkg.id}`);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
@@ -87,13 +105,26 @@ export const PackagesSelectionView: React.FC = () => {
         ) : (
           <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
             {packages.map((pkg, index) => (
-              <PackageCard key={pkg.id} pkg={pkg} index={index} />
+              <PackageCard
+                key={pkg.id}
+                pkg={pkg}
+                index={index}
+                onSelect={handleSelectPackage}
+              />
             ))}
           </div>
         )}
+
+        {/* Checkout Modal */}
+        <CheckoutModal
+          isOpen={Boolean(selectedPackageForCheckout)}
+          pkg={selectedPackageForCheckout}
+          onClose={() => setSelectedPackageForCheckout(null)}
+        />
       </div>
     </div>
   );
 };
 
 export default PackagesSelectionView;
+
