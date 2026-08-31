@@ -18,6 +18,9 @@ export interface NotificationItem {
   type?: NotificationType;
   title: string;
   message?: string;
+  icon?: string | null;
+  icon_url?: string | null;
+  image?: string | null;
   data?: Record<string, unknown> | null;
   is_read: boolean;
   read_at?: string | null;
