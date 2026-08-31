@@ -46,3 +46,10 @@ export interface MarkNotificationReadResponse {
   message?: string;
   data?: unknown;
 }
+
+export interface DeleteAllNotificationsResponse {
+  success: boolean;
+  message?: string;
+  data?: unknown;
+}
+

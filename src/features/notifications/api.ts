@@ -5,6 +5,7 @@ import type {
   NotificationsResponse,
   UnreadCountResponse,
   MarkNotificationReadResponse,
+  DeleteAllNotificationsResponse,
 } from "./types";
 
 /**
@@ -109,3 +110,23 @@ export async function markNotificationAsRead(
 
   return await handleResponse<MarkNotificationReadResponse>(response);
 }
+
+/**
+ * 4. DELETE /notifications/all
+ * Deletes all notifications. If childId is provided, appends ?child_id={childId}
+ */
+export async function deleteAllNotifications(
+  childId?: string | null,
+  token?: string | null
+): Promise<DeleteAllNotificationsResponse> {
+  const query = childId ? `?child_id=${encodeURIComponent(childId)}` : "";
+  const endpoint = `${API_BASE_URL}/notifications/all${query}`;
+
+  const response = await fetch(endpoint, {
+    method: "DELETE",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<DeleteAllNotificationsResponse>(response);
+}
+

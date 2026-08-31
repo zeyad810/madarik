@@ -149,6 +149,8 @@ function buildParentActiveAccount(
     user_type: sessionUserType,
     name: user.name || (isParentRole ? "ولي الأمر" : "المستخدم"),
     status: user.status || "active",
+    avatar_img: user.avatar_img || user.avatar || null,
+    avatar: user.avatar_img || user.avatar || "/assets/user_avatar.png",
     isParent: true,
     rawParent: user,
   };
