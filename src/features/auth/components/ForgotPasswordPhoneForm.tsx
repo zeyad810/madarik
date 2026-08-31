@@ -39,13 +39,7 @@ export const ForgotPasswordPhoneForm: React.FC<ForgotPasswordPhoneFormProps> = (
     mutate: executeForgotPassword,
     isPending,
     error: mutationError,
-  } = useForgotPassword({
-    onSuccess: (response, variables) => {
-      if (onSubmitSuccess) {
-        onSubmitSuccess({ phone: variables.phone }, response);
-      }
-    },
-  });
+  } = useForgotPassword();
 
   const {
     control,
@@ -61,10 +55,24 @@ export const ForgotPasswordPhoneForm: React.FC<ForgotPasswordPhoneFormProps> = (
   const isLoading = isSubmitting || isPending;
 
   const onSubmit = (data: ForgotPasswordPhoneFormData) => {
-    console.log("[Forgot Password Form Submitted]:", data);
-    executeForgotPassword({
-      phone: data.phone.trim(),
-    });
+    console.log("[Forgot Password Phone Form Submitted]:", data);
+    executeForgotPassword(
+      {
+        phone: data.phone.trim(),
+      },
+      {
+        onSuccess: (response) => {
+          if (onSubmitSuccess) {
+            onSubmitSuccess(
+              {
+                phone: data.phone.trim(),
+              },
+              response
+            );
+          }
+        },
+      }
+    );
   };
 
   const apiErrorMessage = mutationError
