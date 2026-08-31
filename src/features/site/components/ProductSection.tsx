@@ -55,6 +55,9 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         availability: story.availability,
         levelTag: story.level,
         storyCodeTag: story.code,
+        outcome: story.outcome,
+        indicator: story.indicator,
+        pagesCount: story.pages_count,
         ctaText: "ابدأ القراءة",
         ctaLink: `/stories/${story.id}`,
       };

@@ -9,6 +9,9 @@ export interface Product {
   availability?: "free" | "paid" | string;
   levelTag?: string;
   storyCodeTag?: string;
+  outcome?: string;
+  indicator?: string;
+  pagesCount?: number;
   ctaText?: string;
   ctaLink?: string;
 }
@@ -24,6 +27,9 @@ export interface ProductCardProps {
   availability?: "free" | "paid" | string;
   levelTag?: string;
   storyCodeTag?: string;
+  outcome?: string;
+  indicator?: string;
+  pagesCount?: number;
   ctaText?: string;
   ctaLink?: string;
   onCtaClick?: () => void;

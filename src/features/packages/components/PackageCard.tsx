@@ -124,10 +124,21 @@ export const PackageCard: React.FC<PackageCardProps> = ({
       {/* Price block */}
       {pkg.price !== null && pkg.price !== undefined ? (
         <div className="mt-5 text-center">
-          <div className="flex items-baseline justify-center gap-1.5" dir="rtl">
-            <span className="text-4xl font-extrabold text-mad-main">
-              {pkg.price}
-            </span>
+          <div className="flex items-baseline justify-center gap-2" dir="rtl">
+            {pkg.discountedPrice ? (
+              <>
+                <span className="text-4xl font-extrabold text-mad-main">
+                  {pkg.discountedPrice}
+                </span>
+                <span className="text-sm font-medium line-through text-gray-400">
+                  {pkg.price}
+                </span>
+              </>
+            ) : (
+              <span className="text-4xl font-extrabold text-mad-main">
+                {pkg.price}
+              </span>
+            )}
             <span className="text-sm font-medium text-gray-600">
               {pkg.currency || "ر.س"} {pkg.durationLabel ? `/ ${pkg.durationLabel}` : ""}
             </span>

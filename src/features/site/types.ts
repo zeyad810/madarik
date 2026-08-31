@@ -16,6 +16,8 @@ export interface HeroProps {
   stats?: HeroStatItem[];
   ctaText?: string;
   ctaLink?: string;
+  secondaryCtaText?: string;
+  secondaryCtaLink?: string;
   bgImageSrc?: string;
   mobileBgImageSrc?: string;
   sideImageSrc?: string;
@@ -58,7 +60,9 @@ export interface BannerSliderProps {
 export interface ReviewItem {
   id: string | number;
   author: string;
-  role: string;
+  role?: string;
+  title?: string;
+  subtitle?: string;
   comment: string;
   rating: number;
 }
@@ -360,6 +364,8 @@ export interface PublicHeroBanner {
   id?: string;
   title: string;
   subtitle: string;
+  primary_button_text?: string;
+  secondary_button_text?: string;
   stats: PublicHeroStat[];
 }
 
@@ -441,18 +447,20 @@ export interface PublicSuggestedStory {
   thumbnail_url: string;
   cover_photo_url: string;
   level: string;
-  outcome: string;
-  indicator: string;
+  outcome?: string;
+  indicator?: string;
   age_category: string;
   availability: "free" | "paid" | string;
-  pdf_url: string | null;
+  pdf_url?: string | null;
+  quiz_id?: string | null;
+  pages_count?: number;
   blocks?: PublicStoryBlock[];
 }
 
 export interface PublicSuggestedStoriesSection {
   id?: string;
   title: string;
-  link_text: string;
+  link_text?: string;
   items: PublicSuggestedStory[];
 }
 
@@ -483,17 +491,21 @@ export interface PublicJourneySection {
 export interface PublicTestimonial {
   id: string;
   name: string;
-  role: string;
+  title?: string;
+  subtitle?: string;
+  role?: string;
   quote: string;
-  display_order: number;
-  status: "active" | "inactive" | string;
-  created_at: string;
-  updated_at: string;
+  review?: number;
+  display_order?: number;
+  status?: "active" | "inactive" | string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface PublicTestimonialsSection {
   id?: string;
   title: string;
+  description?: string;
   items: PublicTestimonial[];
 }
 
@@ -530,7 +542,7 @@ export interface PublicSocialMedia {
 export interface PublicContactSection {
   id?: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   button_text?: string;
   description?: string;
   form_fields?: Record<string, { label?: string; placeholder?: string }>;
@@ -542,6 +554,12 @@ export interface PublicNewsletterSection {
   id?: string;
   title: string;
   subtitle: string;
+}
+
+export interface PublicPackagesSection {
+  id?: string;
+  title?: string | null;
+  subtitle?: string | null;
 }
 
 export interface PublicBannerItem {
@@ -596,28 +614,43 @@ export interface PublicLandingData {
   faq_section: PublicFaqSection;
   contact_section: PublicContactSection;
   newsletter_section: PublicNewsletterSection;
+  packages_section?: PublicPackagesSection;
   banners_section?: PublicBannersSection;
   footer_section?: PublicFooterSection;
 }
 
 export type PublicLandingResponse = ApiResponse<PublicLandingData>;
 
+export interface PublicPackageLevel {
+  id: string;
+  name: string;
+  age_from: number;
+  age_to: number;
+  status: string;
+  age_category?: string;
+}
+
 export interface PublicPackage {
   id: string;
   name: string;
+  image_url?: string | null;
   audience: "individual" | "school" | string;
   description: string | null;
   features: string[] | string | null;
   price: string | number | null;
-  duration_type: "months" | "years" | "lifetime" | string;
+  discounted_price?: string | number | null;
+  duration_type: "days" | "months" | "years" | "lifetime" | "custom" | string;
   duration_value: number | null;
   duration_label: string | null;
   start_date: string | null;
   end_date: string | null;
-  age_categories: string[];
+  age_categories?: string[];
+  levels?: PublicPackageLevel[];
   status: string;
   cta_type: "checkout" | "whatsapp" | string;
   cta_text: string | null;
+  cta_whatsapp_number?: string | null;
+  is_system?: boolean;
   display_order: number;
   created_at: string;
   updated_at: string;

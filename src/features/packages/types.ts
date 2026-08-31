@@ -6,8 +6,10 @@ export interface PackagePlan {
   description?: string | null;
   audience?: PackageAudience;
   icon: string;
+  imageUrl?: string | null;
   ageCategories: string[];
   price: number | string | null;
+  discountedPrice?: number | string | null;
   currency?: string;
   durationLabel?: string;
   annualNote?: string;

@@ -41,12 +41,13 @@ export const getPackagesList = async (): Promise<PackagePlan[]> => {
       if (data?.data?.packages && data.data.packages.length > 0) {
         return data.data.packages.map((pkg, idx) => {
           const isSchool = pkg.audience === "school" || pkg.cta_type === "whatsapp";
-          const icon =
+          const defaultIcon =
             idx === 0
               ? "/iamges/family-icon.svg"
               : isSchool
               ? "/iamges/school-icon.svg"
               : "/iamges/crown-illustration.svg";
+          const icon = pkg.image_url || defaultIcon;
 
           const features = Array.isArray(pkg.features)
             ? pkg.features
@@ -54,21 +55,40 @@ export const getPackagesList = async (): Promise<PackagePlan[]> => {
             ? [pkg.features]
             : [];
 
+          const ageCategories =
+            pkg.levels && pkg.levels.length > 0
+              ? pkg.levels.map((lvl) => lvl.age_category || `${lvl.age_from}-${lvl.age_to}`)
+              : pkg.age_categories || ["5-9", "10-12", "13-15"];
+
+          const waNumber = pkg.cta_whatsapp_number?.replace(/\D/g, "") || "966500000000";
+
+          const durationLabel =
+            pkg.duration_label ||
+            (pkg.duration_type === "days"
+              ? pkg.duration_value && pkg.duration_value > 1 ? `${pkg.duration_value} يوم` : "يوميًا"
+              : pkg.duration_type === "years"
+              ? pkg.duration_value && pkg.duration_value > 1 ? `${pkg.duration_value} سنوات` : "سنويًا"
+              : pkg.duration_type === "months"
+              ? pkg.duration_value && pkg.duration_value > 1 ? `${pkg.duration_value} أشهر` : "شهريًا"
+              : "شهرياً");
+
           return {
             id: String(pkg.id),
             name: pkg.name,
             description: pkg.description,
             audience: pkg.audience,
             icon,
-            ageCategories: pkg.age_categories || ["3-6", "7-10", "11-13"],
+            imageUrl: pkg.image_url,
+            ageCategories,
             price: pkg.price ? Number(pkg.price) : null,
+            discountedPrice: pkg.discounted_price ? Number(pkg.discounted_price) : null,
             currency: "ر.س",
-            durationLabel: pkg.duration_label || "شهرياً",
-            annualNote: pkg.price ? "قيمة سنوية 1490 شاملة" : undefined,
+            durationLabel,
+            annualNote: pkg.price ? undefined : undefined,
             features: features.length > 0 ? features : (DEFAULT_PACKAGES[idx]?.features || []),
             ctaType: isSchool ? "whatsapp" : "checkout",
             ctaText: pkg.cta_text || (isSchool ? "اشترك عبر الواتساب" : "اشترك الآن"),
-            ctaLink: isSchool ? "https://wa.me/966500000000" : undefined,
+            ctaLink: isSchool ? `https://wa.me/${waNumber}` : undefined,
             isFeatured: idx === 0,
           };
         });
