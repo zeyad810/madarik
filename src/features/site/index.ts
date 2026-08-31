@@ -21,6 +21,7 @@ export { default as LegalPageView } from "./components/LegalPageView";
 // Hooks
 export * from "./hooks/usePublicLanding";
 export * from "./hooks/usePublicPackages";
+export * from "./hooks/useBanners";
 export * from "./hooks/useLegalData";
 export * from "./hooks/useSendContactMessage";
 export * from "./hooks/useHashScroll";
