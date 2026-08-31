@@ -52,12 +52,17 @@ export async function getNotifications(
   childId?: string | null,
   token?: string | null
 ): Promise<NotificationItem[]> {
+  const resolvedToken = token || getStoredAuthToken();
+  if (!resolvedToken) {
+    return [];
+  }
+
   const query = childId ? `?child_id=${encodeURIComponent(childId)}` : "";
   const endpoint = `${API_BASE_URL}/notifications${query}`;
 
   const response = await fetch(endpoint, {
     method: "GET",
-    headers: buildHeaders(token),
+    headers: buildHeaders(resolvedToken),
     cache: "no-store",
   });
 
@@ -80,12 +85,17 @@ export async function getUnreadCount(
   childId?: string | null,
   token?: string | null
 ): Promise<number> {
+  const resolvedToken = token || getStoredAuthToken();
+  if (!resolvedToken) {
+    return 0;
+  }
+
   const query = childId ? `?child_id=${encodeURIComponent(childId)}` : "";
   const endpoint = `${API_BASE_URL}/notifications/unread-count${query}`;
 
   const response = await fetch(endpoint, {
     method: "GET",
-    headers: buildHeaders(token),
+    headers: buildHeaders(resolvedToken),
     cache: "no-store",
   });
 

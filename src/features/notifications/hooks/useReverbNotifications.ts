@@ -40,7 +40,7 @@ export function useReverbNotifications() {
 
     const token = getStoredAuthToken(session);
 
-    if (status !== "authenticated" || !token) {
+    if (status !== "authenticated" || !token || !isAuthenticated) {
       if (pusherRef.current) {
         pusherRef.current.disconnect();
         pusherRef.current = null;

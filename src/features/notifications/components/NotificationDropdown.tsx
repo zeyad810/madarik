@@ -7,6 +7,9 @@ import {
   ExternalLink,
   Loader2,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { getStoredAuthToken } from "@/lib/auth";
 import {
   useNotifications,
   useUnreadNotificationCount,
@@ -45,7 +48,86 @@ function formatRelativeTime(dateStr?: string | null): string {
   return `منذ ${diffDays} يوماً`;
 }
 
-export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
+/**
+ * Safely extracts notification icon URL or string from item.
+ */
+function getNotificationIconSource(item: NotificationItem): string | null {
+  let dataObj: Record<string, unknown> | null = null;
+  if (item.data && typeof item.data === "object") {
+    dataObj = item.data as Record<string, unknown>;
+  } else if (typeof item.data === "string") {
+    try {
+      dataObj = JSON.parse(item.data);
+    } catch {
+      dataObj = null;
+    }
+  }
+
+  const source =
+    (dataObj?.image as string | undefined) ||
+    (dataObj?.icon as string | undefined) ||
+    (dataObj?.icon_url as string | undefined) ||
+    (dataObj?.badge_image as string | undefined) ||
+    (dataObj?.badge_icon as string | undefined) ||
+    item.image ||
+    item.icon_url ||
+    item.icon ||
+    (dataObj?.avatar as string | undefined) ||
+    (dataObj?.url as string | undefined);
+
+  return source || null;
+}
+
+/**
+ * Helper component to display notification icon image with automatic fallback.
+ */
+const NotificationIconImage: React.FC<{
+  src: string;
+  fallback: React.ReactNode;
+}> = ({ src, fallback }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) return <>{fallback}</>;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      onError={() => setHasError(true)}
+      className="size-5 sm:size-6 object-contain inline-block shrink-0 align-middle ml-1 rounded-sm"
+    />
+  );
+};
+
+/**
+ * Format notification message and replace any template placeholders.
+ */
+function formatNotificationMessage(item: NotificationItem): string {
+  if (!item.message) return "";
+  let msg = item.message;
+  if (msg.includes("{required_score}")) {
+    let dataObj: Record<string, unknown> | null = null;
+    if (item.data && typeof item.data === "object") {
+      dataObj = item.data as Record<string, unknown>;
+    } else if (typeof item.data === "string") {
+      try {
+        dataObj = JSON.parse(item.data);
+      } catch {
+        dataObj = null;
+      }
+    }
+    const score =
+      dataObj?.required_score ??
+      dataObj?.score ??
+      dataObj?.passing_score ??
+      "";
+    msg = msg.replace("{required_score}", String(score || "").trim());
+  }
+  return msg;
+}
+
+const AuthenticatedNotificationDropdown: React.FC<NotificationDropdownProps> = ({
   className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -97,12 +179,21 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
    * Renders the notification icon image from the backend or falls back gracefully.
    */
   const renderNotificationIcon = (item: NotificationItem) => {
-    const iconSource =
-      item.icon ||
-      item.icon_url ||
-      item.image ||
-      (item.data?.icon as string | undefined) ||
-      (item.data?.image as string | undefined);
+    const iconSource = getNotificationIconSource(item);
+
+    const typeStr = (item.type || "").toLowerCase();
+    const defaultFallback = (() => {
+      if (typeStr === "badge" || typeStr === "achievement") {
+        return <span className="text-base leading-none inline-block shrink-0 ml-1">🥇</span>;
+      }
+      if (typeStr === "story") {
+        return <span className="text-base leading-none inline-block shrink-0 ml-1">📖</span>;
+      }
+      if (typeStr === "quiz" || typeStr === "challenge") {
+        return <span className="text-base leading-none inline-block shrink-0 ml-1">⭐</span>;
+      }
+      return null;
+    })();
 
     if (iconSource) {
       if (
@@ -113,11 +204,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           iconSource.startsWith("data:"))
       ) {
         return (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <NotificationIconImage
             src={iconSource}
-            alt=""
-            className="size-5 sm:size-5.5 object-contain inline-block shrink-0 align-middle ml-1"
+            fallback={defaultFallback}
           />
         );
       }
@@ -128,17 +217,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       );
     }
 
-    // Default icon fallback based on type matching UI design
-    switch (item.type) {
-      case "badge":
-        return <span className="text-base leading-none inline-block shrink-0 ml-1">🥇</span>;
-      case "story":
-        return <span className="text-base leading-none inline-block shrink-0 ml-1">📖</span>;
-      case "quiz":
-        return <span className="text-base leading-none inline-block shrink-0 ml-1">⭐</span>;
-      default:
-        return null;
-    }
+    return defaultFallback;
   };
 
   return (
@@ -235,7 +314,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                         !item.is_read ? "pr-4" : ""
                       }`}
                     >
-                      {item.message}
+                      {formatNotificationMessage(item)}
                     </p>
                   ) : null}
 
@@ -266,6 +345,25 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       )}
     </div>
   );
+};
+
+export const NotificationDropdown: React.FC<NotificationDropdownProps> = (props) => {
+  const { data: session, status } = useSession();
+  const { isAuthenticated, isHydrated } = useActiveAccount();
+  const token = getStoredAuthToken(session);
+
+  const isUserAuthenticated = Boolean(
+    isHydrated &&
+      status === "authenticated" &&
+      isAuthenticated &&
+      token
+  );
+
+  if (!isUserAuthenticated) {
+    return null;
+  }
+
+  return <AuthenticatedNotificationDropdown {...props} />;
 };
 
 export default NotificationDropdown;
