@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { getStoredAuthToken } from "@/lib/auth";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import {
   getNotifications,
@@ -36,17 +37,18 @@ export function useResolvedChildId(customChildId?: string | null) {
  */
 export function useNotifications(customChildId?: string | null) {
   const { data: session, status } = useSession();
-  const { isAuthenticated } = useActiveAccount();
-  const token = session?.accessToken || session?.token || null;
+  const { isAuthenticated, isHydrated } = useActiveAccount();
+  const token = getStoredAuthToken(session);
   const childId = useResolvedChildId(customChildId);
 
   return useQuery<NotificationItem[]>({
     queryKey: notificationQueryKeys.list(childId),
     queryFn: () => getNotifications(childId, token),
-    enabled: isAuthenticated && !!token && status !== "loading",
-    staleTime: 1000 * 15,
-    refetchInterval: 1000 * 60, // Poll every 60s
-    refetchOnWindowFocus: true,
+    enabled: isHydrated && (isAuthenticated || !!token) && status !== "loading",
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
+    refetchInterval: 1000 * 30, // Fallback poll every 30s
   });
 }
 
@@ -56,17 +58,18 @@ export function useNotifications(customChildId?: string | null) {
  */
 export function useUnreadNotificationCount(customChildId?: string | null) {
   const { data: session, status } = useSession();
-  const { isAuthenticated } = useActiveAccount();
-  const token = session?.accessToken || session?.token || null;
+  const { isAuthenticated, isHydrated } = useActiveAccount();
+  const token = getStoredAuthToken(session);
   const childId = useResolvedChildId(customChildId);
 
   return useQuery<number>({
     queryKey: notificationQueryKeys.unreadCount(childId),
     queryFn: () => getUnreadCount(childId, token),
-    enabled: isAuthenticated && !!token && status !== "loading",
-    staleTime: 1000 * 10,
-    refetchInterval: 1000 * 30, // Poll every 30s for the badge
-    refetchOnWindowFocus: true,
+    enabled: isHydrated && (isAuthenticated || !!token) && status !== "loading",
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
+    refetchInterval: 1000 * 15, // Fallback poll every 15s for the badge
   });
 }
 
@@ -77,7 +80,7 @@ export function useUnreadNotificationCount(customChildId?: string | null) {
 export function useMarkNotificationAsRead(customChildId?: string | null) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
-  const token = session?.accessToken || session?.token || null;
+  const token = getStoredAuthToken(session);
   const childId = useResolvedChildId(customChildId);
 
   return useMutation({
@@ -144,7 +147,7 @@ export function useMarkNotificationAsRead(customChildId?: string | null) {
 export function useMarkAllNotificationsAsRead(customChildId?: string | null) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
-  const token = session?.accessToken || session?.token || null;
+  const token = getStoredAuthToken(session);
   const childId = useResolvedChildId(customChildId);
 
   return useMutation({
