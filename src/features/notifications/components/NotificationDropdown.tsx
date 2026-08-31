@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Bell,
   CheckCheck,
-  Trash2,
   ExternalLink,
   BookOpen,
   Award,
@@ -15,8 +14,14 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
+  Loader2,
 } from "lucide-react";
-import { useNotificationStore } from "../store";
+import {
+  useNotifications,
+  useUnreadNotificationCount,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationsAsRead,
+} from "../hooks/useNotifications";
 import { NotificationItem, NotificationType } from "../types";
 import { formatArabicActivityTime } from "@/lib/utils";
 
@@ -31,14 +36,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const {
-    notifications,
-    unreadCount,
-    markAsRead,
-    markAllAsRead,
-    removeNotification,
-    clearAll,
-  } = useNotificationStore();
+  const { data: notifications = [], isLoading } = useNotifications();
+  const { data: unreadCount = 0 } = useUnreadNotificationCount();
+  const { mutate: markAsRead } = useMarkNotificationAsRead();
+  const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllNotificationsAsRead();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -114,6 +115,12 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     }
   };
 
+  const handleNotificationClick = (item: NotificationItem) => {
+    if (!item.is_read) {
+      markAsRead(item.id);
+    }
+  };
+
   return (
     <div className={`relative ${className}`} ref={dropdownRef} dir="rtl">
       {/* 1. Notification Bell Button */}
@@ -155,22 +162,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               {unreadCount > 0 && (
                 <button
                   type="button"
-                  onClick={markAllAsRead}
-                  className="text-mad-main hover:text-purple-700 flex items-center gap-1 font-bold cursor-pointer transition-colors"
+                  onClick={() => markAllAsRead(notifications)}
+                  disabled={isMarkingAll}
+                  className="text-mad-main hover:text-purple-700 flex items-center gap-1 font-bold cursor-pointer transition-colors disabled:opacity-50"
                   title="تحديد الكل كمقروء"
                 >
                   <CheckCheck className="size-4" />
                   <span>قراءة الكل</span>
-                </button>
-              )}
-              {notifications.length > 0 && (
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="text-gray-400 hover:text-red-500 flex items-center gap-1 cursor-pointer transition-colors"
-                  title="مسح كافة الإشعارات"
-                >
-                  <Trash2 className="size-3.5" />
                 </button>
               )}
             </div>
@@ -204,7 +202,12 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
           {/* Notification Items List */}
           <div className="max-h-84 overflow-y-auto space-y-1.5 px-0.5 custom-scrollbar">
-            {filteredNotifications.length === 0 ? (
+            {isLoading && notifications.length === 0 ? (
+              <div className="py-10 text-center text-gray-400 flex flex-col items-center justify-center gap-2">
+                <Loader2 className="size-6 text-mad-main animate-spin" />
+                <p className="text-xs font-medium text-gray-500">جاري تحميل الإشعارات...</p>
+              </div>
+            ) : filteredNotifications.length === 0 ? (
               <div className="py-10 text-center text-gray-400 flex flex-col items-center justify-center gap-2">
                 <Bell className="size-8 stroke-1 text-gray-300" />
                 <p className="text-sm font-medium">
@@ -217,7 +220,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               filteredNotifications.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => markAsRead(item.id)}
+                  onClick={() => handleNotificationClick(item)}
                   className={`group relative flex items-start gap-3 p-3 rounded-2xl transition-all border text-right cursor-pointer ${
                     !item.is_read
                       ? "bg-[#F7F5FF] border-purple-200/70 hover:bg-purple-100/50"
@@ -241,7 +244,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       </h4>
 
                       <span className="text-[10px] text-gray-400 shrink-0 font-medium">
-                        {formatArabicActivityTime(item.created_at)}
+                        {item.created_at ? formatArabicActivityTime(item.created_at) : ""}
                       </span>
                     </div>
 
@@ -256,7 +259,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                         href={item.link}
                         onClick={(e) => {
                           e.stopPropagation();
-                          markAsRead(item.id);
+                          if (!item.is_read) {
+                            markAsRead(item.id);
+                          }
                           setIsOpen(false);
                         }}
                         className="inline-flex items-center gap-1 text-xs text-mad-main font-bold mt-1.5 hover:underline cursor-pointer"
@@ -266,19 +271,6 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       </Link>
                     ) : null}
                   </div>
-
-                  {/* Delete Button (on hover) */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeNotification(item.id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 rounded-lg transition-opacity cursor-pointer shrink-0"
-                    title="حذف الإشعار"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </button>
                 </div>
               ))
             )}

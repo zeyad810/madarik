@@ -1,37 +1,45 @@
 export type NotificationType =
-  | "info"
-  | "success"
-  | "warning"
-  | "error"
+  | "system"
   | "quiz"
   | "story"
   | "subscription"
   | "package"
   | "badge"
-  | "system"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
   | string;
 
 export interface NotificationItem {
-  id: string;
-  title: string;
-  message: string;
-  body?: string;
+  id: number | string;
+  target_id?: string;
+  target_type?: string;
   type?: NotificationType;
-  is_read?: boolean;
-  link?: string;
+  title: string;
+  message?: string;
+  data?: Record<string, unknown> | null;
+  is_read: boolean;
+  read_at?: string | null;
   created_at: string;
-  data?: Record<string, unknown>;
+  link?: string;
 }
 
-export interface NotificationStreamPayload {
-  id?: string;
-  title?: string;
+export interface NotificationsResponse {
+  success: boolean;
+  data: NotificationItem[];
   message?: string;
-  body?: string;
-  type?: NotificationType;
-  link?: string;
-  data?: Record<string, unknown>;
-  notification?: NotificationItem;
+}
+
+export interface UnreadCountResponse {
+  success?: boolean;
+  data?: { unread_count?: number; count?: number } | number;
   unread_count?: number;
-  created_at?: string;
+  count?: number;
+}
+
+export interface MarkNotificationReadResponse {
+  success: boolean;
+  message?: string;
+  data?: unknown;
 }
