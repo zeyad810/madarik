@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { submitQuiz } from "../api";
 import { quizQueryKeys } from "../constants";
+import { parentQueryKeys } from "@/features/parent/constants";
 import type { SubmitQuizPayload, SubmitQuizResponse } from "../types";
 import type { ApiError } from "@/types";
 
@@ -30,6 +31,10 @@ export function useSubmitQuiz(
       await queryClient.invalidateQueries({ queryKey: quizQueryKeys.all });
       await queryClient.invalidateQueries({ queryKey: ["quiz"] });
       await queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      await queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
+      if (childId) {
+        await queryClient.invalidateQueries({ queryKey: parentQueryKeys.child(childId) });
+      }
       await queryClient.refetchQueries({ queryKey: ["quiz", "history"] });
       if (options?.onSuccess) {
         (options.onSuccess as Function)(data, variables, context);

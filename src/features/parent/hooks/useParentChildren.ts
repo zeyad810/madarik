@@ -75,7 +75,7 @@ export const useParentChildren = () => {
       }
     },
     enabled: status === "authenticated" && !!token,
-    initialData:
+    placeholderData:
       sessionChildren && sessionChildren.length > 0
         ? sessionChildren
         : undefined,

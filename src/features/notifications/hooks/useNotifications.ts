@@ -42,14 +42,21 @@ export function useNotifications(customChildId?: string | null) {
   const token = getStoredAuthToken(session);
   const childId = useResolvedChildId(customChildId);
 
+  const isAuth = Boolean(
+    isHydrated &&
+      status === "authenticated" &&
+      isAuthenticated &&
+      token
+  );
+
   return useQuery<NotificationItem[]>({
     queryKey: notificationQueryKeys.list(childId),
     queryFn: () => getNotifications(childId, token),
-    enabled: isHydrated && (isAuthenticated || !!token) && status !== "loading",
+    enabled: isAuth,
     staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-    refetchInterval: 1000 * 30, // Fallback poll every 30s
+    refetchOnMount: isAuth ? "always" : false,
+    refetchOnWindowFocus: isAuth ? "always" : false,
+    refetchInterval: isAuth ? 1000 * 30 : false, // Fallback poll every 30s only when authenticated
   });
 }
 
@@ -63,14 +70,21 @@ export function useUnreadNotificationCount(customChildId?: string | null) {
   const token = getStoredAuthToken(session);
   const childId = useResolvedChildId(customChildId);
 
+  const isAuth = Boolean(
+    isHydrated &&
+      status === "authenticated" &&
+      isAuthenticated &&
+      token
+  );
+
   return useQuery<number>({
     queryKey: notificationQueryKeys.unreadCount(childId),
     queryFn: () => getUnreadCount(childId, token),
-    enabled: isHydrated && (isAuthenticated || !!token) && status !== "loading",
+    enabled: isAuth,
     staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-    refetchInterval: 1000 * 15, // Fallback poll every 15s for the badge
+    refetchOnMount: isAuth ? "always" : false,
+    refetchOnWindowFocus: isAuth ? "always" : false,
+    refetchInterval: isAuth ? 1000 * 15 : false, // Fallback poll every 15s for the badge only when authenticated
   });
 }
 
