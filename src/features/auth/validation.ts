@@ -60,6 +60,27 @@ export const resetFirstPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const forgotPasswordSchema = z
+  .object({
+    phone: z
+      .string()
+      .min(1, { message: AUTH_TEXTS.validation.phoneRequired })
+      .refine((val) => !val || isValidPhoneNumber(val), {
+        message: "رقم الهاتف غير صحيح للدولة المحددة",
+      }),
+    password: z
+      .string()
+      .min(1, { message: AUTH_TEXTS.validation.passwordRequired })
+      .min(6, { message: AUTH_TEXTS.validation.passwordMinLength }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: AUTH_TEXTS.validation.passwordRequired }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: AUTH_TEXTS.validation.passwordMatch,
+    path: ["confirmPassword"],
+  });
+
 export const forgotPasswordPhoneSchema = z.object({
   phone: z
     .string()
@@ -88,6 +109,7 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export type OtpFormData = z.infer<typeof otpSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type ResetFirstPasswordFormData = z.infer<typeof resetFirstPasswordSchema>;
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ForgotPasswordPhoneFormData = z.infer<typeof forgotPasswordPhoneSchema>;
 export type ResetPasswordConfirmFormData = z.infer<typeof resetPasswordConfirmSchema>;
 

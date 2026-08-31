@@ -1,6 +1,7 @@
 import { API_BASE_URL, handleResponse } from "@/services/api";
 import { ApiResponse } from "@/types";
 import {
+  LegalItem,
   PublicLandingData,
   PublicPackagesData,
   SendContactPayload,
@@ -16,6 +17,18 @@ export const getPublicLandingData = async (): Promise<ApiResponse<PublicLandingD
 export const getPublicPackages = async (): Promise<ApiResponse<PublicPackagesData>> => {
   const response = await fetch(`${API_BASE_URL}/public/packages`);
   const data = await handleResponse<ApiResponse<PublicPackagesData>>(response);
+  return data;
+};
+
+export const getPublicTerms = async (): Promise<ApiResponse<LegalItem[]>> => {
+  const response = await fetch(`${API_BASE_URL}/public/terms`);
+  const data = await handleResponse<ApiResponse<LegalItem[]>>(response);
+  return data;
+};
+
+export const getPublicPrivacy = async (): Promise<ApiResponse<LegalItem[]>> => {
+  const response = await fetch(`${API_BASE_URL}/public/privacy`);
+  const data = await handleResponse<ApiResponse<LegalItem[]>>(response);
   return data;
 };
 
@@ -38,4 +51,5 @@ export const sendContactMessage = async (
 
   return await handleResponse<ApiResponse<SendContactResponse | null>>(response);
 };
+
 

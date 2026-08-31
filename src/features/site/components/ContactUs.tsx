@@ -23,7 +23,11 @@ const ContactUs: React.FC<ContactUsProps> = ({
 
   const id = propId ?? contactData?.id ?? "contact_section";
   const title = propTitle ?? contactData?.title ?? defaultContactData.title;
-  const description = propDescription ?? contactData?.subtitle ?? defaultContactData.description;
+  const description =
+    propDescription ??
+    contactData?.description ??
+    contactData?.subtitle ??
+    defaultContactData.description;
 
   const contactInfo =
     propContactInfo ??

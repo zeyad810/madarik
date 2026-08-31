@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { usePublicPackages } from "../hooks/usePublicPackages";
+import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { PublicPackage } from "../types";
 
 export interface PricingProps {
@@ -90,7 +91,8 @@ const PackageCard = ({
 
   const handleCta = () => {
     if (isWhatsApp) {
-      window.open("https://wa.me/966500000000", "_blank", "noopener,noreferrer");
+      const waNumber = pkg.cta_whatsapp_number?.replace(/\D/g, "") || "966500000000";
+      window.open(`https://wa.me/${waNumber}`, "_blank", "noopener,noreferrer");
     } else if (onCtaClick) {
       onCtaClick(pkg.id);
     } else {
@@ -100,13 +102,20 @@ const PackageCard = ({
 
   const getBillingPeriod = () => {
     if (pkg.duration_label) return pkg.duration_label;
-    if (pkg.duration_type === "months") return "شهريًا";
-    if (pkg.duration_type === "years") return "سنويًا";
+    if (pkg.duration_type === "days") {
+      return pkg.duration_value && pkg.duration_value > 1 ? `${pkg.duration_value} يوم` : "يوميًا";
+    }
+    if (pkg.duration_type === "months") {
+      return pkg.duration_value && pkg.duration_value > 1 ? `${pkg.duration_value} أشهر` : "شهريًا";
+    }
+    if (pkg.duration_type === "years") {
+      return pkg.duration_value && pkg.duration_value > 1 ? `${pkg.duration_value} سنوات` : "سنويًا";
+    }
     if (pkg.duration_type === "lifetime") return "مدى الحياة";
     return "";
   };
 
-  const iconSrc = PACKAGE_ICONS[index % PACKAGE_ICONS.length];
+  const iconSrc = pkg.image_url || PACKAGE_ICONS[index % PACKAGE_ICONS.length];
 
   const featuresList = Array.isArray(pkg.features)
     ? pkg.features
@@ -117,6 +126,11 @@ const PackageCard = ({
   const priceNum =
     pkg.price !== null && pkg.price !== undefined ? pkg.price : null;
 
+  const ageCategories =
+    pkg.levels && pkg.levels.length > 0
+      ? pkg.levels.map((lvl) => lvl.age_category || `${lvl.age_from}-${lvl.age_to}`)
+      : pkg.age_categories || [];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -126,7 +140,7 @@ const PackageCard = ({
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className="relative flex flex-col rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 transition-shadow duration-300 hover:shadow-xl"
     >
-      {/* Icon */}
+      {/* Icon or Image */}
       <div className="flex justify-center">
         <div className="relative" style={{ width: 100, height: 70 }}>
           <Image
@@ -156,22 +170,33 @@ const PackageCard = ({
       )}
 
       {/* Age Categories */}
-      {pkg.age_categories && pkg.age_categories.length > 0 && (
+      {ageCategories.length > 0 && (
         <>
           <p className="mt-5 text-center text-xs font-semibold tracking-wide text-mad-main">
             الفئات العمرية
           </p>
-          <AgeGroupPills groups={pkg.age_categories} />
+          <AgeGroupPills groups={ageCategories} />
         </>
       )}
 
       {/* Price block */}
       {priceNum !== null ? (
         <div className="mt-5 text-center" dir="rtl">
-          <div className="flex items-baseline justify-center gap-1">
-            <span className="text-4xl font-extrabold text-mad-main">
-              {priceNum}
-            </span>
+          <div className="flex items-baseline justify-center gap-2">
+            {pkg.discounted_price ? (
+              <>
+                <span className="text-4xl font-extrabold text-mad-main">
+                  {pkg.discounted_price}
+                </span>
+                <span className="text-sm font-medium line-through text-gray-400">
+                  {priceNum}
+                </span>
+              </>
+            ) : (
+              <span className="text-4xl font-extrabold text-mad-main">
+                {priceNum}
+              </span>
+            )}
             <span className="text-base font-medium text-gray-500">
               ر.س {getBillingPeriod() ? `/ ${getBillingPeriod()}` : ""}
             </span>
@@ -228,15 +253,24 @@ const Pricing: React.FC<PricingProps> = ({
     select: (res) => res.data,
   });
 
+  const { data: homePackagesSection } = usePublicLanding({
+    select: (res) => res.data?.packages_section,
+  });
+
   if (isChildOrStudent) {
     return null;
   }
 
-  const id = propId ?? packagesData?.id;
-  const title = propTitle ?? packagesData?.title ?? "اختر الباقة المناسبة لطفلك";
+  const id = propId ?? packagesData?.id ?? homePackagesSection?.id;
+  const title =
+    propTitle ??
+    packagesData?.title ??
+    homePackagesSection?.title ??
+    "اختر الباقة المناسبة لطفلك";
   const description =
     propDescription ??
     packagesData?.subtitle ??
+    homePackagesSection?.subtitle ??
     "باقات مرنة تناسب جميع المراحل العمرية، لتمنح طفلك تجربة قراءة ممتعة وآمنة.";
 
   const packagesList = propPackages ?? packagesData?.packages ?? [];

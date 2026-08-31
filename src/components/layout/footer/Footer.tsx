@@ -22,16 +22,17 @@ import {
   DEFAULT_NEWSLETTER,
 } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { usePublicLanding } from "@/features/site/hooks/usePublicLanding";
 
 const Footer: React.FC<FooterProps> = ({
   id = "footer",
-  newsletter = DEFAULT_NEWSLETTER,
+  newsletter: propNewsletter,
   onSubscribe,
   brandDescription = DEFAULT_BRAND_DESCRIPTION,
   quickLinks: propQuickLinks,
   importantLinks = DEFAULT_IMPORTANT_LINKS,
-  contactInfo = DEFAULT_CONTACT_INFO,
-  socialLinks = DEFAULT_SOCIAL_LINKS,
+  contactInfo: propContactInfo,
+  socialLinks: propSocialLinks,
   copyrightText = DEFAULT_COPYRIGHT,
   bgImageSrc = "/iamges/FooterBg.png",
   mobileBgImageSrc = "/iamges/FooterBgMob.png",
@@ -42,6 +43,47 @@ const Footer: React.FC<FooterProps> = ({
     userRole === "student" ||
     userRole === "child" ||
     activeAccount?.type === "child";
+
+  const { data: landingData } = usePublicLanding();
+  const apiNewsletter = landingData?.data?.newsletter_section;
+  const apiContact = landingData?.data?.contact_section?.contact_info;
+  const apiSocial = landingData?.data?.contact_section?.social_media;
+
+  const newsletter = React.useMemo(() => {
+    if (propNewsletter) return propNewsletter;
+    if (apiNewsletter) {
+      return {
+        title: apiNewsletter.title || DEFAULT_NEWSLETTER.title,
+        description: apiNewsletter.subtitle || DEFAULT_NEWSLETTER.description,
+        placeholder: DEFAULT_NEWSLETTER.placeholder,
+      };
+    }
+    return DEFAULT_NEWSLETTER;
+  }, [propNewsletter, apiNewsletter]);
+
+  const contactInfo = React.useMemo(() => {
+    if (propContactInfo) return propContactInfo;
+    if (apiContact) {
+      return {
+        email: apiContact.email || DEFAULT_CONTACT_INFO.email,
+        phone: apiContact.phone || DEFAULT_CONTACT_INFO.phone,
+        location: apiContact.address || DEFAULT_CONTACT_INFO.location,
+      };
+    }
+    return DEFAULT_CONTACT_INFO;
+  }, [propContactInfo, apiContact]);
+
+  const socialLinks = React.useMemo(() => {
+    if (propSocialLinks) return propSocialLinks;
+    if (apiSocial) {
+      return [
+        { id: "instagram", name: "Instagram", href: apiSocial.instagram || DEFAULT_SOCIAL_LINKS[1].href, type: "instagram" as const },
+        { id: "twitter", name: "Twitter", href: apiSocial.twitter || DEFAULT_SOCIAL_LINKS[2].href, type: "twitter" as const },
+        { id: "facebook", name: "Facebook", href: apiSocial.facebook || DEFAULT_SOCIAL_LINKS[3].href, type: "facebook" as const },
+      ];
+    }
+    return DEFAULT_SOCIAL_LINKS;
+  }, [propSocialLinks, apiSocial]);
 
   const rawQuickLinks: FooterLinkItem[] =
     propQuickLinks ?? DEFAULT_QUICK_LINKS;

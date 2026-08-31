@@ -18,6 +18,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isFree: isFreeProp,
   levelTag: levelTagProp,
   storyCodeTag: storyCodeTagProp,
+  outcome: outcomeProp,
   ctaText: ctaTextProp,
   ctaLink: ctaLinkProp,
   onCtaClick,
@@ -38,6 +39,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const levelTag = levelTagProp ?? product?.levelTag ?? DEFAULT_PRODUCT.levelTag;
   const storyCodeTag =
     storyCodeTagProp ?? product?.storyCodeTag ?? DEFAULT_PRODUCT.storyCodeTag;
+  const outcome = outcomeProp ?? product?.outcome;
   const ctaText = ctaTextProp ?? product?.ctaText ?? DEFAULT_PRODUCT.ctaText;
   const ctaLink = ctaLinkProp ?? product?.ctaLink;
 
@@ -61,7 +63,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
           {/* Tags Row */}
-          <ProductCardTags storyCodeTag={storyCodeTag} levelTag={levelTag} />
+          <ProductCardTags
+            storyCodeTag={storyCodeTag}
+            levelTag={levelTag}
+            outcome={outcome}
+          />
 
           {/* Story Title */}
           <h3 className="mad-h6 font-bold text-mad-text-primary mb-2.5 text-right leading-snug group-hover:text-mad-main transition-colors line-clamp-1 min-h-7">

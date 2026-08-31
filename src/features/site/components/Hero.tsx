@@ -13,8 +13,10 @@ const Hero: React.FC<HeroProps> = ({
   title: propTitle,
   description: propDescription,
   stats: propStats,
-  ctaText = "إشترك الآن",
-  ctaLink = "/about",
+  ctaText: propCtaText,
+  ctaLink: propCtaLink,
+  secondaryCtaText: propSecondaryCtaText,
+  secondaryCtaLink: propSecondaryCtaLink,
   bgImageSrc = "/assets/Hero_bg.png",
   mobileBgImageSrc = "/assets/Hero-mobile-bg.png",
   sideImageSrc = "/assets/hero_image.png",
@@ -27,6 +29,11 @@ const Hero: React.FC<HeroProps> = ({
   const id = propId ?? heroData?.id;
   const title = propTitle ?? heroData?.title ?? "";
   const description = propDescription ?? heroData?.subtitle ?? "";
+  const ctaText = propCtaText ?? heroData?.primary_button_text ?? "ابدأ الآن";
+  const ctaLink = propCtaLink ?? "/register";
+  const secondaryCtaText = propSecondaryCtaText ?? heroData?.secondary_button_text;
+  const secondaryCtaLink = propSecondaryCtaLink ?? "#why-us";
+
   const stats: HeroStatItem[] =
     propStats ??
     (heroData?.stats?.map((stat, idx) => ({
@@ -101,12 +108,12 @@ const Hero: React.FC<HeroProps> = ({
               ))}
             </motion.div>
 
-            {/* Call to Action Button */}
+            {/* Call to Action Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="pt-1"
+              className="flex items-center flex-wrap gap-2 pt-1"
             >
               <Button
                 btnLink={ctaLink}
@@ -117,8 +124,16 @@ const Hero: React.FC<HeroProps> = ({
                 btnColor="var(--mad-white-50)"
                 icon="have"
                 btnShadow="shadow-[inset_0_2px_6px_rgba(255,255,255,0.45),inset_0_-2px_4px_rgba(0,0,0,0.2)]"
-                className="font-bold text-sm px-5 py-1.5 rounded-full hover:scale-[1.02] active:scale-95 transition-all"
+                className="font-bold text-sm px-4 py-1.5 rounded-full hover:scale-[1.02] active:scale-95 transition-all"
               />
+              {secondaryCtaText && (
+                <a
+                  href={secondaryCtaLink}
+                  className="font-bold text-xs px-3.5 py-1.5 rounded-full border border-white/80 text-white bg-white/10 backdrop-blur-xs hover:bg-white/20 active:scale-95 transition-all"
+                >
+                  {secondaryCtaText}
+                </a>
+              )}
             </motion.div>
           </motion.div>
 
@@ -202,14 +217,12 @@ const Hero: React.FC<HeroProps> = ({
             ))}
           </motion.div>
 
-          {/* Call to Action Button */}
+          {/* Call to Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="pt-2"
+            className="flex items-center flex-wrap gap-4 pt-2"
           >
             <Button
               btnLink={ctaLink}
@@ -222,6 +235,14 @@ const Hero: React.FC<HeroProps> = ({
               btnShadow="shadow-[inset_0_3px_8px_rgba(255,255,255,0.45),inset_0_-2px_6px_rgba(0,0,0,0.2)]"
               className="font-bold text-base px-8 py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all"
             />
+            {secondaryCtaText && (
+              <a
+                href={secondaryCtaLink}
+                className="font-bold text-base px-7 py-3 rounded-full border-2 border-white/80 text-white bg-white/10 hover:bg-white/20 backdrop-blur-xs active:scale-95 transition-all"
+              >
+                {secondaryCtaText}
+              </a>
+            )}
           </motion.div>
         </motion.div>
 
