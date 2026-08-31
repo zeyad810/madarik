@@ -632,3 +632,23 @@ export interface PublicPackagesData {
 
 export type PublicPackagesResponse = ApiResponse<PublicPackagesData>;
 
+// ==========================================
+// Legal & Terms / Privacy Types
+// ==========================================
+export interface LegalItem {
+  id: string;
+  title: string;
+  content: string;
+  display_order: number;
+  status: "active" | "inactive" | string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type LegalResponse = ApiResponse<LegalItem[]>;
+
+export interface LegalPageProps {
+  type: "terms" | "privacy";
+  customTitle?: string;
+  customSubtitle?: string;
+}

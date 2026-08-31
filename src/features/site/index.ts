@@ -16,12 +16,15 @@ export { default as MadVideo } from "./components/MadVideo";
 export { default as OurJourney } from "./components/OurJourney";
 export { default as Bannerslider } from "./components/Bannerslider";
 export { default as HashScroller } from "./components/HashScroller";
+export { default as LegalPageView } from "./components/LegalPageView";
 
 // Hooks
 export * from "./hooks/usePublicLanding";
 export * from "./hooks/usePublicPackages";
+export * from "./hooks/useLegalData";
 export * from "./hooks/useSendContactMessage";
 export * from "./hooks/useHashScroll";
+
 
 // Services & API
 export * from "./api";
