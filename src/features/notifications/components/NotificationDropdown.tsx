@@ -36,10 +36,25 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { data: notifications = [], isLoading } = useNotifications();
-  const { data: unreadCount = 0 } = useUnreadNotificationCount();
+  const {
+    data: notifications = [],
+    isLoading,
+    refetch: refetchNotifications,
+  } = useNotifications();
+  const {
+    data: unreadCount = 0,
+    refetch: refetchUnreadCount,
+  } = useUnreadNotificationCount();
   const { mutate: markAsRead } = useMarkNotificationAsRead();
   const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllNotificationsAsRead();
+
+  // Refetch latest notifications whenever dropdown is opened
+  useEffect(() => {
+    if (isOpen) {
+      refetchNotifications();
+      refetchUnreadCount();
+    }
+  }, [isOpen, refetchNotifications, refetchUnreadCount]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

@@ -47,6 +47,7 @@ export function useFinishStory(
       queryClient.invalidateQueries({ queryKey: ["reading-activity"] });
       queryClient.invalidateQueries({ queryKey: ["attempts"] });
       queryClient.invalidateQueries({ queryKey: ["results"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
 
       if (options?.onSuccess) {
         (options.onSuccess as Function)(data, variables, context);

@@ -29,6 +29,7 @@ export function useSubmitQuiz(
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({ queryKey: quizQueryKeys.all });
       await queryClient.invalidateQueries({ queryKey: ["quiz"] });
+      await queryClient.invalidateQueries({ queryKey: ["notifications"] });
       await queryClient.refetchQueries({ queryKey: ["quiz", "history"] });
       if (options?.onSuccess) {
         (options.onSuccess as Function)(data, variables, context);
