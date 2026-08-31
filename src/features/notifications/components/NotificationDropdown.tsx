@@ -11,7 +11,7 @@ import {
   useNotifications,
   useUnreadNotificationCount,
   useMarkNotificationAsRead,
-  useMarkAllNotificationsAsRead,
+  useDeleteAllNotifications,
 } from "../hooks/useNotifications";
 import { NotificationItem } from "../types";
 
@@ -61,8 +61,8 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     refetch: refetchUnreadCount,
   } = useUnreadNotificationCount();
   const { mutate: markAsRead } = useMarkNotificationAsRead();
-  const { mutate: markAllAsRead, isPending: isMarkingAll } =
-    useMarkAllNotificationsAsRead();
+  const { mutate: deleteAllNotifications, isPending: isDeletingAll } =
+    useDeleteAllNotifications();
 
   // Refetch latest notifications whenever dropdown is opened
   useEffect(() => {
@@ -173,11 +173,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             {notifications.length > 0 && (
               <button
                 type="button"
-                onClick={() => markAllAsRead(notifications)}
-                disabled={isMarkingAll}
-                className="text-xs sm:text-sm text-slate-400 hover:text-[#7939E3] font-medium cursor-pointer transition-colors disabled:opacity-50"
+                onClick={() => deleteAllNotifications()}
+                disabled={isDeletingAll}
+                className="text-xs sm:text-sm text-slate-400 hover:text-red-500 font-medium cursor-pointer transition-colors disabled:opacity-50"
               >
-                مسح الكل
+                {isDeletingAll ? "جاري المسح..." : "مسح الكل"}
               </button>
             )}
           </div>

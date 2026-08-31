@@ -8,6 +8,7 @@ import {
   getNotifications,
   getUnreadCount,
   markNotificationAsRead,
+  deleteAllNotifications,
 } from "../api";
 import { notificationQueryKeys } from "../constants";
 import type { NotificationItem } from "../types";
@@ -202,3 +203,57 @@ export function useMarkAllNotificationsAsRead(customChildId?: string | null) {
     },
   });
 }
+
+/**
+ * Hook to delete all notifications completely.
+ * Optimistically clears notifications list and resets unread count to 0.
+ */
+export function useDeleteAllNotifications(customChildId?: string | null) {
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  const token = getStoredAuthToken(session);
+  const childId = useResolvedChildId(customChildId);
+
+  return useMutation({
+    mutationFn: () => deleteAllNotifications(childId, token),
+    onMutate: async () => {
+      const listKey = notificationQueryKeys.list(childId);
+      const unreadKey = notificationQueryKeys.unreadCount(childId);
+
+      await queryClient.cancelQueries({ queryKey: listKey });
+      await queryClient.cancelQueries({ queryKey: unreadKey });
+
+      const prevList = queryClient.getQueryData<NotificationItem[]>(listKey);
+      const prevUnread = queryClient.getQueryData<number>(unreadKey);
+
+      // Optimistically clear the list immediately
+      queryClient.setQueryData<NotificationItem[]>(listKey, []);
+      queryClient.setQueryData<number>(unreadKey, 0);
+
+      return { prevList, prevUnread };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.prevList) {
+        queryClient.setQueryData(
+          notificationQueryKeys.list(childId),
+          context.prevList
+        );
+      }
+      if (typeof context?.prevUnread === "number") {
+        queryClient.setQueryData(
+          notificationQueryKeys.unreadCount(childId),
+          context.prevUnread
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: notificationQueryKeys.list(childId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: notificationQueryKeys.unreadCount(childId),
+      });
+    },
+  });
+}
+
