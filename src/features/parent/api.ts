@@ -79,7 +79,7 @@ export const createChild = async (
 };
 
 /**
- * PUT /children/{id}
+ * PATCH /children/{id}
  * Updates an existing child profile.
  */
 export const updateChild = async (
@@ -102,7 +102,7 @@ export const updateChild = async (
     if (bodyData.status) formData.append("status", bodyData.status);
     formData.append("avatar", payload.avatarFile);
     formData.append("avatar_img", payload.avatarFile);
-    formData.append("_method", "PUT");
+    formData.append("_method", "PATCH");
     body = formData;
   } else {
     body = JSON.stringify({
@@ -116,7 +116,7 @@ export const updateChild = async (
   }
 
   const endpoint = `${API_BASE_URL}/children/${id}`;
-  const method = isMultipart ? "POST" : "PUT";
+  const method = isMultipart ? "POST" : "PATCH";
 
   const response = await fetch(endpoint, {
     method,
