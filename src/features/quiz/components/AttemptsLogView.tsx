@@ -146,7 +146,7 @@ export const AttemptsLogView: React.FC = () => {
           />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+        <div className="relative z-10 max-w-[1600px] mx-auto w-full sm:px-6 lg:px-8 pt-6 pb-4">
           {/* Heading */}
           <div className="flex flex-col items-center justify-center text-center mt-2 mb-8">
             <span className="text-xs sm:text-sm font-black text-[#7939E3] mb-1 tracking-wide">
