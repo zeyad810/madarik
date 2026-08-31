@@ -76,7 +76,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full relative rounded-3xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-100 aspect-[16/6] sm:aspect-[21/7] md:aspect-[24/7] max-h-[600px]"
+        className="w-full relative rounded-3xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-100 aspect-16/6 sm:aspect-21/7 md:aspect-24/7 h-150 max-h-150"
       >
         <Image
           src={bannerSrc}
@@ -107,7 +107,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             <div className="relative w-16 h-12 shrink-0">
               <FreeRosetteBadge
                 availability={story.availability}
-                className="!static !top-auto !left-auto"
+                className="static! top-auto! left-auto!"
               />
             </div>
 
@@ -132,9 +132,8 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             {descriptionText}
           </p>
 
-          {/* ── 3 Info Pills (المؤشر / المستوى / الناتج) ── */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-            {/* المؤشر (Indicator) */}
+            {/* Indicator */}
             <div className="bg-[#F8F5FF] rounded-2xl py-3 px-4 flex flex-row-reverse items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#E9D5FF] flex items-center justify-center shrink-0">
                 <Image
@@ -155,7 +154,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
               </div>
             </div>
 
-            {/* المستوى (Level) */}
+            {/* Level */}
             <div className="bg-[#F8F5FF] rounded-2xl py-3 px-4 flex flex-row-reverse items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#E9D5FF] flex items-center justify-center shrink-0">
                 <Image
@@ -176,7 +175,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
               </div>
             </div>
 
-            {/* الناتج (Outcome) */}
+            {/* Outcome */}
             <div className="bg-[#F8F5FF] rounded-2xl py-3 px-4 flex flex-row-reverse items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#E9D5FF] flex items-center justify-center shrink-0">
                 <Image
@@ -199,7 +198,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
           </div>
 
           {/* Number of Pages */}
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-4 flex items-center gap-2 mt-auto">
             <span className="text-xs text-[#94A3B8] font-bold">
               عدد الصفحات
             </span>
@@ -209,8 +208,8 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
           </div>
 
           {/* ── Action Buttons Row ── */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* 1. ابدأ رحلة القراءة الآن */}
+          <div className="flex flex-wrap items-center gap-3 mt-auto">
+            {/* 1. Start Reading */}
             <Link
               href={`/stories/${story.id}/read`}
               onClick={() => {
@@ -224,7 +223,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
               <span>ابدأ رحلة القراءة الآن</span>
             </Link>
 
-            {/* 2. حل الاختبار */}
+            {/* 2. Solve the Quiz */}
             {getStoryQuizId(story) && (
               <Link
                 href={`/stories/${story.id}/quiz`}
@@ -235,7 +234,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
               </Link>
             )}
 
-            {/* 3. تحميل PDF */}
+            {/* 3. Download PDF */}
             {Boolean(story.pdf_url) && (
               <button
                 type="button"
@@ -283,7 +282,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
 
         {/* ── Left: Story Cover Illustration ── */}
         <div className="w-full lg:w-80 xl:w-88 shrink-0">
-          <div className="relative w-full aspect-[4/5] rounded-[22px] overflow-hidden shadow-md border border-slate-100 bg-slate-50">
+          <div className="relative w-full aspect-4/5 rounded-[22px] overflow-hidden shadow-md border border-slate-100 bg-slate-50">
             <Image
               src={coverSrc}
               alt={story.title}
