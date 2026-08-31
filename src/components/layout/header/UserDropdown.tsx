@@ -6,6 +6,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Search, LogOut, User } from "lucide-react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { resolveChildBadgesCount } from "@/lib/children";
 import { NotificationDropdown } from "@/features/notifications";
 
 interface UserDropdownProps {
@@ -141,11 +142,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
                 const isSelected = activeId === child.id;
                 const isActive = !child.status || child.status === "active";
                 const statusLabel = isActive ? "نشط" : "معطل";
-                const badges =
-                  child.badges_count ??
-                  child.badges ??
-                  ((child as unknown as Record<string, unknown>).badges as number) ??
-                  0;
+                const badges = resolveChildBadgesCount(child);
                 const avatarSrc =
                   child.avatar_img ||
                   child.avatar ||

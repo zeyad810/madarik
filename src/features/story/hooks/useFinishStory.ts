@@ -40,6 +40,9 @@ export function useFinishStory(
       // triggers the backend to start a new reading activity session.
       queryClient.invalidateQueries({ queryKey: parentQueryKeys.reports() });
       queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
+      if (resolvedChildId) {
+        queryClient.invalidateQueries({ queryKey: parentQueryKeys.child(resolvedChildId) });
+      }
       queryClient.invalidateQueries({ queryKey: ["child-reports"] });
       queryClient.invalidateQueries({ queryKey: ["student"] });
       queryClient.invalidateQueries({ queryKey: ["student-reports"] });
