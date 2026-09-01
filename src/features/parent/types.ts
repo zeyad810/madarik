@@ -117,6 +117,39 @@ export interface UpdateParentPasswordResponse {
 }
 
 // =========================================================================
+// Account Subscription History Interfaces (GET /account/subscription/history)
+// =========================================================================
+
+export interface AccountSubscriptionHistoryAccount {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  change_by_admin?: boolean;
+  type: string;
+  status: string;
+  phone_verified_at?: string | null;
+  otp_attempts?: number;
+  otp_locked_until?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AccountSubscriptionHistoryData {
+  account: AccountSubscriptionHistoryAccount;
+  children_count: number;
+  is_subscribed: boolean;
+  unlocked_age_categories: string[];
+}
+
+export interface AccountSubscriptionHistoryResponse {
+  success: boolean;
+  data: AccountSubscriptionHistoryData;
+  message?: string;
+}
+
+
+// =========================================================================
 
 // Child Reports Interfaces (Based on API response)
 // =========================================================================
@@ -201,9 +234,9 @@ export interface ChildReportItem {
   stories_read_count: number;
   badges_count: number;
   user_type: "child" | string;
-  reading_activities: ReadingActivity[];
-  quiz_attempts: QuizAttempt[];
-  user_badges: UserBadge[];
+  reading_activities?: ReadingActivity[];
+  quiz_attempts?: QuizAttempt[];
+  user_badges?: UserBadge[];
 }
 
 export interface ChildReportsResponse {
@@ -212,11 +245,60 @@ export interface ChildReportsResponse {
   data: ChildReportItem[];
 }
 
+export interface ChildReportStatsData {
+  average_success_rate?: number;
+  average_score?: number;
+  quizzes_count?: number;
+  stories_read_count?: number;
+}
+
+export interface ChildReportQuizResult {
+  quiz_id: string;
+  quiz_code?: string;
+  story_title?: string;
+  percentage?: number;
+  score?: number;
+  attempts?: number;
+  status?: "passed" | "failed" | string;
+  duration_seconds?: number | null;
+  completed_at?: string | null;
+}
+
+export interface ChildReportReadingLog {
+  story_id: string;
+  story_title?: string;
+  started_at?: string | null;
+  finished_at?: string | null;
+  status?: "completed" | "in_progress" | string;
+}
+
+export interface ChildReportDetailData {
+  child?: Child | ChildReportItem;
+  stats?: ChildReportStatsData;
+  quiz_results?: ChildReportQuizResult[];
+  reading_log?: ChildReportReadingLog[];
+  // Backwards compatibility if endpoint returns flat child object
+  id?: string;
+  name?: string;
+  birth_date?: string;
+  gender?: "male" | "female" | string;
+  status?: string;
+  avatar_img?: string | null;
+  avatar?: string | null;
+  quizzes_count?: number;
+  average_score?: number;
+  stories_read_count?: number;
+  badges_count?: number;
+  reading_activities?: ReadingActivity[];
+  quiz_attempts?: QuizAttempt[];
+  user_badges?: UserBadge[];
+}
+
 export interface SingleChildReportResponse {
   success?: boolean;
   message?: string;
-  data?: ChildReportItem;
-  report?: ChildReportItem;
+  data?: ChildReportDetailData;
+  report?: ChildReportDetailData;
 }
 
 export interface QuizResultRow {
@@ -239,5 +321,6 @@ export interface ReadingHistoryRow {
   durationMinutes: number;
   status: "completed" | "in_progress";
 }
+
 
 

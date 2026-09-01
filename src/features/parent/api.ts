@@ -2,6 +2,7 @@ import { API_BASE_URL, handleResponse } from "@/services/api";
 import { getStoredAuthToken } from "@/lib/auth";
 import type { Child } from "@/types/auth";
 import {
+  AccountSubscriptionHistoryResponse,
   AddChildPayload,
   AddChildResponse,
   ChildReportsResponse,
@@ -145,25 +146,14 @@ export const getChildren = async (
 export const getParentChildren = getChildren;
 
 /**
- * GET /free/child
- * Fetches the child profile (falls back to /children or /free/child).
+ * Fetches the child profile (delegates to /children).
  */
 export const getFreeChild = async (
   token?: string | null
 ): Promise<{ success?: boolean; message?: string; data?: Child; child?: Child }> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/children`, {
-      method: "GET",
-      headers: buildHeaders(token),
-    });
-    return await handleResponse<{ success?: boolean; message?: string; data?: Child; child?: Child }>(response);
-  } catch {
-    const fallbackResponse = await fetch(`${API_BASE_URL}/free/child`, {
-      method: "GET",
-      headers: buildHeaders(token),
-    });
-    return await handleResponse<{ success?: boolean; message?: string; data?: Child; child?: Child }>(fallbackResponse);
-  }
+  const res = await getChildren(token);
+  const child = res.data && res.data[0] ? res.data[0] : undefined;
+  return { success: res.success, data: child, child };
 };
 
 /**
@@ -186,18 +176,26 @@ export const getChildById = getChild;
 
 /**
  * GET /children/{id}/report
- * Fetches comprehensive report for a specific child.
+ * Fetches comprehensive report for a specific child, falling back to /children/{id}.
  */
 export const getChildReport = async (
   childId: string | number,
   token?: string | null
 ): Promise<SingleChildReportResponse> => {
-  const response = await fetch(`${API_BASE_URL}/children/${childId}/report`, {
-    method: "GET",
-    headers: buildHeaders(token),
-  });
-
-  return await handleResponse<SingleChildReportResponse>(response);
+  const resolvedToken = token || getStoredAuthToken();
+  try {
+    const response = await fetch(`${API_BASE_URL}/children/${childId}/report`, {
+      method: "GET",
+      headers: buildHeaders(resolvedToken),
+    });
+    return await handleResponse<SingleChildReportResponse>(response);
+  } catch {
+    const fallbackResponse = await fetch(`${API_BASE_URL}/children/${childId}`, {
+      method: "GET",
+      headers: buildHeaders(resolvedToken),
+    });
+    return await handleResponse<SingleChildReportResponse>(fallbackResponse);
+  }
 };
 
 /**
@@ -321,6 +319,23 @@ export const updateParentPassword = async (
 
   return await handleResponse<UpdateParentPasswordResponse>(response);
 };
+
+/**
+ * GET /account/subscription/history
+ * Fetches parent dashboard subscription summary / history data:
+ * Account info, children_count, is_subscribed, and unlocked_age_categories.
+ */
+export const getAccountSubscriptionHistory = async (
+  token?: string | null
+): Promise<AccountSubscriptionHistoryResponse> => {
+  const response = await fetch(`${API_BASE_URL}/account/subscription/history`, {
+    method: "GET",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<AccountSubscriptionHistoryResponse>(response);
+};
+
 
 
 

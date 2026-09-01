@@ -8,6 +8,7 @@ import {
   useParentSettings,
   useUpdateParentSettings,
   useUpdateParentPassword,
+  useAccountSubscriptionHistory,
 } from "../hooks";
 import { type ParentSettingsFormData } from "../validation";
 import { extractAuthErrorMessage } from "@/features/auth/helpers/formatAuthError";
@@ -18,6 +19,7 @@ import { ParentGeneralSettings } from "./ParentGeneralSettings";
 export const SettingsView: React.FC = () => {
   const { activeAccount, isParentRole } = useActiveAccount();
   const { children } = useParentChildren();
+  const { childrenCount: serverChildrenCount, account: historyAccount } = useAccountSubscriptionHistory();
 
   // Queries and mutations for account/settings and account/settings/password
   const { data: serverSettingsData } = useParentSettings();
@@ -89,16 +91,16 @@ export const SettingsView: React.FC = () => {
   }, [serverSettingsData, activeAccount]);
 
   // Children count display string in Arabic
-  const childrenCount = children?.length ?? 0;
+  const effectiveChildrenCount = (children && children.length > 0) ? children.length : (serverChildrenCount ?? 0);
   const childrenCountText =
-    childrenCount === 1
+    effectiveChildrenCount === 1
       ? "طفل واحد"
-      : childrenCount === 2
+      : effectiveChildrenCount === 2
       ? "طفلان"
-      : childrenCount >= 3 && childrenCount <= 10
-      ? `${childrenCount} أطفال`
-      : childrenCount > 10
-      ? `${childrenCount} طفلاً`
+      : effectiveChildrenCount >= 3 && effectiveChildrenCount <= 10
+      ? `${effectiveChildrenCount} أطفال`
+      : effectiveChildrenCount > 10
+      ? `${effectiveChildrenCount} طفلاً`
       : "";
 
   const roleText = isParentRole
@@ -106,6 +108,7 @@ export const SettingsView: React.FC = () => {
       ? `ولي الأمر - ${childrenCountText}`
       : "ولي الأمر"
     : "مستخدم";
+
 
 
   // Toggle edit mode

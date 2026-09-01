@@ -50,23 +50,41 @@ export const useDeleteChild = (
       const successMessage = data.message || "تم حذف حساب الطفل بنجاح";
       toast.success(successMessage);
 
-      // Invalidate children cache in React Query
-      await queryClient.invalidateQueries({
-        queryKey: parentQueryKeys.children(),
+      // Update React Query caches directly
+      queryClient.setQueryData<Child[]>(
+        parentQueryKeys.children(),
+        (oldChildren) => {
+          if (!Array.isArray(oldChildren)) return oldChildren;
+          return oldChildren.filter((c) => String(c.id) !== childId);
+        }
+      );
+
+      queryClient.removeQueries({
+        queryKey: parentQueryKeys.child(childId),
       });
+      queryClient.removeQueries({
+        queryKey: parentQueryKeys.childReport(childId),
+      });
+
+      // Invalidate children cache in React Query in background
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.child(childId) });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.reports() });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.childReport(childId) });
 
       // Update NextAuth session if present
       if (session?.user?.children) {
         const updatedChildren = session.user.children.filter(
           (c: Child) => String(c.id) !== childId
         );
-        await updateSession({
+        updateSession({
           ...session,
           user: {
             ...session.user,
             children: updatedChildren,
           },
-        }).catch(() => null);
+        }).catch((err) => console.error("[Update session error]:", err));
       }
 
       if (onSuccess) {

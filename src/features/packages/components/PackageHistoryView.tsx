@@ -192,8 +192,10 @@ export const PackageHistoryView: React.FC = () => {
                       </td>
 
                       {/* 3. Age Group */}
-                      <td className="py-4 px-4 text-gray-600">
-                        {item.ageCategory}
+                      <td className="py-4 px-4">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F0EBFA] text-mad-main">
+                          {item.ageCategory}
+                        </span>
                       </td>
 
                       {/* 4. Price */}

@@ -192,6 +192,7 @@ export const AddChildView: React.FC = () => {
         {
           onSuccess: () => {
             router.push("/parents/childMangement");
+            
           },
           onError: (error) => {
             if (error instanceof Error) {
@@ -211,6 +212,7 @@ export const AddChildView: React.FC = () => {
         {
           onSuccess: () => {
             router.push("/parents/childMangement");
+            
           },
           onError: (error) => {
             if (error instanceof Error) {

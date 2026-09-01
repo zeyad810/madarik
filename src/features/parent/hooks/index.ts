@@ -8,6 +8,8 @@ export * from "./useChildReports";
 export * from "./useParentSettings";
 export * from "./useUpdateParentSettings";
 export * from "./useUpdateParentPassword";
+export * from "./useAccountSubscriptionHistory";
+
 
 
 

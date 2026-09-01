@@ -71,12 +71,19 @@ export interface BackendPackage {
 }
 
 export interface BackendSubscription {
-  id: string;
+  id?: string;
+  subscription_id?: string;
   user_id?: string | number;
-  package_id: string | number;
+  package_id?: string | number;
+  name?: string;
+  type?: string;
+  age_categories?: string[];
+  price?: string | number;
   status: "active" | "frozen" | "expired" | "cancelled" | string;
   start_date?: string;
   end_date?: string;
+  payment_method?: string;
+  transaction_code?: string;
   auto_renew?: boolean;
   package?: BackendPackage | null;
   [key: string]: unknown;
@@ -84,7 +91,8 @@ export interface BackendSubscription {
 
 export interface SubscriptionData {
   is_subscribed: boolean;
-  subscription: BackendSubscription | null;
+  subscriptions?: BackendSubscription[];
+  subscription?: BackendSubscription | null;
   unlocked_age_categories: string[];
 }
 
