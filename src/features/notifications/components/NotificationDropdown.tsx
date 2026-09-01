@@ -82,7 +82,7 @@ const AuthenticatedNotificationDropdown: React.FC<NotificationDropdownProps> = (
       <NotificationBellButton
         isOpen={isOpen}
         unreadCount={unreadCount}
-        onToggle={() => setIsOpen((prev) => !prev)}
+        onToggle={() => setIsOpen((prev)  => !prev)}
       />
 
       {/* 2. Dropdown Popover */}

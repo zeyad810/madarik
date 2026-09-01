@@ -8,11 +8,12 @@ import { StoryEmptyState } from "./StoryEmptyState";
 import { StorySearchBanner } from "./StorySearchBanner";
 import { StoryLoadingState } from "./StoryLoadingState";
 import { StoryGrid } from "./StoryGrid";
-import { Story, StoryFilterType } from "../types";
+import {
+  Story,
+  StoryAvailabilityFilter,
+  StoryFilterType,
+} from "../types";
 import { useFreeStories } from "../hooks/useFreeStories";
-
-const INITIAL_VISIBLE_COUNT = 8;
-const LOAD_MORE_STEP = 4;
 
 export const StoriesView: React.FC = () => {
   const searchParams = useSearchParams();
@@ -26,6 +27,8 @@ export const StoriesView: React.FC = () => {
   // Filter States
   const [activeTab, setActiveTab] = useState<StoryFilterType>("all");
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
+  const [selectedAvailability, setSelectedAvailability] =
+    useState<StoryAvailabilityFilter>("all");
 
   const { data: storiesResponse, isLoading, isError } = useFreeStories({
     search: searchQuery || undefined,
@@ -33,16 +36,13 @@ export const StoriesView: React.FC = () => {
   });
 
   const allStories = useMemo<Story[]>(() => {
-    if (!storiesResponse) return [];
-    if (Array.isArray(storiesResponse.data)) return storiesResponse.data;
-    if (Array.isArray((storiesResponse as any)?.data?.data))
-      return (storiesResponse as any).data.data;
-    return [];
+    return storiesResponse?.data ?? [];
   }, [storiesResponse]);
 
   const paginationMeta = storiesResponse?.pagination;
   const totalPages = paginationMeta?.last_page || 1;
   const totalStories = paginationMeta?.total || allStories.length;
+  const storiesPerPage = paginationMeta?.per_page || 20;
 
   // Extract unique levels dynamically from API data
   const availableLevels = useMemo(() => {
@@ -69,17 +69,24 @@ export const StoriesView: React.FC = () => {
 
   // Filtered stories based on tab and level selection
   const filteredStories = useMemo(() => {
-    if (activeTab === "level" && selectedLevel !== "all") {
-      return allStories.filter((story) => {
+    return allStories.filter((story) => {
+      const matchesLevel = (() => {
+        if (activeTab !== "level" || selectedLevel === "all") return true;
         const levelName =
           typeof story.level === "object" && story.level
             ? story.level.name
             : story.level;
         return String(levelName).trim() === String(selectedLevel).trim();
-      });
-    }
-    return allStories;
-  }, [allStories, activeTab, selectedLevel]);
+      })();
+
+      const availability = story.availability?.toLowerCase().trim() || "free";
+      const matchesAvailability =
+        selectedAvailability === "all" ||
+        availability === selectedAvailability;
+
+      return matchesLevel && matchesAvailability;
+    });
+  }, [allStories, activeTab, selectedLevel, selectedAvailability]);
 
   // Handle "عرض المزيد": loads page 2 and activates full pagination for next interactions
   const handleLoadMore = () => {
@@ -97,6 +104,7 @@ export const StoriesView: React.FC = () => {
   const handleResetFilters = () => {
     setActiveTab("all");
     setSelectedLevel("all");
+    setSelectedAvailability("all");
     setPage(1);
     setHasClickedLoadMore(false);
     if (searchQuery) {
@@ -111,7 +119,11 @@ export const StoriesView: React.FC = () => {
   };
 
   // Determine whether to show "عرض المزيد" or pagination
-  const showLoadMore = totalPages > 1 && page === 1 && !hasClickedLoadMore;
+  const showLoadMore =
+    filteredStories.length >= storiesPerPage &&
+    totalPages > 1 &&
+    page === 1 &&
+    !hasClickedLoadMore;
   const showPagination = hasClickedLoadMore || page > 1;
 
   return (
@@ -135,6 +147,12 @@ export const StoriesView: React.FC = () => {
           onTabChange={handleTabChange}
           availableLevels={availableLevels}
           selectedLevel={selectedLevel}
+          selectedAvailability={selectedAvailability}
+          onAvailabilityChange={(availability) => {
+            setSelectedAvailability(availability);
+            setPage(1);
+            setHasClickedLoadMore(false);
+          }}
           onLevelChange={(lvl) => {
             setSelectedLevel(lvl);
             setPage(1);
@@ -156,7 +174,10 @@ export const StoriesView: React.FC = () => {
             buttonText={searchQuery ? "عرض جميع القصص" : "العودة للرئيسية"}
             buttonHref="/stories"
             onResetFilters={
-              searchQuery || activeTab !== "all" || selectedLevel !== "all"
+              searchQuery ||
+              activeTab !== "all" ||
+              selectedLevel !== "all" ||
+              selectedAvailability !== "all"
                 ? handleResetFilters
                 : undefined
             }
