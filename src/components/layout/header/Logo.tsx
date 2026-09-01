@@ -34,8 +34,8 @@ const Logo: React.FC<LogoProps> = ({
         alt={alt}
         width={width}
         height={height}
-        sizes="(max-width: 599px) 50px, (max-width: 1023px) 64px, 100px"
-        className="h-auto w-12.5 object-contain sm:w-16 lg:w-25"
+        sizes="(max-width: 599px) 50px, (max-width: 1023px) 64px, 75px"
+        className="h-auto w-12.5 object-contain sm:w-16 lg:w-18"
         loading={loading}
       />
     </Link>

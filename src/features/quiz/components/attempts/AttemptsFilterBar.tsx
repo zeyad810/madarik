@@ -27,7 +27,7 @@ export const AttemptsFilterBar: React.FC<AttemptsFilterBarProps> = ({
   indicatorsList,
 }) => {
   return (
-    <div className="w-full grid grid-cols-3 sm:flex sm:flex-row sm:items-center sm:justify-start gap-2 sm:gap-3 mb-4">
+    <div className="w-full grid grid-cols-3 sm:flex sm:flex-row sm:items-center sm:justify-start gap-2 sm:gap-3 mb-4 px-4 md:px-0">
       {/* 1. Level Filter */}
       <div className="relative w-full sm:w-auto sm:min-w-36">
         <select
