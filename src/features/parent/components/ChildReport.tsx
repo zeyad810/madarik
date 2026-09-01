@@ -140,7 +140,7 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
               <Breadcrumb.Separator />
               <Breadcrumb.Item>
                 <Breadcrumb.Page className="text-mad-main font-bold">
-                  نتائج الطفل
+                  {child?.name ? `نتائج ${child.name}` : "نتائج الطفل"}
                 </Breadcrumb.Page>
               </Breadcrumb.Item>
             </Breadcrumb.List>
@@ -150,7 +150,7 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
         {/* 2. Page Header */}
         <div className="pt-1 pb-2 space-y-1 text-right">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-mad-text-primary tracking-tight">
-            تقارير الأطفال
+            {child?.name ? `تقرير ${child.name}` : "تقرير الطفل"}
           </h1>
           <p className="text-xs sm:text-sm text-mad-text-secondary font-normal max-w-xl">
             شاهد وقم بإدارة حسابات أطفالك، وتابع تقدمهم القرائي واختباراتهم بكل سهولة.

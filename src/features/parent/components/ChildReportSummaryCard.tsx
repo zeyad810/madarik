@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 interface ChildReportSummaryCardProps {
@@ -26,6 +26,14 @@ export const ChildReportSummaryCard: React.FC<ChildReportSummaryCardProps> = ({
   const defaultAvatar =
     gender === "female" ? "/assets/girl_avatar.png" : "/assets/boy_avatar.png";
   const [avatarSrc, setAvatarSrc] = useState<string>(avatarUrl || defaultAvatar);
+
+  useEffect(() => {
+    if (avatarUrl) {
+      setAvatarSrc(avatarUrl);
+    } else {
+      setAvatarSrc(defaultAvatar);
+    }
+  }, [avatarUrl, defaultAvatar]);
 
   const isAccountActive =
     isActive !== undefined
@@ -56,7 +64,7 @@ export const ChildReportSummaryCard: React.FC<ChildReportSummaryCardProps> = ({
         </div>
         <div className="min-w-0 flex flex-col text-right">
           <h2 className="font-extrabold text-mad-text-primary text-lg sm:text-2xl truncate">
-            {name || "حساب الطفل"}
+            {name || "اسم الطفل"}
           </h2>
           {subtitle && (
             <span className="text-xs sm:text-sm text-mad-text-secondary font-medium truncate mt-0.5">
