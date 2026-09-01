@@ -71,22 +71,30 @@ export const QuizView: React.FC<QuizViewProps> = ({
   const isSubmittingRef = useRef(false);
   const isAdvancingRef = useRef(false);
   const advanceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // ── Timer store ────────────────────────────────────────────────────────────
+  const { quizId: storedQuizId, startTime: storedStartTime, setTimer, clearTimer } = useQuizTimerStore();
+  const [startTime, setStartTime] = useState<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
   // Initialize start time on mount & cleanup timer on unmount
   useEffect(() => {
-    if (startTimeRef.current === null) {
-      startTimeRef.current = getCurrentTimestamp();
+    let currentStart = startTimeRef.current;
+    if (currentStart === null) {
+      if (storedQuizId === quizId && storedStartTime) {
+        currentStart = storedStartTime;
+      } else {
+        currentStart = getCurrentTimestamp();
+        setTimer(quizId, currentStart);
+      }
+      startTimeRef.current = currentStart;
+      setStartTime(currentStart);
     }
     return () => {
       if (advanceTimeoutRef.current) {
         clearTimeout(advanceTimeoutRef.current);
       }
     };
-  }, []);
-
-  // ── Timer store ────────────────────────────────────────────────────────────
-  const { clearTimer } = useQuizTimerStore();
+  }, [quizId, storedQuizId, storedStartTime, setTimer]);
 
   // ── Mutations ──────────────────────────────────────────────────────────────
   const { mutateAsync: checkAnswer, isPending: isChecking } = useCheckQuizAnswer(quizId);
@@ -161,25 +169,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
     }
   };
 
-  /** Called by QuizTimer when the 90-second question timer runs out */
-  const handleQuestionTimerExpire = () => {
-    if (submissionState !== "idle") return;
-    if (isAdvancingRef.current) return;
-    isAdvancingRef.current = true;
-    setTimeout(() => {
-      isAdvancingRef.current = false;
-    }, 600);
 
-    setValidationError(null);
-    setCurrentIdx((curr) => {
-      if (curr < totalQuestions - 1) {
-        return curr + 1;
-      } else {
-        performSubmit(selectedAnswers);
-        return curr;
-      }
-    });
-  };
 
   /** Move to next question: checks answer first, displays feedback (صح/خطأ), then advances */
   const handleNext = async () => {
@@ -320,8 +310,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
     setQuizResult(null);
     setValidationError(null);
     isSubmittingRef.current = false;
-    startTimeRef.current = getCurrentTimestamp();
-    clearTimer();
+    const now = getCurrentTimestamp();
+    startTimeRef.current = now;
+    setStartTime(now);
+    setTimer(quizId, now);
   };
 
   const isLastQuestion = currentIdx === totalQuestions - 1;
@@ -405,8 +397,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               storyId={storyId}
               questionId={currentQuestion?.id || String(currentIdx)}
               currentPoints={currentPoints}
-              durationSeconds={90}
-              onTimerExpire={handleQuestionTimerExpire}
+              startTime={startTime}
             />
 
             {/* Stepper Timeline */}
@@ -473,8 +464,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             storyId={storyId}
             questionId={currentQuestion?.id || String(currentIdx)}
             currentPoints={currentPoints}
-            durationSeconds={90}
-            onTimerExpire={handleQuestionTimerExpire}
+            startTime={startTime}
           />
         </div>
       </main>

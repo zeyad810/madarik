@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, RotateCcw, Star } from "lucide-react";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
+import { formatTimerDisplay, formatDurationArabic } from "../utils";
 import type { QuizResultData } from "../types";
 
 interface QuizResultProps {
@@ -14,13 +15,6 @@ interface QuizResultProps {
   storyTitle?: string;
   userRole: string;
   onRetry?: () => void;
-}
-
-function formatTimeTaken(seconds?: number): string {
-  if (typeof seconds !== "number" || seconds <= 0) return "00:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
 export const QuizResult: React.FC<QuizResultProps> = ({
@@ -210,9 +204,14 @@ export const QuizResult: React.FC<QuizResultProps> = ({
             <span className="text-xs font-bold text-slate-500">
               الوقت المستغرق
             </span>
-            <span className="text-base sm:text-lg font-black text-slate-800">
-              {formatTimeTaken(result.time_taken)}
-            </span>
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-base sm:text-lg font-black text-slate-800 font-mono" dir="ltr">
+                {formatTimerDisplay(result.time_taken || 0)}
+              </span>
+              <span className="text-[11px] font-bold text-[#7939E3]">
+                {formatDurationArabic(result.time_taken || 0)}
+              </span>
+            </div>
           </div>
         </motion.div>
 

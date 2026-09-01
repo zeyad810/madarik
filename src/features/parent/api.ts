@@ -248,13 +248,13 @@ export const getParentChildReports = async (
 };
 
 /**
- * GET /parent/settings
+ * GET /account/settings
  * Fetches the authenticated parent's settings.
  */
 export const getParentSettings = async (
   token?: string | null
 ): Promise<ParentSettingsResponse> => {
-  const response = await fetch(`${API_BASE_URL}/parent/settings`, {
+  const response = await fetch(`${API_BASE_URL}/account/settings`, {
     method: "GET",
     headers: buildHeaders(token),
   });
@@ -263,14 +263,14 @@ export const getParentSettings = async (
 };
 
 /**
- * PATCH /parent/settings
+ * PATCH /account/settings
  * Updates the authenticated parent's settings (name, notifications, etc.).
  */
 export const updateParentSettings = async (
   payload: ParentSettingsPayload,
   token?: string | null
 ): Promise<ParentSettingsResponse> => {
-  const response = await fetch(`${API_BASE_URL}/parent/settings`, {
+  const response = await fetch(`${API_BASE_URL}/account/settings`, {
     method: "PATCH",
     headers: buildHeaders(token),
     body: JSON.stringify({
@@ -287,7 +287,7 @@ export const updateParentSettings = async (
 
 
 /**
- * PUT /parent/settings/password
+ * PUT /account/settings/password
  * Updates the authenticated parent's password.
  */
 export const updateParentPassword = async (
@@ -303,7 +303,7 @@ export const updateParentPassword = async (
     payload.password_confirmation ||
     newPass;
 
-  const response = await fetch(`${API_BASE_URL}/parent/settings/password`, {
+  const response = await fetch(`${API_BASE_URL}/account/settings/password`, {
     method: "PUT",
     headers: buildHeaders(token),
     body: JSON.stringify({
