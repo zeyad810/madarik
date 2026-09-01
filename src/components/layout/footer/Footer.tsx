@@ -119,7 +119,7 @@ const Footer: React.FC<FooterProps> = ({
       <footer
         id={id}
         dir="rtl"
-        className="footer-responsive-bg w-full text-white pt-32 sm:pt-40 md:pt-48 lg:pt-56 pb-8 sm:pb-12 min-h-245 xl:min-h-287.5 flex flex-col justify-between relative overflow-hidden"
+        className="footer-responsive-bg w-full text-white pt-32 sm:pt-40 md:pt-48 lg:pt-56 pb-8 sm:pb-12 min-h-280 xl:min-h-287.5 flex flex-col justify-between relative overflow-hidden"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-end flex-1">
           {/* ==========================================

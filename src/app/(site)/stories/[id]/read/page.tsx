@@ -37,7 +37,7 @@ export default function StoryReaderPage({ params }: StoryReaderPageProps) {
   const story = storyResponse?.data;
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-[#F8FAFC]">
+    <div className="w-full min-h-screen flex flex-col">
       {/* Page Content */}
       <div className="flex-1 flex flex-col">
         {/* Loading State */}
