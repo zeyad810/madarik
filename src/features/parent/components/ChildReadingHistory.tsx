@@ -21,12 +21,12 @@ export const ChildReadingHistory: React.FC<ChildReadingHistoryProps> = ({
 
       {displayRows.length > 0 ? (
         <div className="space-y-3">
-          {displayRows.map((row) => {
+          {displayRows.map((row, index) => {
             const isCompleted = row.status === "completed";
 
             return (
               <div
-                key={row.id}
+                key={`${row.id}-${index}`}
                 className="w-full bg-white border border-mad-white-200/90 hover:border-mad-purple-200 hover:shadow-xs transition-all duration-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
                 {/* Right side in RTL: Story Title */}

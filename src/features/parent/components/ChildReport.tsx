@@ -43,7 +43,7 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
           (q.quiz_code ? `اختبار ${q.quiz_code}` : `اختبار ${index + 1}`);
 
         return {
-          id: q.quiz_id || `quiz-${index}`,
+          id: `${q.quiz_id || "quiz"}-${q.completed_at || index}-${index}`,
           storyTitle: resolvedTitle,
           story: {
             id: q.quiz_id || `story-${index}`,
@@ -85,7 +85,7 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
           };
 
         return {
-          id: attempt.id || `quiz-${index}`,
+          id: `${attempt.id || attempt.quiz_id || "attempt"}-${attempt.created_at || index}-${index}`,
           storyTitle: resolvedTitle,
           story: resolvedStory,
           level: levelText,
@@ -113,7 +113,7 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
         const resolvedTitle = log.story_title || `قصة ${index + 1}`;
 
         return {
-          id: log.story_id || `read-${index}`,
+          id: `${log.story_id || "story"}-${log.started_at || index}-${index}`,
           storyTitle: resolvedTitle,
           story: { id: log.story_id, title: resolvedTitle },
           dateText: formatArabicDateTime(log.started_at),
@@ -135,7 +135,7 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
         const resolvedTitle = act.story?.title || `قصة ${index + 1}`;
 
         return {
-          id: act.id || `read-${index}`,
+          id: `${act.id || act.story_id || "read"}-${act.started_at || index}-${index}`,
           storyTitle: resolvedTitle,
           story: act.story || { id: act.story_id, title: resolvedTitle },
           dateText: formatArabicDateTime(act.started_at),
@@ -147,12 +147,6 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
 
     return [];
   }, [rawReadingLog, child]);
-
-  const handleExport = () => {
-    if (typeof window !== "undefined") {
-      window.print();
-    }
-  };
 
   if (isLoading) {
     return <ChildReportDetailSkeleton />;
@@ -223,7 +217,7 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
         {/* 5. Quiz Results & Evaluation Table */}
         <ChildQuizResultsTable
           quizRows={quizRows}
-          onExport={handleExport}
+          childName={child?.name}
         />
 
         {/* 6. Reading History */}
