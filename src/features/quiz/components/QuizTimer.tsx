@@ -1,64 +1,50 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { formatTimerDisplay } from "../utils";
-import { QUESTION_DURATION_SECONDS } from "../constants";
 
 interface QuizTimerProps {
-  questionId: string;
-  durationSeconds?: number;
-  /** Called when the timer reaches zero */
-  onExpire: () => void;
+  /** Start time timestamp in ms. If not provided, timer starts from mount. */
+  startTime?: number | null;
+  /** Optional questionId for backwards compatibility */
+  questionId?: string;
+  className?: string;
 }
 
 export const QuizTimer: React.FC<QuizTimerProps> = ({
-  questionId,
-  durationSeconds = QUESTION_DURATION_SECONDS,
-  onExpire,
+  startTime,
+  className = "",
 }) => {
-  const [remainingSeconds, setRemainingSeconds] = useState<number>(durationSeconds);
-  const onExpireRef = useRef(onExpire);
-  onExpireRef.current = onExpire;
-  const hasFiredRef = useRef(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
 
-  // Setup fresh timer on questionId change
   useEffect(() => {
-    hasFiredRef.current = false;
-    setRemainingSeconds(durationSeconds);
+    const effectiveStart = startTime || Date.now();
 
-    const expiresAt = Date.now() + durationSeconds * 1000;
+    const update = () => {
+      const elapsed = Math.max(0, Math.floor((Date.now() - effectiveStart) / 1000));
+      setElapsedSeconds(elapsed);
+    };
 
-    const interval = setInterval(() => {
-      const remaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
-      setRemainingSeconds(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        if (!hasFiredRef.current) {
-          hasFiredRef.current = true;
-          onExpireRef.current();
-        }
-      }
-    }, 500);
+    update();
+    const interval = setInterval(update, 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [questionId, durationSeconds]);
+  }, [startTime]);
 
-  const totalDuration = durationSeconds;
-  const progressPct = Math.max(0, Math.min(1, remainingSeconds / totalDuration));
-
-  // SVG circle progress
+  // SVG circle progress — smoothly loops every 60 seconds (stopwatch sweep)
   const radius = 38;
   const circumference = 2 * Math.PI * radius;
+  const secondsInMinute = elapsedSeconds % 60;
+  const progressPct = secondsInMinute / 60;
   const dashOffset = circumference * (1 - progressPct);
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className={`flex flex-col items-center gap-2 ${className}`}>
       {/* Label */}
-      <span className="text-xs font-bold text-slate-500">الوقت المتبقي</span>
+      <span className="text-xs font-bold text-slate-500">الوقت المستغرق</span>
 
       {/* Circular progress */}
       <div className="relative w-24 h-24 my-1">
@@ -89,16 +75,16 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <Image
             src="/iamges/q-clock.svg"
-            alt="الوقت"
+            alt="الوقت المستغرق"
             width={16}
             height={16}
             style={{ width: "auto", height: "auto" }}
             className="mb-0.5"
           />
-          <span className="text-sm font-black text-slate-800 leading-tight">
-            {formatTimerDisplay(remainingSeconds)}
+          <span className="text-sm font-black text-slate-800 leading-tight font-mono" dir="ltr">
+            {formatTimerDisplay(elapsedSeconds)}
           </span>
-          <span className="text-[10px] font-bold text-slate-400">دقيقة</span>
+          <span className="text-[10px] font-bold text-slate-400">دقيقة : ثانية</span>
         </div>
       </div>
     </div>

@@ -13,10 +13,10 @@ import { QUIZ_TIMER_STORAGE_KEY } from "../constants";
 interface QuizTimerState {
   /** The quiz ID this timer belongs to (null when no active quiz) */
   quizId: string | null;
-  /** Absolute Unix timestamp in ms when the quiz expires */
-  expiresAt: number | null;
+  /** Absolute Unix timestamp in ms when the quiz was started */
+  startTime: number | null;
 
-  setTimer: (quizId: string, expiresAt: number) => void;
+  setTimer: (quizId: string, startTime: number) => void;
   clearTimer: () => void;
 }
 
@@ -24,10 +24,10 @@ export const useQuizTimerStore = create<QuizTimerState>()(
   persist(
     (set) => ({
       quizId: null,
-      expiresAt: null,
+      startTime: null,
 
-      setTimer: (quizId, expiresAt) => set({ quizId, expiresAt }),
-      clearTimer: () => set({ quizId: null, expiresAt: null }),
+      setTimer: (quizId, startTime) => set({ quizId, startTime }),
+      clearTimer: () => set({ quizId: null, startTime: null }),
     }),
     {
       name: QUIZ_TIMER_STORAGE_KEY,

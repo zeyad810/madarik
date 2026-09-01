@@ -33,13 +33,53 @@ export function getQuizApiPrefix(role: string): string {
 }
 
 /**
- * Formats total seconds into "MM:SS" display string.
+ * Formats total seconds into "MM:SS" (or "HH:MM:SS" if >= 1 hour) display string.
  */
 export function formatTimerDisplay(totalSeconds: number): string {
   const safeSeconds = Math.max(0, Math.floor(totalSeconds));
-  const m = Math.floor(safeSeconds / 60);
+  const h = Math.floor(safeSeconds / 3600);
+  const m = Math.floor((safeSeconds % 3600) / 60);
   const s = safeSeconds % 60;
+  if (h > 0) {
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+/**
+ * Formats elapsed seconds into friendly Arabic text (e.g. "دقيقة و 25 ثانية").
+ */
+export function formatDurationArabic(totalSeconds: number): string {
+  const safeSeconds = Math.max(0, Math.floor(totalSeconds));
+  if (safeSeconds === 0) return "أقل من ثانية";
+  const h = Math.floor(safeSeconds / 3600);
+  const m = Math.floor((safeSeconds % 3600) / 60);
+  const s = safeSeconds % 60;
+
+  const parts: string[] = [];
+
+  if (h > 0) {
+    if (h === 1) parts.push("ساعة واحدة");
+    else if (h === 2) parts.push("ساعتان");
+    else if (h <= 10) parts.push(`${h} ساعات`);
+    else parts.push(`${h} ساعة`);
+  }
+
+  if (m > 0) {
+    if (m === 1) parts.push("دقيقة واحدة");
+    else if (m === 2) parts.push("دقيقتان");
+    else if (m <= 10) parts.push(`${m} دقائق`);
+    else parts.push(`${m} دقيقة`);
+  }
+
+  if (s > 0 || parts.length === 0) {
+    if (s === 1) parts.push("ثانية واحدة");
+    else if (s === 2) parts.push("ثانيتان");
+    else if (s <= 10) parts.push(`${s} ثوانٍ`);
+    else parts.push(`${s} ثانية`);
+  }
+
+  return parts.join(" و ");
 }
 
 /**
