@@ -156,11 +156,13 @@ export interface StoryDetailResponse {
 }
 
 export type StoryFilterType = "all" | "age" | "level";
+export type StoryAvailabilityFilter = "all" | "free" | "paid";
 
 export interface StoryFiltersState {
   filterType: StoryFilterType;
   selectedAge?: string;
   selectedLevel?: string;
+  selectedAvailability?: StoryAvailabilityFilter;
 }
 
 export interface StartStoryPayload {
@@ -171,7 +173,7 @@ export interface StartStoryPayload {
 export interface StartStoryResponse {
   success?: boolean;
   message?: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface FinishStoryPayload {
@@ -184,6 +186,6 @@ export interface FinishStoryPayload {
 export interface FinishStoryResponse {
   success?: boolean;
   message?: string;
-  data?: any;
+  data?: unknown;
 }
 
