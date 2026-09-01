@@ -8,18 +8,18 @@ import { QuizTimer } from "./QuizTimer";
 
 interface QuizMetricsCardsProps {
   storyId: string;
-  questionId: string;
   currentPoints: number;
+  startTime?: number | null;
+  /** Kept for backwards compatibility */
+  questionId?: string;
   durationSeconds?: number;
-  onTimerExpire: () => void;
+  onTimerExpire?: () => void;
 }
 
 export const QuizMetricsCards: React.FC<QuizMetricsCardsProps> = ({
   storyId,
-  questionId,
   currentPoints,
-  durationSeconds = 90,
-  onTimerExpire,
+  startTime,
 }) => {
   return (
     <div className="w-full flex flex-col lg:hidden">
@@ -37,13 +37,9 @@ export const QuizMetricsCards: React.FC<QuizMetricsCardsProps> = ({
 
       {/* 2 Metric Cards: Time & Points (Side by Side) */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mb-6">
-        {/* Card 1: Remaining Time */}
+        {/* Card 1: Elapsed Time */}
         <div className="bg-white rounded-3xl p-4 sm:p-5 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col items-center justify-center min-h-36.25">
-          <QuizTimer
-            questionId={questionId}
-            durationSeconds={durationSeconds}
-            onExpire={onTimerExpire}
-          />
+          <QuizTimer startTime={startTime} />
         </div>
 
         {/* Card 2: Points */}

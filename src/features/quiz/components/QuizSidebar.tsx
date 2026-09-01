@@ -8,18 +8,18 @@ import { QuizTimer } from "./QuizTimer";
 
 interface QuizSidebarProps {
   storyId: string;
-  questionId: string;
   currentPoints: number;
+  startTime?: number | null;
+  /** Kept for backwards compatibility */
+  questionId?: string;
   durationSeconds?: number;
-  onTimerExpire: () => void;
+  onTimerExpire?: () => void;
 }
 
 export const QuizSidebar: React.FC<QuizSidebarProps> = ({
   storyId,
-  questionId,
   currentPoints,
-  durationSeconds = 90,
-  onTimerExpire,
+  startTime,
 }) => {
   return (
     <aside className="lg:col-span-3 hidden lg:flex flex-col gap-4">
@@ -44,11 +44,7 @@ export const QuizSidebar: React.FC<QuizSidebarProps> = ({
 
       {/* 2. Timer Card */}
       <div className="bg-white rounded-3xl p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col items-center justify-center">
-        <QuizTimer
-          questionId={questionId}
-          durationSeconds={durationSeconds}
-          onExpire={onTimerExpire}
-        />
+        <QuizTimer startTime={startTime} />
       </div>
 
       {/* 3. Exit Quiz Button */}
