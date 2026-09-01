@@ -154,7 +154,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                       src={slide.bgImage}
                       alt={slide.title}
                       fill
-                      sizes="100vw"
+                      sizes="(min-width: 1600px) 1568px, calc(100vw - 32px)"
                       priority={index === 0}
                       className="object-cover object-center w-full h-full opacity-35"
                     />
