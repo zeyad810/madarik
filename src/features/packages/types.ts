@@ -45,12 +45,17 @@ export interface SubscriptionPackageDetails {
 }
 
 export interface SubscriptionItemData {
-  id: string | number;
+  id?: string | number;
+  subscription_id?: string;
   account_id?: string;
   package_id?: string;
+  name?: string;
   package_name?: string;
+  type?: string;
   package_description?: string;
+  price?: string | number;
   package_price?: string | number;
+  age_categories?: string[];
   package_features?: string[];
   package_duration_type?: string;
   package_duration_value?: number;
@@ -61,6 +66,7 @@ export interface SubscriptionItemData {
   created_at?: string;
   updated_at?: string;
   payment_method?: string;
+  transaction_code?: string;
   package?: SubscriptionPackageDetails;
 }
 
@@ -76,6 +82,7 @@ export interface SubscriptionApiResponse {
 
 export interface CurrentSubscription {
   id: string;
+  subscriptionId?: string;
   accountId?: string;
   packageId?: string;
   planName: string;
@@ -85,6 +92,7 @@ export interface CurrentSubscription {
   durationType?: string;
   durationValue?: number;
   ageCategory: string;
+  ageCategories?: string[];
   unlockedAgeCategories?: string[];
   isSubscribed?: boolean;
   startDate: string;
@@ -101,6 +109,7 @@ export interface CurrentSubscription {
   isFrozen?: boolean;
   freezeUntil?: string;
   description?: string;
+  transactionCode?: string;
   rawSubscription?: SubscriptionItemData;
 }
 

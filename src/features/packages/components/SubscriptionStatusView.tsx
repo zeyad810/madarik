@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { useCurrentSubscriptions } from "../hooks/usePackages";
 import { CurrentSubscription } from "../types";
 
@@ -15,17 +16,12 @@ export const SubscriptionStatusView: React.FC = () => {
       return sub.paidPriceText;
     }
     if (sub.paidPriceText) {
-      const duration =
-        sub.durationLabel ||
-        (sub.packageType === "سنوي" ? "سنوياً" : "شهرياً");
-      return `${sub.paidPriceText} / ${duration}`;
+      return sub.paidPriceText;
     }
-    if (sub.paidPrice) {
-      return `${sub.paidPrice} ر.س / ${
-        sub.durationLabel || "سنوياً"
-      }`;
+    if (sub.paidPrice !== undefined && sub.paidPrice !== null && sub.paidPrice !== "") {
+      return `${sub.paidPrice} ر.س`;
     }
-    return "199 ر.س / سنوياً";
+    return "-";
   };
 
   const formatAge = (cat: string) => {
@@ -38,13 +34,16 @@ export const SubscriptionStatusView: React.FC = () => {
   };
 
   const getAgeCategories = (sub: CurrentSubscription): string[] => {
+    if (sub.ageCategories && sub.ageCategories.length > 0) {
+      return sub.ageCategories.map(formatAge);
+    }
     if (sub.unlockedAgeCategories && sub.unlockedAgeCategories.length > 0) {
       return sub.unlockedAgeCategories.map(formatAge);
     }
     if (sub.ageCategory) {
       return [formatAge(sub.ageCategory)];
     }
-    return ["6-8 سنوات"];
+    return [];
   };
 
   return (
@@ -53,15 +52,22 @@ export const SubscriptionStatusView: React.FC = () => {
         {/* =========================================================================
             1. BREADCRUMBS NAVIGATION (الرئيسية > حاله اشتراكي)
            ========================================================================= */}
-        <div className="flex items-center justify-start mb-6 sm:mb-8 text-xs sm:text-sm">
-          <Link
-            href="/"
-            className="text-mad-main font-bold underline underline-offset-4 decoration-mad-main hover:opacity-85 transition-opacity"
-          >
-            الرئيسية
-          </Link>
-          <span className="mx-2 text-gray-400 select-none">&gt;</span>
-          <span className="text-gray-400 font-medium">حاله اشتراكي</span>
+        <div className="flex items-center justify-start mb-6 sm:mb-8">
+          <Breadcrumb>
+            <Breadcrumb.List>
+              <Breadcrumb.Item>
+                <Breadcrumb.Link href="/" className="text-mad-main font-bold hover:underline">
+                  الرئيسية
+                </Breadcrumb.Link>
+              </Breadcrumb.Item>
+              <Breadcrumb.Separator />
+              <Breadcrumb.Item>
+                <Breadcrumb.Page className="text-gray-500 font-medium">
+                  حاله اشتراكي
+                </Breadcrumb.Page>
+              </Breadcrumb.Item>
+            </Breadcrumb.List>
+          </Breadcrumb>
         </div>
 
         {/* =========================================================================

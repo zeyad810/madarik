@@ -143,12 +143,21 @@ export const getCurrentSubscriptions = async (
           return [];
         }
 
-        return rawList.map((subData) => {
+        // Sort active subscriptions by end_date descending so latest active subscription is first
+        const sortedList = [...rawList].sort((a, b) => {
+          const dateA = a.end_date ? new Date(a.end_date).getTime() : 0;
+          const dateB = b.end_date ? new Date(b.end_date).getTime() : 0;
+          return dateB - dateA;
+        });
+
+        return sortedList.map((subData, idx) => {
           const pkg = subData.package;
 
-          // Use the price paid during subscription (package_price), fallback to package discounted/regular price
+          // Priority: direct price from subscription payload, then package_price, then package price
           const rawPaidPrice =
-            subData.package_price !== undefined && subData.package_price !== null && subData.package_price !== ""
+            subData.price !== undefined && subData.price !== null && subData.price !== ""
+              ? subData.price
+              : subData.package_price !== undefined && subData.package_price !== null && subData.package_price !== ""
               ? subData.package_price
               : pkg?.discounted_price ?? pkg?.price;
 
@@ -158,55 +167,84 @@ export const getCurrentSubscriptions = async (
               ? `${rawPaidPrice} ${currency}`
               : "";
 
-          const planName = subData.package_name || pkg?.name || "الباقة المشترك بها";
-          const description = subData.package_description || pkg?.description || "اشتراك طفلك الحالي النشط";
+          const planName =
+            subData.name ||
+            subData.package_name ||
+            pkg?.name ||
+            "الباقة المشترك بها";
+
+          const description =
+            subData.package_description ||
+            pkg?.description ||
+            "اشتراك طفلك الحالي النشط";
+
           const packageType =
+            subData.type ||
             subData.package_duration_label ||
             pkg?.duration_label ||
             (subData.package_duration_type === "years" || pkg?.duration_type === "years"
               ? "سنوي"
               : subData.package_duration_type === "months" || pkg?.duration_type === "months"
               ? "شهري"
-              : "مخصص");
+              : "مدفوع");
+
+          const subAgeCategories =
+            Array.isArray(subData.age_categories) && subData.age_categories.length > 0
+              ? subData.age_categories
+              : unlockedAges;
 
           const features =
             subData.package_features && subData.package_features.length > 0
               ? subData.package_features
               : pkg?.features || [];
 
+          const subId = String(
+            subData.subscription_id || subData.id || `sub_${idx}_${Date.now()}`
+          );
+
+          const rawStatus = (subData.status || "active").toLowerCase().trim();
+          const status: "active" | "expired" | "cancelled" =
+            rawStatus === "expired"
+              ? "expired"
+              : rawStatus === "cancelled" || rawStatus === "canceled"
+              ? "cancelled"
+              : "active";
+
+          const statusLabel =
+            status === "active"
+              ? "نشط"
+              : status === "expired"
+              ? "منتهية"
+              : status === "cancelled"
+              ? "ملغاة"
+              : "نشط";
+
           return {
-            id: String(subData.id || "sub_live"),
+            id: subId,
+            subscriptionId: subId,
             accountId: subData.account_id,
-            packageId: subData.package_id,
+            packageId: subData.package_id ? String(subData.package_id) : undefined,
             planName,
             subtitle: description,
             packageType,
             durationLabel: subData.package_duration_label || pkg?.duration_label || undefined,
             durationType: subData.package_duration_type || pkg?.duration_type,
             durationValue: subData.package_duration_value || pkg?.duration_value,
-            ageCategory:
-              unlockedAges.length > 0
-                ? unlockedAges.join("، ")
-                : subData.package_duration_label || pkg?.duration_label || "",
+            ageCategory: subAgeCategories.join("، "),
+            ageCategories: subAgeCategories,
             unlockedAgeCategories: unlockedAges,
             isSubscribed: true,
             startDate: formatArabicDate(subData.start_date),
             endDate: formatArabicDate(subData.end_date),
             autoRenewDate: formatArabicDate(subData.end_date),
-            paymentMethod: subData.payment_method || "بطاقة دفع إلكتروني (Moyasar)",
+            paymentMethod: subData.payment_method || "بطاقة ائتمان",
             paidPrice: rawPaidPrice !== undefined && rawPaidPrice !== null ? String(rawPaidPrice) : undefined,
             paidPriceText,
             monthlyPriceText: paidPriceText,
-            status: (subData.status as "active" | "expired" | "cancelled") || "active",
-            statusLabel:
-              subData.status === "active"
-                ? "نشط"
-                : subData.status === "expired"
-                ? "منتهية"
-                : subData.status === "cancelled"
-                ? "ملغاة"
-                : "نشط",
+            status,
+            statusLabel,
             features,
+            transactionCode: subData.transaction_code,
             rawSubscription: subData,
           };
         });
@@ -220,7 +258,7 @@ export const getCurrentSubscriptions = async (
 
 /**
  * Fetches the user's primary active subscription status from GET /subscription.
- * Returns the primary subscription data or null if not subscribed.
+ * Returns the primary (latest) subscription data or null if not subscribed.
  */
 export const getCurrentSubscription = async (
   token?: string | null
