@@ -93,7 +93,7 @@ const Header: React.FC = () => {
             </button>
 
             {/* Logo Component */}
-            <Logo />
+            <Logo loading="eager" />
           </div>
 
           {/* ==========================================

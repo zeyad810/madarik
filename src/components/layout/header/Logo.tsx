@@ -11,7 +11,7 @@ interface LogoProps {
   alt?: string;
   width?: number;
   height?: number;
-  priority?: boolean;
+  loading?: "eager" | "lazy";
 }
 
 const Logo: React.FC<LogoProps> = ({
@@ -20,7 +20,7 @@ const Logo: React.FC<LogoProps> = ({
   alt = "شعار منصة مدارك القراءة",
   width = 100,
   height = 100,
-  priority = false,
+  loading = "lazy",
 }) => {
   const { isStudent } = useActiveAccount();
 
@@ -35,7 +35,7 @@ const Logo: React.FC<LogoProps> = ({
         width={width}
         height={height}
         className="w-auto h-auto object-contain"
-        priority={priority}
+        loading={loading}
       />
     </Link>
   );
