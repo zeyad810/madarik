@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { PauseCircle, ArrowLeft, RefreshCw, Calendar, CreditCard, ShieldCheck } from "lucide-react";
+import { ArrowLeft, RefreshCw, ShieldCheck } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { useCurrentSubscription } from "../hooks/usePackages";
-import { FreezeSubscriptionModal } from "./FreezeSubscriptionModal";
 
 export const SubscriptionStatusView: React.FC = () => {
   const { data: subscription, isLoading } = useCurrentSubscription();
-  const [isFreezeModalOpen, setIsFreezeModalOpen] = useState(false);
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
@@ -37,7 +35,7 @@ export const SubscriptionStatusView: React.FC = () => {
         </div>
 
         {/* =========================================================================
-            2. SUBSCRIPTION STATUS MAIN CARD
+            2. SUBSCRIPTION STATUS MAIN CARD / EMPTY STATE
            ========================================================================= */}
         {isLoading ? (
           <div className="max-w-4xl mx-auto h-96 rounded-[28px] bg-gray-50/70 animate-pulse border border-gray-200" />
@@ -48,7 +46,7 @@ export const SubscriptionStatusView: React.FC = () => {
             transition={{ duration: 0.45 }}
             className="max-w-4xl mx-auto rounded-[28px] border border-gray-200/90 bg-white p-6 sm:p-10 shadow-sm"
           >
-            {/* Top Bar: Plan Name + Subtitle + Freeze Action */}
+            {/* Top Bar: Plan Name + Subtitle + Renew Action */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 border-b border-gray-100">
               <div className="text-right space-y-1">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
@@ -60,16 +58,13 @@ export const SubscriptionStatusView: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setIsFreezeModalOpen(true)}
-                  type="button"
+                <Link
+                  href="/packages/renew"
                   className="px-5 py-2.5 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-xs sm:text-sm transition-all flex items-center gap-2 shadow-xs cursor-pointer"
                 >
-                  <span>{subscription.isFrozen ? "إلغاء التجميد" : "تجميد الباقة"}</span>
+                  <span>تجديد أو ترقية الاشتراك</span>
                   <ArrowLeft className="size-4 rotate-180" />
-                </motion.button>
+                </Link>
               </div>
             </div>
 
@@ -112,7 +107,7 @@ export const SubscriptionStatusView: React.FC = () => {
                     ))
                   ) : (
                     <span className="rounded-full bg-purple-50 text-mad-main text-xs font-semibold px-3 py-1 border border-purple-100">
-                      {subscription.ageCategory}
+                      {subscription.ageCategory || "-"}
                     </span>
                   )}
                 </div>
@@ -128,13 +123,13 @@ export const SubscriptionStatusView: React.FC = () => {
                 </span>
               </div>
 
-              {/* 5. Monthly Value */}
+              {/* 5. Paid Price */}
               <div className="flex items-center justify-between py-1 border-b border-gray-50">
                 <span className="text-xs sm:text-sm text-gray-500 font-medium">
-                  القيمة الحالية والشهور:
+                  المبلغ المدفوع:
                 </span>
                 <span className="text-xs sm:text-sm font-bold text-mad-main">
-                  {subscription.monthlyPriceText}
+                  {subscription.paidPriceText || subscription.monthlyPriceText || "-"}
                 </span>
               </div>
 
@@ -147,13 +142,11 @@ export const SubscriptionStatusView: React.FC = () => {
                   className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
                     subscription.status === "active"
                       ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                      : subscription.status === "frozen"
-                      ? "bg-amber-50 text-amber-600 border border-amber-200"
                       : "bg-rose-50 text-rose-600 border border-rose-200"
                   }`}
                 >
                   <span className="size-2 rounded-full bg-current animate-pulse" />
-                  {subscription.statusLabel || (subscription.status === "active" ? "نشط" : "مجمدة")}
+                  {subscription.statusLabel || (subscription.status === "active" ? "نشط" : "منتهي")}
                 </span>
               </div>
             </div>
@@ -175,17 +168,36 @@ export const SubscriptionStatusView: React.FC = () => {
               </Link>
             </div>
           </motion.div>
-        ) : null}
-
-        {/* Freeze Modal */}
-        <FreezeSubscriptionModal
-          isOpen={isFreezeModalOpen}
-          onClose={() => setIsFreezeModalOpen(false)}
-          currentPlanName={subscription?.planName}
-        />
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-xl mx-auto rounded-[28px] border border-gray-200/90 bg-white p-8 sm:p-12 text-center shadow-sm space-y-4"
+          >
+            <div className="size-16 rounded-full bg-purple-50 flex items-center justify-center text-mad-main mx-auto mb-2">
+              <ShieldCheck className="size-8 stroke-[1.8]" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900">
+              لا يوجد اشتراك نشط حالياً
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
+              اشترك في إحدى باقات مدارك القراءة لتفعيل الوصول إلى المكتبة التفاعلية وتقارير أداء طفلك.
+            </p>
+            <div className="pt-4">
+              <Link
+                href="/packages"
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-xs sm:text-sm transition-all shadow-xs cursor-pointer"
+              >
+                <span>تصفح واشترك في الباقات</span>
+                <ArrowLeft className="size-4 rotate-180" />
+              </Link>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
 };
 
 export default SubscriptionStatusView;
+

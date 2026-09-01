@@ -4,6 +4,7 @@ import React, { use } from "react";
 import { StoryReaderView, StoryEmptyState } from "@/features/story";
 import { useStoryById } from "@/features/story/hooks/useStoryById";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { isFreeRole } from "@/lib/roles";
 import { SelectChildPrompt } from "@/components/guards";
 import { Loader2 } from "lucide-react";
 
@@ -15,9 +16,22 @@ export default function StoryReaderPage({ params }: StoryReaderPageProps) {
   const resolvedParams = use(params);
   const storyId = resolvedParams.id;
 
-  const { isAuthenticated, isParentRole, isParentActive } = useActiveAccount();
+  const {
+    isAuthenticated,
+    isParentRole,
+    isParentActive,
+    isFreeCustomer,
+    sessionUserType,
+    user_type,
+  } = useActiveAccount();
+
+  const isFree =
+    isFreeCustomer ||
+    isFreeRole(sessionUserType) ||
+    isFreeRole(user_type);
+
   const shouldPromptChildSelection =
-    isAuthenticated && isParentRole && isParentActive;
+    isAuthenticated && (isParentRole || isFree) && isParentActive;
 
   const { data: storyResponse, isLoading, isError } = useStoryById(storyId);
   const story = storyResponse?.data;

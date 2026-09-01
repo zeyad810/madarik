@@ -112,3 +112,31 @@ export function formatArabicActivityTime(dateStr?: string | null): string {
   if (diffDays <= 10) return `منذ ${diffDays} أيام`;
   return `منذ ${diffDays} يوماً`;
 }
+
+/**
+ * Formats a date string into readable Arabic format (e.g. "15 فبراير 2026").
+ */
+export function formatArabicDate(dateStr?: string | null): string {
+  if (!dateStr) return "-";
+  const trimmed = String(dateStr).trim();
+  if (!trimmed || trimmed === "null" || trimmed === "undefined") return "-";
+  // If already in Arabic formatted text (contains Arabic letters), return as is
+  if (/[\u0600-\u06FF]/.test(trimmed)) return trimmed;
+
+  const date = new Date(trimmed);
+  if (isNaN(date.getTime())) return trimmed;
+
+  try {
+    const months = [
+      "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+      "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+    ];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  } catch {
+    return trimmed;
+  }
+}
+

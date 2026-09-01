@@ -117,14 +117,19 @@ const SideMenu: React.FC<SideMenuProps> = ({
         item.href.startsWith("/results") ||
         item.href.startsWith("/attempts");
 
-      // Results/attempts log is strictly for authenticated student, parent, child
-      // and NEVER for free_customer
+      // Results/attempts log is strictly for authenticated student / child
+      // and hidden for parent, free_customer, or when parent account is active
       if (isResultsItem) {
-        if (isFreeCustomer) {
+        if (
+          isFreeCustomer ||
+          isParentActive ||
+          userRole === "parent" ||
+          (isParentRole && !isChildOrStudent)
+        ) {
           return false;
         }
         const hasHistoryRole =
-          userRole === "student" || userRole === "parent" || userRole === "child";
+          userRole === "student" || userRole === "child" || isChildOrStudent;
         if (!hasHistoryRole) {
           return false;
         }
@@ -134,6 +139,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
       if (item.allowedRoles && item.allowedRoles.length > 0) {
         const hasAccess =
           item.allowedRoles.includes(userRole) ||
+          (isChildOrStudent &&
+            (item.allowedRoles.includes("student") ||
+              item.allowedRoles.includes("child"))) ||
           (isFreeCustomer &&
             (item.allowedRoles.includes("free") ||
               item.allowedRoles.includes("free_customer")));
@@ -156,7 +164,14 @@ const SideMenu: React.FC<SideMenuProps> = ({
       }
       return true;
     });
-  }, [isAuthenticated, isFreeCustomer, isChildOrStudent, userRole]);
+  }, [
+    isAuthenticated,
+    isFreeCustomer,
+    isChildOrStudent,
+    isParentActive,
+    isParentRole,
+    userRole,
+  ]);
 
   const isItemDisabled = (item: (typeof SIDE_MENU_ITEMS)[number]) => {
     if (!isAuthenticated) {

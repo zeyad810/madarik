@@ -53,9 +53,10 @@ export const PackageRenewView: React.FC = () => {
           <div className="w-full max-w-4xl mx-auto h-52 rounded-[28px] bg-amber-50/50 animate-pulse border border-amber-100 mb-12" />
         ) : subscription ? (
           <div className="mb-12">
-            <CurrentSubscriptionBanner subscription={subscription} />
+            <CurrentSubscriptionBanner subscription={subscription} hideActionButton={true} />
           </div>
         ) : null}
+
 
         {/* =========================================================================
             3. RENEWAL / UPGRADE SECTION HEADER

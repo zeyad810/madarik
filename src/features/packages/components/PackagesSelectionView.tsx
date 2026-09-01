@@ -102,6 +102,11 @@ export const PackagesSelectionView: React.FC = () => {
               />
             ))}
           </div>
+        ) : packages.length === 0 ? (
+          <div className="max-w-md mx-auto text-center py-12 px-6 rounded-3xl border border-gray-100 bg-gray-50/50">
+            <p className="text-sm font-semibold text-gray-700">لا توجد باقات متاحة حالياً</p>
+            <p className="text-xs text-gray-400 mt-1">يرجى المحاولة لاحقاً أو التواصل مع الدعم الفني.</p>
+          </div>
         ) : (
           <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
             {packages.map((pkg, index) => (

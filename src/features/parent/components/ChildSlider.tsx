@@ -15,14 +15,18 @@ interface ChildSliderProps {
   childrenList: ManagedChild[];
   onEditChild?: (child: ManagedChild) => void;
   onToggleStatus?: (child: ManagedChild) => void;
+  onDeleteChild?: (child: ManagedChild) => void;
   togglingChildId?: string | null;
+  deletingChildId?: string | null;
 }
 
 export const ChildSlider: React.FC<ChildSliderProps> = ({
   childrenList,
   onEditChild,
   onToggleStatus,
+  onDeleteChild,
   togglingChildId,
+  deletingChildId,
 }) => {
   return (
     <div className="w-full py-4 relative select-none" dir="rtl">
@@ -61,7 +65,9 @@ export const ChildSlider: React.FC<ChildSliderProps> = ({
               child={child}
               onEdit={onEditChild}
               onToggleStatus={onToggleStatus}
+              onDelete={onDeleteChild}
               isToggling={togglingChildId === child.id}
+              isDeleting={deletingChildId === child.id}
             />
           </SwiperSlide>
         ))}

@@ -26,7 +26,7 @@ interface StoryDetailHeroProps {
 }
 
 export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
-  const { isAuthenticated } = useActiveAccount();
+  const { isAuthenticated, isParentActive } = useActiveAccount();
   const [isDownloading, setIsDownloading] = useState(false);
   const { mutate: triggerStartStory } = useStartStory(story.id);
 
@@ -215,7 +215,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
             <Link
               href={`/stories/${story.id}/read`}
               onClick={() => {
-                if (isAuthenticated) {
+                if (isAuthenticated && !isParentActive) {
                   triggerStartStory(undefined, {
                     onError: (err) => console.error("Start reading error:", err),
                   });

@@ -20,7 +20,7 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
     id: "attempts-log",
     label: "سجل المحاولات",
     href: "/attempts",
-    allowedRoles: ["student", "parent", "child"],
+    allowedRoles: ["student", "child"],
   },
   {
     id: "sub-status",
@@ -38,7 +38,7 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
 
 export const DESKTOP_NAV_LINKS: NavLinkItem[] = [
   { id: "home", label: "الرئيسية", href: "/" },
-  { id: "results", label: "نتائجي", href: "/results" },
+  { id: "results", label: "نتائجي", href: "/results", allowedRoles: ["student", "child"] },
   { id: "packages", label: "الباقات", href: "/packages" },
   { id: "library", label: "مكتبة القصص", href: "/stories" },
   { id: "contact", label: "تواصل معنا", href: "/#contact_section" },

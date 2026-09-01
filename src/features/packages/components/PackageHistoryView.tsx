@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { FileText, Download, Filter, AlertCircle, Eye } from "lucide-react";
+import { FileText, AlertCircle, Inbox } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { usePackageHistory } from "../hooks/usePackages";
 import { HistoryFilterType, PackageHistoryItem } from "../types";
@@ -159,8 +159,18 @@ export const PackageHistoryView: React.FC = () => {
                   ))
                 ) : filteredHistory.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-gray-400">
-                      لا توجد سجلات مطابقة لهذا الفلتر.
+                    <td colSpan={9} className="py-14 text-center">
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <div className="size-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400">
+                          <Inbox className="size-6 stroke-[1.8]" />
+                        </div>
+                        <p className="text-sm font-semibold text-gray-700">
+                          لا توجد سجلات اشتراكات أو فواتير سابقة
+                        </p>
+                        <p className="text-xs text-gray-400 max-w-sm">
+                          عند الاشتراك في باقة أو إجراء عملية دفع ستظهر تفاصيلها وفواتيرها هنا تلقائياً.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 ) : (

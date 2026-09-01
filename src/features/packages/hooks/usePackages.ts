@@ -1,15 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import {
-  freezeSubscription,
   getCurrentSubscription,
   getPackageHistory,
   getPackagesList,
 } from "../api";
 import {
   CurrentSubscription,
-  FreezeSubscriptionPayload,
-  FreezeSubscriptionResponse,
   PackageHistoryItem,
   PackagePlan,
 } from "../types";
@@ -33,7 +30,7 @@ export const useCurrentSubscription = () => {
   const { data: session } = useSession();
   const token = (session as unknown as { accessToken?: string })?.accessToken;
 
-  return useQuery<CurrentSubscription>({
+  return useQuery<CurrentSubscription | null>({
     queryKey: packageKeys.subscription(),
     queryFn: () => getCurrentSubscription(token),
     staleTime: 2 * 60 * 1000,
@@ -51,20 +48,3 @@ export const usePackageHistory = () => {
   });
 };
 
-export const useFreezeSubscription = () => {
-  const queryClient = useQueryClient();
-  const { data: session } = useSession();
-  const token = (session as unknown as { accessToken?: string })?.accessToken;
-
-  return useMutation<FreezeSubscriptionResponse, Error, FreezeSubscriptionPayload>({
-    mutationFn: (payload) => freezeSubscription(payload, token),
-    onSuccess: (data) => {
-      queryClient.setQueryData<CurrentSubscription>(
-        packageKeys.subscription(),
-        (prev) => (data.data ? data.data : prev ? { ...prev, isFrozen: true, status: "frozen" } : undefined)
-      );
-      queryClient.invalidateQueries({ queryKey: packageKeys.subscription() });
-      queryClient.invalidateQueries({ queryKey: packageKeys.history() });
-    },
-  });
-};

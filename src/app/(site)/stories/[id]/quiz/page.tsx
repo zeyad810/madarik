@@ -16,6 +16,7 @@ import { useStoryById } from "@/features/story/hooks/useStoryById";
 import { QuizView } from "@/features/quiz/components/QuizView";
 import { getStoryQuizId } from "@/features/story/types";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { isFreeRole } from "@/lib/roles";
 import { SelectChildPrompt } from "@/components/guards";
 
 interface QuizPageProps {
@@ -29,10 +30,23 @@ export default function QuizPage({ params }: QuizPageProps) {
   const { data: storyResponse, isLoading, isPending, isError } = useStoryById(storyId);
   const story = storyResponse?.data;
   const quizId = getStoryQuizId(story);
-  const { isAuthenticated, isParentRole, isParentActive, isLoading: isAccountLoading } = useActiveAccount();
+  const {
+    isAuthenticated,
+    isParentRole,
+    isParentActive,
+    isFreeCustomer,
+    sessionUserType,
+    user_type,
+    isLoading: isAccountLoading,
+  } = useActiveAccount();
+
+  const isFree =
+    isFreeCustomer ||
+    isFreeRole(sessionUserType) ||
+    isFreeRole(user_type);
 
   const shouldPromptChildSelection =
-    isAuthenticated && isParentRole && isParentActive;
+    isAuthenticated && (isParentRole || isFree) && isParentActive;
 
   // Loading the story / auth state / query pending — show skeleton loading
   if (isLoading || isPending || isAccountLoading || (!story && !isError)) {

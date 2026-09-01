@@ -12,8 +12,10 @@ import {
   Sparkles,
   Award,
   Users,
+  Loader2,
 } from "lucide-react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { useParentChildren } from "@/features/parent/hooks/useParentChildren";
 import { Child } from "@/types/auth";
 import { resolveChildBadgesCount } from "@/lib/children";
 
@@ -30,7 +32,13 @@ export const SelectChildPrompt: React.FC<SelectChildPromptProps> = ({
   storyTitle,
   onSelectChild,
 }) => {
-  const { children, switchAccount } = useActiveAccount();
+  const { children: sessionChildren, switchAccount } = useActiveAccount();
+  const { children: parentChildren, isLoading: isChildrenLoading } = useParentChildren();
+
+  const children =
+    parentChildren && parentChildren.length > 0
+      ? parentChildren
+      : sessionChildren;
 
   const isQuiz = actionType === "quiz";
   const title = isQuiz
@@ -89,8 +97,13 @@ export const SelectChildPrompt: React.FC<SelectChildPromptProps> = ({
           {description}
         </p>
 
-        {/* Children Grid or Empty State */}
-        {children && children.length > 0 ? (
+        {/* Children Grid or Loading / Empty State */}
+        {isChildrenLoading && (!children || children.length === 0) ? (
+          <div className="py-12 flex flex-col items-center justify-center gap-3 text-slate-400">
+            <Loader2 className="w-8 h-8 animate-spin text-[#7939E3]" />
+            <p className="text-sm font-bold">جاري تحميل بيانات الأبناء...</p>
+          </div>
+        ) : children && children.length > 0 ? (
           <div className="w-full">
             <div className="flex items-center justify-between gap-2 mb-4 px-1">
               <span className="text-xs sm:text-sm font-bold text-slate-500 flex items-center gap-1.5">

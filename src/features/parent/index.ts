@@ -14,6 +14,7 @@ export {
   AddChildSkeleton,
 } from "./components/AddChildView";
 export { default as ChildStatusConfirmModal } from "./components/ChildStatusConfirmModal";
+export { default as ChildDeleteConfirmModal } from "./components/ChildDeleteConfirmModal";
 export { default as ChildReportCard, ChildReportCardSkeleton } from "./components/ChildReportCard";
 export { default as ChildsReports } from "./components/ChildsReports";
 export { default as ChildReport } from "./components/ChildReport";

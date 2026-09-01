@@ -10,5 +10,5 @@ export { default as PackageRenewView } from "./components/PackageRenewView";
 export { default as SubscriptionStatusView } from "./components/SubscriptionStatusView";
 export { default as PackageHistoryView } from "./components/PackageHistoryView";
 export { default as SubscriptionsHubView } from "./components/SubscriptionsHubView";
-export { default as FreezeSubscriptionModal } from "./components/FreezeSubscriptionModal";
 export { default as InvoiceModal } from "./components/InvoiceModal";
+

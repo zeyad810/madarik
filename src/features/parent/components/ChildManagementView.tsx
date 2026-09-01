@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ChildSlider, ChildSliderSkeleton } from "./ChildSlider";
 import { ChildStatusConfirmModal } from "./ChildStatusConfirmModal";
+import { ChildDeleteConfirmModal } from "./ChildDeleteConfirmModal";
 import { ManagedChild } from "../types";
-import { useToggleChildStatus, useParentChildren } from "../hooks";
+import { useToggleChildStatus, useDeleteChild, useParentChildren } from "../hooks";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
 import Link from "next/link";
 
@@ -16,8 +17,12 @@ export const ChildManagementView: React.FC = () => {
   const { children: parentChildren, isLoading } = useParentChildren();
   const toggleStatusMutation = useToggleChildStatus();
 
+  const deleteChildMutation = useDeleteChild();
+
   // Child currently selected for status toggle confirmation in the modal
   const [selectedChildForToggle, setSelectedChildForToggle] = useState<ManagedChild | null>(null);
+  // Child currently selected for deletion confirmation in the modal
+  const [selectedChildForDelete, setSelectedChildForDelete] = useState<ManagedChild | null>(null);
 
   // Map children to ManagedChild format
   const mappedChildren: ManagedChild[] = useMemo(() => {
@@ -50,6 +55,14 @@ export const ChildManagementView: React.FC = () => {
       : toggleStatusMutation.variables?.childId
     : null;
 
+  const deletingChildId = deleteChildMutation.isPending
+    ? typeof deleteChildMutation.variables === "string"
+      ? deleteChildMutation.variables
+      : typeof deleteChildMutation.variables === "object" && deleteChildMutation.variables !== null && "childId" in deleteChildMutation.variables
+      ? String(deleteChildMutation.variables.childId)
+      : null
+    : null;
+
   // Open the confirmation modal when user clicks the toggle switch
   const handleOpenToggleModal = (child: ManagedChild) => {
     setSelectedChildForToggle(child);
@@ -60,6 +73,32 @@ export const ChildManagementView: React.FC = () => {
     if (!toggleStatusMutation.isPending) {
       setSelectedChildForToggle(null);
     }
+  };
+
+  // Open delete confirmation modal
+  const handleOpenDeleteModal = (child: ManagedChild) => {
+    setSelectedChildForDelete(child);
+  };
+
+  // Close delete confirmation modal
+  const handleCloseDeleteModal = () => {
+    if (!deleteChildMutation.isPending) {
+      setSelectedChildForDelete(null);
+    }
+  };
+
+  // Perform delete after user confirms in the modal
+  const handleConfirmDeleteChild = () => {
+    if (!selectedChildForDelete) return;
+
+    deleteChildMutation.mutate(
+      { childId: selectedChildForDelete.id },
+      {
+        onSettled: () => {
+          setSelectedChildForDelete(null);
+        },
+      }
+    );
   };
 
   // Navigate to child form in edit mode
@@ -169,7 +208,9 @@ export const ChildManagementView: React.FC = () => {
                 childrenList={displayChildren}
                 onEditChild={handleEditChild}
                 onToggleStatus={handleOpenToggleModal}
+                onDeleteChild={handleOpenDeleteModal}
                 togglingChildId={togglingChildId}
+                deletingChildId={deletingChildId}
               />
             </div>
           ) : (
@@ -188,7 +229,6 @@ export const ChildManagementView: React.FC = () => {
           )}
         </Suspense>
 
-
         {/* =========================================================================
             4. CHILD STATUS CONFIRMATION MODAL (Warning for Off, Green for On)
            ========================================================================= */}
@@ -198,6 +238,17 @@ export const ChildManagementView: React.FC = () => {
           onClose={handleCloseToggleModal}
           onConfirm={handleConfirmToggleStatus}
           isLoading={toggleStatusMutation.isPending}
+        />
+
+        {/* =========================================================================
+            5. CHILD DELETE CONFIRMATION MODAL (Red / Danger)
+           ========================================================================= */}
+        <ChildDeleteConfirmModal
+          isOpen={!!selectedChildForDelete}
+          child={selectedChildForDelete}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleConfirmDeleteChild}
+          isLoading={deleteChildMutation.isPending}
         />
       </div>
     </div>

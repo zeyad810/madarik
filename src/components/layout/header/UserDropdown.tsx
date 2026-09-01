@@ -6,6 +6,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Search, LogOut, User } from "lucide-react";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { useParentChildren } from "@/features/parent/hooks/useParentChildren";
 import { resolveChildBadgesCount } from "@/lib/children";
 import { NotificationDropdown } from "@/features/notifications";
 
@@ -18,12 +19,18 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
     activeId,
     activeAccount,
     switchAccount,
-    children,
+    children: sessionChildren,
     isParentRole,
     isParentActive,
     isChildOrStudent,
     resetAccount,
   } = useActiveAccount();
+  const { children: parentChildren } = useParentChildren();
+
+  const children =
+    parentChildren && parentChildren.length > 0
+      ? parentChildren
+      : sessionChildren;
 
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

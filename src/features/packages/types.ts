@@ -24,6 +24,8 @@ export interface CurrentSubscription {
   id: string;
   planName: string;
   subtitle?: string;
+  packageType?: string;
+  durationLabel?: string;
   ageCategory: string;
   unlockedAgeCategories?: string[];
   isSubscribed?: boolean;
@@ -31,6 +33,8 @@ export interface CurrentSubscription {
   endDate: string;
   autoRenewDate?: string;
   paymentMethod: string;
+  paidPrice?: string | number;
+  paidPriceText?: string;
   monthlyPriceText?: string;
   annualPriceText?: string;
   status: "active" | "frozen" | "expired" | "cancelled";
@@ -58,14 +62,3 @@ export interface PackageHistoryItem {
   invoiceUrl?: string;
 }
 
-export interface FreezeSubscriptionPayload {
-  subscriptionId?: string;
-  durationMonths: number;
-  reason?: string;
-}
-
-export interface FreezeSubscriptionResponse {
-  success: boolean;
-  message?: string;
-  data?: CurrentSubscription;
-}

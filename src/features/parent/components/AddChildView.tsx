@@ -20,6 +20,7 @@ import {
   useUpdateChild,
   useToggleChildStatus,
   useParentChildren,
+  useChild,
 } from "../hooks";
 import { ChildStatusConfirmModal } from "./ChildStatusConfirmModal";
 import type { ManagedChild } from "../types";
@@ -39,10 +40,13 @@ export const AddChildView: React.FC = () => {
 
   // Fetch children list to populate data in edit mode
   const { children: parentChildren, isLoading: isChildrenLoading } = useParentChildren();
+  // Fetch single child data directly from /children/{id}
+  const { child: singleChild, isLoading: isSingleChildLoading } = useChild(isEditMode ? childId : null);
 
   // Target child raw object when in edit mode
   const targetChild = useMemo(() => {
     if (!isEditMode) return null;
+    if (singleChild) return singleChild;
     if (childId) {
       const found = parentChildren?.find((c) => String(c.id) === String(childId));
       if (found) return found;
@@ -51,7 +55,7 @@ export const AddChildView: React.FC = () => {
       return parentChildren[0];
     }
     return null;
-  }, [isEditMode, childId, parentChildren]);
+  }, [isEditMode, singleChild, childId, parentChildren]);
 
   // Target child mapped to ManagedChild format for status modal & card matching
   const mappedTargetChild: ManagedChild | null = useMemo(() => {
@@ -219,10 +223,10 @@ export const AddChildView: React.FC = () => {
   };
 
   // If in edit mode and data is still loading
-  const isInitialLoading = isEditMode && isChildrenLoading && !targetChild;
+  const isInitialLoading = isEditMode && (isChildrenLoading || isSingleChildLoading) && !targetChild;
 
   // If in edit mode, loading finished, and child is not found
-  const isChildNotFound = isEditMode && !isChildrenLoading && !targetChild && parentChildren && parentChildren.length > 0;
+  const isChildNotFound = isEditMode && !isChildrenLoading && !isSingleChildLoading && !targetChild && parentChildren && parentChildren.length > 0;
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing" dir="rtl">

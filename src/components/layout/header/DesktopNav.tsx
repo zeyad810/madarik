@@ -25,6 +25,8 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
     isAuthenticated,
     activeAccount,
     activeChild,
+    isParentActive,
+    isParentRole,
   } = useActiveAccount();
 
   const isChildOrStudent =
@@ -59,27 +61,51 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
         return false;
       }
 
-      // 2. Results link ("نتائجي") is strictly for authenticated student, parent, child
-      // and NEVER for free_customer
+      // 2. Results link ("نتائجي") is strictly for authenticated student / child
+      // and hidden for parent, free_customer, or when parent account is active
       const isResultsLink =
         link.id === "results" ||
         link.href.startsWith("/results") ||
         link.href.startsWith("/attempts");
 
       if (isResultsLink) {
-        if (isFreeCustomer) {
+        if (
+          isFreeCustomer ||
+          isParentActive ||
+          userRole === "parent" ||
+          (isParentRole && !isChildOrStudent)
+        ) {
           return false;
         }
         const hasHistoryRole =
-          userRole === "student" || userRole === "parent" || userRole === "child";
+          userRole === "student" || userRole === "child" || isChildOrStudent;
         if (!hasHistoryRole) {
+          return false;
+        }
+      }
+
+      // 3. Link allowedRoles check
+      if (link.allowedRoles && link.allowedRoles.length > 0) {
+        const hasAccess =
+          link.allowedRoles.includes(userRole) ||
+          (isChildOrStudent &&
+            (link.allowedRoles.includes("student") ||
+              link.allowedRoles.includes("child")));
+        if (!hasAccess) {
           return false;
         }
       }
 
       return true;
     });
-  }, [isAuthenticated, isFreeCustomer, isChildOrStudent, userRole]);
+  }, [
+    isAuthenticated,
+    isFreeCustomer,
+    isChildOrStudent,
+    isParentActive,
+    isParentRole,
+    userRole,
+  ]);
 
   const isNavLinkDisabled = (link: (typeof DESKTOP_NAV_LINKS)[number]) => {
     if (!isAuthenticated) {
