@@ -24,26 +24,46 @@ interface ChildReportProps {
 }
 
 export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
-  const { child, isLoading } = useChildReport(childId);
+  const { child, stats, rawQuizResults, rawReadingLog, isLoading } = useChildReport(childId);
 
-  const storiesCount = child ? getChildStoriesCount(child) : 0;
-  const quizzesCount = child ? getChildQuizzesCount(child) : 0;
-  const averageScore = child ? calculateChildAverageScore(child) : 0;
+  const storiesCount = stats?.stories_read_count ?? (child ? getChildStoriesCount(child) : 0);
+  const quizzesCount = stats?.quizzes_count ?? (child ? getChildQuizzesCount(child) : 0);
+  const averageScore = stats?.average_score ?? (child ? calculateChildAverageScore(child) : 0);
   const gradeAndAge = child?.birth_date ? getChildGradeAndAge(child.birth_date) : "";
   const levelText = child ? getChildLevel(child) : "";
-  const activityTime = child?.updated_at
-    ? formatArabicActivityTime(child.updated_at)
-    : child
-    ? "نشط"
-    : "";
 
-  // Build Quiz rows from child data or empty array
+  // Build Quiz rows supporting both report endpoint format and child attempts format
   const quizRows = useMemo(() => {
+    // 1. Check if rawQuizResults from report endpoint exists
+    if (Array.isArray(rawQuizResults) && rawQuizResults.length > 0) {
+      return rawQuizResults.map((q, index) => {
+        const score = Number(q.percentage ?? q.score ?? 0);
+        const resolvedTitle =
+          q.story_title ||
+          (q.quiz_code ? `اختبار ${q.quiz_code}` : `اختبار ${index + 1}`);
+
+        return {
+          id: q.quiz_id || `quiz-${index}`,
+          storyTitle: resolvedTitle,
+          story: {
+            id: q.quiz_id || `story-${index}`,
+            title: resolvedTitle,
+          },
+          level: levelText,
+          resultScore: score,
+          attemptsCount: Number(q.attempts ?? 1),
+          lastScore: score,
+          highestScore: score,
+          maxScore: 100,
+        };
+      });
+    }
+
+    // 2. Fallback to child.quiz_attempts format
     if (child?.quiz_attempts && child.quiz_attempts.length > 0) {
       return child.quiz_attempts.map((attempt, index) => {
         const score = Number(attempt.score) || 0;
 
-        // Resolve story title from quiz or reading activities
         const matchedReadingStory = child.reading_activities?.find(
           (act) =>
             (attempt.quiz?.story_id && act.story_id === attempt.quiz.story_id) ||
@@ -77,11 +97,35 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
         };
       });
     }
-    return [];
-  }, [child, levelText]);
 
-  // Build Reading history rows from child data or empty array
+    return [];
+  }, [rawQuizResults, child, levelText]);
+
+  // Build Reading history rows supporting both reading_log and reading_activities
   const readingRows = useMemo(() => {
+    // 1. Check if rawReadingLog from report endpoint exists
+    if (Array.isArray(rawReadingLog) && rawReadingLog.length > 0) {
+      return rawReadingLog.slice(0, 5).map((log, index) => {
+        const duration = calculateActivityDurationMinutes(
+          log.started_at,
+          log.finished_at
+        );
+        const resolvedTitle = log.story_title || `قصة ${index + 1}`;
+
+        return {
+          id: log.story_id || `read-${index}`,
+          storyTitle: resolvedTitle,
+          story: { id: log.story_id, title: resolvedTitle },
+          dateText: formatArabicDateTime(log.started_at),
+          durationMinutes: duration,
+          status: (log.status === "completed" || log.finished_at)
+            ? ("completed" as const)
+            : ("in_progress" as const),
+        };
+      });
+    }
+
+    // 2. Fallback to child.reading_activities format
     if (child?.reading_activities && child.reading_activities.length > 0) {
       return child.reading_activities.slice(0, 5).map((act, index) => {
         const duration = calculateActivityDurationMinutes(
@@ -100,8 +144,9 @@ export const ChildReport: React.FC<ChildReportProps> = ({ childId }) => {
         };
       });
     }
+
     return [];
-  }, [child]);
+  }, [rawReadingLog, child]);
 
   const handleExport = () => {
     if (typeof window !== "undefined") {

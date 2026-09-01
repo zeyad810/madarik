@@ -201,9 +201,9 @@ export interface ChildReportItem {
   stories_read_count: number;
   badges_count: number;
   user_type: "child" | string;
-  reading_activities: ReadingActivity[];
-  quiz_attempts: QuizAttempt[];
-  user_badges: UserBadge[];
+  reading_activities?: ReadingActivity[];
+  quiz_attempts?: QuizAttempt[];
+  user_badges?: UserBadge[];
 }
 
 export interface ChildReportsResponse {
@@ -212,11 +212,60 @@ export interface ChildReportsResponse {
   data: ChildReportItem[];
 }
 
+export interface ChildReportStatsData {
+  average_success_rate?: number;
+  average_score?: number;
+  quizzes_count?: number;
+  stories_read_count?: number;
+}
+
+export interface ChildReportQuizResult {
+  quiz_id: string;
+  quiz_code?: string;
+  story_title?: string;
+  percentage?: number;
+  score?: number;
+  attempts?: number;
+  status?: "passed" | "failed" | string;
+  duration_seconds?: number | null;
+  completed_at?: string | null;
+}
+
+export interface ChildReportReadingLog {
+  story_id: string;
+  story_title?: string;
+  started_at?: string | null;
+  finished_at?: string | null;
+  status?: "completed" | "in_progress" | string;
+}
+
+export interface ChildReportDetailData {
+  child?: Child | ChildReportItem;
+  stats?: ChildReportStatsData;
+  quiz_results?: ChildReportQuizResult[];
+  reading_log?: ChildReportReadingLog[];
+  // Backwards compatibility if endpoint returns flat child object
+  id?: string;
+  name?: string;
+  birth_date?: string;
+  gender?: "male" | "female" | string;
+  status?: string;
+  avatar_img?: string | null;
+  avatar?: string | null;
+  quizzes_count?: number;
+  average_score?: number;
+  stories_read_count?: number;
+  badges_count?: number;
+  reading_activities?: ReadingActivity[];
+  quiz_attempts?: QuizAttempt[];
+  user_badges?: UserBadge[];
+}
+
 export interface SingleChildReportResponse {
   success?: boolean;
   message?: string;
-  data?: ChildReportItem;
-  report?: ChildReportItem;
+  data?: ChildReportDetailData;
+  report?: ChildReportDetailData;
 }
 
 export interface QuizResultRow {
@@ -239,5 +288,6 @@ export interface ReadingHistoryRow {
   durationMinutes: number;
   status: "completed" | "in_progress";
 }
+
 
 

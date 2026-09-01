@@ -85,48 +85,82 @@ export const useChildReport = (childId: string) => {
     queryKey: parentQueryKeys.childReport(childId),
     queryFn: async () => {
       const res = await getChildReport(childId, token);
-      const raw: any =
-        res?.data?.data ||
-        res?.data?.child ||
-        res?.data?.report ||
-        res?.data ||
-        res?.report ||
-        res?.child ||
-        res;
+      const resData = (res as any)?.data || (res as any)?.report || res;
 
-      if (!raw || (!raw.id && !raw.name)) {
+      if (!resData) return null;
+
+      const rawChild: any = resData.child || (resData.id || resData.name ? resData : null);
+      const rawStats: any = resData.stats || {};
+      const rawQuizResults: any[] = resData.quiz_results || resData.quiz_attempts || [];
+      const rawReadingLog: any[] = resData.reading_log || resData.reading_activities || [];
+
+      const fallbackFromList = reports.find((c) => String(c.id) === String(childId));
+      const effectiveChild = rawChild || fallbackFromList;
+
+      if (!effectiveChild && rawQuizResults.length === 0 && rawReadingLog.length === 0) {
         return null;
       }
 
-      const normalized: ChildReportItem = {
-        id: String(raw.id || childId),
-        account_id: String(raw.account_id || session?.user?.id || ""),
-        avatar_img: raw.avatar_img || raw.avatar || null,
-        avatar: raw.avatar || raw.avatar_img || null,
-        name: raw.name || "",
-        birth_date: raw.birth_date || "",
-        gender: raw.gender || "male",
-        status: raw.status || "active",
-        created_at: raw.created_at || "",
-        updated_at: raw.updated_at || "",
-        quizzes_count: Number(raw.quizzes_count ?? raw.quiz_attempts?.length ?? 0),
-        average_score: Number(raw.average_score ?? 0),
-        stories_read_count: Number(raw.stories_read_count ?? raw.reading_activities?.length ?? 0),
-        badges_count: Number(raw.badges_count ?? raw.badges ?? raw.user_badges?.length ?? 0),
-        user_type: raw.user_type || "child",
-        reading_activities: raw.reading_activities || [],
-        quiz_attempts: raw.quiz_attempts || [],
-        user_badges: raw.user_badges || [],
+      const normalizedChild: ChildReportItem = {
+        id: String(effectiveChild?.id || childId),
+        account_id: String(effectiveChild?.account_id || session?.user?.id || ""),
+        avatar_img: effectiveChild?.avatar_img || effectiveChild?.avatar || null,
+        avatar: effectiveChild?.avatar || effectiveChild?.avatar_img || null,
+        name: effectiveChild?.name || "",
+        birth_date: effectiveChild?.birth_date || "",
+        gender: effectiveChild?.gender || "male",
+        status: effectiveChild?.status || "active",
+        created_at: effectiveChild?.created_at || "",
+        updated_at: effectiveChild?.updated_at || "",
+        quizzes_count: Number(
+          rawStats.quizzes_count ??
+            effectiveChild?.quizzes_count ??
+            rawQuizResults.length
+        ),
+        average_score: Number(
+          rawStats.average_success_rate ??
+            rawStats.average_score ??
+            effectiveChild?.average_score ??
+            0
+        ),
+        stories_read_count: Number(
+          rawStats.stories_read_count ??
+            effectiveChild?.stories_read_count ??
+            rawReadingLog.length
+        ),
+        badges_count: Number(
+          effectiveChild?.badges_count ??
+            effectiveChild?.badges ??
+            effectiveChild?.user_badges?.length ??
+            0
+        ),
+        user_type: effectiveChild?.user_type || "child",
+        reading_activities: effectiveChild?.reading_activities || [],
+        quiz_attempts: effectiveChild?.quiz_attempts || [],
+        user_badges: effectiveChild?.user_badges || [],
       };
 
-      return normalized;
+      return {
+        child: normalizedChild,
+        stats: {
+          average_score: normalizedChild.average_score,
+          quizzes_count: normalizedChild.quizzes_count,
+          stories_read_count: normalizedChild.stories_read_count,
+          badges_count: normalizedChild.badges_count,
+        },
+        rawQuizResults,
+        rawReadingLog,
+      };
     },
     enabled: status === "authenticated" && !!token && !!childId,
     staleTime: 1000 * 60 * 5, // 5 minutes cache
   });
 
   const fallbackChild = reports.find((c) => String(c.id) === String(childId)) || null;
-  const child = singleQuery.data || fallbackChild;
+  const child = singleQuery.data?.child || fallbackChild;
+  const stats = singleQuery.data?.stats;
+  const rawQuizResults = singleQuery.data?.rawQuizResults;
+  const rawReadingLog = singleQuery.data?.rawReadingLog;
 
   const isLoading =
     (status === "loading" || singleQuery.isLoading || isReportsLoading) && !child;
@@ -137,6 +171,9 @@ export const useChildReport = (childId: string) => {
 
   return {
     child,
+    stats,
+    rawQuizResults,
+    rawReadingLog,
     isLoading,
     isError: singleQuery.isError,
     refetch,
