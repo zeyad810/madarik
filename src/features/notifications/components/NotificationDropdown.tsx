@@ -89,7 +89,7 @@ const AuthenticatedNotificationDropdown: React.FC<NotificationDropdownProps> = (
       {isOpen && (
         <div
           dir="rtl"
-          className="absolute top-full left-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 sm:p-6 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
+          className="absolute top-full -left-8.75 md:left-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 sm:p-6 z-50 animate-in fade-in zoom-in-95 duration-150 text-right select-none"
         >
           {/* Header */}
           <NotificationHeader

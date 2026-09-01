@@ -11,16 +11,16 @@ interface LogoProps {
   alt?: string;
   width?: number;
   height?: number;
-  priority?: boolean;
+  loading?: "eager" | "lazy";
 }
 
 const Logo: React.FC<LogoProps> = ({
   className = "",
   src = "/logo.png",
   alt = "شعار منصة مدارك القراءة",
-  width = 100,
-  height = 100,
-  priority = false,
+  width = 71,
+  height = 83,
+  loading = "lazy",
 }) => {
   const { isStudent } = useActiveAccount();
 
@@ -34,11 +34,12 @@ const Logo: React.FC<LogoProps> = ({
         alt={alt}
         width={width}
         height={height}
-        className="w-auto h-auto object-contain"
-        priority={priority}
+        sizes="(max-width: 599px) 50px, (max-width: 1023px) 64px, 100px"
+        className="h-auto w-12.5 object-contain sm:w-16 lg:w-25"
+        loading={loading}
       />
     </Link>
   );
 };
 
-export default Logo;
+export default Logo;

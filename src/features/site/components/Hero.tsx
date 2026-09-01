@@ -147,8 +147,9 @@ const Hero: React.FC<HeroProps> = ({
             <Image
               src={sideImageSrc}
               alt={sideImageAlt}
-              width={140}
-              height={165}
+              width={787}
+              height={839}
+              sizes="140px"
               style={{ width: "100%", height: "auto" }}
               className="max-h-41.25 object-contain drop-shadow-xl"
               loading="eager"
@@ -261,8 +262,9 @@ const Hero: React.FC<HeroProps> = ({
             <Image
               src={sideImageSrc}
               alt={sideImageAlt}
-              width={821}
-              height={648}
+              width={787}
+              height={839}
+              sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 620px, (max-width: 1279px) 50vw, 750px"
               style={{ width: "100%", height: "auto" }}
               className="max-h-95 md:max-h-none max-w-[620px] xl:max-w-[750px] object-contain drop-shadow-2xl"
               loading="eager"
