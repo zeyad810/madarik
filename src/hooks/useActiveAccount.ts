@@ -38,7 +38,7 @@ export interface UseActiveAccountReturn {
   user_type: string;
   /** Alias for user_type */
   userRole: string;
-  /** The base user_type of the parent/session */
+  /** The base user_type of the account/session */
   sessionUserType: string;
   /** Normalized metadata object for the currently active account */
   activeAccount: ActiveAccount | null;

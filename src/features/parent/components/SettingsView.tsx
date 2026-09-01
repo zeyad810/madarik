@@ -19,7 +19,7 @@ export const SettingsView: React.FC = () => {
   const { activeAccount, isParentRole } = useActiveAccount();
   const { children } = useParentChildren();
 
-  // Queries and mutations for parent/settings and parent/settings/password
+  // Queries and mutations for account/settings and account/settings/password
   const { data: serverSettingsData } = useParentSettings();
   const updateSettingsMutation = useUpdateParentSettings();
   const updatePasswordMutation = useUpdateParentPassword();
@@ -124,18 +124,18 @@ export const SettingsView: React.FC = () => {
     setIsEditingProfile(false);
   };
 
-  // Handle saving modified profile using parent/settings and parent/settings/password
+  // Handle saving modified profile using account/settings and account/settings/password
   const handleSaveProfile = async (data: ParentSettingsFormData) => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
     try {
-      // 1. Call parent/settings endpoint
+      // 1. Call account/settings endpoint
       await updateSettingsMutation.mutateAsync({
         name: data.name.trim(),
       });
 
-      // 2. If new password is provided, call parent/settings/password endpoint
+      // 2. If new password is provided, call account/settings/password endpoint
       if (data.newPassword && data.newPassword.trim().length > 0) {
         await updatePasswordMutation.mutateAsync({
           current_password: data.currentPassword,
