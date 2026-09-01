@@ -45,22 +45,48 @@ export const useToggleChildStatus = (
       const successMessage = data.message || "تم تغيير حالة حساب الطفل بنجاح";
       toast.success(successMessage);
 
-      // Invalidate children cache in React Query
-      await queryClient.invalidateQueries({
-        queryKey: parentQueryKeys.children(),
-      });
+      // Update React Query caches directly for instant UI update
+      const rawData: any = data.data || data.child || data;
+      const serverStatus =
+        rawData?.status || (typeof data.status === "string" ? data.status : null);
+
+      queryClient.setQueryData<Child[]>(
+        parentQueryKeys.children(),
+        (oldChildren) => {
+          if (!Array.isArray(oldChildren)) return oldChildren;
+          return oldChildren.map((c) => {
+            if (String(c.id) === String(childId)) {
+              const nextStatus =
+                serverStatus || (c.status === "active" ? "deactivated" : "active");
+              return { ...c, status: nextStatus };
+            }
+            return c;
+          });
+        }
+      );
+
+      queryClient.setQueryData(
+        parentQueryKeys.child(childId),
+        (oldChild: any) => {
+          if (!oldChild) return oldChild;
+          const nextStatus =
+            serverStatus || (oldChild.status === "active" ? "deactivated" : "active");
+          return { ...oldChild, status: nextStatus };
+        }
+      );
+
+      // Invalidate all parent and child queries in background
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.child(childId) });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.reports() });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.childReport(childId) });
 
       // Update NextAuth session so all views and active accounts reflect the change immediately
       if (session?.user?.children) {
         const currentChildren = session.user.children;
         const updatedChildren = currentChildren.map((c: Child) => {
-          if (c.id === childId) {
-            // Determine new status: from server response data if available, or toggle current
-            const rawData: any = data.data || data.child || data;
-            const serverStatus =
-              rawData?.status ||
-              (typeof data.status === "string" ? data.status : null);
-
+          if (String(c.id) === String(childId)) {
             let nextStatus = serverStatus;
             if (!nextStatus) {
               nextStatus = c.status === "active" ? "deactivated" : "active";
@@ -74,13 +100,13 @@ export const useToggleChildStatus = (
           return c;
         });
 
-        await updateSession({
+        updateSession({
           ...session,
           user: {
             ...session.user,
             children: updatedChildren,
           },
-        }).catch(() => null);
+        }).catch((err) => console.error("[Update session error]:", err));
       }
 
       if (onSuccess) {

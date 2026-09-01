@@ -35,47 +35,68 @@ export const useAddChild = (
       const successMessage = data.message || "تم إضافة الطفل بنجاح";
       toast.success(successMessage);
 
-      // Invalidate children cache in React Query
-      await queryClient.invalidateQueries({
-        queryKey: parentQueryKeys.children(),
-      });
-
       // Safely extract and normalize the returned child data
       const rawChild: any = data.data || data.child || data;
-      if (rawChild && (rawChild.id || rawChild.name) && session?.user) {
-        const newChild: Child = {
-          id: String(rawChild.id || Date.now()),
-          account_id: String(rawChild.account_id || session.user.id),
-          name: rawChild.name || variables.name,
-          birth_date: rawChild.birth_date || variables.birth_date,
-          gender: rawChild.gender || variables.gender,
-          status: rawChild.status || variables.status || "active",
-          avatar_img:
-            rawChild.avatar_img ||
-            rawChild.avatar ||
-            variables.avatar_img ||
-            variables.avatar ||
-            (variables.gender === "female"
-              ? "/assets/girl_avatar.png"
-              : "/assets/boy_avatar.png"),
-          avatar:
-            rawChild.avatar ||
-            rawChild.avatar_img ||
-            variables.avatar ||
-            (variables.gender === "female"
-              ? "/assets/girl_avatar.png"
-              : "/assets/boy_avatar.png"),
-          user_type: rawChild.user_type || "child",
-          created_at: rawChild.created_at || new Date().toISOString(),
-          updated_at: rawChild.updated_at || new Date().toISOString(),
-          badges_count: rawChild.badges_count ?? 0,
-          badges: rawChild.badges ?? 0,
-        };
+      const childId = String(rawChild?.id || Date.now());
 
+      const newChild: Child = {
+        id: childId,
+        account_id: String(rawChild?.account_id || session?.user?.id || ""),
+        name: rawChild?.name || variables.name,
+        birth_date: rawChild?.birth_date || variables.birth_date,
+        gender: rawChild?.gender || variables.gender || "male",
+        status: rawChild?.status || variables.status || "active",
+        avatar_img:
+          rawChild?.avatar_img ||
+          rawChild?.avatar ||
+          variables.avatar_img ||
+          variables.avatar ||
+          (variables.gender === "female"
+            ? "/assets/girl_avatar.png"
+            : "/assets/boy_avatar.png"),
+        avatar:
+          rawChild?.avatar ||
+          rawChild?.avatar_img ||
+          variables.avatar ||
+          variables.avatar_img ||
+          (variables.gender === "female"
+            ? "/assets/girl_avatar.png"
+            : "/assets/boy_avatar.png"),
+        user_type: rawChild?.user_type || "child",
+        created_at: rawChild?.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        badges_count: rawChild?.badges_count ?? 0,
+        badges: rawChild?.badges ?? 0,
+      };
+
+      // Synchronously update query cache
+      queryClient.setQueryData<Child[]>(
+        parentQueryKeys.children(),
+        (oldChildren) => {
+          if (!Array.isArray(oldChildren)) return [newChild];
+          const exists = oldChildren.some((c) => String(c.id) === childId);
+          return exists
+            ? oldChildren.map((c) => (String(c.id) === childId ? newChild : c))
+            : [...oldChildren, newChild];
+        }
+      );
+
+      queryClient.setQueryData(
+        parentQueryKeys.child(childId),
+        newChild
+      );
+
+      // Invalidate children and parent cache in React Query in background
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.child(childId) });
+      queryClient.invalidateQueries({ queryKey: parentQueryKeys.reports() });
+
+      if (rawChild && (rawChild.id || rawChild.name) && session?.user) {
         const currentChildren = session.user.children || [];
-        const exists = currentChildren.some((c) => c.id === newChild.id);
+        const exists = currentChildren.some((c) => String(c.id) === childId);
         const updatedChildren = exists
-          ? currentChildren.map((c) => (c.id === newChild.id ? newChild : c))
+          ? currentChildren.map((c) => (String(c.id) === childId ? newChild : c))
           : [...currentChildren, newChild];
 
         updateSession({

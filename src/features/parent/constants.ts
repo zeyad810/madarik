@@ -5,5 +5,6 @@ export const parentQueryKeys = {
   reports: () => [...parentQueryKeys.all, "reports"] as const,
   childReport: (id: string | number) => [...parentQueryKeys.all, "child-report", String(id)] as const,
   settings: () => [...parentQueryKeys.all, "settings"] as const,
+  subscriptionHistory: () => [...parentQueryKeys.all, "subscription-history"] as const,
 };
 

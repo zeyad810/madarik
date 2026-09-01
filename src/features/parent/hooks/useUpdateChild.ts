@@ -39,42 +39,64 @@ export const useUpdateChild = (
         const rawChild: any = data.data || data.child || data;
         const childId = String(variables.id);
 
-        await queryClient.invalidateQueries({
-          queryKey: parentQueryKeys.children(),
-        });
-        await queryClient.invalidateQueries({
-          queryKey: parentQueryKeys.childReport(childId),
-        });
-        await queryClient.invalidateQueries({
-          queryKey: parentQueryKeys.reports(),
-        });
+        const updatedChild: Child = {
+          id: childId,
+          account_id: String(session?.user?.id || rawChild?.account_id || ""),
+          name: rawChild?.name || variables.name || "",
+          birth_date: rawChild?.birth_date || variables.birth_date || "",
+          gender: (rawChild?.gender || variables.gender || "male") as "male" | "female",
+          status: rawChild?.status || variables.status || "active",
+          avatar_img:
+            rawChild?.avatar_img ||
+            rawChild?.avatar ||
+            variables.avatar_img ||
+            variables.avatar ||
+            (variables.gender === "female"
+              ? "/assets/girl_avatar.png"
+              : "/assets/boy_avatar.png"),
+          avatar:
+            rawChild?.avatar ||
+            rawChild?.avatar_img ||
+            variables.avatar ||
+            variables.avatar_img ||
+            (variables.gender === "female"
+              ? "/assets/girl_avatar.png"
+              : "/assets/boy_avatar.png"),
+          user_type: rawChild?.user_type || "child",
+          created_at: rawChild?.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          badges_count: rawChild?.badges_count ?? 0,
+          badges: rawChild?.badges ?? 0,
+        };
+
+        // Synchronously update query cache for instant feedback
+        queryClient.setQueryData<Child[]>(
+          parentQueryKeys.children(),
+          (oldChildren) => {
+            if (!Array.isArray(oldChildren)) return oldChildren;
+            return oldChildren.map((c) =>
+              String(c.id) === childId ? { ...c, ...updatedChild } : c
+            );
+          }
+        );
+
+        queryClient.setQueryData(
+          parentQueryKeys.child(childId),
+          (oldChild: any) => {
+            return oldChild ? { ...oldChild, ...updatedChild } : updatedChild;
+          }
+        );
+
+        // Invalidate all parent queries in background to ensure fresh data
+        queryClient.invalidateQueries({ queryKey: parentQueryKeys.all });
+        queryClient.invalidateQueries({ queryKey: parentQueryKeys.children() });
+        queryClient.invalidateQueries({ queryKey: parentQueryKeys.child(childId) });
+        queryClient.invalidateQueries({ queryKey: parentQueryKeys.reports() });
+        queryClient.invalidateQueries({ queryKey: parentQueryKeys.childReport(childId) });
+        queryClient.invalidateQueries({ queryKey: ["child-reports"] });
 
         if (session?.user) {
           const currentChildren = session.user.children || [];
-          const updatedChild: Child = {
-            id: childId,
-            account_id: String(session.user.id),
-            name: rawChild?.name || variables.name,
-            birth_date: rawChild?.birth_date || variables.birth_date,
-            gender: (rawChild?.gender || variables.gender || "male") as "male" | "female",
-            status: rawChild?.status || variables.status || "active",
-            avatar_img:
-              rawChild?.avatar_img ||
-              rawChild?.avatar ||
-              (variables.gender === "female"
-                ? "/assets/girl_avatar.png"
-                : "/assets/boy_avatar.png"),
-            avatar:
-              rawChild?.avatar ||
-              rawChild?.avatar_img ||
-              (variables.gender === "female"
-                ? "/assets/girl_avatar.png"
-                : "/assets/boy_avatar.png"),
-            user_type: "child",
-            created_at: rawChild?.created_at || new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-
           const updatedChildren =
             currentChildren.length > 0
               ? currentChildren.map((c: Child) =>

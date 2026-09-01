@@ -117,6 +117,39 @@ export interface UpdateParentPasswordResponse {
 }
 
 // =========================================================================
+// Account Subscription History Interfaces (GET /account/subscription/history)
+// =========================================================================
+
+export interface AccountSubscriptionHistoryAccount {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  change_by_admin?: boolean;
+  type: string;
+  status: string;
+  phone_verified_at?: string | null;
+  otp_attempts?: number;
+  otp_locked_until?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AccountSubscriptionHistoryData {
+  account: AccountSubscriptionHistoryAccount;
+  children_count: number;
+  is_subscribed: boolean;
+  unlocked_age_categories: string[];
+}
+
+export interface AccountSubscriptionHistoryResponse {
+  success: boolean;
+  data: AccountSubscriptionHistoryData;
+  message?: string;
+}
+
+
+// =========================================================================
 
 // Child Reports Interfaces (Based on API response)
 // =========================================================================

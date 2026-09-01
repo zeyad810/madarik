@@ -4,42 +4,48 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
-import { useCurrentSubscription } from "../hooks/usePackages";
+import { useCurrentSubscriptions } from "../hooks/usePackages";
+import { CurrentSubscription } from "../types";
 
 export const SubscriptionStatusView: React.FC = () => {
-  const { data: subscription, isLoading } = useCurrentSubscription();
+  const { data: subscriptions = [], isLoading } = useCurrentSubscriptions();
 
-  const formattedPrice = useMemo(() => {
-    if (!subscription) return "199 ر.س / سنوياً";
-    if (subscription.paidPriceText && subscription.paidPriceText.includes("/")) {
-      return subscription.paidPriceText;
+  const formatPrice = (sub: CurrentSubscription) => {
+    if (sub.paidPriceText && sub.paidPriceText.includes("/")) {
+      return sub.paidPriceText;
     }
-    if (subscription.paidPriceText) {
+    if (sub.paidPriceText) {
       const duration =
-        subscription.durationLabel ||
-        (subscription.packageType === "سنوي" ? "سنوياً" : "شهرياً");
-      return `${subscription.paidPriceText} / ${duration}`;
+        sub.durationLabel ||
+        (sub.packageType === "سنوي" ? "سنوياً" : "شهرياً");
+      return `${sub.paidPriceText} / ${duration}`;
     }
-    if (subscription.paidPrice) {
-      return `${subscription.paidPrice} ر.س / ${
-        subscription.durationLabel || "سنوياً"
+    if (sub.paidPrice) {
+      return `${sub.paidPrice} ر.س / ${
+        sub.durationLabel || "سنوياً"
       }`;
     }
     return "199 ر.س / سنوياً";
-  }, [subscription]);
+  };
 
-  const ageCategories = useMemo(() => {
-    if (
-      subscription?.unlockedAgeCategories &&
-      subscription.unlockedAgeCategories.length > 0
-    ) {
-      return subscription.unlockedAgeCategories;
+  const formatAge = (cat: string) => {
+    const trimmed = String(cat).trim();
+    if (trimmed.includes("سنوات") || trimmed.includes("سنة")) return trimmed;
+    if (trimmed === "5-9") return "5-9 سنوات";
+    if (trimmed === "10-12") return "10-12 سنة";
+    if (trimmed === "13-15") return "13-15 سنة";
+    return `${trimmed} سنة`;
+  };
+
+  const getAgeCategories = (sub: CurrentSubscription): string[] => {
+    if (sub.unlockedAgeCategories && sub.unlockedAgeCategories.length > 0) {
+      return sub.unlockedAgeCategories.map(formatAge);
     }
-    if (subscription?.ageCategory) {
-      return [subscription.ageCategory];
+    if (sub.ageCategory) {
+      return [formatAge(sub.ageCategory)];
     }
     return ["6-8 سنوات"];
-  }, [subscription]);
+  };
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
@@ -59,134 +65,151 @@ export const SubscriptionStatusView: React.FC = () => {
         </div>
 
         {/* =========================================================================
-            2. SUBSCRIPTION STATUS CARD / SKELETON / EMPTY STATE
+            2. SUBSCRIPTIONS CARDS LIST / SKELETON / EMPTY STATE
            ========================================================================= */}
         {isLoading ? (
-          <div className="w-full rounded-[32px] sm:rounded-[36px] border border-gray-100 bg-white p-6 sm:p-10 lg:p-12 shadow-[0_2px_16px_rgba(0,0,0,0.02)] space-y-8 animate-pulse">
-            <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100">
-              <div className="space-y-2">
-                <div className="h-7 w-40 bg-gray-200 rounded-lg" />
-                <div className="h-4 w-48 bg-gray-100 rounded-md" />
-              </div>
-              <div className="h-10 w-32 bg-gray-200 rounded-full" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              <div className="h-5 w-48 bg-gray-100 rounded" />
-              <div className="h-5 w-48 bg-gray-100 rounded" />
-              <div className="h-5 w-44 bg-gray-100 rounded" />
-              <div className="h-5 w-44 bg-gray-100 rounded" />
-              <div className="h-5 w-40 bg-gray-100 rounded" />
-              <div className="h-5 w-32 bg-gray-100 rounded" />
-            </div>
-          </div>
-        ) : subscription ? (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="w-full rounded-[32px] sm:rounded-[36px] border border-gray-200/80 bg-white p-6 sm:p-10 lg:p-12 shadow-[0_2px_16px_rgba(0,0,0,0.02)]"
-          >
-            {/* Header: Plan Name, Subtitle, and Renew Action */}
-            <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 pb-6 sm:pb-8 border-b border-gray-100">
-              <div className="text-right space-y-1">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                  {subscription.planName || "الباقة المتقدمة"}
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-400 font-medium">
-                  {subscription.subtitle || "اشتراك طفلك الفردي للمنصة"}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-start sm:justify-end">
-                <Link
-                  href="/packages/renew"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-xs sm:text-sm transition-all shadow-xs cursor-pointer"
-                >
-                  <span>تجديد الباقة</span>
-                  <ArrowLeft className="size-4 shrink-0" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Details Grid (Aligned rows across 2 columns) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 sm:gap-y-8 gap-x-8 lg:gap-x-16 pt-6 sm:pt-8">
-              {/* Row 1 - Right: Start Date */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
-                  تاريخ بدء الاشتراك:
-                </span>
-                <span className="text-xs sm:text-sm font-bold text-gray-900">
-                  {subscription.startDate || "15 فبراير 2025"}
-                </span>
-              </div>
-
-              {/* Row 1 - Left: End Date */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
-                  تاريخ انتهاء الاشتراك:
-                </span>
-                <span className="text-xs sm:text-sm font-bold text-gray-900">
-                  {subscription.endDate || "15 فبراير 2026"}
-                </span>
-              </div>
-
-              {/* Row 2 - Right: Age Category */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
-                  الفئة العمرية المحددة:
-                </span>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {ageCategories.map((age, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center justify-center px-3.5 py-0.5 rounded-full bg-[#F0EBFA] text-mad-main text-xs sm:text-sm font-bold"
-                    >
-                      {age}
-                    </span>
-                  ))}
+          <div className="space-y-6 sm:space-y-8">
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-full rounded-[32px] sm:rounded-[36px] border border-gray-100 bg-white p-6 sm:p-10 lg:p-12 shadow-[0_2px_16px_rgba(0,0,0,0.02)] space-y-8 animate-pulse"
+              >
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100">
+                  <div className="space-y-2">
+                    <div className="h-7 w-40 bg-gray-200 rounded-lg" />
+                    <div className="h-4 w-48 bg-gray-100 rounded-md" />
+                  </div>
+                  <div className="h-10 w-32 bg-gray-200 rounded-full" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                  <div className="h-5 w-48 bg-gray-100 rounded" />
+                  <div className="h-5 w-48 bg-gray-100 rounded" />
+                  <div className="h-5 w-44 bg-gray-100 rounded" />
+                  <div className="h-5 w-44 bg-gray-100 rounded" />
+                  <div className="h-5 w-40 bg-gray-100 rounded" />
+                  <div className="h-5 w-32 bg-gray-100 rounded" />
                 </div>
               </div>
+            ))}
+          </div>
+        ) : subscriptions.length > 0 ? (
+          <div className="space-y-6 sm:space-y-8">
+            {subscriptions.map((subscription, idx) => {
+              const ages = getAgeCategories(subscription);
+              const priceText = formatPrice(subscription);
 
-              {/* Row 2 - Left: Payment Method */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
-                  طريقة الدفع:
-                </span>
-                <span className="text-xs sm:text-sm font-bold text-gray-900">
-                  {subscription.paymentMethod || "مدى ينتهي بـ (4032)"}
-                </span>
-              </div>
-
-              {/* Row 3 - Right: Price & Fees */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
-                  القيمة المالية والرسوم:
-                </span>
-                <span className="text-xs sm:text-sm font-bold text-mad-main">
-                  {formattedPrice}
-                </span>
-              </div>
-
-              {/* Row 3 - Left: Status */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
-                  حالة الباقة:
-                </span>
-                <span
-                  className={`inline-flex items-center justify-center px-4 py-0.5 rounded-full text-xs sm:text-sm font-bold ${
-                    subscription.status === "expired"
-                      ? "bg-[#FEF2F2] text-[#EF4444]"
-                      : subscription.status === "cancelled"
-                      ? "bg-[#F3F4F6] text-[#6B7280]"
-                      : "bg-[#E8F8EE] text-[#1DBF73]"
-                  }`}
+              return (
+                <motion.div
+                  key={subscription.id || idx}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: idx * 0.08, ease: "easeOut" }}
+                  className="w-full rounded-[32px] sm:rounded-[36px] border border-gray-200/80 bg-white p-6 sm:p-10 lg:p-12 shadow-[0_2px_16px_rgba(0,0,0,0.02)]"
                 >
-                  {subscription.statusLabel ||
-                    (subscription.status === "active" ? "نشط" : "منتهية")}
-                </span>
-              </div>
-            </div>
-          </motion.div>
+                  {/* Header: Plan Name, Subtitle, and Renew Action */}
+                  <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 pb-6 sm:pb-8 border-b border-gray-100">
+                    <div className="text-right space-y-1">
+                      <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                        {subscription.planName || "الباقة المتقدمة"}
+                      </h1>
+                      <p className="text-xs sm:text-sm text-gray-400 font-medium">
+                        {subscription.subtitle || "اشتراك طفلك الفردي للمنصة"}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-start sm:justify-end">
+                      <Link
+                        href="/packages/renew"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-xs sm:text-sm transition-all shadow-xs cursor-pointer"
+                      >
+                        <span>تجديد الباقة</span>
+                        <ArrowLeft className="size-4 shrink-0" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Details Grid (Aligned rows across 2 columns) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 sm:gap-y-8 gap-x-8 lg:gap-x-16 pt-6 sm:pt-8">
+                    {/* Row 1 - Right: Start Date */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
+                        تاريخ بدء الاشتراك:
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-gray-900">
+                        {subscription.startDate || "15 فبراير 2025"}
+                      </span>
+                    </div>
+
+                    {/* Row 1 - Left: End Date */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
+                        تاريخ انتهاء الاشتراك:
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-gray-900">
+                        {subscription.endDate || "15 فبراير 2026"}
+                      </span>
+                    </div>
+
+                    {/* Row 2 - Right: Age Categories */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
+                        الفئات العمرية المحددة:
+                      </span>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {ages.map((age: string, ageIdx: number) => (
+                          <span
+                            key={ageIdx}
+                            className="inline-flex items-center justify-center px-3.5 py-0.5 rounded-full bg-[#F0EBFA] text-mad-main text-xs sm:text-sm font-bold"
+                          >
+                            {age}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Row 2 - Left: Payment Method */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
+                        طريقة الدفع:
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-gray-900">
+                        {subscription.paymentMethod || "بطاقة دفع إلكتروني"}
+                      </span>
+                    </div>
+
+                    {/* Row 3 - Right: Price & Fees */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
+                        القيمة المالية والرسوم:
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-mad-main">
+                        {priceText}
+                      </span>
+                    </div>
+
+                    {/* Row 3 - Left: Status */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm text-gray-400 font-medium whitespace-nowrap">
+                        حالة الباقة:
+                      </span>
+                      <span
+                        className={`inline-flex items-center justify-center px-4 py-0.5 rounded-full text-xs sm:text-sm font-bold ${
+                          subscription.status === "expired"
+                            ? "bg-[#FEF2F2] text-[#EF4444]"
+                            : subscription.status === "cancelled"
+                            ? "bg-[#F3F4F6] text-[#6B7280]"
+                            : "bg-[#E8F8EE] text-[#1DBF73]"
+                        }`}
+                      >
+                        {subscription.statusLabel ||
+                          (subscription.status === "active" ? "نشط" : "منتهية")}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -219,3 +242,5 @@ export const SubscriptionStatusView: React.FC = () => {
 };
 
 export default SubscriptionStatusView;
+
+

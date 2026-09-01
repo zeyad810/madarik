@@ -2,6 +2,7 @@ import { API_BASE_URL, handleResponse } from "@/services/api";
 import { getStoredAuthToken } from "@/lib/auth";
 import type { Child } from "@/types/auth";
 import {
+  AccountSubscriptionHistoryResponse,
   AddChildPayload,
   AddChildResponse,
   ChildReportsResponse,
@@ -318,6 +319,23 @@ export const updateParentPassword = async (
 
   return await handleResponse<UpdateParentPasswordResponse>(response);
 };
+
+/**
+ * GET /account/subscription/history
+ * Fetches parent dashboard subscription summary / history data:
+ * Account info, children_count, is_subscribed, and unlocked_age_categories.
+ */
+export const getAccountSubscriptionHistory = async (
+  token?: string | null
+): Promise<AccountSubscriptionHistoryResponse> => {
+  const response = await fetch(`${API_BASE_URL}/account/subscription/history`, {
+    method: "GET",
+    headers: buildHeaders(token),
+  });
+
+  return await handleResponse<AccountSubscriptionHistoryResponse>(response);
+};
+
 
 
 
