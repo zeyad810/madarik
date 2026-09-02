@@ -63,8 +63,8 @@ const Features: React.FC<FeaturesProps> = ({
           className="mb-12 md:mb-16 max-w-3xl"
         />
 
-        {/* Features Cards Grid */}
-        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 lg:gap-6">
+        {/* Features Cards Grid: 2 columns side-by-side on mobile, centered on desktop */}
+        <div className="w-full grid grid-cols-2 md:flex md:flex-wrap md:justify-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 max-w-7xl mx-auto">
           {features.map((feature, index) => (
             <FeatureCard
               key={feature.id}
@@ -75,7 +75,7 @@ const Features: React.FC<FeaturesProps> = ({
               bgCircleColor={feature.bgCircleColor}
               icon={feature.icon}
               imageSrc={feature.imageSrc}
-              className="last:col-span-2 last:justify-self-center last:w-[calc(50%-10px)] md:last:col-span-1 md:last:w-full"
+              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] md:max-w-[280px] [&:nth-child(odd):last-child]:col-span-2 [&:nth-child(odd):last-child]:w-[calc(50%-6px)] [&:nth-child(odd):last-child]:justify-self-center md:[&:nth-child(odd):last-child]:w-[calc(50%-12px)] lg:[&:nth-child(odd):last-child]:w-[calc(25%-18px)]"
             />
           ))}
         </div>
