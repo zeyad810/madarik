@@ -180,22 +180,13 @@ export const FaqPageView: React.FC = () => {
     return DEFAULT_FAQ_ITEMS;
   }, [faqSection?.items]);
 
-  // Set of open item IDs (default first item open to match screenshot design)
-  const [openIds, setOpenIds] = useState<Set<number | string>>(() => {
-    const firstId = items[0]?.id ?? 1;
-    return new Set([firstId]);
+  // Active open item ID (default first item open to match screenshot design)
+  const [openId, setOpenId] = useState<number | string | null>(() => {
+    return items[0]?.id ?? 1;
   });
 
   const toggleItem = (id: number | string) => {
-    setOpenIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
+    setOpenId((prev) => (prev === id ? null : id));
   };
 
   // Split into 2 columns (5 in right column, 5 in left column)
@@ -215,15 +206,15 @@ export const FaqPageView: React.FC = () => {
       />
 
       {/* 2. Main FAQ Content Grid */}
-      <main className="w-full flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-18 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 lg:gap-6 items-start">
+      <main className="w-full flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-18 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 lg:gap-25 items-start">
           {/* Right Column (Column 1 in RTL) */}
           <div className="flex flex-col gap-4 sm:gap-4.5 w-full">
             {rightColumnItems.map((item, idx) => (
               <FaqCard
                 key={`faq-r-${item.id}-${idx}`}
                 item={item}
-                isOpen={openIds.has(item.id)}
+                isOpen={openId === item.id}
                 onToggle={() => toggleItem(item.id)}
                 index={idx}
               />
@@ -236,7 +227,7 @@ export const FaqPageView: React.FC = () => {
               <FaqCard
                 key={`faq-l-${item.id}-${idx}`}
                 item={item}
-                isOpen={openIds.has(item.id)}
+                isOpen={openId === item.id}
                 onToggle={() => toggleItem(item.id)}
                 index={idx + halfCount}
               />
@@ -244,31 +235,6 @@ export const FaqPageView: React.FC = () => {
           </div>
         </div>
       </main>
-
-      {/* 3. Bottom Decorative Vector Wave matching screenshot design */}
-      <div className="w-full relative pointer-events-none select-none overflow-hidden mt-8">
-        <svg
-          className="w-full h-24 sm:h-36 md:h-44 text-[#7526de] fill-none"
-          viewBox="0 0 1440 180"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          {/* Curved flowing stroke */}
-          <path
-            d="M-20,160 C240,60 480,220 720,140 C960,60 1200,190 1460,80"
-            stroke="#7526de"
-            strokeWidth="5"
-            strokeLinecap="round"
-            className="opacity-75"
-          />
-          {/* Bottom filled decorative wave corner */}
-          <path
-            d="M1200,180 Q1320,110 1440,80 L1440,180 Z"
-            fill="#7526de"
-            className="opacity-90"
-          />
-        </svg>
-      </div>
     </div>
   );
 };

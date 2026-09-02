@@ -9,8 +9,6 @@ import CopyrightBar from "./CopyrightBar";
 import {
   FooterProps,
   FooterLinkItem,
-  ContactInfo,
-  SocialLink,
 } from "./types";
 import {
   DEFAULT_BRAND_DESCRIPTION,

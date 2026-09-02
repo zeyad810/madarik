@@ -28,7 +28,7 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
         height={320}
         priority
         style={{ width: "100%", height: "auto" }}
-        className="w-full h-auto block select-none pointer-events-none min-h-[160px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[320px] object-cover sm:object-fill"
+        className="w-full h-auto block select-none pointer-events-none min-h-40 sm:min-h-55 md:min-h-70 lg:min-h-80 object-cover sm:object-fill"
       />
 
       {/* Overlay Centered Content */}
