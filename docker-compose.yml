@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dashboard-app:latest
+    container_name: dashboard-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+    env_file:
+      - .env
+    
+      # Add any other env vars your app needs here, e.g.:
+      # - NEXT_PUBLIC_API_URL=https://api.example.com
+    # If you have a .env.production file, uncomment below instead of hardcoding vars:
+    # env_file:
+    #   - .env.production

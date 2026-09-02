@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+.dockerignore
+npm-debug.log
+README.md
+*.log
+.vscode
+.DS_Store
+pnpm-workspace.yaml
