@@ -47,8 +47,8 @@ const DEFAULT_SLIDES: BannerSlideItem[] = [
     bgImage: "/assets/win-bg.png",
     sideImage: "/iamges/reportSecimg.png",
     sideImageAlt: "تقارير الأداء",
-    buttonText: "لوحة المتابعة",
-    buttonLink: "/login",
+    buttonText: "إشترك الآن",
+    buttonLink: "/register",
   },
 ];
 
@@ -78,21 +78,27 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
   const slides: BannerSlideItem[] =
     propSlides ??
     (validItems.length > 0
-      ? validItems.map((item, idx) => ({
-          id: item.id || idx,
-          title: item.title,
-          description: item.description,
-          bgImage: item.image_url,
-          sideImage: item.side_image_url,
-          sideImageAlt: item.title,
-          buttonLink: item.link_url || "/packages",
-          buttonText:
-            (item as unknown as { button_text?: string; cta_text?: string })
-              .button_text ||
-            (item as unknown as { button_text?: string; cta_text?: string })
-              .cta_text ||
-            "إشترك الآن",
-        }))
+      ? validItems.map((item, idx) => {
+          const isStoryBanner = item.title?.includes("قصص") || item.description?.includes("قصص");
+          const defaultLink = isStoryBanner ? "/stories" : "/register";
+          const defaultText = isStoryBanner ? "تصفّح القصص" : "إشترك الآن";
+
+          return {
+            id: item.id || idx,
+            title: item.title,
+            description: item.description,
+            bgImage: item.image_url,
+            sideImage: item.side_image_url,
+            sideImageAlt: item.title,
+            buttonLink: item.link_url || defaultLink,
+            buttonText:
+              (item as unknown as { button_text?: string; cta_text?: string })
+                .button_text ||
+              (item as unknown as { button_text?: string; cta_text?: string })
+                .cta_text ||
+              defaultText,
+          };
+        })
       : DEFAULT_SLIDES);
 
   const [activeIndex, setActiveIndex] = useState(0);

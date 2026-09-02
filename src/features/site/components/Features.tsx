@@ -75,7 +75,7 @@ const Features: React.FC<FeaturesProps> = ({
               bgCircleColor={feature.bgCircleColor}
               icon={feature.icon}
               imageSrc={feature.imageSrc}
-              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] md:max-w-[280px] [&:nth-child(odd):last-child]:col-span-2 [&:nth-child(odd):last-child]:w-[calc(50%-6px)] [&:nth-child(odd):last-child]:justify-self-center md:[&:nth-child(odd):last-child]:w-[calc(50%-12px)] lg:[&:nth-child(odd):last-child]:w-[calc(25%-18px)]"
+              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] md:max-w-70 [&:nth-child(odd):last-child]:col-span-2 [&:nth-child(odd):last-child]:w-[calc(50%-6px)] [&:nth-child(odd):last-child]:justify-self-center md:[&:nth-child(odd):last-child]:w-[calc(50%-12px)] lg:[&:nth-child(odd):last-child]:w-[calc(25%-18px)]"
             />
           ))}
         </div>

@@ -10,10 +10,12 @@ import { ChildDeleteConfirmModal } from "./ChildDeleteConfirmModal";
 import { ManagedChild } from "../types";
 import { useToggleChildStatus, useDeleteChild, useParentChildren } from "../hooks";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 import Link from "next/link";
 
 export const ChildManagementView: React.FC = () => {
   const router = useRouter();
+  const { isFreeCustomer } = useActiveAccount();
   const { children: parentChildren, isLoading } = useParentChildren();
   const toggleStatusMutation = useToggleChildStatus();
 
@@ -184,14 +186,16 @@ export const ChildManagementView: React.FC = () => {
             </p>
           </div>
 
-          {/* Action Button: Add New Child */}
-          <Link
-            href={"/parents/childMangement/addChild?mode=add"}
-            className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
-          >
-            <PlusCircle className="size-5 stroke-[2.2]" />
-            <span>إضافة طفل جديد</span>
-          </Link>
+          {/* Action Button: Add New Child — hidden for free users */}
+          {!isFreeCustomer && (
+            <Link
+              href={"/parents/childMangement/addChild?mode=add"}
+              className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
+            >
+              <PlusCircle className="size-5 stroke-[2.2]" />
+              <span>إضافة طفل جديد</span>
+            </Link>
+          )}
         </div>
 
         {/* =========================================================================
@@ -218,13 +222,15 @@ export const ChildManagementView: React.FC = () => {
               <p className="text-gray-500 font-medium text-base sm:text-lg">
                 لا يوجد أطفال مضافين حالياً في حسابك.
               </p>
-              <Link
-                href="/parents/childMangement/addChild?mode=add"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
-              >
-                <PlusCircle className="size-5 stroke-[2.2]" />
-                <span>إضافة طفل الآن</span>
-              </Link>
+              {!isFreeCustomer && (
+                <Link
+                  href="/parents/childMangement/addChild?mode=add"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <PlusCircle className="size-5 stroke-[2.2]" />
+                  <span>إضافة طفل الآن</span>
+                </Link>
+              )}
             </div>
           )}
         </Suspense>
