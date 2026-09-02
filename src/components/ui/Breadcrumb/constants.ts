@@ -14,6 +14,7 @@ export const DEFAULT_ROUTE_DICTIONARY: Record<string, string> = {
   settings: "الإعدادات",
   about: "عن مدارك",
   contact: "اتصل بنا",
+  faq: "الأسئلة الشائعة",
   faqs: "الأسئلة الشائعة",
   pricing: "الباقات والأسعار",
   packages: "اختيار الباقة",

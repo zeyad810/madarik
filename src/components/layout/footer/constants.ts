@@ -19,6 +19,7 @@ export const DEFAULT_QUICK_LINKS: FooterLinkItem[] = [
   { id: "home", label: "الرئيسية", href: "/" },
   { id: "features", label: "المميزات", href: "/#features" },
   { id: "stories", label: "القصص", href: "/stories" },
+  { id: "faq", label: "الأسئلة الشائعة", href: "/faq" },
   { id: "pricing", label: "الأسعار", href: "/#pricing" },
 ];
 

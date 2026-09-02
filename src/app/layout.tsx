@@ -25,6 +25,7 @@ const ibmPlexSansArabic = localFont({
   ],
   variable: "--font-ibm-plex-sans-arabic",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

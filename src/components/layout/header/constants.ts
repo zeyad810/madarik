@@ -4,6 +4,7 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
   { id: "home", label: "الرئيسية", href: "/" },
   { id: "packages", label: "الباقات والاشتراكات", href: "/packages" },
   { id: "available-stories", label: "القصص المتاحة", href: "/stories" },
+  { id: "faq", label: "الأسئلة الشائعة", href: "/faq" },
   {
     id: "children-mgmt",
     label: "إدارة الأطفال",
@@ -42,5 +43,5 @@ export const DESKTOP_NAV_LINKS: NavLinkItem[] = [
   { id: "packages", label: "الباقات", href: "/packages" },
   { id: "library", label: "مكتبة القصص", href: "/stories" },
   { id: "contact", label: "تواصل معنا", href: "/#contact_section" },
-  { id: "faq", label: "الأسئلة الشائعة", href: "/#faq_section" },
+  { id: "faq", label: "الأسئلة الشائعة", href: "/faq" },
 ];

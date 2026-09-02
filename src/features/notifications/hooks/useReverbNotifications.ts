@@ -34,11 +34,10 @@ export function useReverbNotifications() {
   const childId = useResolvedChildId();
   const pusherRef = useRef<Pusher | null>(null);
   const channelRef = useRef<Channel | null>(null);
+  const token = getStoredAuthToken(session);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    const token = getStoredAuthToken(session);
 
     if (status !== "authenticated" || !token || !isAuthenticated) {
       if (pusherRef.current) {
@@ -177,13 +176,18 @@ export function useReverbNotifications() {
         channelRef.current = null;
       }
       if (pusherRef.current) {
-        pusherRef.current.unsubscribe(channelName);
-        pusherRef.current.disconnect();
+        try {
+          pusherRef.current.unsubscribe(channelName);
+          pusherRef.current.disconnect();
+        } catch {
+          // ignore cleanup errors during fast unmounts
+        }
         pusherRef.current = null;
       }
     };
   }, [
-    session,
+    session?.user?.id,
+    token,
     status,
     isAuthenticated,
     userRole,

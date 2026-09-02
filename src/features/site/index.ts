@@ -17,6 +17,8 @@ export { default as OurJourney } from "./components/OurJourney";
 export { default as Bannerslider } from "./components/Bannerslider";
 export { default as HashScroller } from "./components/HashScroller";
 export { default as LegalPageView } from "./components/LegalPageView";
+export { default as FaqHeroBanner } from "./components/FaqHeroBanner";
+export { default as FaqPageView } from "./components/FaqPageView";
 
 // Hooks
 export * from "./hooks/usePublicLanding";
