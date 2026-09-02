@@ -222,12 +222,12 @@ export const QuizResult: React.FC<QuizResultProps> = ({
           transition={{ duration: 0.4, delay: 0.4 }}
           className="flex items-center justify-center gap-4 mt-2 mb-6"
         >
-          {/* Back to Story */}
+          {/* Back to Stories */}
           <Link
-            href={`/stories/${storyId}`}
+            href="/stories"
             className="flex items-center justify-center gap-2 py-3 px-8 rounded-full bg-[#7939E3] hover:bg-[#6D28D9] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
           >
-            <span>العودة للقصة</span>
+            <span>العودة للقصص</span>
             <ArrowLeft className="w-4 h-4" />
           </Link>
 
