@@ -12,6 +12,7 @@ import {
   isFreeRole,
 } from "@/lib/roles";
 import { resolveChildBadgesCount } from "@/lib/children";
+import { AUTH_TOKEN_KEY } from "@/lib/auth";
 
 // ============================================================================
 // Constants & Configuration
@@ -171,6 +172,28 @@ export function useActiveAccount(): UseActiveAccountReturn {
 
   // 3. User & Children Extraction
   const user = session?.user;
+
+  // Sync session token with localStorage for client-side API calls
+  useEffect(() => {
+    if (status === "authenticated") {
+      const token =
+        (session as any)?.accessToken ||
+        (session as any)?.token ||
+        (user as any)?.accessToken ||
+        (user as any)?.token;
+      if (token && typeof window !== "undefined") {
+        try {
+          if (localStorage.getItem(AUTH_TOKEN_KEY) !== token) {
+            localStorage.setItem(AUTH_TOKEN_KEY, token);
+            localStorage.setItem("token", token);
+            localStorage.setItem("accessToken", token);
+          }
+        } catch {
+          // ignore storage quota / access errors
+        }
+      }
+    }
+  }, [status, session, user]);
   const children: Child[] = useMemo(
     () => user?.children || [],
     [user?.children]
