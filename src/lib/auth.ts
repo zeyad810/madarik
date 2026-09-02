@@ -49,6 +49,42 @@ export function getStoredAuthToken(session?: any): string | null {
   return null;
 }
 
+export function clearStoredAuth(): void {
+  if (typeof window === "undefined") return;
+
+  // 1. Clear LocalStorage keys
+  const authKeys = [
+    AUTH_TOKEN_KEY,
+    "token",
+    "accessToken",
+    "auth_token",
+    "madarik_active_account",
+  ];
+  authKeys.forEach((key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // ignore
+    }
+  });
+
+  // 2. Clear known auth cookies
+  const cookieNames = [
+    "token",
+    "auth_token",
+    "accessToken",
+    "jwt",
+    "madarik_token",
+  ];
+  cookieNames.forEach((name) => {
+    try {
+      document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+    } catch {
+      // ignore
+    }
+  });
+}
+
 const API_BASE_URL =
   process.env.API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||

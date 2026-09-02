@@ -9,6 +9,7 @@ import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { useParentChildren } from "@/features/parent/hooks/useParentChildren";
 import { resolveChildBadgesCount } from "@/lib/children";
 import { NotificationDropdown } from "@/features/notifications";
+import { clearStoredAuth } from "@/lib/auth";
 
 interface UserDropdownProps {
   onOpenSearch?: () => void;
@@ -253,6 +254,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
               onClick={() => {
                 setIsOpen(false);
                 resetAccount();
+                clearStoredAuth();
                 signOut({ callbackUrl: "/" });
               }}
               className="w-full flex items-center justify-center gap-2 py-3.5 px-4 text-[#EF4444] hover:text-[#DC2626] font-bold text-base hover:bg-red-50/60 rounded-2xl transition-all cursor-pointer active:scale-95"

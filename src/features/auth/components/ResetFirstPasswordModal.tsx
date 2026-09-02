@@ -8,6 +8,7 @@ import { signOut } from "next-auth/react";
 import { resetFirstPasswordSchema, ResetFirstPasswordFormData } from "../validation";
 import { useResetFirstPassword } from "../hooks/useResetFirstPassword";
 import { AUTH_TEXTS, AUTH_TYPOGRAPHY, AUTH_COLORS } from "../constants";
+import { clearStoredAuth } from "@/lib/auth";
 
 interface ResetFirstPasswordModalProps {
   isOpen: boolean;
@@ -59,6 +60,7 @@ export const ResetFirstPasswordModal: React.FC<ResetFirstPasswordModalProps> = (
   };
 
   const handleLogout = async () => {
+    clearStoredAuth();
     if (onSignOut) {
       onSignOut();
     }
