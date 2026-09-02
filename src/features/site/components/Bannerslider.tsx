@@ -4,14 +4,14 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation, EffectFade } from "swiper/modules";
+import { Autoplay, EffectFade, Navigation } from "swiper/modules";
 import { ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 
 import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
 import "swiper/css/effect-fade";
+import "swiper/css/navigation";
 
 import { BannerSliderProps, BannerSlideItem } from "../types";
 import { usePublicLanding } from "../hooks/usePublicLanding";
@@ -96,6 +96,23 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
       : DEFAULT_SLIDES);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (swiper) {
+      swiper.slidePrev();
+    }
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (swiper) {
+      swiper.slideNext();
+    }
+  };
 
   return (
     <div id={id} dir="rtl" className={`container relative w-full px-4 py-6 md:py-8 ${className}`}>
@@ -105,10 +122,14 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
 
       <div className="relative w-full overflow-hidden rounded-3xl bg-linear-to-r from-mad-purple-800 via-mad-main to-mad-purple-950 shadow-xl group">
         <Swiper
-          modules={[Autoplay, Pagination, Navigation, EffectFade]}
+          modules={[Autoplay, EffectFade, Navigation]}
           effect="fade"
           fadeEffect={{ crossFade: true }}
+          speed={600}
           loop={slides.length > 1}
+          loopPreventsSliding={false}
+          watchSlidesProgress={true}
+          allowTouchMove={true}
           autoplay={
             autoplayDelay
               ? {
@@ -118,26 +139,10 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                 }
               : false
           }
-          pagination={
-            showPagination && slides.length > 1
-              ? {
-                  clickable: true,
-                  el: ".custom-banner-pagination",
-                  bulletActiveClass: "swiper-pagination-bullet-active !w-7 !bg-mad-third",
-                }
-              : false
-          }
-          navigation={
-            showNavigation && slides.length > 1
-              ? {
-                  nextEl: ".custom-banner-next",
-                  prevEl: ".custom-banner-prev",
-                }
-              : false
-          }
-          onSlideChange={(swiper) => {
-            setActiveIndex(swiper.realIndex);
-            onSlideChange?.(swiper.realIndex);
+          onSwiper={setSwiper}
+          onRealIndexChange={(s) => {
+            setActiveIndex(s.realIndex);
+            onSlideChange?.(s.realIndex);
           }}
           dir="rtl"
           className={`w-full ${heightClass}`}
@@ -252,7 +257,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                       transition={{ duration: 0.6, delay: 0.15 }}
                       className="w-full md:w-5/12 lg:w-1/2 flex justify-center md:justify-end items-center shrink-0"
                     >
-                      <div className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-[540px] h-60 sm:h-72 md:h-84 lg:h-96 drop-shadow-2xl">
+                      <div className="relative w-full max-w-85 sm:max-w-105 md:max-w-120 lg:max-w-135 h-60 sm:h-72 md:h-84 lg:h-96 drop-shadow-2xl">
                         <Image
                           src={slide.sideImage}
                           alt={slide.sideImageAlt || slide.title}
@@ -275,24 +280,49 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
           <>
             <button
               type="button"
+              onClick={handlePrev}
               aria-label="الشريحة السابقة"
-              className="custom-banner-prev absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-50 size-10 sm:size-12 rounded-full bg-black/35 hover:bg-black/55 active:scale-90 text-white backdrop-blur-md border border-white/30 flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-2xl pointer-events-auto select-none"
             >
-              <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+              <ChevronRight className="size-6 text-white stroke-[2.5]" />
             </button>
             <button
               type="button"
+              onClick={handleNext}
               aria-label="الشريحة التالية"
-              className="custom-banner-next absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-50 size-10 sm:size-12 rounded-full bg-black/35 hover:bg-black/55 active:scale-90 text-white backdrop-blur-md border border-white/30 flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer shadow-2xl pointer-events-auto select-none"
             >
-              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+              <ChevronLeft className="size-6 text-white stroke-[2.5]" />
             </button>
           </>
         )}
 
         {/* Custom Pagination Bullets */}
         {showPagination && slides.length > 1 && (
-          <div className="custom-banner-pagination absolute bottom-3 inset-x-0 z-30 flex items-center justify-center gap-2 [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-white/40 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet]:cursor-pointer [&_.swiper-pagination-bullet-active]:!w-7 [&_.swiper-pagination-bullet-active]:!bg-mad-third" />
+          <div className="absolute bottom-4 sm:bottom-6 inset-x-0 z-50 flex items-center justify-center gap-2.5 sm:gap-3 pointer-events-auto">
+            {slides.map((_, idx) => {
+              const isCurrent = activeIndex === idx;
+              return (
+                <button
+                  key={`banner-bullet-${idx}`}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (swiper) {
+                      swiper.slideToLoop(idx);
+                    }
+                  }}
+                  aria-label={`انتقل إلى الشريحة ${idx + 1}`}
+                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    isCurrent
+                      ? "w-8 sm:w-10 bg-mad-third shadow-[0_0_14px_rgba(255,186,0,0.9)] ring-2 ring-mad-third/40"
+                      : "w-2.5 bg-white/40 hover:bg-white/80 hover:scale-125"
+                  }`}
+                />
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
