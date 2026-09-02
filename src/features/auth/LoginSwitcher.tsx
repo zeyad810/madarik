@@ -9,13 +9,13 @@ import { Child } from "@/types/auth";
 import { Loader2, LogOut } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-import { isStudentRole } from "@/lib/roles";
+import { isStudentRole, isFreeRole } from "@/lib/roles";
 
 import "swiper/css";
 import "swiper/css/pagination";
 
 interface LoginSwitcherProps {
-  onComplete?: () => void;
+  onComplete?: (session: ReturnType<typeof useSession>["data"]) => void;
   onSwitchUser?: () => void;
 }
 
@@ -68,10 +68,23 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
     switchAccount(selectedId);
 
     if (onComplete) {
-      onComplete();
+      onComplete(session);
     } else {
+      // Default role-based redirect when used standalone (no onComplete prop)
       const callbackUrl = searchParams?.get("callbackUrl");
-      const targetUrl = isStudent ? "/stories" : (callbackUrl || "/");
+      const hasChildren = Array.isArray(children) && children.length > 0;
+
+      let targetUrl: string;
+      if (isStudent) {
+        targetUrl = "/stories";
+      } else if (isFreeRole(rawRole)) {
+        targetUrl = "/packages";
+      } else if (hasChildren) {
+        targetUrl = callbackUrl || "/parents/childMangement";
+      } else {
+        targetUrl = callbackUrl || "/packages";
+      }
+
       router.push(targetUrl);
       router.refresh();
     }

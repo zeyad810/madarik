@@ -15,7 +15,7 @@ import PhoneNumberInput from "@/components/ui/PhoneNumberInput";
 
 import { useSession } from "next-auth/react";
 import LoginSwitcher from "./LoginSwitcher";
-import { isStudentRole } from "@/lib/roles";
+import { isStudentRole, isFreeRole } from "@/lib/roles";
 
 interface LoginFormProps {
   onSubmitSuccess?: (data: LoginFormData) => void;
@@ -123,9 +123,21 @@ const LoginForm: React.FC<LoginFormProps> = ({
     return (
       <LoginSwitcher
         onSwitchUser={() => setShowSwitcher(false)}
-        onComplete={() => {
+        onComplete={(session) => {
           const callbackUrl = searchParams?.get("callbackUrl");
-          const targetUrl = callbackUrl || "/";
+          const rawRole = (session as any)?.user_type || (session?.user as any)?.user_type;
+          const children = (session?.user as any)?.children || [];
+          const hasChildren = Array.isArray(children) && children.length > 0;
+
+          let targetUrl: string;
+          if (isFreeRole(rawRole)) {
+            targetUrl = "/packages";
+          } else if (hasChildren) {
+            targetUrl = callbackUrl || "/parents/childMangement";
+          } else {
+            targetUrl = callbackUrl || "/packages";
+          }
+
           router.push(targetUrl);
           router.refresh();
         }}
@@ -134,7 +146,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   }
 
   return (
-    <div className="w-full max-w-[440px] px-4 py-8 flex flex-col items-center justify-center font-sans" dir="rtl">
+    <div className="w-full max-w-110 px-4 py-8 flex flex-col items-center justify-center font-sans" dir="rtl">
       {/* Logo */}
       <div className="mb-4">
         <Image
