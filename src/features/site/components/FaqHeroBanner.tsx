@@ -18,7 +18,7 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
   return (
     <div
       dir="rtl"
-      className={`relative w-full h-[320px] sm:h-[280px] md:h-[320px] lg:h-[360px] overflow-hidden flex items-center justify-center bg-[#7526de] ${className}`}
+      className={`relative w-full h-80 sm:h-70 md:h-80 lg:h-90 overflow-hidden flex items-center justify-center bg-[#7526de] ${className}`}
     >
       {/* 1. Desktop Banner Image (Hidden on Mobile) */}
       <Image
@@ -26,7 +26,7 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
         alt="الأسئلة الشائعة"
         fill
         priority
-        sizes="100vw"
+        sizes="(min-width: 640px) 100vw, 1px"
         className="hidden sm:block object-cover sm:object-fill object-center select-none pointer-events-none"
       />
 
@@ -36,7 +36,7 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
         alt="الأسئلة الشائعة"
         fill
         priority
-        sizes="100vw"
+        sizes="(max-width: 640px) 100vw, 1px"
         className="block sm:hidden object-cover object-center select-none pointer-events-none"
       />
 
