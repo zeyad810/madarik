@@ -31,14 +31,6 @@ export const ProductCardTags: React.FC<ProductCardTagsProps> = ({
           </span>
         )}
       </div>
-
-      {/* Outcome / Target Tag */}
-      {outcome && (
-        <div className="flex items-center gap-1.5 text-[11px] font-medium text-mad-main bg-purple-50 px-2.5 py-1 rounded-lg select-none">
-          <span>🎯</span>
-          <span className="truncate">{outcome}</span>
-        </div>
-      )}
     </div>
   );
 };
