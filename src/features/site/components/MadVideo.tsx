@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ArrowLeft } from "lucide-react";
 import { usePublicLanding } from "../hooks/usePublicLanding";
@@ -12,8 +13,8 @@ const MadVideo: React.FC<MadVideoProps> = ({
   subtitle: propSubtitle,
   title: propTitle,
   description: propDescription,
-  ctaText = "ابدأ تجربتك المجانية الآن",
-  ctaHref = "#",
+  ctaText = "تصفّح القصص",
+  ctaHref = "/stories",
   youtubeId = "dQw4w9WgXcQ", // Replace with target Youtube video ID
   thumbnailSrc = "/iamges/video_thumbnail.png",
   onCtaClick,
@@ -79,14 +80,14 @@ const MadVideo: React.FC<MadVideoProps> = ({
               whileTap={{ scale: 0.97 }}
               className="mt-8"
             >
-              <a
-                href={ctaHref}
+              <Link
+                href={ctaHref || "/stories"}
                 onClick={onCtaClick}
                 className="bg-mad-purple-600 hover:bg-mad-purple-700 text-mad-white-50 font-bold mad-label-1 px-8 py-3.5 sm:py-4 rounded-full inline-flex items-center gap-2.5 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
               >
-                <span>{ctaText}</span>
+                <span>{ctaText || "تصفّح القصص"}</span>
                 <ArrowLeft className="w-5 h-5" />
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
 

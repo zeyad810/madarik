@@ -2,8 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { InstantReportFeature, InstantReportProps } from "../types";
 
@@ -58,9 +58,6 @@ const InstantReport: React.FC<InstantReportProps> = ({
   title: propTitle,
   description: propDescription,
   features: propFeatures,
-  ctaLabel = "ابدأ تجربتك المجانية الآن",
-  ctaHref,
-  onCtaClick,
   image = "/iamges/reportSecimg.png",
   imageAlt = "لوحة تحكم تقارير مدارك القراءة",
 }) => {
@@ -80,11 +77,6 @@ const InstantReport: React.FC<InstantReportProps> = ({
       icon: DEFAULT_ICONS[idx % DEFAULT_ICONS.length],
     })) ??
     [];
-
-  const handleCta = () => {
-    if (ctaHref) window.open(ctaHref, "_blank", "noopener,noreferrer");
-    else onCtaClick?.();
-  };
 
   return (
     <section
@@ -111,16 +103,22 @@ const InstantReport: React.FC<InstantReportProps> = ({
               }}
               className="relative w-full max-w-lg"
             >
-              <Image
-                src={image}
-                alt={imageAlt}
-                width={700}
-                height={520}
-                priority
-                sizes="(max-width: 1024px) 90vw, 45vw"
-                style={{ width: "100%", height: "auto" }}
-                className="object-contain drop-shadow-xl"
-              />
+              <Link
+                href="/login"
+                aria-label="تسجيل الدخول لمتابعة تقارير القراءة"
+                className="block cursor-pointer group transition-transform duration-300 hover:scale-[1.02]"
+              >
+                <Image
+                  src={image}
+                  alt={imageAlt}
+                  width={700}
+                  height={520}
+                  priority
+                  sizes="(max-width: 1024px) 90vw, 45vw"
+                  style={{ width: "100%", height: "auto" }}
+                  className="object-contain drop-shadow-xl"
+                />
+              </Link>
             </motion.div>
           </motion.div>
 
@@ -151,17 +149,6 @@ const InstantReport: React.FC<InstantReportProps> = ({
                 <FeatureRow key={f.id} feature={f} index={index} />
               ))}
             </ul>
-
-            {/* CTA */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleCta}
-              className="mt-10 flex items-center gap-2 rounded-full bg-mad-main px-7 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-mad-main/90 active:scale-95 cursor-pointer"
-            >
-              {ctaLabel}
-              <ArrowLeft className="size-4" />
-            </motion.button>
           </motion.div>
         </div>
       </div>

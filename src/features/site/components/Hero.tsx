@@ -30,7 +30,7 @@ const Hero: React.FC<HeroProps> = ({
   const title = propTitle ?? heroData?.title ?? "";
   const description = propDescription ?? heroData?.subtitle ?? "";
   const ctaText = propCtaText ?? heroData?.primary_button_text ?? "ابدأ الآن";
-  const ctaLink = propCtaLink ?? "/register";
+  const ctaLink = propCtaLink ?? "/packages";
   const secondaryCtaText = propSecondaryCtaText ?? heroData?.secondary_button_text;
   const secondaryCtaLink = propSecondaryCtaLink ?? "#why-us";
 

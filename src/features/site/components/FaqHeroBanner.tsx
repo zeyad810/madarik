@@ -18,28 +18,26 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
   return (
     <div
       dir="rtl"
-      className={`relative w-full overflow-hidden flex items-center justify-center bg-[#7526de] ${className}`}
+      className={`relative w-full h-[320px] sm:h-[280px] md:h-[320px] lg:h-[360px] overflow-hidden flex items-center justify-center bg-[#7526de] ${className}`}
     >
       {/* 1. Desktop Banner Image (Hidden on Mobile) */}
       <Image
         src="/iamges/faq-page-banner.png"
         alt="الأسئلة الشائعة"
-        width={1920}
-        height={320}
+        fill
         priority
-        style={{ width: "100%", height: "auto" }}
-        className="w-full h-auto hidden sm:block select-none pointer-events-none min-h-40 sm:min-h-55 md:min-h-70 lg:min-h-80 object-cover sm:object-fill"
+        sizes="100vw"
+        className="hidden sm:block object-cover sm:object-fill object-center select-none pointer-events-none"
       />
 
       {/* 2. Mobile Banner Image (Visible on Mobile only) */}
       <Image
         src="/iamges/faq-page-banner-mob.png"
         alt="الأسئلة الشائعة"
-        width={375}
-        height={320}
+        fill
         priority
-        style={{ width: "100%", height: "auto" }}
-        className="w-full h-auto block sm:hidden select-none pointer-events-none min-h-80 object-cover"
+        sizes="100vw"
+        className="block sm:hidden object-cover object-center select-none pointer-events-none"
       />
 
       {/* Overlay Content: Positioned at top on mobile (above the 3D graphics), centered on desktop */}

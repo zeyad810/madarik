@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import { FaqItem, FqaProps } from "../types";
@@ -167,12 +168,12 @@ const Fqa: React.FC<FqaProps> = ({
               whileTap={{ scale: 0.97 }}
               className="w-full flex justify-start mt-6"
             >
-              <button
-                type="button"
-                className="px-9 py-3.5 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-[0_12px_30px_rgba(109,40,217,0.35)] hover:shadow-[0_18px_40px_rgba(109,40,217,0.45)] transition-all duration-300 cursor-pointer backdrop-blur-xs"
+              <Link
+                href="/faq"
+                className="px-9 py-3.5 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-[0_12px_30px_rgba(109,40,217,0.35)] hover:shadow-[0_18px_40px_rgba(109,40,217,0.45)] transition-all duration-300 cursor-pointer backdrop-blur-xs inline-flex items-center justify-center"
               >
                 عرض المزيد
-              </button>
+              </Link>
             </motion.div>
           </div>
 
