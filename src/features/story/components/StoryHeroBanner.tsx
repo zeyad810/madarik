@@ -27,6 +27,7 @@ export const StoryHeroBanner: React.FC<StoryHeroBannerProps> = ({
         width={1920}
         height={320}
         priority
+        style={{ width: "100%", height: "auto" }}
         className="w-full h-auto block select-none pointer-events-none min-h-40 object-cover sm:object-fill"
       />
 

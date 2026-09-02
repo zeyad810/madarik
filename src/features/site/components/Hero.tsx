@@ -165,7 +165,7 @@ const Hero: React.FC<HeroProps> = ({
     <section
       dir="rtl"
       id={id}
-      className="w-full min-h-screen lg:h-[1400px] lg:min-h-[1400px] pt-32 sm:pt-40 lg:pt-40 pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat flex items-start justify-center relative overflow-hidden"
+      className="w-full min-h-screen lg:h-350 lg:min-h-350 pt-32 sm:pt-40 lg:pt-40 pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat flex items-start justify-center relative overflow-hidden"
       style={{
         backgroundImage: `url(${bgImageSrc})`,
       }}
@@ -266,7 +266,7 @@ const Hero: React.FC<HeroProps> = ({
               height={839}
               sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 620px, (max-width: 1279px) 50vw, 750px"
               style={{ width: "100%", height: "auto" }}
-              className="max-h-95 md:max-h-none max-w-[620px] xl:max-w-[750px] object-contain drop-shadow-2xl"
+              className="max-h-95 md:max-h-none max-w-155 xl:max-w-187.5 object-contain drop-shadow-2xl"
               loading="eager"
             />
           </motion.div>
