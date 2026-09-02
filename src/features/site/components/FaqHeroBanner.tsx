@@ -20,7 +20,7 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
       dir="rtl"
       className={`relative w-full overflow-hidden flex items-center justify-center bg-[#7526de] ${className}`}
     >
-      {/* Responsive Intrinsic Banner Image (1920x320) */}
+      {/* 1. Desktop Banner Image (Hidden on Mobile) */}
       <Image
         src="/iamges/faq-page-banner.png"
         alt="الأسئلة الشائعة"
@@ -28,16 +28,27 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
         height={320}
         priority
         style={{ width: "100%", height: "auto" }}
-        className="w-full h-auto block select-none pointer-events-none min-h-40 sm:min-h-55 md:min-h-70 lg:min-h-80 object-cover sm:object-fill"
+        className="w-full h-auto hidden sm:block select-none pointer-events-none min-h-40 sm:min-h-55 md:min-h-70 lg:min-h-80 object-cover sm:object-fill"
       />
 
-      {/* Overlay Centered Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-10">
+      {/* 2. Mobile Banner Image (Visible on Mobile only) */}
+      <Image
+        src="/iamges/faq-page-banner-mob.png"
+        alt="الأسئلة الشائعة"
+        width={375}
+        height={320}
+        priority
+        style={{ width: "100%", height: "auto" }}
+        className="w-full h-auto block sm:hidden select-none pointer-events-none min-h-80 object-cover"
+      />
+
+      {/* Overlay Content: Positioned at top on mobile (above the 3D graphics), centered on desktop */}
+      <div className="absolute inset-0 flex flex-col items-center justify-start pt-12 sm:pt-14 md:justify-center md:pt-0 text-center px-4 sm:px-6 z-10">
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2 sm:mb-3 tracking-tight drop-shadow-md"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-1.5 sm:mb-2 md:mb-3 tracking-tight drop-shadow-md"
         >
           {title}
         </motion.h1>
@@ -46,7 +57,7 @@ export const FaqHeroBanner: React.FC<FaqHeroBannerProps> = ({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-          className="text-xs sm:text-sm md:text-base lg:text-lg text-purple-100/95 font-medium max-w-xl mx-auto drop-shadow-sm leading-relaxed"
+          className="text-xs sm:text-sm md:text-base lg:text-lg text-purple-100/95 font-medium max-w-70 xs:max-w-xs sm:max-w-md md:max-w-xl mx-auto drop-shadow-sm leading-relaxed"
         >
           {subtitle}
         </motion.p>

@@ -38,14 +38,14 @@ export const ChildReadingHistory: React.FC<ChildReadingHistoryProps> = ({
                     {/* Date */}
                     {row.dateText && (
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="size-3.5 text-mad-text-secondary stroke-[2]" />
+                        <Calendar className="size-3.5 text-mad-text-secondary stroke-2" />
                         <span>تاريخ القراءة: {row.dateText}</span>
                       </div>
                     )}
 
                     {/* Duration */}
                     <div className="flex items-center gap-1.5">
-                      <Clock className="size-3.5 text-mad-text-secondary stroke-[2]" />
+                      <Clock className="size-3.5 text-mad-text-secondary stroke-2" />
                       <span>الوقت المنقضي: {row.durationMinutes || 0} دقيقة</span>
                     </div>
                   </div>
