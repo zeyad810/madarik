@@ -10,6 +10,7 @@ import { Loader2, LogOut } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import { isStudentRole, isFreeRole } from "@/lib/roles";
+import { clearStoredAuth } from "@/lib/auth";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -93,6 +94,7 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
 
   const handleDifferentAccount = async () => {
     resetAccount();
+    clearStoredAuth();
     if (onSwitchUser) {
       onSwitchUser();
     }

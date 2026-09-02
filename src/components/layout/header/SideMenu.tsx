@@ -23,6 +23,7 @@ import { SIDE_MENU_ITEMS } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { RoleGuard } from "@/components/guards";
 import { useChild, useParentChildren } from "@/features/parent/hooks";
+import { clearStoredAuth } from "@/lib/auth";
 import { resolveChildBadgesCount } from "@/lib/children";
 
 // Smooth spring physics — feels like a native drawer
@@ -609,6 +610,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                     onClick={() => {
                       onClose();
                       resetAccount();
+                      clearStoredAuth();
                       signOut({ callbackUrl: "/" });
                     }}
                     className="w-full py-2.5 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-center text-xs sm:text-sm transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer border border-red-200 shadow-xs"
