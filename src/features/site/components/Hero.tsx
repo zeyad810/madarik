@@ -239,7 +239,7 @@ const Hero: React.FC<HeroProps> = ({
             {secondaryCtaText && (
               <a
                 href={secondaryCtaLink}
-                className="font-bold text-base px-7 py-3 rounded-full border-2 border-white/80 text-white bg-white/10 hover:bg-white/20 backdrop-blur-xs active:scale-95 transition-all"
+                className="font-bold text-sm md:text-xl py-4 px-8 underline underline-offset-9 text-white"
               >
                 {secondaryCtaText}
               </a>
