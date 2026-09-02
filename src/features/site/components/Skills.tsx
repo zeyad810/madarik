@@ -2,7 +2,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import Button from "@/components/ui/Button";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import { SkillCardItem, SkillsProps } from "../types";
@@ -54,7 +53,7 @@ const Skills: React.FC<SkillsProps> = ({
       .map((item, idx) => {
         const originalIdx = idx * 2 + 1;
         const style = CARD_STYLES[originalIdx % CARD_STYLES.length];
-        return {
+        return  {
           id: `card-${originalIdx}`,
           title: item.title,
           description: item.description,
@@ -78,20 +77,9 @@ const Skills: React.FC<SkillsProps> = ({
           <h2 className="mad-h2 font-extrabold text-mad-text-primary mb-4 md:mb-6 leading-tight">
             {title}
           </h2>
-          <p className="mad-body-1 text-mad-text-secondary font-normal mb-8 leading-relaxed max-w-xl">
+          <p className="mad-body-1 text-mad-text-secondary font-normal leading-relaxed max-w-xl">
             {description}
           </p>
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button
-              btnLink="#"
-              btnText="ابدأ تجربتك المجانية الآن"
-              btnType="fit"
-              icon="have"
-              btnBackground="var(--mad-main)"
-              btnColor="#ffffff"
-              className="px-7 py-3.5 mad-body-2 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-full"
-            />
-          </motion.div>
         </motion.div>
 
         {/* Cards Side (Left in RTL layout) */}

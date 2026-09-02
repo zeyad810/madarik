@@ -26,7 +26,7 @@ const DEFAULT_SLIDES: BannerSlideItem[] = [
     sideImage: "/assets/hero_image.png",
     sideImageAlt: "أطفال يقرأون القصص",
     buttonText: "إشترك الآن",
-    buttonLink: "/register",
+    buttonLink: "/packages",
   },
   {
     id: 2,
@@ -48,7 +48,7 @@ const DEFAULT_SLIDES: BannerSlideItem[] = [
     sideImage: "/iamges/reportSecimg.png",
     sideImageAlt: "تقارير الأداء",
     buttonText: "لوحة المتابعة",
-    buttonLink: "/parents",
+    buttonLink: "/login",
   },
 ];
 
@@ -85,7 +85,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
           bgImage: item.image_url,
           sideImage: item.side_image_url,
           sideImageAlt: item.title,
-          buttonLink: item.link_url || "/register",
+          buttonLink: item.link_url || "/packages",
           buttonText:
             (item as unknown as { button_text?: string; cta_text?: string })
               .button_text ||
