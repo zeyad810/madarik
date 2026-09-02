@@ -16,6 +16,7 @@ import PhoneNumberInput from "@/components/ui/PhoneNumberInput";
 import { useSession } from "next-auth/react";
 import LoginSwitcher from "./LoginSwitcher";
 import { isStudentRole, isFreeRole } from "@/lib/roles";
+import { AUTH_TOKEN_KEY } from "@/lib/auth";
 
 interface LoginFormProps {
   onSubmitSuccess?: (data: LoginFormData) => void;
@@ -92,6 +93,17 @@ const LoginForm: React.FC<LoginFormProps> = ({
         }
 
         const currentSession = await getSession();
+        const token =
+          (currentSession as any)?.accessToken ||
+          (currentSession as any)?.token ||
+          (currentSession?.user as any)?.accessToken ||
+          (currentSession?.user as any)?.token;
+        if (token && typeof window !== "undefined") {
+          localStorage.setItem(AUTH_TOKEN_KEY, token);
+          localStorage.setItem("token", token);
+          localStorage.setItem("accessToken", token);
+        }
+
         const rawRole = (currentSession as any)?.user_type || (currentSession?.user as any)?.user_type;
         if (isStudentRole(rawRole)) {
           const callbackUrl = searchParams?.get("callbackUrl");
