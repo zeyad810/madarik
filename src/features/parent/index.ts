@@ -27,5 +27,4 @@ export { default as ParentProfileBanner } from "./components/ParentProfileBanner
 export { default as ParentProfileCard } from "./components/ParentProfileCard";
 export { default as ParentProfileForm } from "./components/ParentProfileForm";
 export { default as ParentProfileDetails } from "./components/ParentProfileDetails";
-export { default as ParentGeneralSettings } from "./components/ParentGeneralSettings";
 

@@ -117,11 +117,10 @@ export const ChildCard: React.FC<ChildCardProps> = ({
     <>
       <div
         dir="rtl"
-        className={`relative w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between transition-all duration-200 select-none border-2 box-border ${
-          !isActive
+        className={`relative w-full mx-auto rounded-3xl p-6 lg:p-8 flex flex-col items-center justify-between transition-all duration-200 select-none border-2 box-border ${!isActive
             ? "border-gray-200/90 bg-[#F9FAFB]/90 opacity-80 hover:opacity-95 shadow-xs"
             : "border-gray-200 bg-white hover:border-purple-200 shadow-xs hover:shadow-md hover:scale-[1.01]"
-        }`}
+          }`}
       >
         {/* Delete Action Button (Top Right) */}
         <button
@@ -162,9 +161,8 @@ export const ChildCard: React.FC<ChildCardProps> = ({
         {/* 3. Age Category Badge */}
         {ageCategory ? (
           <div
-            className={`px-3.5 py-1 rounded-full text-xs font-bold mb-2 ${
-              isActive ? "bg-[#EDE9FE] text-mad-main" : "bg-gray-200 text-gray-500"
-            }`}
+            className={`px-3.5 py-1 rounded-full text-xs font-bold mb-2 ${isActive ? "bg-[#EDE9FE] text-mad-main" : "bg-gray-200 text-gray-500"
+              }`}
           >
             الفئة: {ageCategory}
           </div>
@@ -185,9 +183,8 @@ export const ChildCard: React.FC<ChildCardProps> = ({
           {/* Toggle Switch + Status Text */}
           <div className="flex items-center gap-2">
             <span
-              className={`font-bold text-xs ${
-                isActive ? "text-[#22C55E]" : "text-gray-400"
-              }`}
+              className={`font-bold text-xs ${isActive ? "text-[#22C55E]" : "text-gray-400"
+                }`}
             >
               {isActive ? "مفعل" : "معطل"}
             </span>
