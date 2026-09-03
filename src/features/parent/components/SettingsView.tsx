@@ -14,7 +14,6 @@ import { type ParentSettingsFormData } from "../validation";
 import { extractAuthErrorMessage } from "@/features/auth/helpers/formatAuthError";
 import { ParentProfileBanner } from "./ParentProfileBanner";
 import { ParentProfileCard } from "./ParentProfileCard";
-import { ParentGeneralSettings } from "./ParentGeneralSettings";
 
 export const SettingsView: React.FC = () => {
   const { activeAccount, isParentRole } = useActiveAccount();
@@ -55,9 +54,6 @@ export const SettingsView: React.FC = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(
-    serverSettingsData?.data?.notifications_enabled ?? true
-  );
 
   // Sync profile data when server settings or account changes
   useEffect(() => {
@@ -84,10 +80,6 @@ export const SettingsView: React.FC = () => {
       phone: newPhone || prev.phone,
       avatar: newAvatar || prev.avatar,
     }));
-
-    if (serverSettingsData?.data?.notifications_enabled !== undefined) {
-      setNotificationsEnabled(serverSettingsData.data.notifications_enabled);
-    }
   }, [serverSettingsData, activeAccount]);
 
   // Children count display string in Arabic
@@ -171,14 +163,6 @@ export const SettingsView: React.FC = () => {
   };
 
 
-  const handleNotificationsChange = (enabled: boolean) => {
-    setNotificationsEnabled(enabled);
-    updateSettingsMutation.mutate({
-      name: profileData.name,
-      notifications_enabled: enabled,
-    });
-  };
-
 
   return (
     <div className="w-full min-h-screen bg-[#FAFAFB] section-spacing pb-16" dir="rtl">
@@ -231,10 +215,9 @@ export const SettingsView: React.FC = () => {
         />
 
         {/* =========================================================================
-            4. TWO-COLUMN CARDS GRID (Personal Info & General Settings)
+            4. PERSONAL INFORMATION CARD
            ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-          {/* RIGHT CARD: Personal Information - View / Edit Mode */}
+        <div>
           <ParentProfileCard
             profileData={profileData}
             isEditing={isEditingProfile}
@@ -242,12 +225,6 @@ export const SettingsView: React.FC = () => {
             successMessage={successMessage}
             onSave={handleSaveProfile}
             onCancel={handleCancelEdit}
-          />
-
-          {/* LEFT CARD: General Settings */}
-          <ParentGeneralSettings
-            notificationsEnabled={notificationsEnabled}
-            onNotificationsChange={handleNotificationsChange}
           />
         </div>
       </div>
