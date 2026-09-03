@@ -8,14 +8,52 @@ import { Play, X, ArrowLeft } from "lucide-react";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { MadVideoProps } from "../types";
 
+/**
+ * Formats a video URL or YouTube ID into a valid YouTube embed URL.
+ * Handles watch URLs, youtu.be, embed URLs, shorts, and raw IDs.
+ */
+function getYouTubeEmbedUrl(
+  urlOrId?: string,
+  fallbackUrl: string = "https://www.youtube.com/watch?v=BklOegCLyZE"
+): string {
+  const target = (urlOrId && urlOrId.trim()) || fallbackUrl;
+
+  // Already an embed URL
+  if (target.includes("youtube.com/embed/")) {
+    const separator = target.includes("?") ? "&" : "?";
+    return `${target}${separator}autoplay=1&rel=0`;
+  }
+
+  // Extract 11-char video ID from common YouTube URL formats
+  const regExp =
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/i;
+  const match = target.match(regExp);
+  if (match && match[1]) {
+    return `https://www.youtube.com/embed/${match[1]}?autoplay=1&rel=0`;
+  }
+
+  // 11-char direct YouTube video ID
+  if (/^[a-zA-Z0-9_-]{11}$/.test(target)) {
+    return `https://www.youtube.com/embed/${target}?autoplay=1&rel=0`;
+  }
+
+  // General URL fallback
+  if (target.startsWith("http://") || target.startsWith("https://")) {
+    return target;
+  }
+
+  return `https://www.youtube.com/embed/BklOegCLyZE?autoplay=1&rel=0`;
+}
+
 const MadVideo: React.FC<MadVideoProps> = ({
   id: propId,
   subtitle: propSubtitle,
   title: propTitle,
   description: propDescription,
-  ctaText = "تصفّح القصص",
+  ctaText: propCtaText,
   ctaHref = "/stories",
-  youtubeId = "dQw4w9WgXcQ", // Replace with target Youtube video ID
+  youtubeId: propYoutubeId,
+  videoUrl: propVideoUrl,
   thumbnailSrc = "/iamges/video_thumbnail.png",
   onCtaClick,
 }) => {
@@ -27,6 +65,9 @@ const MadVideo: React.FC<MadVideoProps> = ({
   const title = propTitle ?? tourData?.title ?? "";
   const subtitle = propSubtitle ?? tourData?.eyebrow ?? "";
   const description = propDescription ?? tourData?.description ?? "";
+  const ctaText = propCtaText ?? tourData?.button_text ?? "تصفّح القصص";
+  const videoSource = propVideoUrl ?? tourData?.video_url ?? propYoutubeId;
+  const embedUrl = getYouTubeEmbedUrl(videoSource);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -166,7 +207,7 @@ const MadVideo: React.FC<MadVideoProps> = ({
 
               {/* YouTube Embed Iframe */}
               <iframe
-                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
+                src={embedUrl}
                 title={title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
