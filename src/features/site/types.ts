@@ -294,6 +294,17 @@ export interface SendContactResponse {
   data?: unknown;
 }
 
+export interface SubscribeNewsletterPayload {
+  email: string;
+}
+
+export interface SubscribeNewsletterResponse {
+  success: boolean;
+  message?: string;
+  code?: string;
+  data?: unknown;
+}
+
 export interface ContactInfoItem {
   email?: string;
   phone?: string;

@@ -6,6 +6,8 @@ import {
   PublicPackagesData,
   SendContactPayload,
   SendContactResponse,
+  SubscribeNewsletterPayload,
+  SubscribeNewsletterResponse,
 } from "./types";
 
 export const getPublicLandingData = async (): Promise<ApiResponse<PublicLandingData>> => {
@@ -52,5 +54,19 @@ export const sendContactMessage = async (
   return await handleResponse<ApiResponse<SendContactResponse | null>>(response);
 };
 
+export const subscribeNewsletter = async (
+  payload: SubscribeNewsletterPayload
+): Promise<SubscribeNewsletterResponse> => {
+  const response = await fetch(`${API_BASE_URL}/public/newsletter/subscribe`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      email: payload.email.trim(),
+    }),
+  });
 
-
+  return await handleResponse<SubscribeNewsletterResponse>(response);
+};

@@ -14,7 +14,12 @@ export async function handleResponse<T>(response: Response): Promise<T> {
     let message = data?.message || data?.error;
 
     // Handle nested validation errors (e.g., { errors: { phone: ["..."] } })
-    if (!message && data?.errors) {
+    if (
+      data?.errors &&
+      (!message ||
+        message.toLowerCase().includes("given data was invalid") ||
+        message.toLowerCase().includes("validation"))
+    ) {
       if (Array.isArray(data.errors)) {
         message = data.errors.join(" - ");
       } else if (typeof data.errors === "object") {
