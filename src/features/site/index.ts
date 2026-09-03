@@ -26,8 +26,12 @@ export * from "./hooks/usePublicPackages";
 export * from "./hooks/useBanners";
 export * from "./hooks/useLegalData";
 export * from "./hooks/useSendContactMessage";
+export * from "./hooks/useSubscribeNewsletter";
 export * from "./hooks/useHashScroll";
 
+// Schemas
+export * from "./contactSchema";
+export * from "./newsletterSchema";
 
 // Services & API
 export * from "./api";

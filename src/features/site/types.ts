@@ -294,6 +294,17 @@ export interface SendContactResponse {
   data?: unknown;
 }
 
+export interface SubscribeNewsletterPayload {
+  email: string;
+}
+
+export interface SubscribeNewsletterResponse {
+  success: boolean;
+  message?: string;
+  code?: string;
+  data?: unknown;
+}
+
 export interface ContactInfoItem {
   email?: string;
   phone?: string;
@@ -346,6 +357,8 @@ export interface MadVideoProps {
   ctaText?: string;
   ctaHref?: string;
   youtubeId?: string;
+  videoUrl?: string;
+  video_url?: string;
   thumbnailSrc?: string;
   onCtaClick?: () => void;
 }
@@ -399,6 +412,8 @@ export interface PublicPlatformTourSection {
   title: string;
   eyebrow: string;
   description: string;
+  video_url?: string;
+  button_text?: string;
 }
 
 export interface PublicInstantReportSection {
