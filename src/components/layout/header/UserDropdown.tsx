@@ -25,6 +25,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
     isParentActive,
     isChildOrStudent,
     resetAccount,
+    parentName: hookParentName,
   } = useActiveAccount();
   const { children: parentChildren } = useParentChildren();
 
@@ -36,7 +37,16 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ onOpenSearch }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const parentName = activeAccount?.rawParent?.name || (isParentRole ? "ولي الأمر" : "المستخدم");
+  const parentName =
+    hookParentName ||
+    activeAccount?.rawParent?.name ||
+    (isParentActive &&
+    activeAccount?.name &&
+    activeAccount.name !== "المستخدم" &&
+    activeAccount.name !== "ولي الأمر"
+      ? activeAccount.name
+      : "") ||
+    "ولي الأمر";
   const isParentStatusActive = !activeAccount?.rawParent?.status || activeAccount?.rawParent?.status === "active";
   const parentStatusLabel = isParentStatusActive ? "نشط" : "معطل";
 

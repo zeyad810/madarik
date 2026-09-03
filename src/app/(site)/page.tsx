@@ -28,13 +28,13 @@ export default function HomePage() {
       <Skills />
       <ChildWin />
       <ProductSection />
+      <Bannerslider />
       <WhyTrustUs />
       <OurJourney />
       <Pricing />
       <CustomerReviews imageSrc={sectionHeading.src} />
       <Fqa />
       <ContactUs />
-      <Bannerslider />
     </div>
   );
 }

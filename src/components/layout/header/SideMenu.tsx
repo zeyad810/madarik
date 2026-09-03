@@ -68,6 +68,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
     isChildOrStudent,
     isFreeCustomer,
     switchAccount,
+    parentName: hookParentName,
   } = useActiveAccount();
   const { children } = useParentChildren();
   const activeChildId =
@@ -202,7 +203,15 @@ const SideMenu: React.FC<SideMenuProps> = ({
       : "/assets/user_avatar.png";
 
   const parentName =
-    activeAccount?.rawParent?.name || (isParentRole ? "ولي الأمر" : "المستخدم");
+    hookParentName ||
+    activeAccount?.rawParent?.name ||
+    (isParentActive &&
+    activeAccount?.name &&
+    activeAccount.name !== "المستخدم" &&
+    activeAccount.name !== "ولي الأمر"
+      ? activeAccount.name
+      : "") ||
+    "ولي الأمر";
   const isParentStatusActive =
     !activeAccount?.rawParent?.status ||
     activeAccount?.rawParent?.status === "active";

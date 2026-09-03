@@ -106,7 +106,7 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
     const isParentActive = !user?.status || user?.status === "active";
     const parentProfile = {
       id: "parent",
-      name: "ولي الأمر",
+      name: parentName,
       avatar: "/assets/user_avatar.png",
       isActive: isParentActive,
     };
@@ -124,7 +124,7 @@ export const LoginSwitcher: React.FC<LoginSwitcherProps> = ({
     }));
 
     return [parentProfile, ...childProfiles];
-  }, [children, user?.status]);
+  }, [children, user?.status, parentName]);
 
   const renderProfileCard = (profile: { id: string; name: string; avatar: string; isActive?: boolean }) => {
     const isSelected = selectedId === profile.id;

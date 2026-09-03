@@ -13,6 +13,7 @@ import {
 } from "@/lib/roles";
 import { resolveChildBadgesCount } from "@/lib/children";
 import { AUTH_TOKEN_KEY } from "@/lib/auth";
+import { useParentSettings } from "@/features/parent/hooks/useParentSettings";
 
 // ============================================================================
 // Constants & Configuration
@@ -71,6 +72,10 @@ export interface UseActiveAccountReturn {
   isLoading: boolean;
   /** True if the user is authenticated */
   isAuthenticated: boolean;
+  /** The parent account name if available */
+  parentName: string;
+  /** The parent user object */
+  rawParent: AuthUser | null;
 }
 
 // ============================================================================
@@ -113,7 +118,17 @@ function resolveChildAvatar(child: Child): string {
 /**
  * Builds normalized ActiveAccount object for a selected child.
  */
-function buildChildActiveAccount(child: Child): ActiveAccount {
+function buildChildActiveAccount(
+  child: Child,
+  parentUser?: AuthUser,
+  settingsName?: string
+): ActiveAccount {
+  const resolvedParent = parentUser
+    ? settingsName
+      ? { ...parentUser, name: settingsName }
+      : parentUser
+    : undefined;
+
   return {
     id: child.id,
     type: "child",
@@ -126,6 +141,7 @@ function buildChildActiveAccount(child: Child): ActiveAccount {
     badges: resolveChildBadgesCount(child),
     isParent: false,
     rawChild: child,
+    rawParent: resolvedParent,
   };
 }
 
@@ -135,18 +151,23 @@ function buildChildActiveAccount(child: Child): ActiveAccount {
 function buildParentActiveAccount(
   user: AuthUser,
   sessionUserType: string,
-  isParentRole: boolean
+  isParentRole: boolean,
+  settingsName?: string
 ): ActiveAccount {
+  const resolvedName =
+    settingsName || user.name || (isParentRole ? "ولي الأمر" : "المستخدم");
+  const resolvedParent = settingsName ? { ...user, name: settingsName } : user;
+
   return {
     id: PARENT_ACCOUNT_ID,
     type: "parent",
     user_type: sessionUserType,
-    name: user.name || (isParentRole ? "ولي الأمر" : "المستخدم"),
+    name: resolvedName,
     status: user.status || "active",
     avatar_img: user.avatar_img || user.avatar || null,
     avatar: user.avatar_img || user.avatar || "/assets/user_avatar.png",
     isParent: true,
-    rawParent: user,
+    rawParent: resolvedParent,
   };
 }
 
@@ -247,16 +268,39 @@ export function useActiveAccount(): UseActiveAccountReturn {
     return isParentActive && (isFreeRole(activeUserType) || isFreeRole(sessionUserType));
   }, [isParentActive, activeUserType, sessionUserType]);
 
+  // Server settings for parent profile
+  const { data: serverSettingsData } = useParentSettings({
+    enabled: status === "authenticated",
+  });
+
   // Active account metadata object
   const activeAccount = useMemo<ActiveAccount | null>(() => {
     if (!user) return null;
 
     if (matchedChild) {
-      return buildChildActiveAccount(matchedChild);
+      return buildChildActiveAccount(
+        matchedChild,
+        user,
+        serverSettingsData?.data?.name
+      );
     }
 
-    return buildParentActiveAccount(user, sessionUserType, isParentRole);
-  }, [user, matchedChild, sessionUserType, isParentRole]);
+    return buildParentActiveAccount(
+      user,
+      sessionUserType,
+      isParentRole,
+      serverSettingsData?.data?.name
+    );
+  }, [user, matchedChild, sessionUserType, isParentRole, serverSettingsData?.data?.name]);
+
+  const parentName = useMemo(() => {
+    return (
+      serverSettingsData?.data?.name ||
+      user?.name ||
+      activeAccount?.rawParent?.name ||
+      ""
+    );
+  }, [serverSettingsData?.data?.name, user?.name, activeAccount?.rawParent?.name]);
 
   const activeId = activeAccount?.id || PARENT_ACCOUNT_ID;
 
@@ -328,5 +372,11 @@ export function useActiveAccount(): UseActiveAccountReturn {
     isHydrated: hasHydrated,
     isLoading: status === "loading",
     isAuthenticated: status === "authenticated",
+    parentName,
+    rawParent: user
+      ? serverSettingsData?.data?.name
+        ? { ...user, name: serverSettingsData.data.name }
+        : user
+      : activeAccount?.rawParent || null,
   };
 }
