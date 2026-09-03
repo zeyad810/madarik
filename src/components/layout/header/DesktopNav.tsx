@@ -42,9 +42,14 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
   };
 
   const visibleNavLinks = React.useMemo(() => {
-    // For unauthenticated visitors, show all navigation links
+    // For unauthenticated visitors, show navigation links except results ("نتائجي" is in the side menu)
     if (!isAuthenticated) {
-      return DESKTOP_NAV_LINKS;
+      return DESKTOP_NAV_LINKS.filter(
+        (link) =>
+          link.id !== "results" &&
+          !link.href.startsWith("/results") &&
+          !link.href.startsWith("/attempts")
+      );
     }
 
     return DESKTOP_NAV_LINKS.filter((link) => {

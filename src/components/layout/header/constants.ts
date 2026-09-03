@@ -18,9 +18,9 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
     allowedRoles: ["parent", "free", "free_customer"],
   },
   {
-    id: "attempts-log",
-    label: "سجل المحاولات",
-    href: "/attempts",
+    id: "results",
+    label: "نتائجي",
+    href: "/results",
     allowedRoles: ["student", "child"],
   },
   {
