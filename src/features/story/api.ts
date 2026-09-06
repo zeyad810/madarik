@@ -5,6 +5,10 @@ import {
   Story,
   StartStoryPayload,
   StartStoryResponse,
+  PauseStoryPayload,
+  PauseStoryResponse,
+  ResumeStoryPayload,
+  ResumeStoryResponse,
   FinishStoryPayload,
   FinishStoryResponse,
 } from "./types";
@@ -240,6 +244,105 @@ export const finishStory = async (
   return {
     success: raw?.success ?? true,
     message: raw?.message ?? "تم تسجيل إنهاء القراءة بنجاح",
+    data: raw?.data ?? raw,
+  };
+};
+
+// ── PATCH /stories/{id}/pause ──────────────────────────────────────────────────
+
+/**
+ * Pause reading a story and save the current page.
+ * Unified endpoint: PATCH /stories/{id}/pause
+ * Body: { child_id: string, current_page: number }
+ */
+export const pauseStory = async (
+  storyId: string,
+  role: string = "visitor",
+  payload?: PauseStoryPayload,
+  token?: string | null,
+  keepalive?: boolean
+): Promise<PauseStoryResponse> => {
+  const resolvedToken = token || getStoredAuthToken();
+
+  if (!resolvedToken) {
+    return { success: true, message: "تم حفظ مكان القراءة" };
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${resolvedToken}`,
+  };
+
+  const endpoint = `${API_BASE_URL}/stories/${storyId}/pause`;
+
+  const bodyData: Record<string, any> = {};
+  const effectiveChildId = payload?.child_id || payload?.student_id;
+  if (effectiveChildId) {
+    bodyData.child_id = effectiveChildId;
+  }
+  if (payload?.current_page !== undefined) {
+    bodyData.current_page = payload.current_page;
+  }
+
+  const response = await fetch(endpoint, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(bodyData),
+    keepalive: Boolean(keepalive),
+  });
+
+  const raw = await handleResponse<any>(response);
+  return {
+    success: raw?.success ?? true,
+    message: raw?.message ?? "تم حفظ مكان القراءة بنجاح",
+    data: raw?.data ?? raw,
+  };
+};
+
+// ── PATCH /stories/{id}/resume ─────────────────────────────────────────────────
+
+/**
+ * Resume reading a paused story.
+ * Unified endpoint: PATCH /stories/{id}/resume
+ * Body: { child_id: string }
+ */
+export const resumeStory = async (
+  storyId: string,
+  role: string = "visitor",
+  payload?: ResumeStoryPayload,
+  token?: string | null
+): Promise<ResumeStoryResponse> => {
+  const resolvedToken = token || getStoredAuthToken();
+
+  if (!resolvedToken) {
+    return { success: true, message: "تم استئناف القراءة" };
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${resolvedToken}`,
+  };
+
+  const endpoint = `${API_BASE_URL}/stories/${storyId}/resume`;
+
+  const bodyData: Record<string, any> = {};
+  const effectiveChildId = payload?.child_id || payload?.student_id;
+  if (effectiveChildId) {
+    bodyData.child_id = effectiveChildId;
+  }
+
+  const response = await fetch(endpoint, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(bodyData),
+  });
+
+  const raw = await handleResponse<any>(response);
+  return {
+    success: raw?.success ?? true,
+    message: raw?.message ?? "تم استئناف القراءة بنجاح",
     data: raw?.data ?? raw,
   };
 };

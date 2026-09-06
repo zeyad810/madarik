@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Story, StoryBlock, getStoryQuizId } from "../types";
-import { useFinishStory } from "../hooks/useFinishStory";
-import { useStartStory } from "../hooks/useStartStory";
+import { useStoryReadingTracker } from "../hooks/useStoryReadingTracker";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { AutoBreadcrumbs } from "@/components/ui/Breadcrumb";
 import { StoryReaderHeader } from "./reader/StoryReaderHeader";
@@ -18,28 +17,9 @@ interface StoryReaderViewProps {
 
 export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   const { isAuthenticated } = useActiveAccount();
-  const { mutate: markStoryStarted } = useStartStory(story.id);
-  const {
-    mutate: markStoryFinished,
-    isPending: isFinishing,
-    isSuccess: isFinished,
-  } = useFinishStory(story.id);
-
-  const hasStartedRef = useRef(false);
-  const hasFinishedRef = useRef(false);
   const contentTopRef = useRef<HTMLDivElement>(null);
   const isFirstMountRef = useRef(true);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-
-  // Record reading start once on mount (only for authenticated users)
-  useEffect(() => {
-    if (isAuthenticated && !hasStartedRef.current) {
-      hasStartedRef.current = true;
-      markStoryStarted(undefined, {
-        onError: (err) => console.error("Start reading session error:", err),
-      });
-    }
-  }, [markStoryStarted, isAuthenticated]);
 
   // Extract story blocks sorted by order
   const blocks: StoryBlock[] = story.blocks && story.blocks.length > 0
@@ -54,6 +34,17 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   );
   const itemsPerPage = Math.max(1, Math.ceil(blocks.length / totalPages));
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Automatic reading lifecycle tracker (start, idle pause/resume, tab visibility, unload pause, finish)
+  const {
+    finishReading: handleFinishStory,
+    isFinishing,
+    isFinished,
+  } = useStoryReadingTracker({
+    storyId: story.id,
+    currentPage,
+    idleTimeoutMs: 90000,
+  });
 
   // Smooth scroll to top of story content on page change
   useEffect(() => {
@@ -86,28 +77,8 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
-  const handleFinishStory = () => {
-    if (!isAuthenticated) {
-      toast.error("يرجى تسجيل الدخول لحفظ تقدم القراءة");
-      return;
-    }
-    if (hasFinishedRef.current || isFinishing || isFinished) return;
-    hasFinishedRef.current = true;
-    markStoryFinished(undefined, {
-      onSuccess: (res) => {
-        toast.success(res?.message || "تم تسجيل إنهاء قراءة القصة بنجاح 🎉");
-      },
-      onError: (err: unknown) => {
-        hasFinishedRef.current = false;
-        const msg =
-          err instanceof Error ? err.message : "حدث خطأ أثناء تسجيل إنهاء القصة";
-        toast.error(msg);
-      },
-    });
-  };
-
   const handleNavigateToQuiz = () => {
-    if (isAuthenticated && !hasFinishedRef.current && !isFinished) {
+    if (isAuthenticated && !isFinished) {
       handleFinishStory();
     }
   };
