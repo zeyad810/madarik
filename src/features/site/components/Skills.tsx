@@ -2,6 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import Button from "@/components/ui/Button";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import { SkillCardItem, SkillsProps } from "../types";
@@ -19,6 +21,9 @@ const Skills: React.FC<SkillsProps> = ({
   description: propDescription,
   rightCards: propRightCards,
   leftCards: propLeftCards,
+  ctaLabel: propCtaLabel,
+  ctaLink: propCtaLink,
+  onCtaClick,
 }) => {
   const { data: moreThanStoriesData } = usePublicLanding({
     select: (res) => res.data?.more_than_stories_section,
@@ -27,6 +32,8 @@ const Skills: React.FC<SkillsProps> = ({
   const id = propId ?? moreThanStoriesData?.id;
   const title = propTitle ?? moreThanStoriesData?.title ?? "";
   const description = propDescription ?? moreThanStoriesData?.description ?? "";
+  const ctaLabel = propCtaLabel ?? "ابدأ تجربتك المجانية الآن";
+  const ctaLink = propCtaLink ?? "/packages";
 
   const items = moreThanStoriesData?.items ?? [];
 
@@ -77,9 +84,35 @@ const Skills: React.FC<SkillsProps> = ({
           <h2 className="mad-h2 font-extrabold text-mad-text-primary mb-4 md:mb-6 leading-tight">
             {title}
           </h2>
-          <p className="mad-body-1 text-mad-text-secondary font-normal leading-relaxed max-w-xl">
+          <p className="mad-body-1 text-mad-text-secondary font-normal mb-8 leading-relaxed max-w-xl">
             {description}
           </p>
+
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            {onCtaClick ? (
+              <button
+                type="button"
+                onClick={onCtaClick}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-mad-main px-7 py-3.5 text-base font-bold text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer"
+              >
+                <span>{ctaLabel}</span>
+                <ArrowLeft size={18} aria-hidden="true" />
+              </button>
+            ) : (
+              <Button
+                btnLink={ctaLink}
+                btnText={ctaLabel}
+                btnType="fit"
+                icon="have"
+                btnBackground="var(--mad-main)"
+                btnColor="#ffffff"
+                className="px-7 py-3.5 mad-body-2 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-full"
+              />
+            )}
+          </motion.div>
         </motion.div>
 
         {/* Cards Side (Left in RTL layout) */}

@@ -135,6 +135,9 @@ export interface SkillsProps {
   description?: string;
   rightCards?: SkillCardItem[];
   leftCards?: SkillCardItem[];
+  ctaLabel?: string;
+  ctaLink?: string;
+  onCtaClick?: () => void;
 }
 
 // ==========================================
@@ -250,6 +253,8 @@ export interface InstantReportProps {
   features?: InstantReportFeature[];
   /** CTA button label */
   ctaLabel?: string;
+  /** CTA link or href */
+  ctaLink?: string;
   /** CTA href — if omitted the button fires onCtaClick */
   ctaHref?: string;
   onCtaClick?: () => void;
