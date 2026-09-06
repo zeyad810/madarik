@@ -4,6 +4,9 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import Button from "@/components/ui/Button";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { usePublicLanding } from "../hooks/usePublicLanding";
 import type { InstantReportFeature, InstantReportProps } from "../types";
 
@@ -58,6 +61,10 @@ const InstantReport: React.FC<InstantReportProps> = ({
   title: propTitle,
   description: propDescription,
   features: propFeatures,
+  ctaLabel: propCtaLabel,
+  ctaLink: propCtaLink,
+  ctaHref: propCtaHref,
+  onCtaClick,
   image = "/iamges/reportSecimg.png",
   imageAlt = "لوحة تحكم تقارير مدارك القراءة",
 }) => {
@@ -65,9 +72,40 @@ const InstantReport: React.FC<InstantReportProps> = ({
     select: (res) => res.data?.instant_report_section,
   });
 
+  const {
+    isAuthenticated,
+    userRole,
+    isStudent,
+    isChild,
+    isChildOrStudent: activeIsChildOrStudent,
+    isParentRole,
+    isParentActive,
+    activeAccount,
+    activeChild,
+  } = useActiveAccount();
+
+  const isChildOrStudent =
+    isStudent ||
+    isChild ||
+    activeIsChildOrStudent ||
+    userRole === "student" ||
+    userRole === "child" ||
+    activeAccount?.type === "child" ||
+    activeChild !== null;
+
+  const isParent =
+    isAuthenticated && (isParentRole || isParentActive) && !isChildOrStudent;
+
   const id = propId ?? reportData?.id;
   const title = propTitle ?? reportData?.title ?? "";
   const description = propDescription ?? reportData?.description ?? "";
+  const ctaLabel =
+    propCtaLabel ??
+    (isParent ? "عرض تقارير الأطفال" : "ابدأ تجربتك المجانية الآن");
+  const ctaLink =
+    propCtaLink ??
+    propCtaHref ??
+    (isParent ? "/parents/childReports" : "/packages");
 
   const features: InstantReportFeature[] =
     propFeatures ??
@@ -104,8 +142,12 @@ const InstantReport: React.FC<InstantReportProps> = ({
               className="relative w-full max-w-lg"
             >
               <Link
-                href="/login"
-                aria-label="تسجيل الدخول لمتابعة تقارير القراءة"
+                href={isParent ? "/parents/childReports" : "/login"}
+                aria-label={
+                  isParent
+                    ? "الانتقال إلى تقارير الأطفال"
+                    : "تسجيل الدخول لمتابعة تقارير القراءة"
+                }
                 className="block cursor-pointer group transition-transform duration-300 hover:scale-[1.02]"
               >
                 <Image
@@ -149,6 +191,40 @@ const InstantReport: React.FC<InstantReportProps> = ({
                 <FeatureRow key={f.id} feature={f} index={index} />
               ))}
             </ul>
+
+            {/* CTA - visible only to parent / visitors, hidden for children */}
+            {!isChildOrStudent && (
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: 0.4 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="mt-10"
+              >
+                {onCtaClick ? (
+                  <button
+                    type="button"
+                    onClick={onCtaClick}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-mad-main px-7 py-3 text-sm md:text-base font-bold text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer"
+                  >
+                    <span>{ctaLabel}</span>
+                    <ArrowLeft size={18} aria-hidden="true" />
+                  </button>
+                ) : (
+                  <Button
+                    btnLink={ctaLink}
+                    btnText={ctaLabel}
+                    btnType="fit"
+                    icon="have"
+                    btnBackground="var(--mad-main)"
+                    btnColor="#ffffff"
+                    className="px-7 py-3.5 mad-body-2 font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 rounded-full"
+                  />
+                )}
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>
