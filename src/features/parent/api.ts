@@ -246,18 +246,17 @@ export const getParentChildReports = async (
 };
 
 /**
- * GET /account/settings
- * Fetches the authenticated parent's settings.
+ * getParentSettings
+ * Note: The backend does not have a GET /account/settings endpoint (it only provides PATCH /account/settings).
+ * Account data is retrieved from the session.
  */
 export const getParentSettings = async (
-  token?: string | null
+  _token?: string | null
 ): Promise<ParentSettingsResponse> => {
-  const response = await fetch(`${API_BASE_URL}/account/settings`, {
-    method: "GET",
-    headers: buildHeaders(token),
-  });
-
-  return await handleResponse<ParentSettingsResponse>(response);
+  return {
+    success: true,
+    data: {},
+  };
 };
 
 /**
