@@ -17,6 +17,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({
   id: propId,
   title: propTitle,
   subtitle: propSubtitle,
+  description: propDescription,
   steps: propSteps,
 }) => {
   const { data: howItWorksData } = usePublicLanding({
@@ -25,7 +26,12 @@ const HowItWorks: React.FC<HowItWorksProps> = ({
 
   const id = propId ?? howItWorksData?.id;
   const title = propTitle ?? howItWorksData?.title ?? "";
-  const subtitle = propSubtitle ?? howItWorksData?.description ?? "";
+  const subtitle =
+    propSubtitle ??
+    propDescription ??
+    howItWorksData?.subtitle ??
+    howItWorksData?.description ??
+    "";
 
   const steps: StepItem[] =
     propSteps ??

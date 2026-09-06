@@ -68,7 +68,7 @@ const Header: React.FC = () => {
         dir="rtl"
         className={
           isHomePage
-            ? `fixed top-0 left-0 right-0 z-40 w-full transition-all duration-300 px-4 sm:px-6 lg:px-12 ${
+            ? `fixed top-0 left-0 right-0 z-99 w-full transition-all duration-300 px-4 sm:px-6 lg:px-12 ${
                 isScrolled
                   ? "bg-mad-main/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10"
                   : "bg-transparent py-4 sm:py-5"

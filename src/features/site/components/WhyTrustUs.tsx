@@ -49,6 +49,7 @@ const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
   id: propId,
   title: propTitle,
   description: propDescription,
+  subtitle: propSubtitle,
   image = "/iamges/whyTrustUs.svg",
   imageAlt = "معلم يستخدم جهازًا لوحيًا",
   features: propFeatures,
@@ -59,7 +60,12 @@ const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
 
   const id = propId ?? trustData?.id;
   const title = propTitle ?? trustData?.title ?? "";
-  const description = propDescription ?? trustData?.description ?? "";
+  const subtitle =
+    propSubtitle ??
+    propDescription ??
+    trustData?.subtitle ??
+    trustData?.description ??
+    "";
 
   const features: WhyTrustUsFeature[] =
     propFeatures ??
@@ -125,10 +131,12 @@ const WhyTrustUs: React.FC<WhyTrustUsProps> = ({
               </motion.div>
             </div>
 
-            {/* Description */}
-            <p className="mad-h6 mt-6 max-w-2xl leading-7 text-mad-main/70">
-              {description}
-            </p>
+            {/* Subtitle / Description */}
+            {subtitle ? (
+              <p className="mad-h6 mt-6 max-w-2xl leading-7 text-mad-text-secondary">
+                {subtitle}
+              </p>
+            ) : null}
 
             {/* Features */}
             <div className="mt-8 w-full max-w-2xl">
