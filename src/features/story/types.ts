@@ -189,3 +189,26 @@ export interface FinishStoryResponse {
   data?: unknown;
 }
 
+export interface PauseStoryPayload {
+  child_id?: string | null;
+  student_id?: string | null;
+  current_page?: number;
+}
+
+export interface PauseStoryResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
+export interface ResumeStoryPayload {
+  child_id?: string | null;
+  student_id?: string | null;
+}
+
+export interface ResumeStoryResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
