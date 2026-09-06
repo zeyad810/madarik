@@ -87,7 +87,10 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   };
 
   const handleFinishStory = () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      toast.error("يرجى تسجيل الدخول لحفظ تقدم القراءة");
+      return;
+    }
     if (hasFinishedRef.current || isFinishing || isFinished) return;
     hasFinishedRef.current = true;
     markStoryFinished(undefined, {
@@ -151,12 +154,15 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
         onNavigateToQuiz={handleNavigateToQuiz}
       />
 
+      {/* Divider */}
+      <hr className="border-slate-200/80 my-8" />
+
       {/* 3. Story Content Box */}
       <div
         ref={contentTopRef}
-        className="rounded-3xl p-6 sm:p-10 md:p-12 bg-white shadow-xs border border-slate-100 scroll-mt-24"
+        className="scroll-mt-24"
       >
-        <div className="text-center pb-4 mb-8">
+        <div className="text-center pb-4 mb-6">
           <h2 className="text-xl sm:text-2xl font-black text-mad-text-primary inline-flex items-center gap-2">
             <span>محتوى القصة</span>
           </h2>
@@ -170,13 +176,9 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
         >
           {isLastPage && (
             <StoryReaderFinishActions
-              storyId={story.id}
-              hasQuiz={hasQuiz}
               isFinishing={isFinishing}
               isFinished={isFinished}
-              isAuthenticated={isAuthenticated}
               onFinishStory={handleFinishStory}
-              onNavigateToQuiz={handleNavigateToQuiz}
             />
           )}
         </StoryReaderContent>

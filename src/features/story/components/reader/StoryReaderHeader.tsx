@@ -21,19 +21,27 @@ export const StoryReaderHeader: React.FC<StoryReaderHeaderProps> = ({
   const hasQuiz = Boolean(getStoryQuizId(story));
 
   return (
-    <div className="rounded-3xl p-4 sm:p-6 md:p-8 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-2">
       {/* Story Metadata & Title */}
-      <div className="text-right">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+      <div className="text-right flex flex-col gap-2">
+        {/* Title + Availability Badge (مجانية / مدفوعة) on the same line */}
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-mad-text-primary">
+            {story.title}
+          </h1>
           <span
-            className={`text-xs font-bold px-3.5 py-0.5 rounded-full select-none ${
+            className={`text-xs font-bold px-3 py-1 rounded-full select-none ${
               story.availability === "paid"
                 ? "bg-[#FEF9C3] text-[#A16207] border border-[#FDE047]"
-                : "bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]"
+                : "bg-[#E6F7F5] text-[#0D9488] border border-[#99F6E4]/50"
             }`}
           >
             {story.availability === "paid" ? "مدفوعة" : "مجانية"}
           </span>
+        </div>
+
+        {/* Badges Under Title: Code & Age Category */}
+        <div className="flex flex-wrap items-center gap-2">
           {story.code && (
             <span className="bg-[#EBF7F5] text-[#0D9488] text-xs font-bold px-3.5 py-0.5 rounded-full select-none">
               {story.code}
@@ -45,19 +53,27 @@ export const StoryReaderHeader: React.FC<StoryReaderHeaderProps> = ({
             </span>
           )}
         </div>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-mad-text-primary">
-          {story.title}
-        </h1>
       </div>
 
-      {/* Action Buttons: PDF & Quiz */}
+      {/* Action Buttons: Quiz & PDF */}
       <div className="flex flex-wrap items-center gap-3">
+        {hasQuiz && (
+          <Link
+            href={`/stories/${story.id}/quiz`}
+            onClick={onNavigateToQuiz}
+            className="py-2.5 px-6 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-xs hover:shadow-md cursor-pointer select-none active:scale-95"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            <span>حل الاختبار</span>
+          </Link>
+        )}
+
         {Boolean(story.pdf_url) && (
           <button
             type="button"
             disabled={isDownloadingPdf}
             onClick={onDownloadPdf}
-            className="py-2.5 px-5 rounded-full bg-[#EAB308] hover:bg-[#CA8A04] disabled:opacity-75 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer select-none active:scale-95"
+            className="py-2.5 px-5 rounded-full bg-[#FBBF24] hover:bg-[#F59E0B] disabled:opacity-75 text-slate-900 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-xs hover:shadow-md cursor-pointer select-none active:scale-95"
           >
             {isDownloadingPdf ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -66,17 +82,6 @@ export const StoryReaderHeader: React.FC<StoryReaderHeaderProps> = ({
             )}
             <span>{isDownloadingPdf ? "جاري التحميل..." : "تحميل PDF"}</span>
           </button>
-        )}
-
-        {hasQuiz && (
-          <Link
-            href={`/stories/${story.id}/quiz`}
-            onClick={onNavigateToQuiz}
-            className="py-2.5 px-6 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer select-none hover:scale-105 active:scale-95"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>حل الاختبار</span>
-          </Link>
         )}
       </div>
     </div>
