@@ -116,13 +116,15 @@ function normalizeStoriesResponse(raw: any): FreeStoriesResponse {
 export const getStoryById = async (
   id: string,
   role: string = "visitor",
-  token?: string | null
+  _token?: string | null
 ): Promise<StoryDetailResponse> => {
   const endpoint = `${API_BASE_URL}/stories/${id}`;
 
   const response = await fetch(endpoint, {
     method: "GET",
-    headers: buildHeaders(token),
+    headers: {
+      Accept: "application/json",
+    },
     next: { revalidate: 60 },
   });
 

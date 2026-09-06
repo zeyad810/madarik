@@ -9,6 +9,7 @@ import { StoryReaderHeader } from "./reader/StoryReaderHeader";
 import { StoryReaderContent } from "./reader/StoryReaderContent";
 import { StoryReaderFinishActions } from "./reader/StoryReaderFinishActions";
 import { StoryReaderNavigation } from "./reader/StoryReaderNavigation";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 interface StoryReaderViewProps {
@@ -35,9 +36,11 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   const itemsPerPage = Math.max(1, Math.ceil(blocks.length / totalPages));
   const [currentPage, setCurrentPage] = useState(1);
 
+  const router = useRouter();
+
   // Automatic reading lifecycle tracker (start, idle pause/resume, tab visibility, unload pause, finish)
   const {
-    finishReading: handleFinishStory,
+    finishReading,
     isFinishing,
     isFinished,
   } = useStoryReadingTracker({
@@ -45,6 +48,14 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
     currentPage,
     idleTimeoutMs: 90000,
   });
+
+  const handleFinishStory = React.useCallback(() => {
+    finishReading(() => {
+      setTimeout(() => {
+        router.push(`/stories/${story.id}`);
+      }, 1000);
+    });
+  }, [finishReading, router, story.id]);
 
   // Smooth scroll to top of story content on page change
   useEffect(() => {

@@ -28,7 +28,7 @@ export const StoryReaderNavigation: React.FC<StoryReaderNavigationProps> = ({
         aria-label="الصفحة السابقة"
         className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
           currentPage === 1
-            ? "bg-purple-200/50 cursor-not-allowed opacity-40"
+            ? "bg-purple-200/50 cursor-not-allowed opacity-80"
             : "bg-[#7939E3] hover:bg-[#6824D6] hover:scale-105 active:scale-95 cursor-pointer"
         }`}
       >
@@ -49,7 +49,7 @@ export const StoryReaderNavigation: React.FC<StoryReaderNavigationProps> = ({
         aria-label="الصفحة التالية"
         className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
           currentPage === totalPages
-            ? "bg-purple-200/50 cursor-not-allowed opacity-40"
+            ? "bg-purple-200/50 cursor-not-allowed opacity-80"
             : "bg-[#7939E3] hover:bg-[#6824D6] hover:scale-105 active:scale-95 cursor-pointer"
         }`}
       >

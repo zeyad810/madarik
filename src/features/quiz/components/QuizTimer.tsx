@@ -22,7 +22,10 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({
     const effectiveStart = startTime || Date.now();
 
     const update = () => {
-      const elapsed = Math.max(0, Math.floor((Date.now() - effectiveStart) / 1000));
+      const elapsed = Math.max(
+        0,
+        Math.floor((Date.now() - effectiveStart) / 1000),
+      );
       setElapsedSeconds(elapsed);
     };
 
@@ -47,7 +50,7 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({
       <span className="text-xs font-bold text-slate-500">الوقت المستغرق</span>
 
       {/* Circular progress */}
-      <div className="relative w-24 h-24 my-1">
+      <div className="relative w-28 h-28 my-1">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 96 96">
           <circle
             cx="48"
@@ -81,10 +84,20 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({
             style={{ width: "auto", height: "auto" }}
             className="mb-0.5"
           />
-          <span className="text-sm font-black text-slate-800 leading-tight font-mono" dir="ltr">
+          <span
+            className="text-sm font-black text-slate-800 leading-tight font-mono"
+            dir="ltr"
+          >
             {formatTimerDisplay(elapsedSeconds)}
           </span>
-          <span className="text-[10px] font-bold text-slate-400">دقيقة : ثانية</span>
+          <div
+            className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-400 select-none"
+            dir="ltr"
+          >
+            <span>دقيقة</span>
+            <span>:</span>
+            <span>ثانية</span>
+          </div>
         </div>
       </div>
     </div>
