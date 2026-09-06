@@ -73,7 +73,7 @@ export const StoryReaderHeader: React.FC<StoryReaderHeaderProps> = ({
             type="button"
             disabled={isDownloadingPdf}
             onClick={onDownloadPdf}
-            className="py-2.5 px-5 rounded-full bg-[#FBBF24] hover:bg-[#F59E0B] disabled:opacity-75 text-slate-900 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-xs hover:shadow-md cursor-pointer select-none active:scale-95"
+            className="py-2.5 px-5 rounded-full bg-mad-third hover:bg-[#F59E0B] disabled:opacity-75 text-slate-900 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-xs hover:shadow-md cursor-pointer select-none active:scale-95"
           >
             {isDownloadingPdf ? (
               <Loader2 className="w-4 h-4 animate-spin" />
