@@ -60,7 +60,7 @@ export const SuggestedStories: React.FC<SuggestedStoriesProps> = ({
           ? story.level.name
           : story.level) ?? undefined,
       storyCodeTag: story.code,
-      ctaText: "ابدأ القراءة",
+      ctaText: "عرض القصة",
       ctaLink: `/stories/${story.id}`,
     };
   });

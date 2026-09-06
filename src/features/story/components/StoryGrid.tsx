@@ -63,7 +63,7 @@ export const StoryGrid: React.FC<StoryGridProps> = ({
         availability: story.availability || "free",
         levelTag: levelStr,
         storyCodeTag: story.code ?? "Story 000-XXX",
-        ctaText: "ابدأ القراءة",
+        ctaText: "عرض القصة",
         ctaLink: `/stories/${story.id}`,
       };
     });

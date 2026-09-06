@@ -58,7 +58,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         outcome: story.outcome,
         indicator: story.indicator,
         pagesCount: story.pages_count,
-        ctaText: "ابدأ القراءة",
+        ctaText: "عرض القصة",
         ctaLink: `/stories/${story.id}`,
       };
     }) ?? []);

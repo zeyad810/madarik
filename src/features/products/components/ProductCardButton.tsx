@@ -8,7 +8,7 @@ interface ProductCardButtonProps {
 }
 
 export const ProductCardButton: React.FC<ProductCardButtonProps> = ({
-  ctaText = "ابدأ القراءة",
+  ctaText = "عرض القصة",
   ctaLink,
   onCtaClick,
 }) => {

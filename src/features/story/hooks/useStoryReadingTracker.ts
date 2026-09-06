@@ -125,7 +125,13 @@ export function useStoryReadingTracker({
 
   // ── Finish Action ────────────────────────────────────────────────────────────
   const finishReading = useCallback(
-    (onSuccessCallback?: (msg: string) => void, onErrorCallback?: (err: string) => void) => {
+    (
+      onSuccessCallback?: ((msg: string) => void) | unknown,
+      onErrorCallback?: ((err: string) => void) | unknown
+    ) => {
+      const safeOnSuccess = typeof onSuccessCallback === "function" ? onSuccessCallback : undefined;
+      const safeOnError = typeof onErrorCallback === "function" ? onErrorCallback : undefined;
+
       if (!isAuthenticated) {
         toast.error("يرجى تسجيل الدخول لحفظ تقدم القراءة");
         return;
@@ -147,13 +153,13 @@ export function useStoryReadingTracker({
         onSuccess: (res) => {
           const msg = res?.message || "تم تسجيل إنهاء قراءة القصة بنجاح 🎉";
           toast.success(msg);
-          if (onSuccessCallback) onSuccessCallback(msg);
+          if (safeOnSuccess) safeOnSuccess(msg);
         },
         onError: (err: unknown) => {
           statusRef.current = "reading"; // allow retry on error
           const msg = err instanceof Error ? err.message : "حدث خطأ أثناء تسجيل إنهاء القصة";
           toast.error(msg);
-          if (onErrorCallback) onErrorCallback(msg);
+          if (safeOnError) safeOnError(msg);
         },
       });
     },
