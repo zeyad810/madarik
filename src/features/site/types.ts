@@ -115,6 +115,7 @@ export interface HowItWorksProps {
   id?: string;
   title?: string;
   subtitle?: string;
+  description?: string;
   steps?: StepItem[];
 }
 
@@ -189,6 +190,7 @@ export interface WhyTrustUsProps {
   id?: string;
   title?: string;
   description?: string;
+  subtitle?: string;
   image?: string;
   imageAlt?: string;
   features?: WhyTrustUsFeature[];
@@ -408,7 +410,8 @@ export interface PublicHowItWorksStep {
 export interface PublicHowItWorksSection {
   id?: string;
   title: string;
-  description: string;
+  description?: string;
+  subtitle?: string;
   steps: PublicHowItWorksStep[];
 }
 
@@ -492,7 +495,8 @@ export interface PublicTrustItem {
 export interface PublicTrustSection {
   id?: string;
   title: string;
-  description: string;
+  description?: string;
+  subtitle?: string;
   items: PublicTrustItem[];
 }
 
