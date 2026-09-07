@@ -46,9 +46,9 @@ export default function RootLayout({
       lang="ar"
       dir="rtl"
       data-scroll-behavior="smooth"
-      className={`${ibmPlexSansArabic.variable} ${ibmPlexSansArabic.className} h-full antialiased`}
+      className={`${ibmPlexSansArabic.variable} ${ibmPlexSansArabic.className} h-full antialiased select-none`}
     >
-      <body className={`${ibmPlexSansArabic.className} min-h-full flex flex-col font-sans`}>
+      <body className={`${ibmPlexSansArabic.className} min-h-full flex flex-col font-sans select-none`}>
         <AuthProvider>
           <QueryProvider>
             {children}
