@@ -12,8 +12,6 @@ import {
 import {
   usePublicTerms,
   usePublicPrivacy,
-  DEFAULT_TERMS_DATA,
-  DEFAULT_PRIVACY_DATA,
 } from "../hooks/useLegalData";
 import { LegalItem, LegalPageProps } from "../types";
 
@@ -48,8 +46,7 @@ export const LegalPageView: React.FC<LegalPageProps> = ({
   const query = isTerms ? termsQuery : privacyQuery;
   const { data, isLoading, isError, error, refetch } = query;
 
-  const fallbackItems = isTerms ? DEFAULT_TERMS_DATA : DEFAULT_PRIVACY_DATA;
-  const rawItems = (data?.data && data.data.length > 0 ? data.data : fallbackItems) as LegalItem[];
+  const rawItems = (data?.data && data.data.length > 0 ? data.data : []) as LegalItem[];
   // Sort items by display_order ascending
   const items = React.useMemo(() => {
     return [...rawItems].sort(
