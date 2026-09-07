@@ -7,3 +7,4 @@ export { default as CreditCardForm } from "./components/CreditCardForm";
 export { default as CheckoutModal } from "./components/CheckoutModal";
 export { default as Payment3DSecureModal } from "./components/Payment3DSecureModal";
 export { default as PaymentVerificationView } from "./components/PaymentVerificationView";
+export { default as StreamCheckoutEmbed } from "./components/StreamCheckoutEmbed";

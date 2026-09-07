@@ -320,17 +320,28 @@ export const updateParentPassword = async (
 };
 
 /**
- * GET /account/subscription/history
+ * GET /subscription/history
  * Fetches parent dashboard subscription summary / history data:
  * Account info, children_count, is_subscribed, and unlocked_age_categories.
  */
 export const getAccountSubscriptionHistory = async (
-  token?: string | null
+  token?: string | null,
+  status?: string | null
 ): Promise<AccountSubscriptionHistoryResponse> => {
-  const response = await fetch(`${API_BASE_URL}/account/subscription/history`, {
+  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+  let response = await fetch(`${API_BASE_URL}/subscription/history${query}`, {
     method: "GET",
     headers: buildHeaders(token),
+    cache: "no-store",
   });
+
+  if (response.status === 404) {
+    response = await fetch(`${API_BASE_URL}/account/subscription/history${query}`, {
+      method: "GET",
+      headers: buildHeaders(token),
+      cache: "no-store",
+    });
+  }
 
   return await handleResponse<AccountSubscriptionHistoryResponse>(response);
 };

@@ -20,23 +20,35 @@ export type MoyasarPaymentSource =
   | MoyasarTokenSource
   | ({ type: string } & Record<string, unknown>);
 
+export type PaymentSource =
+  | MoyasarPaymentSource
+  | unknown[]
+  | Record<string, unknown>;
+
 export interface CheckoutSubscriptionPayload {
   package_id: string;
-  source: MoyasarPaymentSource;
+  source?: PaymentSource;
 }
 
 export type PaymentStatus = "initiated" | "paid" | "success" | "failed" | "refunded" | string;
 
 export interface CheckoutPaymentData {
   payment_id: string;
-  status: PaymentStatus;
+  payment_url?: string | null;
   transaction_url?: string | null;
+  status?: PaymentStatus;
+  is_subscribed?: boolean;
 }
 
 export interface CheckoutSubscriptionResponse {
   success: boolean;
   message?: string;
   data: CheckoutPaymentData;
+}
+
+export interface VerifyPaymentQueryParams {
+  paymentId: string;
+  id?: string | null; // streampay_id
 }
 
 export interface VerifyPaymentData {
@@ -101,3 +113,32 @@ export interface SubscriptionResponse {
   message?: string;
   data: SubscriptionData;
 }
+
+export interface SubscriptionHistoryAccount {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  change_by_admin?: boolean;
+  type: string;
+  status: string;
+  phone_verified_at?: string | null;
+  otp_attempts?: number;
+  otp_locked_until?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SubscriptionHistoryData {
+  account: SubscriptionHistoryAccount;
+  children_count: number;
+  is_subscribed: boolean;
+  unlocked_age_categories: string[];
+}
+
+export interface SubscriptionHistoryResponse {
+  success: boolean;
+  message?: string;
+  data: SubscriptionHistoryData;
+}
+
