@@ -177,10 +177,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-2xl overflow-hidden rounded-[32px] bg-white shadow-2xl z-10 my-8"
+            className="relative w-full max-w-2xl overflow-hidden rounded-4xl bg-white shadow-2xl z-10 my-8"
           >
             {/* Modal Top Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 px-6 sm:px-8 py-5 bg-gradient-to-r from-purple-50/70 to-white">
+            <div className="flex items-center justify-between border-b border-gray-100 px-6 sm:px-8 py-5 bg-linear-to-r from-purple-50/70 to-white">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-2xl bg-mad-main/10 text-mad-main font-bold">
                   <Sparkles className="size-5" />
@@ -353,7 +353,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     /* Paid Package Flow with StreamPay */
                     <div className="space-y-5">
                       {/* StreamPay Primary Checkout Button */}
-                      <div className="rounded-2xl border border-purple-100 bg-gradient-to-br from-purple-50/50 to-white p-5 space-y-4 shadow-sm">
+                      <div className="rounded-2xl border border-purple-100 bg-linear-to-br from-purple-50/50 to-white p-5 space-y-4 shadow-sm">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <ShieldCheck className="size-5 text-emerald-600" />
