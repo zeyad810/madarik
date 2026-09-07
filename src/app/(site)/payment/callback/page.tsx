@@ -4,17 +4,22 @@ import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { PaymentVerificationView } from "@/features/payment";
 import Link from "next/link";
-import { CreditCard, ArrowLeft } from "lucide-react";
+import { AlertCircle, ArrowLeft, CreditCard } from "lucide-react";
 
-function PaymentOperationsContent() {
+function PaymentCallbackContent() {
   const searchParams = useSearchParams();
+
+  // Extract payment identifiers from StreamPay redirect query params
   const paymentId =
     searchParams.get("payment_id") ||
     searchParams.get("paymentId") ||
     searchParams.get("id");
 
   const streamPayId =
-    searchParams.get("id") || searchParams.get("streampay_id") || null;
+    searchParams.get("id") ||
+    searchParams.get("streampay_id") ||
+    null;
+
   const result = searchParams.get("result") || null;
 
   if (paymentId) {
@@ -30,14 +35,14 @@ function PaymentOperationsContent() {
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-xl">
-        <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-purple-50 text-mad-main mb-6 border border-purple-100 shadow-sm">
-          <CreditCard className="size-10" />
+        <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-amber-50 text-amber-600 mb-6 border border-amber-200 shadow-sm">
+          <AlertCircle className="size-10" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3">
-          عمليات الدفع والاشتراك
+          معرّف الدفع غير موجود
         </h1>
         <p className="text-sm text-gray-600 mb-8 leading-relaxed">
-          يمكنك الاطلاع على حالة اشتراكك الحالية وإدارة خططك وفواتيرك السابقة بكل سهولة وأمان.
+          تعذر العثور على بيانات العملية في رابط العودة. يرجى مراجعة تفاصيل اشتراكك الحالية أو العودة لاختيار الباقة.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -49,10 +54,10 @@ function PaymentOperationsContent() {
             <ArrowLeft className="size-4 rotate-180" />
           </Link>
           <Link
-            href="/packages/history"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition-all"
+            href="/packages"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition-all inline-flex items-center justify-center"
           >
-            سجل الفواتير
+            تصفح الباقات
           </Link>
         </div>
       </div>
@@ -60,7 +65,7 @@ function PaymentOperationsContent() {
   );
 }
 
-export default function PaymentOperationsPage() {
+export default function PaymentCallbackPage() {
   return (
     <Suspense
       fallback={
@@ -69,7 +74,7 @@ export default function PaymentOperationsPage() {
         </div>
       }
     >
-      <PaymentOperationsContent />
+      <PaymentCallbackContent />
     </Suspense>
   );
 }

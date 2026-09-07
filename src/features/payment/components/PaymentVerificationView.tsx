@@ -9,10 +9,14 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 
 export interface PaymentVerificationViewProps {
   paymentId: string;
+  streamPayId?: string | null;
+  result?: string | null;
 }
 
 export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = ({
   paymentId,
+  streamPayId,
+  result,
 }) => {
   const {
     data,
@@ -21,7 +25,7 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
     error,
     refetch,
     isFetching,
-  } = useVerifySubscriptionPayment(paymentId, {
+  } = useVerifySubscriptionPayment(paymentId, streamPayId, {
     refetchInterval: (query) => {
       const qData = (query as { state?: { data?: { status?: string } } })?.state?.data;
       if (qData?.status === "initiated") {
@@ -32,8 +36,8 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
   });
 
   const isSuccess = data?.is_subscribed || data?.status === "paid" || data?.status === "success";
-  const isFailed = data?.status === "failed" || isError;
-  const isInitiated = data?.status === "initiated" || isLoading;
+  const isFailed = data?.status === "failed" || isError || result === "failed";
+  const isInitiated = (data?.status === "initiated" || isLoading) && !isSuccess && !isFailed;
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
@@ -76,7 +80,7 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
                   جاري التحقق من حالة الدفعة...
                 </h1>
                 <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                  نتواصل الآن مع بوابة ميسر والبنك للتأكد من اكتمال المعاملة وتفعيل اشتراكك تلقائياً.
+                  نتواصل الآن مع بوابة الدفع الآمنة والبنك للتأكد من اكتمال المعاملة وتفعيل اشتراكك تلقائياً.
                 </p>
               </div>
 

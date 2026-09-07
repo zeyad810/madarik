@@ -31,6 +31,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [is3DSOpen, setIs3DSOpen] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showCardForm, setShowCardForm] = useState(false);
 
   const { mutate: checkout, isPending: isCheckingOut } = useCheckoutSubscription();
 
@@ -42,35 +43,54 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   if (!isOpen || !pkg) return null;
 
-  const handlePaymentSubmit = (source: MoyasarCreditCardSource) => {
+  const effectivePrice = pkg.discountedPrice ?? pkg.price;
+  const priceDisplay = effectivePrice ? `${effectivePrice} ${pkg.currency || "ر.س"}` : "";
+
+  const isFreePackage =
+    !effectivePrice ||
+    Number(effectivePrice) === 0 ||
+    pkg.price === 0 ||
+    pkg.discountedPrice === 0;
+
+  const handleCheckout = (source?: any) => {
     setErrorMessage(null);
 
     checkout(
       {
         package_id: pkg.id,
-        source,
+        source: source !== undefined ? source : [],
       },
       {
         onSuccess: (res) => {
-          const { status, payment_id, transaction_url } = res.data;
-          setActivePaymentId(payment_id);
+          const paymentId = res.data?.payment_id;
+          const redirectUrl = res.data?.payment_url || res.data?.transaction_url;
+          const status = res.data?.status;
 
-          if (status === "paid" || status === "success") {
+          if (paymentId) setActivePaymentId(paymentId);
+
+          // Free package or immediately paid
+          if (
+            isFreePackage ||
+            status === "paid" ||
+            status === "success" ||
+            (!redirectUrl && res.success)
+          ) {
             setPaymentSuccess(true);
             toast.success("تم تفعيل اشتراكك بنجاح! مرحباً بك في مدارك");
             if (onSuccess) onSuccess();
-          } else if (status === "initiated" && transaction_url) {
-            setTransactionUrl(transaction_url);
-            setIs3DSOpen(true);
-          } else if (status === "failed") {
-            setErrorMessage("لم تتم عملية الدفع بنجاح. يرجى التأكد من بيانات البطاقة والمحاولة مرة أخرى.");
-          } else {
-            // Default initiated without direct URL or other state
-            setActivePaymentId(payment_id);
-            setTransactionUrl(transaction_url || null);
-            if (transaction_url) {
-              setIs3DSOpen(true);
-            }
+            return;
+          }
+
+          // If StreamPay payment link is returned, navigate customer to the payment page
+          if (redirectUrl) {
+            setTransactionUrl(redirectUrl);
+            toast.loading("جاري تحويلك لصفحة الدفع الآمنة...");
+            window.location.href = redirectUrl;
+            return;
+          }
+
+          if (status === "failed") {
+            setErrorMessage("لم تتم عملية الدفع بنجاح. يرجى المحاولة مرة أخرى.");
           }
         },
         onError: (err) => {
@@ -111,9 +131,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setTransactionUrl(null);
     onClose();
   };
-
-  const effectivePrice = pkg.discountedPrice ?? pkg.price;
-  const priceDisplay = effectivePrice ? `${effectivePrice} ${pkg.currency || "ر.س"}` : "";
 
   return (
     <>
@@ -246,23 +263,99 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </motion.div>
                   )}
 
-                  {/* Payment Method Form */}
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-sm font-bold text-gray-900">بيانات البطاقة البنكية</h4>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <ShieldCheck className="size-4 text-emerald-600" />
-                        <span>Moyasar Gateway</span>
+                  {/* Free Package Flow */}
+                  {isFreePackage ? (
+                    <div className="rounded-2xl bg-emerald-50/60 border border-emerald-200/80 p-6 text-center space-y-4">
+                      <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
+                        <Sparkles className="size-7" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-base font-bold text-gray-900">
+                          باقة مجانية متاحة لحسابك
+                        </h4>
+                        <p className="text-xs text-gray-500 max-w-sm mx-auto">
+                          لا تتطلب هذه الباقة أي بطاقة دفع أو رسوم. اضغط أدناه لتفعيل اشتراكك والبدء فوراً.
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleCheckout([])}
+                        disabled={isCheckingOut}
+                        className="w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                      >
+                        {isCheckingOut ? (
+                          <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <span>تفعيل الاشتراك المجاني الآن</span>
+                            <CheckCircle2 className="size-4" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    /* Paid Package Flow with StreamPay */
+                    <div className="space-y-5">
+                      {/* StreamPay Primary Checkout Button */}
+                      <div className="rounded-2xl border border-purple-100 bg-gradient-to-br from-purple-50/50 to-white p-5 space-y-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <ShieldCheck className="size-5 text-emerald-600" />
+                            <span className="text-sm font-bold text-gray-900">
+                              بوابة الدفع الآمنة (StreamPay)
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-semibold text-mad-main bg-purple-100/70 px-2.5 py-0.5 rounded-full">
+                            دفع آمن 100%
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-gray-500 leading-relaxed">
+                          ادفع بأمان عبر مدى، فيزا، ماستركارد، أو Apple Pay من خلال رابط الدفع المعتمد.
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCheckout([])}
+                          disabled={isCheckingOut || isVerifying}
+                          className="w-full py-4 px-6 rounded-2xl bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-lg shadow-purple-900/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                        >
+                          {isCheckingOut ? (
+                            <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                            <>
+                              <span>متابعة الدفع الآمن ({priceDisplay})</span>
+                              <ArrowRight className="size-4 rotate-180" />
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Optional Direct Card Form for Testing / Alternative */}
+                      <div className="border-t border-gray-100 pt-4">
+                        <button
+                          type="button"
+                          onClick={() => setShowCardForm((prev) => !prev)}
+                          className="text-xs font-semibold text-gray-500 hover:text-mad-main transition-colors flex items-center justify-between w-full py-1 cursor-pointer"
+                        >
+                          <span>أو الدفع المباشر بإدخال بيانات البطاقة (للاختبار)</span>
+                          <span className="text-mad-main">{showCardForm ? "إخفاء" : "إظهار النموذج"}</span>
+                        </button>
+
+                        {showCardForm && (
+                          <div className="pt-4">
+                            <CreditCardForm
+                              onSubmit={(src) => handleCheckout(src)}
+                              isLoading={isCheckingOut || isVerifying}
+                              submitButtonText="تأكيد ودفع الاشتراك"
+                              amountText={priceDisplay}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
-
-                    <CreditCardForm
-                      onSubmit={handlePaymentSubmit}
-                      isLoading={isCheckingOut || isVerifying}
-                      submitButtonText="تأكيد ودفع الاشتراك"
-                      amountText={priceDisplay}
-                    />
-                  </div>
+                  )}
                 </>
               )}
             </div>

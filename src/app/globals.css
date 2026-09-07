@@ -615,3 +615,21 @@
   background: #6d28d9;
 }
 
+/* =========================================================
+   Prevent text selection across the website
+   ========================================================= */
+*,
+*::before,
+*::after {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+

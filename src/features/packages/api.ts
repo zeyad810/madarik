@@ -268,17 +268,27 @@ export const getCurrentSubscription = async (
 };
 
 /**
- * Fetches the parent account subscription history from GET /account/subscription/history.
+ * Fetches the parent account subscription history from GET /subscription/history.
  * Returns raw response from the backend.
  */
 export const getAccountSubscriptionHistory = async (
-  token?: string | null
+  token?: string | null,
+  status?: string | null
 ): Promise<AccountSubscriptionHistoryApiResponse> => {
-  const response = await fetch(`${API_BASE_URL}/account/subscription/history`, {
+  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+  let response = await fetch(`${API_BASE_URL}/subscription/history${query}`, {
     method: "GET",
     headers: buildHeaders(token),
     cache: "no-store",
   });
+
+  if (response.status === 404) {
+    response = await fetch(`${API_BASE_URL}/account/subscription/history${query}`, {
+      method: "GET",
+      headers: buildHeaders(token),
+      cache: "no-store",
+    });
+  }
 
   return await handleResponse<AccountSubscriptionHistoryApiResponse>(response);
 };
