@@ -32,24 +32,24 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
-      className={`group bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 md:p-6 xl:py-6 xl:px-7 flex flex-col items-center text-center border border-slate-100 border-t-[5px] shadow-[0_6px_24px_rgb(0,0,0,0.04)] hover:shadow-xl transition-all duration-300 overflow-hidden ${className}`}
+      className={`group bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 md:p-5 lg:p-4 xl:py-6 xl:px-6 flex flex-col items-center text-center border border-slate-100 border-t-[5px] shadow-[0_6px_24px_rgb(0,0,0,0.04)] hover:shadow-xl transition-all duration-300 overflow-hidden ${className}`}
       style={{
         borderTopColor: accentColor,
       }}
     >
       {/* Icon Container */}
-      <div className="size-12 sm:size-14 md:size-16 mb-3 sm:mb-4 md:mb-5 shrink-0 my-2 sm:my-3 transition-transform duration-300 group-hover:scale-110 flex items-center justify-center">
+      <div className="size-12 sm:size-14 md:size-14 lg:size-12 xl:size-14 mb-2.5 sm:mb-3 md:mb-4 shrink-0 my-1 sm:my-2 transition-transform duration-300 group-hover:scale-110 flex items-center justify-center">
         {imageSrc ? (
           <Image
             src={imageSrc}
             alt={title}
             width={64}
             height={64}
-            className="size-12 sm:size-14 md:size-16 object-contain"
+            className="size-12 sm:size-14 md:size-14 lg:size-12 xl:size-14 object-contain"
           />
         ) : (
           <div
-            className="size-12 sm:size-14 md:size-16 rounded-full flex items-center justify-center"
+            className="size-12 sm:size-14 md:size-14 lg:size-12 xl:size-14 rounded-full flex items-center justify-center"
             style={{ backgroundColor: bgCircleColor }}
           >
             {icon}
@@ -58,12 +58,12 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
       </div>
 
       {/* Title */}
-      <h3 className="text-sm sm:text-base md:mad-h6 text-mad-text-primary font-bold mb-1.5 sm:mb-2 md:mb-3 leading-snug">
+      <h3 className="text-sm sm:text-base lg:text-sm xl:text-base text-mad-text-primary font-bold mb-1.5 sm:mb-2 leading-snug">
         {title}
       </h3>
 
       {/* Description */}
-      <p className="text-[11px] sm:text-xs md:text-sm text-mad-text-secondary font-normal leading-relaxed">
+      <p className="text-[11px] sm:text-xs xl:text-sm text-mad-text-secondary font-normal leading-relaxed">
         {description}
       </p>
     </motion.div>
