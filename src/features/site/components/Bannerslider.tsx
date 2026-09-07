@@ -20,7 +20,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
   id: propId,
   slides: propSlides,
   autoplayDelay = 5000,
-  showNavigation = true,
+  showNavigation = false,
   showPagination = true,
   className = "",
   heightClass = "h-[500px]",
@@ -33,17 +33,19 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
   const id = propId ?? bannerSection?.id ?? "banners_section";
 
   const rawItems = bannerSection?.items;
-  const validItems = rawItems && rawItems.length > 0
-    ? rawItems
-        .filter((item) => !item.status || item.status === "active")
-        .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
-    : [];
+  const validItems =
+    rawItems && rawItems.length > 0
+      ? rawItems
+          .filter((item) => !item.status || item.status === "active")
+          .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+      : [];
 
   const slides: BannerSlideItem[] =
     propSlides ??
     (validItems.length > 0
       ? validItems.map((item, idx) => {
-          const isStoryBanner = item.title?.includes("قصص") || item.description?.includes("قصص");
+          const isStoryBanner =
+            item.title?.includes("قصص") || item.description?.includes("قصص");
           const defaultLink = isStoryBanner ? "/stories" : "/register";
           const defaultText = isStoryBanner ? "تصفّح القصص" : "إشترك الآن";
 
@@ -86,10 +88,22 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
 
   if (slides.length === 0) {
     return (
-      <div id={id} dir="rtl" className={`container relative w-full px-4 py-6 md:py-8 ${className}`}>
-        <span id="banners" className="sr-only absolute -top-24 pointer-events-none" />
-        <span id="banner-slider" className="sr-only absolute -top-24 pointer-events-none" />
-        <div className={`relative w-full overflow-hidden rounded-3xl bg-linear-to-r from-purple-900/30 via-mad-main/20 to-purple-950/30 border border-purple-200/30 shadow-md flex flex-col items-center justify-center text-center p-8 ${heightClass}`}>
+      <div
+        id={id}
+        dir="rtl"
+        className={`container relative w-full px-4 py-6 md:py-8 ${className}`}
+      >
+        <span
+          id="banners"
+          className="sr-only absolute -top-24 pointer-events-none"
+        />
+        <span
+          id="banner-slider"
+          className="sr-only absolute -top-24 pointer-events-none"
+        />
+        <div
+          className={`relative w-full overflow-hidden rounded-3xl bg-linear-to-r from-purple-900/30 via-mad-main/20 to-purple-950/30 border border-purple-200/30 shadow-md flex flex-col items-center justify-center text-center p-8 ${heightClass}`}
+        >
           <div className="w-16 h-16 rounded-2xl bg-mad-main/10 text-mad-main flex items-center justify-center mb-4">
             <Layers className="w-8 h-8 opacity-80" />
           </div>
@@ -97,7 +111,8 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
             لا توجد بنرات متاحة حالياً
           </h3>
           <p className="text-sm md:text-base text-mad-text-secondary max-w-md">
-            يتم تحديث العروض والبنرات الإعلانية بشكل مستمر، ترقبوا كل جديد قريباً.
+            يتم تحديث العروض والبنرات الإعلانية بشكل مستمر، ترقبوا كل جديد
+            قريباً.
           </p>
         </div>
       </div>
@@ -105,10 +120,20 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
   }
 
   return (
-    <div id={id} dir="rtl" className={`container relative w-full px-4 py-6 md:py-8 ${className}`}>
+    <div
+      id={id}
+      dir="rtl"
+      className={`container relative w-full px-4 py-6 md:py-8 ${className}`}
+    >
       {/* Anchor targets for #banners and #banner-slider */}
-      <span id="banners" className="sr-only absolute -top-24 pointer-events-none" />
-      <span id="banner-slider" className="sr-only absolute -top-24 pointer-events-none" />
+      <span
+        id="banners"
+        className="sr-only absolute -top-24 pointer-events-none"
+      />
+      <span
+        id="banner-slider"
+        className="sr-only absolute -top-24 pointer-events-none"
+      />
 
       <div className="relative w-full overflow-hidden rounded-3xl bg-linear-to-r from-mad-purple-800 via-mad-main to-mad-purple-950 shadow-xl group">
         <Swiper
@@ -141,7 +166,10 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
             const isActive = activeIndex === index;
 
             return (
-              <SwiperSlide key={slide.id} className="relative w-full h-full flex items-center">
+              <SwiperSlide
+                key={slide.id}
+                className="relative w-full h-full flex items-center"
+              >
                 {/* Background Image / Overlay */}
                 {slide.bgImage && (
                   <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
@@ -174,7 +202,9 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                     {/* Title */}
                     <motion.h2
                       initial={{ opacity: 0, y: 15 }}
-                      animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+                      animate={
+                        isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }
+                      }
                       transition={{ duration: 0.5, delay: 0.1 }}
                       className={`mad-h2 font-black pb-6 ${
                         slide.titleColor || "text-mad-third"
@@ -187,7 +217,11 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                     {slide.description ? (
                       <motion.p
                         initial={{ opacity: 0, y: 15 }}
-                        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+                        animate={
+                          isActive
+                            ? { opacity: 1, y: 0 }
+                            : { opacity: 0, y: 15 }
+                        }
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="mad-h5 font-medium text-white/90 leading-relaxed max-w-xl pb-10"
                       >
@@ -196,10 +230,16 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
                     ) : null}
 
                     {/* Button */}
-                    {(slide.buttonText || slide.buttonLink || slide.onButtonClick) && (
+                    {(slide.buttonText ||
+                      slide.buttonLink ||
+                      slide.onButtonClick) && (
                       <motion.div
                         initial={{ opacity: 0, y: 15 }}
-                        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+                        animate={
+                          isActive
+                            ? { opacity: 1, y: 0 }
+                            : { opacity: 0, y: 15 }
+                        }
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="pt-2"
                       >
