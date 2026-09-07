@@ -6,6 +6,8 @@ name: Development Pipeline
 
 # INFO: Trigger Section
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
