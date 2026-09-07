@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade, Navigation } from "swiper/modules";
-import { ChevronLeft, ChevronRight, ArrowLeft, Layers } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 
 import "swiper/css";
 import "swiper/css/effect-fade";
@@ -87,36 +87,7 @@ const Bannerslider: React.FC<BannerSliderProps> = ({
   };
 
   if (slides.length === 0) {
-    return (
-      <div
-        id={id}
-        dir="rtl"
-        className={`container relative w-full px-4 py-6 md:py-8 ${className}`}
-      >
-        <span
-          id="banners"
-          className="sr-only absolute -top-24 pointer-events-none"
-        />
-        <span
-          id="banner-slider"
-          className="sr-only absolute -top-24 pointer-events-none"
-        />
-        <div
-          className={`relative w-full overflow-hidden rounded-3xl bg-linear-to-r from-purple-900/30 via-mad-main/20 to-purple-950/30 border border-purple-200/30 shadow-md flex flex-col items-center justify-center text-center p-8 ${heightClass}`}
-        >
-          <div className="w-16 h-16 rounded-2xl bg-mad-main/10 text-mad-main flex items-center justify-center mb-4">
-            <Layers className="w-8 h-8 opacity-80" />
-          </div>
-          <h3 className="text-xl md:text-2xl font-bold text-mad-text-primary mb-2">
-            لا توجد بنرات متاحة حالياً
-          </h3>
-          <p className="text-sm md:text-base text-mad-text-secondary max-w-md">
-            يتم تحديث العروض والبنرات الإعلانية بشكل مستمر، ترقبوا كل جديد
-            قريباً.
-          </p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

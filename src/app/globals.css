@@ -259,6 +259,11 @@
     font-family: var(--mad-font-family);
     scroll-behavior: smooth;
     scroll-padding-top: 60px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
 
 
@@ -271,12 +276,20 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   *,
   ::before,
   ::after {
     border-color: var(--mad-white-200);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   button,
@@ -284,6 +297,15 @@
   textarea,
   select {
     font: inherit;
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
   }
 }
 
