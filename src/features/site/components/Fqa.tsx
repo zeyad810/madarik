@@ -90,9 +90,14 @@ const Fqa: React.FC<FqaProps> = ({
           </motion.div>
 
           {/* Accordion List Column (Left in RTL layout) */}
-          <div className="lg:col-span-7 flex flex-col items-start gap-4 order-1 lg:order-2">
-            <div className="w-full flex flex-col gap-4">
-              {items.map((item, index) => {
+          <div className="lg:col-span-7 flex flex-col items-start gap-4 order-1 lg:order-2 w-full">
+            {items.length === 0 ? (
+              <div className="w-full rounded-2xl md:rounded-3xl p-8 bg-white/70 border border-purple-100 text-center text-mad-text-secondary text-sm md:text-base">
+                لا توجد أسئلة شائعة متاحة حالياً
+              </div>
+            ) : (
+              <div className="w-full flex flex-col gap-4">
+                {items.map((item, index) => {
                 const isOpen = activeOpenId === item.id;
                 return (
                   <motion.div
@@ -156,25 +161,28 @@ const Fqa: React.FC<FqaProps> = ({
                     </AnimatePresence>
                   </motion.div>
                 );
-              })}
-            </div>
+                })}
+              </div>
+            )}
 
             {/* View More Button */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="w-full flex justify-start mt-6"
-            >
-              <Link
-                href="/faq"
-                className="px-9 py-3.5 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-[0_12px_30px_rgba(109,40,217,0.35)] hover:shadow-[0_18px_40px_rgba(109,40,217,0.45)] transition-all duration-300 cursor-pointer backdrop-blur-xs inline-flex items-center justify-center"
+            {items.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="w-full flex justify-start mt-6"
               >
-                عرض المزيد
-              </Link>
-            </motion.div>
+                <Link
+                  href="/faq"
+                  className="px-9 py-3.5 bg-mad-main hover:bg-purple-700 text-white mad-body-2 font-bold rounded-full shadow-[0_12px_30px_rgba(109,40,217,0.35)] hover:shadow-[0_18px_40px_rgba(109,40,217,0.45)] transition-all duration-300 cursor-pointer backdrop-blur-xs inline-flex items-center justify-center"
+                >
+                  عرض المزيد
+                </Link>
+              </motion.div>
+            )}
           </div>
 
         </div>
