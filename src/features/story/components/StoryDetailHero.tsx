@@ -30,17 +30,24 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const { mutate: triggerStartStory } = useStartStory(story.id);
 
-  // Safe image state with default broken image fallback
-  const [coverSrc, setCoverSrc] = useState(() =>
-    getSafeImageUrl(story.thumbnail_url || story.cover_photo_url)
-  );
+  // Top large banner uses cover_photo_url (fallback to thumbnail)
   const [bannerSrc, setBannerSrc] = useState(() =>
     getSafeImageUrl(story.cover_photo_url || story.thumbnail_url)
   );
+  // Smaller card image uses thumbnail_url (fallback to cover_photo_url)
+  const [coverSrc, setCoverSrc] = useState(() =>
+    getSafeImageUrl(story.thumbnail_url || story.cover_photo_url)
+  );
+
+  React.useEffect(() => {
+    setBannerSrc(getSafeImageUrl(story.cover_photo_url || story.thumbnail_url));
+    setCoverSrc(getSafeImageUrl(story.thumbnail_url || story.cover_photo_url));
+  }, [story.cover_photo_url, story.thumbnail_url]);
 
   const totalPages =
-    story.pages_count ??
-    (story.blocks && story.blocks.length > 0 ? story.blocks.length : 1);
+    story.blocks && story.blocks.length > 0
+      ? Math.ceil(story.blocks.length / 2)
+      : (story.pages_count ?? 1);
 
   const ageText =
     story.age_category && story.age_category !== "0-0"
@@ -78,7 +85,7 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full relative rounded-3xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-100 aspect-16/6 sm:aspect-21/7 md:aspect-24/7 h-150 max-h-150"
+        className="w-full relative rounded-3xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-100 aspect-16/6 sm:aspect-21/7 md:aspect-24/7 h-110 max-h-110"
       >
         <Image
           src={bannerSrc}

@@ -27,13 +27,14 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
     ? [...story.blocks].sort((a, b) => a.order - b.order)
     : [];
 
-  // Calculate pagination dynamically
+  // Exactly 2 blocks per page
+  const BLOCKS_PER_PAGE = 2;
   const totalPages = Math.max(
     1,
-    story.pages_count ??
-      (blocks.length > 0 ? Math.ceil(blocks.length / 2) : 1)
+    blocks.length > 0
+      ? Math.ceil(blocks.length / BLOCKS_PER_PAGE)
+      : (story.pages_count ?? 1)
   );
-  const itemsPerPage = Math.max(1, Math.ceil(blocks.length / totalPages));
   const [currentPage, setCurrentPage] = useState(1);
 
   const router = useRouter();
@@ -77,8 +78,8 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
     }
   }, [currentPage]);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentBlocks = blocks.slice(startIndex, startIndex + itemsPerPage);
+  const startIndex = (currentPage - 1) * BLOCKS_PER_PAGE;
+  const currentBlocks = blocks.slice(startIndex, startIndex + BLOCKS_PER_PAGE);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);

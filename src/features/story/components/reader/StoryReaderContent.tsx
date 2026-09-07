@@ -64,7 +64,7 @@ export const StoryReaderContent: React.FC<StoryReaderContentProps> = ({
             return (
               <p
                 key={block.id}
-                className="text-base sm:text-lg md:text-xl text-[#334155] leading-loose font-medium text-right"
+                className="text-base sm:text-lg md:text-xl text-[#334155] leading-loose font-medium text-right whitespace-pre-line"
               >
                 {block.content}
               </p>
