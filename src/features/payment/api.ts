@@ -30,10 +30,13 @@ export async function checkoutSubscription(
   payload: CheckoutSubscriptionPayload,
   token?: string | null
 ): Promise<CheckoutSubscriptionResponse> {
-  const body = {
+  const body: Record<string, any> = {
     package_id: payload.package_id,
-    source: payload.source !== undefined ? payload.source : [],
   };
+
+  if (payload.source && (!Array.isArray(payload.source) || payload.source.length > 0)) {
+    body.source = payload.source;
+  }
 
   const response = await fetch(`${API_BASE_URL}/subscription/checkout`, {
     method: "POST",

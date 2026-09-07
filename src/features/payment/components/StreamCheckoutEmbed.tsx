@@ -46,6 +46,10 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  const isStreamDomain =
+    paymentUrl.includes("streampay.sa") ||
+    (!paymentUrl.startsWith("http://") && !paymentUrl.startsWith("https://"));
+
   useEffect(() => {
     let checkoutInstance: { destroy: () => void; getIframe?: () => HTMLIFrameElement } | null = null;
     let isCancelled = false;
@@ -54,6 +58,13 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
       try {
         setLoading(true);
         setLoadError(null);
+
+        // If not a StreamPay link (e.g. Moyasar or custom gateway URL), we render direct iframe
+        if (!isStreamDomain) {
+          setLoading(false);
+          return;
+        }
+
         await loadStreamScript();
 
         if (isCancelled) return;
@@ -156,11 +167,22 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
           </div>
         )}
 
-        <div
-          id="stream-checkout"
-          ref={containerRef}
-          className="w-full min-h-[380px]"
-        />
+        {/* Non-StreamPay payment URLs (e.g. Moyasar form or direct gateway redirect) */}
+        {!isStreamDomain ? (
+          <iframe
+            src={paymentUrl}
+            onLoad={() => setLoading(false)}
+            className="w-full min-h-[440px] border-0"
+            title="Secure Checkout"
+            allow="payment"
+          />
+        ) : (
+          <div
+            id="stream-checkout"
+            ref={containerRef}
+            className="w-full min-h-[380px]"
+          />
+        )}
       </div>
 
       {/* Verification footer action */}
