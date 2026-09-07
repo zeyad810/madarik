@@ -10,6 +10,7 @@ import { MoyasarCreditCardSource } from "../types";
 import { useCheckoutSubscription, useVerifySubscriptionPayment } from "../hooks/usePayment";
 import { CreditCardForm } from "./CreditCardForm";
 import { Payment3DSecureModal } from "./Payment3DSecureModal";
+import { StreamCheckoutEmbed } from "./StreamCheckoutEmbed";
 import toast from "react-hot-toast";
 
 export interface CheckoutModalProps {
@@ -32,10 +33,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showCardForm, setShowCardForm] = useState(false);
+  const [streamPaymentUrl, setStreamPaymentUrl] = useState<string | null>(null);
+  const [isStreamEmbedActive, setIsStreamEmbedActive] = useState(false);
 
   const { mutate: checkout, isPending: isCheckingOut } = useCheckoutSubscription();
 
-  // Verification hook if 3DS was initiated
+  // Verification hook if 3DS or StreamPay was initiated
   const { refetch: verifyPayment, isFetching: isVerifying } = useVerifySubscriptionPayment(
     activePaymentId,
     { enabled: false }
@@ -81,11 +84,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             return;
           }
 
-          // If StreamPay payment link is returned, navigate customer to the payment page
+          // If StreamPay payment link is returned, open embedded checkout inside modal
           if (redirectUrl) {
+            setStreamPaymentUrl(redirectUrl);
             setTransactionUrl(redirectUrl);
-            toast.loading("جاري تحويلك لصفحة الدفع الآمنة...");
-            window.location.href = redirectUrl;
+            setIsStreamEmbedActive(true);
             return;
           }
 
@@ -100,6 +103,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         },
       }
     );
+  };
+
+  const handleVerifyAndConfirm = async () => {
+    if (!activePaymentId) return;
+    try {
+      toast.loading("جاري التحقق من حالة الدفع وتفعيل الاشتراك...", { id: "verify-toast" });
+      const res = await verifyPayment();
+      toast.dismiss("verify-toast");
+      if (res.data?.is_subscribed || res.data?.status === "paid" || res.data?.status === "success") {
+        setIsStreamEmbedActive(false);
+        setPaymentSuccess(true);
+        toast.success("تم تأكيد وتفعيل اشتراكك بنجاح! مرحباً بك في مدارك");
+        if (onSuccess) onSuccess();
+      } else if (res.data?.status === "failed") {
+        toast.error("لم تكتمل عملية الدفع أو تم رفضها من قبل البنك.");
+      } else {
+        toast("العملية قيد المعالجة، يرجى الانتظار ثوانٍ ثم الضغط مجدداً للتأكيد.", { icon: "⏳" });
+      }
+    } catch {
+      toast.dismiss("verify-toast");
+      toast.error("تعذر التحقق من الدفعة حالياً، يرجى المحاولة مجدداً.");
+    }
   };
 
   const handleVerify3DS = async () => {
@@ -125,6 +150,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handleCloseAll = () => {
     setIs3DSOpen(false);
+    setIsStreamEmbedActive(false);
+    setStreamPaymentUrl(null);
     setPaymentSuccess(false);
     setErrorMessage(null);
     setActivePaymentId(null);
@@ -217,6 +244,34 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       عرض تفاصيل اشتراكي
                     </button>
                   </div>
+                </div>
+              ) : isStreamEmbedActive && streamPaymentUrl ? (
+                /* STREAM EMBED VIEW */
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                    <div className="text-right">
+                      <h4 className="text-sm sm:text-base font-bold text-gray-900">
+                        الدفع عبر StreamPay ({priceDisplay})
+                      </h4>
+                      <p className="text-xs text-gray-500 font-normal">
+                        اختر وسيلة الدفع المناسبة (مدى، بطاقة بنكية، أو Apple Pay)
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsStreamEmbedActive(false)}
+                      className="text-xs text-mad-main font-semibold hover:underline cursor-pointer"
+                    >
+                      تغيير الخيارات
+                    </button>
+                  </div>
+
+                  <StreamCheckoutEmbed
+                    paymentUrl={streamPaymentUrl}
+                    paymentId={activePaymentId || ""}
+                    onSuccess={handleVerifyAndConfirm}
+                    onError={(err) => setErrorMessage(err)}
+                  />
                 </div>
               ) : (
                 <>
