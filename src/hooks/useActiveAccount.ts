@@ -154,19 +154,25 @@ function buildParentActiveAccount(
   isParentRole: boolean,
   settingsName?: string
 ): ActiveAccount {
+  const isStudent = isStudentRole(sessionUserType);
   const resolvedName =
-    settingsName || user.name || (isParentRole ? "ولي الأمر" : "المستخدم");
+    settingsName || user.name || (isParentRole ? "ولي الأمر" : isStudent ? "الطالب" : "المستخدم");
   const resolvedParent = settingsName ? { ...user, name: settingsName } : user;
 
+  const defaultAvatar = isStudent
+    ? ((user as any).gender === "female" ? DEFAULT_GIRL_AVATAR : DEFAULT_BOY_AVATAR)
+    : "/assets/user_avatar.png";
+
   return {
-    id: PARENT_ACCOUNT_ID,
-    type: "parent",
+    id: isStudent ? (user.id || "student") : PARENT_ACCOUNT_ID,
+    type: isStudent ? "student" : "parent",
     user_type: sessionUserType,
     name: resolvedName,
     status: user.status || "active",
     avatar_img: user.avatar_img || user.avatar || null,
-    avatar: user.avatar_img || user.avatar || "/assets/user_avatar.png",
-    isParent: true,
+    avatar: user.avatar_img || user.avatar || defaultAvatar,
+    gender: (user as any).gender,
+    isParent: !isStudent && isParentRole,
     rawParent: resolvedParent,
   };
 }
@@ -239,8 +245,6 @@ export function useActiveAccount(): UseActiveAccountReturn {
     return children.find((c) => c.id === currentActiveId) || null;
   }, [currentActiveId, children]);
 
-  const isParentActive = !matchedChild;
-
   // Active user_type: child user_type if child is selected, else session user_type
   const activeUserType = useMemo(() => {
     if (matchedChild) {
@@ -257,8 +261,10 @@ export function useActiveAccount(): UseActiveAccountReturn {
   }, [matchedChild, activeUserType]);
 
   const isStudent = useMemo(() => {
-    return isStudentRole(activeUserType);
-  }, [activeUserType]);
+    return isStudentRole(activeUserType) || isStudentRole(sessionUserType);
+  }, [activeUserType, sessionUserType]);
+
+  const isParentActive = !isStudent && !matchedChild;
 
   const isChildOrStudent = useMemo(() => {
     return isChild || isStudent || isChildOrStudentRole(activeUserType);
@@ -270,7 +276,7 @@ export function useActiveAccount(): UseActiveAccountReturn {
 
   // Server settings for parent profile
   const { data: serverSettingsData } = useParentSettings({
-    enabled: status === "authenticated",
+    enabled: status === "authenticated" && !isStudent && isParentRole,
   });
 
   // Active account metadata object

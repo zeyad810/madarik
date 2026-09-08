@@ -20,7 +20,7 @@ export interface Child {
 
 export interface ActiveAccount {
   id: string;
-  type: "parent" | "child";
+  type: "parent" | "child" | "student";
   user_type?: string;
   name: string;
   status?: string;

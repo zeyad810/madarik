@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { getParentChildren } from "../api";
 import { parentQueryKeys } from "../constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { isStudentRole } from "@/lib/roles";
 import { getStoredAuthToken } from "@/lib/auth";
 import type { Child } from "@/types/auth";
 
@@ -11,9 +12,13 @@ export const useParentChildren = () => {
   const {
     children: sessionChildren,
     isLoading: isSessionLoading,
+    isStudent,
+    isParentRole,
   } = useActiveAccount();
 
   const token = getStoredAuthToken(session);
+  const rawUserType = (session?.user as any)?.user_type || (session?.user as any)?.role;
+  const isStudentUser = isStudent || isStudentRole(rawUserType);
 
   const query = useQuery({
     queryKey: parentQueryKeys.children(),
@@ -43,7 +48,7 @@ export const useParentChildren = () => {
         badges: c.badges ?? 0,
       })) as Child[];
     },
-    enabled: status === "authenticated" && !!token,
+    enabled: status === "authenticated" && !!token && !isStudentUser && (isParentRole || !rawUserType),
     placeholderData:
       sessionChildren && sessionChildren.length > 0
         ? sessionChildren

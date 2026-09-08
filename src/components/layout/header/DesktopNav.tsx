@@ -74,6 +74,9 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
         link.href.startsWith("/attempts");
 
       if (isResultsLink) {
+        if (isStudent || userRole === "student") {
+          return true;
+        }
         if (
           isFreeCustomer ||
           isParentActive ||
