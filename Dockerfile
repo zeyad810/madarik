@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Copy only what's needed to resolve deps -> better layer caching
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 ##### 3. Build the application #####
 FROM base AS builder
