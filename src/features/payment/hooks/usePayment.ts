@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+"use client";
+
+import { useEffect } from "react";
+import { getPaymentState } from "../paymentFlow";
+import { useMutation, useQuery, useQueryClient, type Query } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import {
   checkoutSubscription,
@@ -73,7 +77,7 @@ export function useCheckoutSubscription() {
 
   return useMutation<CheckoutSubscriptionResponse, Error, CheckoutSubscriptionPayload>({
     mutationFn: (payload: CheckoutSubscriptionPayload) => checkoutSubscription(payload, token),
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Invalidate subscription and packages queries
       queryClient.invalidateQueries({ queryKey: subscriptionKeys.all });
       queryClient.invalidateQueries({ queryKey: ["packages"] });
@@ -84,7 +88,7 @@ export function useCheckoutSubscription() {
 
 export interface VerifyPaymentHookOptions {
   enabled?: boolean;
-  refetchInterval?: number | false | ((query: unknown) => number | false);
+  refetchInterval?: number | false | ((query: Query<VerifyPaymentData, Error>) => number | false);
 }
 
 /**
@@ -97,7 +101,7 @@ export function useVerifySubscriptionPayment(
   maybeOptions?: VerifyPaymentHookOptions
 ) {
   const queryClient = useQueryClient();
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const token = (session as unknown as { accessToken?: string })?.accessToken;
 
   // Flexible argument handling: streamPayId can be passed or omitted
@@ -108,24 +112,27 @@ export function useVerifySubscriptionPayment(
       ? (streamPayIdOrOptions as VerifyPaymentHookOptions)
       : maybeOptions;
 
-  return useQuery<VerifyPaymentData>({
+  const query = useQuery<VerifyPaymentData>({
     queryKey: subscriptionKeys.verify(paymentId || "", streamPayId),
     queryFn: async () => {
       if (!paymentId) throw new Error("Payment ID is required");
       const response = await verifySubscriptionPayment(paymentId, streamPayId, token);
-      if (
-        response.data.is_subscribed ||
-        response.data.status === "paid" ||
-        response.data.status === "success"
-      ) {
-        queryClient.invalidateQueries({ queryKey: subscriptionKeys.all });
-        queryClient.invalidateQueries({ queryKey: ["packages"] });
-        queryClient.invalidateQueries({ queryKey: ["packageHistory"] });
-      }
       return response.data;
     },
-    enabled: Boolean(paymentId) && (options?.enabled ?? true),
+    enabled: sessionStatus !== "loading" && Boolean(paymentId) && (options?.enabled ?? true),
     refetchInterval: options?.refetchInterval,
+    retry: 2,
   });
+
+  const isSuccess = getPaymentState(query.data) === "success";
+  useEffect(() => {
+    if (!isSuccess) return;
+    // Do not invalidate the verification query from inside its own queryFn.
+    void queryClient.invalidateQueries({ queryKey: subscriptionKeys.current() });
+    void queryClient.invalidateQueries({ queryKey: [...subscriptionKeys.all, "history"] });
+    void queryClient.invalidateQueries({ queryKey: ["packages"] });
+  }, [isSuccess, queryClient]);
+
+  return { ...query, isAwaitingSession: sessionStatus === "loading" };
 }
 

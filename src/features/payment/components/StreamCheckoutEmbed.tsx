@@ -1,39 +1,71 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useEffectEvent, useRef, useState } from "react";
+import { getCheckoutUrl } from "../paymentFlow";
 import { ExternalLink, RefreshCw, ShieldCheck, AlertCircle } from "lucide-react";
 
 export interface StreamCheckoutEmbedProps {
   paymentUrl: string;
   paymentId: string;
-  onSuccess?: () => void;
+  onSuccess?: (gatewayId?: string | null) => void;
   onError?: (err: string) => void;
 }
 
+interface StreamCheckoutInstance {
+  destroy: () => void;
+  getIframe: () => HTMLIFrameElement;
+}
+
+type StreamWindow = Window & {
+  Stream?: {
+    Checkout: (options: {
+      paymentLink: string;
+      container: HTMLElement;
+      minHeightPx: number;
+      maxHeightPx: number;
+    }) => StreamCheckoutInstance;
+  };
+};
+
+let streamScriptPromise: Promise<void> | null = null;
+
 export function loadStreamScript(): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
-  if ((window as any).Stream?.Checkout) return Promise.resolve();
+  if ((window as StreamWindow).Stream?.Checkout) return Promise.resolve();
+  if (streamScriptPromise) return streamScriptPromise;
 
-  return new Promise((resolve, reject) => {
-    const existing = document.getElementById("streampay-embed-sdk") as HTMLScriptElement | null;
-    if (existing) {
-      if ((window as any).Stream?.Checkout) {
-        resolve();
-        return;
-      }
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("Failed to load Stream SDK")));
-      return;
+  streamScriptPromise = new Promise<void>((resolve, reject) => {
+    const existing = document.getElementById("streampay-embed-sdk");
+    const script = existing as HTMLScriptElement | null || document.createElement("script");
+    const cleanup = () => {
+      clearTimeout(timeout);
+      script.removeEventListener("load", handleLoad);
+      script.removeEventListener("error", handleError);
+    };
+    const handleError = () => {
+      cleanup();
+      script.remove();
+      reject(new Error("تعذر تحميل بوابة الدفع. يمكنك المتابعة في صفحة الدفع الخارجية."));
+    };
+    const handleLoad = () => {
+      if (!(window as StreamWindow).Stream?.Checkout) return handleError();
+      cleanup();
+      resolve();
+    };
+    const timeout = setTimeout(handleError, 15000);
+    script.addEventListener("load", handleLoad);
+    script.addEventListener("error", handleError);
+    if (!existing) {
+      script.id = "streampay-embed-sdk";
+      script.src = "https://stream-embed.streampay.sa/sdk/embed.min.js";
+      script.async = true;
+      document.head.appendChild(script);
     }
-
-    const script = document.createElement("script");
-    script.id = "streampay-embed-sdk";
-    script.src = "https://stream-embed.streampay.sa/sdk/embed.min.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Stream SDK"));
-    document.head.appendChild(script);
+  }).catch((error: unknown) => {
+    streamScriptPromise = null;
+    throw error;
   });
+  return streamScriptPromise;
 }
 
 export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
@@ -46,84 +78,81 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const isStreamDomain =
-    paymentUrl.includes("streampay.sa") ||
-    (!paymentUrl.startsWith("http://") && !paymentUrl.startsWith("https://"));
+  const directIframeRef = useRef<HTMLIFrameElement>(null);
+  const checkoutUrl = getCheckoutUrl(paymentUrl);
+  const isStreamDomain = checkoutUrl.hostname === "streampay.sa" ||
+    checkoutUrl.hostname.endsWith(".streampay.sa");
+  const notifySuccess = useEffectEvent((gatewayId?: string | null) => onSuccess?.(gatewayId));
+  const notifyError = useEffectEvent((message: string) => onError?.(message));
 
   useEffect(() => {
-    let checkoutInstance: { destroy: () => void; getIframe?: () => HTMLIFrameElement } | null = null;
+    let checkoutInstance: StreamCheckoutInstance | null = null;
     let isCancelled = false;
+    let isComplete = false;
+
+    // Capture before the SDK's redirect listener so it cannot navigate to a
+    // configured backend URL instead of the frontend verification page.
+    const handleMessage = (event: MessageEvent) => {
+      if (typeof event.data?.type !== "string" || !event.data.type.startsWith("stream:")) return;
+      const iframe = checkoutInstance?.getIframe() || directIframeRef.current;
+      const trusted = iframe && event.source === iframe.contentWindow &&
+        event.origin === new URL(iframe.src).origin;
+      if (!trusted) {
+        event.stopImmediatePropagation();
+        return;
+      }
+      if (!["stream:redirect", "stream:success", "stream:paid", "stream:complete"].includes(event.data.type)) return;
+      event.stopImmediatePropagation();
+      if (isComplete) return;
+      isComplete = true;
+      let gatewayId: string | null = null;
+      if (typeof event.data.url === "string") {
+        try {
+          const params = new URL(event.data.url, window.location.origin).searchParams;
+          gatewayId = params.get("id") || params.get("streampay_id");
+        } catch {
+          // Verify with the known backend payment ID even if the return URL is invalid.
+        }
+      }
+      notifySuccess(gatewayId);
+    };
+    window.addEventListener("message", handleMessage, true);
 
     async function initCheckout() {
       try {
-        setLoading(true);
-        setLoadError(null);
-
-        // If not a StreamPay link (e.g. Moyasar or custom gateway URL), we render direct iframe
-        if (!isStreamDomain) {
-          setLoading(false);
-          return;
-        }
-
+        if (!isStreamDomain) return;
         await loadStreamScript();
-
         if (isCancelled) return;
-
-        const streamGlobal = (window as any).Stream;
-        if (!streamGlobal?.Checkout) {
-          throw new Error("Stream.Checkout is not available");
+        const streamGlobal = (window as StreamWindow).Stream;
+        if (!streamGlobal?.Checkout || !containerRef.current) {
+          throw new Error("تعذر تجهيز بوابة الدفع.");
         }
-
-        if (containerRef.current) {
-          checkoutInstance = streamGlobal.Checkout({
-            paymentLink: paymentUrl,
-            container: containerRef.current,
-            minHeightPx: 380,
-            maxHeightPx: 800,
-          });
-          setLoading(false);
-        }
-      } catch (err: any) {
-        if (isCancelled) return;
+        checkoutInstance = streamGlobal.Checkout({
+          paymentLink: paymentUrl,
+          container: containerRef.current,
+          minHeightPx: 380,
+          maxHeightPx: 800,
+        });
         setLoading(false);
-        setLoadError(err?.message || "تعذر تحميل نافذة الدفع");
-        if (onError) onError(err?.message);
+      } catch (error: unknown) {
+        if (isCancelled) return;
+        const message = error instanceof Error ? error.message : "تعذر تحميل نافذة الدفع";
+        setLoading(false);
+        setLoadError(message);
+        notifyError(message);
       }
     }
-
-    initCheckout();
-
-    // Listen to iframe postMessages from StreamPay
-    const handleMessage = (event: MessageEvent) => {
-      if (typeof event.data?.type === "string" && event.data.type.startsWith("stream:")) {
-        const type = event.data.type;
-        if (
-          type === "stream:success" ||
-          type === "stream:paid" ||
-          type === "stream:complete"
-        ) {
-          if (onSuccess) onSuccess();
-        }
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-
+    void initCheckout();
     return () => {
       isCancelled = true;
-      window.removeEventListener("message", handleMessage);
-      try {
-        if (checkoutInstance && typeof checkoutInstance.destroy === "function") {
-          checkoutInstance.destroy();
-        }
-      } catch (e) {
-        // ignore destroy error
-      }
+      window.removeEventListener("message", handleMessage, true);
+      checkoutInstance?.destroy();
     };
-  }, [paymentUrl, onSuccess, onError]);
+  }, [paymentUrl, isStreamDomain]);
 
   const handleOpenExternal = () => {
-    window.open(paymentUrl, "_blank", "noopener,noreferrer");
+    // Keep the return in this tab so its checkout ID survives the gateway redirect.
+    window.location.assign(checkoutUrl.href);
   };
 
   return (
@@ -139,7 +168,7 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
           onClick={handleOpenExternal}
           className="inline-flex items-center gap-1 text-mad-main hover:underline cursor-pointer"
         >
-          <span>فتح في نافذة مستقلة</span>
+          <span>فتح صفحة الدفع</span>
           <ExternalLink className="size-3" />
         </button>
       </div>
@@ -170,6 +199,7 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
         {/* Non-StreamPay payment URLs (e.g. Moyasar form or direct gateway redirect) */}
         {!isStreamDomain ? (
           <iframe
+            ref={directIframeRef}
             src={paymentUrl}
             onLoad={() => setLoading(false)}
             className="w-full min-h-[440px] border-0"
@@ -191,11 +221,11 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
         {onSuccess && (
           <button
             type="button"
-            onClick={onSuccess}
+            onClick={() => onSuccess?.()}
             className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
           >
             <RefreshCw className="size-3.5" />
-            <span>تأكيد نجاح الدفع</span>
+            <span>التحقق من حالة الدفع</span>
           </button>
         )}
       </div>
