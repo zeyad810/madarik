@@ -45,10 +45,9 @@ export function getPendingPaymentId(): string | null {
 
 // `id` belongs to the gateway; it must never replace our checkout payment ID.
 export function resolvePaymentReturn(params: Pick<URLSearchParams, "get">, pendingId: string | null) {
-  const isStreamReturn = Boolean(params.get("payment_link_id") || params.get("invoice_id"));
   return {
     paymentId: params.get("paymentId") ||
-      (isStreamReturn ? pendingId : params.get("payment_id")) || pendingId,
+      params.get("payment_id") || pendingId,
     gatewayId: params.get("id") || params.get("streampay_id"),
   };
 }

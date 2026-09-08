@@ -21,7 +21,7 @@ Legacy return routes remain supported:
 - `/payment/callback?payment_id={backendPaymentId}&id={gatewayId}`
 - `/payment-operations?paymentId={backendPaymentId}&id={gatewayId}`
 
-These redirect to the canonical route. Stream's own `payment_id` is a separate identifier; returns containing Stream's `invoice_id` or `payment_link_id` use the saved checkout ID or an explicit `paymentId` parameter. A bare gateway `id` is never used as the backend payment ID. If the local ID cannot be recovered, the page provides a link to subscription status.
+These redirect to the canonical route. Per the backend checkout contract, `payment_id` on `/payment/callback` identifies the local payment and takes precedence over session storage, even when provider metadata is present. A bare gateway `id` is never used as the backend payment ID. If the local ID cannot be recovered, the page provides a link to subscription status.
 
 When a bank loads verification inside an iframe belonging to this site, verification moves to the full page. The external checkout fallback opens in the same tab to preserve session storage.
 

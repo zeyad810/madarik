@@ -7,11 +7,12 @@ import { PackageCard } from "./PackageCard";
 import { usePackagesList } from "../hooks/usePackages";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { CheckoutModal } from "@/features/payment";
+import { PackagesLoadError } from "@/features/packages/components/PackagesLoadError";
 import { PackagePlan } from "../types";
 
 export const PackagesSelectionView: React.FC = () => {
   const router = useRouter();
-  const { data: packages = [], isLoading: isPkgsLoading } = usePackagesList();
+  const { data: packages = [], isLoading: isPkgsLoading, isError: isPackagesError, isFetching: isPackagesFetching, refetch: refetchPackages } = usePackagesList();
   const {
     isAuthenticated,
     isStudent,
@@ -102,6 +103,8 @@ export const PackagesSelectionView: React.FC = () => {
               />
             ))}
           </div>
+        ) : isPackagesError ? (
+          <PackagesLoadError retry={() => { void refetchPackages(); }} isFetching={isPackagesFetching} />
         ) : packages.length === 0 ? (
           <div className="max-w-md mx-auto text-center py-12 px-6 rounded-3xl border border-gray-100 bg-gray-50/50">
             <p className="text-sm font-semibold text-gray-700">لا توجد باقات متاحة حالياً</p>

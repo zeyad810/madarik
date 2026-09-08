@@ -1,4 +1,4 @@
-import { API_BASE_URL, handleResponse } from "@/services/api";
+import { API_BASE_URL, getPublicPackagesUrl, handleResponse } from "@/services/api";
 import { getStoredAuthToken } from "@/lib/auth";
 import { ApiResponse } from "@/types";
 import { formatArabicDate } from "@/lib/utils";
@@ -32,10 +32,11 @@ function buildHeaders(token?: string | null): Record<string, string> {
  */
 export const getPackagesList = async (): Promise<PackagePlan[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/public/packages`, {
+    const response = await fetch(getPublicPackagesUrl(), {
       headers: { Accept: "application/json" },
       cache: "no-store",
     });
+    if (!response.ok) await handleResponse(response);
     if (response.ok) {
       const result = await handleResponse<ApiResponse<PublicPackagesData>>(response);
       const packages = result?.data?.packages;
@@ -108,7 +109,7 @@ export const getPackagesList = async (): Promise<PackagePlan[]> => {
       }
     }
   } catch (error) {
-    console.error("Error fetching packages list:", error);
+    throw error instanceof Error ? error : new Error("تعذر تحميل الباقات حالياً");
   }
   return [];
 };
