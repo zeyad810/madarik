@@ -215,11 +215,45 @@ export const getQuizHistory = async (
       headers: buildHeaders(token),
     });
 
-    const raw = await handleResponse<any>(response);
+    let raw = await handleResponse<any>(response);
+
+    // Fallback: if student and /quiz-attempts returned empty, check student/profile
+    const listCandidate =
+      raw?.data?.data ||
+      raw?.data?.results ||
+      raw?.data?.quiz_attempts ||
+      raw?.data;
+
+    if (r === "student" && (!raw || !Array.isArray(listCandidate) || listCandidate.length === 0)) {
+      try {
+        const profRes = await fetch(`${API_BASE_URL}/student/profile`, {
+          method: "GET",
+          headers: buildHeaders(token),
+        });
+        if (profRes.ok) {
+          const profData = await handleResponse<any>(profRes);
+          if (
+            Array.isArray(profData?.data?.quiz_attempts) &&
+            profData.data.quiz_attempts.length > 0
+          ) {
+            raw = {
+              success: true,
+              data: profData.data.quiz_attempts,
+            };
+          }
+        }
+      } catch {
+        // fallback
+      }
+    }
 
     let rawList: any[] = [];
     if (Array.isArray(raw?.data?.data)) {
       rawList = raw.data.data;
+    } else if (Array.isArray(raw?.data?.quiz_attempts)) {
+      rawList = raw.data.quiz_attempts;
+    } else if (Array.isArray(raw?.data?.results)) {
+      rawList = raw.data.results;
     } else if (Array.isArray(raw?.data)) {
       rawList = raw.data;
     } else if (Array.isArray(raw)) {
@@ -233,7 +267,7 @@ export const getQuizHistory = async (
 
     rawList.forEach((obj: any, idx: number) => {
       if (!obj) return;
-      const key = obj.quiz_id || obj.id || obj.code || obj.story_title || obj.title || `item-${idx}`;
+      const key = obj.id || obj.quiz_id || obj.code || obj.story_title || obj.title || `item-${idx}`;
 
       const totalQ = obj.total_questions ?? obj.questions?.length ?? 1;
       const score = obj.score ?? obj.correct_answers ?? obj.last_score_percentage ?? obj.last_score ?? 0;

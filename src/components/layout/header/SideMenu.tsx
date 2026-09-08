@@ -92,9 +92,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
   };
 
   const visibleMenuItems = useMemo(() => {
-    // For unauthenticated visitors, show all side menu items
+    // For unauthenticated visitors, show all side menu items except private profile
     if (!isAuthenticated) {
-      return SIDE_MENU_ITEMS;
+      return SIDE_MENU_ITEMS.filter((item) => item.id !== "profile");
     }
 
     return SIDE_MENU_ITEMS.filter((item) => {
@@ -122,6 +122,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
       // Results/attempts log is strictly for authenticated student / child
       // and hidden for parent, free_customer, or when parent account is active
       if (isResultsItem) {
+        if (isStudent || userRole === "student") {
+          return true;
+        }
         if (
           isFreeCustomer ||
           isParentActive ||
@@ -155,10 +158,12 @@ const SideMenu: React.FC<SideMenuProps> = ({
       if (isChildOrStudent) {
         return (
           item.id === "home" ||
+          item.id === "profile" ||
           item.id === "available-stories" ||
           item.id === "attempts-log" ||
           item.id === "results" ||
           item.href === "/" ||
+          item.href.startsWith("/profile") ||
           item.href.startsWith("/stories") ||
           item.href.startsWith("/results") ||
           item.href.startsWith("/attempts")
@@ -217,7 +222,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
     activeAccount?.rawParent?.status === "active";
   const parentStatusLabel = isParentStatusActive ? "نشط" : "معطل";
 
-  const hasMultipleProfiles = isParentRole || children.length > 0;
+  const hasMultipleProfiles = !isStudent && (isParentRole || children.length > 0);
 
   return (
     <AnimatePresence>
@@ -601,8 +606,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 <div className="h-11 w-full bg-gray-200 animate-pulse rounded-xl" />
               ) : isAuthenticated && activeAccount ? (
                 <div className="flex flex-col gap-2">
-                  {/* Profile Page Link - Parent only */}
-                  {isParentActive && !isChildOrStudent && (
+                  {/* Profile Page Link - Parent & Student */}
+                  {((isParentActive && !isChildOrStudent) || isStudent) && (
                     <Link
                       href="/profile"
                       onClick={onClose}
