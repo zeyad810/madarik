@@ -3,6 +3,13 @@ export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://madarik.themiify.com/api/v1";
 
+// Browser requests stay on this site's origin; server requests use the upstream directly.
+export function getPublicPackagesUrl(): string {
+  return typeof window === "undefined"
+    ? `${API_BASE_URL.replace(/\/+$/, "")}/public/packages`
+    : "/api/public/packages";
+}
+
 /**
  * Simple helper to parse response and handle API errors cleanly.
  */

@@ -1,4 +1,4 @@
-import { API_BASE_URL, handleResponse } from "@/services/api";
+import { API_BASE_URL, getPublicPackagesUrl, handleResponse } from "@/services/api";
 import { ApiResponse } from "@/types";
 import {
   LegalItem,
@@ -17,7 +17,7 @@ export const getPublicLandingData = async (): Promise<ApiResponse<PublicLandingD
 };
 
 export const getPublicPackages = async (): Promise<ApiResponse<PublicPackagesData>> => {
-  const response = await fetch(`${API_BASE_URL}/public/packages`);
+  const response = await fetch(getPublicPackagesUrl());
   const data = await handleResponse<ApiResponse<PublicPackagesData>>(response);
   return data;
 };

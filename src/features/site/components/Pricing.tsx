@@ -9,6 +9,7 @@ import { usePublicLanding } from "../hooks/usePublicLanding";
 import { usePublicPackages } from "../hooks/usePublicPackages";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { CheckoutModal } from "@/features/payment";
+import { PackagesLoadError } from "@/features/packages/components/PackagesLoadError";
 import { PackagePlan } from "@/features/packages/types";
 import type { PublicPackage } from "../types";
 
@@ -28,7 +29,7 @@ export const Pricing: React.FC<PricingProps> = ({
   onCtaClick,
 }) => {
   const router = useRouter();
-  const { data: fetchedPackages = [], isLoading: isPkgsLoading } = usePackagesList();
+  const { data: fetchedPackages = [], isLoading: isPkgsLoading, isError: isPackagesError, isFetching: isPackagesFetching, refetch: refetchPackages } = usePackagesList();
   const {
     isAuthenticated,
     isStudent,
@@ -137,6 +138,8 @@ export const Pricing: React.FC<PricingProps> = ({
               />
             ))}
           </div>
+        ) : isPackagesError && packagesList.length === 0 ? (
+          <PackagesLoadError retry={() => { void refetchPackages(); }} isFetching={isPackagesFetching} />
         ) : (
           <div className={`mx-auto mt-12 grid gap-6 lg:gap-8 ${gridColsClass}`}>
             {packagesList.map((pkg, index) => (

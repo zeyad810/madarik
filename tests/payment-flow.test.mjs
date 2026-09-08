@@ -28,10 +28,10 @@ test('gateway IDs never become the backend payment ID', () => {
   assert.equal(flow.resolvePaymentReturn(new URLSearchParams('id=gateway'), null).paymentId, null);
 });
 
-test('Stream payment_id is separate from our saved checkout ID', () => {
-  const params = new URLSearchParams('payment_id=stream&id=gateway&invoice_id=invoice');
-  assert.equal(flow.resolvePaymentReturn(params, 'local').paymentId, 'local');
-  assert.equal(flow.resolvePaymentReturn(params, null).paymentId, null);
+test('documented callback payment_id works without storage, including provider metadata', () => {
+  const params = new URLSearchParams('payment_id=local&id=gateway&invoice_id=invoice');
+  assert.equal(flow.resolvePaymentReturn(params, 'old').paymentId, 'local');
+  assert.equal(flow.resolvePaymentReturn(params, null).paymentId, 'local');
 });
 
 test('explicit local IDs and legacy callback URLs remain supported', () => {
@@ -234,4 +234,41 @@ test('checkout with no payment URL goes to verification instead of declaring suc
   button.props.onClick();
   assert.deepEqual(navigated, ['/subscription/payment/local']);
   assert.ok(!stateChanges.includes(true));
+});
+
+test('packages requests use the same origin in browsers and the configured API on the server', () => {
+  const globals = { process: { env: { API_URL: 'https://backend.test/api/v1/' } } };
+  const server = load('src/services/api.ts', {}, globals);
+  const browser = load('src/services/api.ts', {}, { ...globals, window: {} });
+  assert.equal(server.getPublicPackagesUrl(), 'https://backend.test/api/v1/public/packages');
+  assert.equal(browser.getPublicPackagesUrl(), '/api/public/packages');
+});
+
+test('public packages route forwards the documented data without browser credentials', async () => {
+  const calls = [];
+  const body = { success: true, data: { title: 'Packages', packages: [{ id: 'package-1', price: '149.00' }] } };
+  const route = load('src/app/api/public/packages/route.ts', {
+    '@/services/api': { API_BASE_URL: 'https://backend.test/api/v1/' },
+  }, { Response, AbortSignal, fetch: async (...args) => { calls.push(args); return Response.json(body); } });
+  const response = await route.GET();
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), body);
+  assert.equal(calls[0][0], 'https://backend.test/api/v1/public/packages');
+  assert.deepEqual(Object.keys(calls[0][1].headers), ['Accept']);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+});
+
+test('public packages route reports upstream outages and malformed payloads as JSON errors', async () => {
+  for (const [fetchResult, expected] of [
+    [async () => new Response('', { status: 404 }), 404],
+    [async () => { throw new TypeError('Failed to fetch'); }, 502],
+    [async () => Response.json({ success: true, data: {} }), 502],
+  ]) {
+    const route = load('src/app/api/public/packages/route.ts', {
+      '@/services/api': { API_BASE_URL: 'https://backend.test/api/v1' },
+    }, { Response, AbortSignal, fetch: fetchResult });
+    const response = await route.GET();
+    assert.equal(response.status, expected);
+    assert.equal((await response.json()).success, false);
+  }
 });

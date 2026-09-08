@@ -6,11 +6,12 @@ import { PackageCard } from "./PackageCard";
 import { CurrentSubscriptionBanner } from "./CurrentSubscriptionBanner";
 import { useCurrentSubscription, usePackagesList } from "../hooks/usePackages";
 import { CheckoutModal } from "@/features/payment";
+import { PackagesLoadError } from "@/features/packages/components/PackagesLoadError";
 import { PackagePlan } from "../types";
 
 export const PackageRenewView: React.FC = () => {
   const { data: subscription, isLoading: isSubLoading } = useCurrentSubscription();
-  const { data: packages = [], isLoading: isPkgLoading } = usePackagesList();
+  const { data: packages = [], isLoading: isPkgLoading, isError: isPackagesError, isFetching: isPackagesFetching, refetch: refetchPackages } = usePackagesList();
   const [selectedPackageForCheckout, setSelectedPackageForCheckout] = useState<PackagePlan | null>(null);
 
   const handleSelectPackage = (pkg: PackagePlan) => {
@@ -82,6 +83,8 @@ export const PackageRenewView: React.FC = () => {
               />
             ))}
           </div>
+        ) : isPackagesError ? (
+          <PackagesLoadError retry={() => { void refetchPackages(); }} isFetching={isPackagesFetching} />
         ) : (
           <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
             {packages.map((pkg, index) => (
