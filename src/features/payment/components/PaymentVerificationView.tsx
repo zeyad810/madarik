@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { CheckCircle2, XCircle, RefreshCw, ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
+import { getPaymentState, getVerificationUrl } from "../paymentFlow";
 import { useVerifySubscriptionPayment } from "../hooks/usePayment";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 
@@ -16,28 +17,39 @@ export interface PaymentVerificationViewProps {
 export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = ({
   paymentId,
   streamPayId,
-  result,
 }) => {
+  useEffect(() => {
+    if (window.top && window.top !== window.self) {
+      try {
+        // A bank may load the callback inside its iframe; show verification in the full page.
+        if (window.top.location.origin === window.location.origin) {
+          window.top.location.replace(getVerificationUrl(paymentId, streamPayId));
+        }
+      } catch {
+        // Cross-origin parents cannot be controlled by this page.
+      }
+    }
+  }, [paymentId, streamPayId]);
+
   const {
     data,
-    isLoading,
+    isPending,
+    isAwaitingSession,
     isError,
-    error,
     refetch,
     isFetching,
   } = useVerifySubscriptionPayment(paymentId, streamPayId, {
     refetchInterval: (query) => {
-      const qData = (query as { state?: { data?: { status?: string } } })?.state?.data;
-      if (qData?.status === "initiated") {
-        return 3000; // Poll every 3s while initiated
-      }
-      return false;
+      if (query.state.status === "error" || query.state.dataUpdateCount >= 40) return false;
+      return getPaymentState(query.state.data) === "pending" ? 3000 : false;
     },
   });
 
-  const isSuccess = data?.is_subscribed || data?.status === "paid" || data?.status === "success";
-  const isFailed = data?.status === "failed" || isError || result === "failed";
-  const isInitiated = (data?.status === "initiated" || isLoading) && !isSuccess && !isFailed;
+  const state = getPaymentState(data);
+  const isSuccess = state === "success";
+  const isFailed = !isSuccess && (state === "failed" || isError);
+  const isInitiated = !isSuccess && !isFailed;
+  const isChecking = isPending || isAwaitingSession || isFetching;
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
@@ -72,12 +84,12 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
           {isInitiated && !isSuccess && (
             <div className="space-y-6">
               <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-purple-50 text-mad-main border border-purple-100">
-                <RefreshCw className="size-10 animate-spin text-mad-main" />
+                <RefreshCw className={`size-10 text-mad-main ${isChecking ? "animate-spin" : ""}`} />
               </div>
 
               <div className="space-y-2">
                 <h1 className="text-2xl font-extrabold text-gray-900">
-                  جاري التحقق من حالة الدفعة...
+                  {isChecking ? "جاري التحقق من حالة الدفعة..." : "الدفعة قيد المعالجة"}
                 </h1>
                 <p className="text-sm text-gray-500 max-w-sm mx-auto">
                   نتواصل الآن مع بوابة الدفع الآمنة والبنك للتأكد من اكتمال المعاملة وتفعيل اشتراكك تلقائياً.
@@ -89,6 +101,17 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
                 <span>رقم العملية: {paymentId}</span>
               </div>
             </div>
+          )}
+
+          {isInitiated && !isPending && (
+            <button
+              type="button"
+              onClick={() => refetch()}
+              disabled={isFetching || isAwaitingSession}
+              className="mt-6 px-6 py-3 rounded-full bg-mad-main text-white font-bold text-sm disabled:opacity-50 cursor-pointer"
+            >
+              إعادة فحص الدفعة
+            </button>
           )}
 
           {/* 2. SUCCESS STATE */}
@@ -143,11 +166,11 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
 
               <div className="space-y-2">
                 <h1 className="text-2xl font-extrabold text-gray-900">
-                  لم تكتمل عملية الدفع
+                  {isError ? "تعذر التحقق من حالة الدفع حالياً" : "لم تكتمل عملية الدفع"}
                 </h1>
                 <p className="text-sm text-gray-600 max-w-md mx-auto">
-                  {error instanceof Error
-                    ? error.message
+                  {isError
+                    ? "تعذر الاتصال للتحقق من العملية. أعد فحص الدفعة قبل محاولة الدفع مرة أخرى."
                     : "تعذر إتمام الدفع أو تم رفض العملية من قبل البنك. يرجى التأكد من رصيد البطاقة والمحاولة مرة أخرى."}
                 </p>
               </div>
@@ -156,7 +179,7 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
                 <button
                   type="button"
                   onClick={() => refetch()}
-                  disabled={isFetching}
+                  disabled={isFetching || isAwaitingSession}
                   className="w-full sm:w-auto px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
                   <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />

@@ -1,28 +1,19 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePaymentReturn } from "@/features/payment/hooks/usePaymentReturn";
 import { PaymentVerificationView } from "@/features/payment";
 import Link from "next/link";
 import { CreditCard, ArrowLeft } from "lucide-react";
 
 function PaymentOperationsContent() {
-  const searchParams = useSearchParams();
-  const paymentId =
-    searchParams.get("payment_id") ||
-    searchParams.get("paymentId") ||
-    searchParams.get("id");
-
-  const streamPayId =
-    searchParams.get("id") || searchParams.get("streampay_id") || null;
-  const result = searchParams.get("result") || null;
+  const { paymentId, streamPayId } = usePaymentReturn();
 
   if (paymentId) {
     return (
       <PaymentVerificationView
         paymentId={paymentId}
         streamPayId={streamPayId}
-        result={result}
       />
     );
   }

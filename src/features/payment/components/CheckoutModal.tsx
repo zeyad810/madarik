@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, AlertCircle, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
 import { PackagePlan } from "@/features/packages/types";
-import { useCheckoutSubscription, useVerifySubscriptionPayment } from "../hooks/usePayment";
+import { useCheckoutSubscription } from "../hooks/usePayment";
 import { StreamCheckoutEmbed } from "./StreamCheckoutEmbed";
 import toast from "react-hot-toast";
+import { getCheckoutUrl, getPaymentState, getVerificationUrl, rememberPayment } from "../paymentFlow";
 
 export interface CheckoutModalProps {
   isOpen: boolean;
@@ -32,24 +33,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const { mutate: checkout, isPending: isCheckingOut } = useCheckoutSubscription();
 
-  // Verification hook when payment completes
-  const { refetch: verifyPayment, isFetching: isVerifying } = useVerifySubscriptionPayment(
-    activePaymentId,
-    { enabled: false }
-  );
-
   if (!isOpen || !pkg) return null;
 
   const effectivePrice = pkg.discountedPrice ?? pkg.price;
   const priceDisplay = effectivePrice ? `${effectivePrice} ${pkg.currency || "ر.س"}` : "";
 
-  const isFreePackage =
-    !effectivePrice ||
-    Number(effectivePrice) === 0 ||
-    pkg.price === 0 ||
-    pkg.discountedPrice === 0;
+  const isFreePackage = effectivePrice != null && Number(effectivePrice) === 0;
 
   const handleCheckout = () => {
+    if (isCheckingOut) return;
+    if (activePaymentId && streamPaymentUrl) {
+      setIsStreamEmbedActive(true);
+      return;
+    }
     setErrorMessage(null);
 
     checkout(
@@ -58,35 +54,47 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       },
       {
         onSuccess: (res) => {
-          const paymentId = res.data?.payment_id;
+          const paymentId = res.data?.payment_id ? String(res.data.payment_id) : null;
           const redirectUrl = res.data?.payment_url || res.data?.transaction_url;
-          const status = res.data?.status;
+          const state = getPaymentState(res.data);
 
-          if (paymentId) setActivePaymentId(paymentId);
+          if (!res.success || state === "failed") {
+            setErrorMessage(res.message || "لم تتم عملية الدفع بنجاح. يرجى المحاولة مرة أخرى.");
+            return;
+          }
 
-          // Free package or immediately paid
-          if (
-            isFreePackage ||
-            status === "paid" ||
-            status === "success" ||
-            (!redirectUrl && res.success)
-          ) {
+          if (paymentId) {
+            setActivePaymentId(paymentId);
+            rememberPayment(paymentId);
+          }
+
+          if (state === "success") {
+            if (paymentId) {
+              router.push(getVerificationUrl(paymentId));
+              return;
+            }
             setPaymentSuccess(true);
             toast.success("تم تفعيل اشتراكك بنجاح! مرحباً بك في مدارك");
-            if (onSuccess) onSuccess();
+            onSuccess?.();
             return;
           }
 
-          // Open embedded StreamPay checkout inside modal
+          if (!paymentId) {
+            setErrorMessage("تعذر العثور على رقم عملية الدفع. يرجى مراجعة حالة اشتراكك قبل المحاولة مجدداً.");
+            return;
+          }
+
           if (redirectUrl) {
-            setStreamPaymentUrl(redirectUrl);
-            setIsStreamEmbedActive(true);
+            try {
+              setStreamPaymentUrl(getCheckoutUrl(redirectUrl).href);
+              setIsStreamEmbedActive(true);
+            } catch {
+              setErrorMessage("رابط الدفع غير صالح. يرجى مراجعة الدعم.");
+            }
             return;
           }
 
-          if (status === "failed") {
-            setErrorMessage("لم تتم عملية الدفع بنجاح. يرجى المحاولة مرة أخرى.");
-          }
+          router.push(getVerificationUrl(paymentId));
         },
         onError: (err) => {
           const msg = err?.message || "تعذر بدء عملية الدفع. يرجى المحاولة لاحقاً.";
@@ -97,29 +105,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     );
   };
 
-  const handleVerifyAndConfirm = async () => {
-    if (!activePaymentId) return;
-    try {
-      toast.loading("جاري التحقق من حالة الدفع وتفعيل الاشتراك...", { id: "verify-toast" });
-      const res = await verifyPayment();
-      toast.dismiss("verify-toast");
-      if (res.data?.is_subscribed || res.data?.status === "paid" || res.data?.status === "success") {
-        setIsStreamEmbedActive(false);
-        setPaymentSuccess(true);
-        toast.success("تم تأكيد وتفعيل اشتراكك بنجاح! مرحباً بك في مدارك");
-        if (onSuccess) onSuccess();
-      } else if (res.data?.status === "failed") {
-        toast.error("لم تكتمل عملية الدفع أو تم رفضها من قبل البنك.");
-      } else {
-        toast("العملية قيد المعالجة، يرجى الانتظار ثوانٍ ثم الضغط مجدداً للتأكيد.", { icon: "⏳" });
-      }
-    } catch {
-      toast.dismiss("verify-toast");
-      toast.error("تعذر التحقق من الدفعة حالياً، يرجى المحاولة مجدداً.");
-    }
+  const handleVerifyAndConfirm = (gatewayId?: string | null) => {
+    if (activePaymentId) router.push(getVerificationUrl(activePaymentId, gatewayId));
   };
 
   const handleCloseAll = () => {
+    if (isCheckingOut) return;
     setIsStreamEmbedActive(false);
     setStreamPaymentUrl(null);
     setPaymentSuccess(false);
@@ -220,11 +211,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     onClick={() => setIsStreamEmbedActive(false)}
                     className="text-xs text-mad-main font-semibold hover:underline cursor-pointer"
                   >
-                    تغيير الخيارات
+                    الرجوع لملخص الباقة
                   </button>
                 </div>
 
                 <StreamCheckoutEmbed
+                  key={activePaymentId}
                   paymentUrl={streamPaymentUrl}
                   paymentId={activePaymentId || ""}
                   onSuccess={handleVerifyAndConfirm}
@@ -357,7 +349,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <button
                       type="button"
                       onClick={handleCheckout}
-                      disabled={isCheckingOut || isVerifying}
+                      disabled={isCheckingOut}
                       className="w-full py-4 px-6 rounded-2xl bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-lg shadow-purple-900/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
                       {isCheckingOut ? (
