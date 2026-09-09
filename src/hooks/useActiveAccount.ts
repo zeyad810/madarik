@@ -276,7 +276,10 @@ export function useActiveAccount(): UseActiveAccountReturn {
 
   // Server settings for parent profile
   const { data: serverSettingsData } = useParentSettings({
-    enabled: status === "authenticated" && !isStudent && isParentRole,
+    enabled:
+      status === "authenticated" &&
+      !isStudent &&
+      (isParentRole || isFreeCustomer || isFreeRole(sessionUserType)),
   });
 
   // Active account metadata object
@@ -294,10 +297,17 @@ export function useActiveAccount(): UseActiveAccountReturn {
     return buildParentActiveAccount(
       user,
       sessionUserType,
-      isParentRole,
+      isParentRole || isFreeCustomer || isFreeRole(sessionUserType),
       serverSettingsData?.data?.name
     );
-  }, [user, matchedChild, sessionUserType, isParentRole, serverSettingsData?.data?.name]);
+  }, [
+    user,
+    matchedChild,
+    sessionUserType,
+    isParentRole,
+    isFreeCustomer,
+    serverSettingsData?.data?.name,
+  ]);
 
   const parentName = useMemo(() => {
     return (

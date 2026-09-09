@@ -13,7 +13,6 @@ export const useParentChildren = () => {
     children: sessionChildren,
     isLoading: isSessionLoading,
     isStudent,
-    isParentRole,
   } = useActiveAccount();
 
   const token = getStoredAuthToken(session);
@@ -48,7 +47,7 @@ export const useParentChildren = () => {
         badges: c.badges ?? 0,
       })) as Child[];
     },
-    enabled: status === "authenticated" && !!token && !isStudentUser && (isParentRole || !rawUserType),
+    enabled: status === "authenticated" && !!token && !isStudentUser,
     placeholderData:
       sessionChildren && sessionChildren.length > 0
         ? sessionChildren

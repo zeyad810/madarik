@@ -9,6 +9,18 @@ export const SIDE_MENU_ITEMS: SideMenuItem[] = [
     allowedRoles: ["student", "parent", "free", "free_customer"],
   },
   {
+    id: "children-mgmt",
+    label: "إدارة الأطفال",
+    href: "/parents/childMangement",
+    allowedRoles: ["parent", "free", "free_customer"],
+  },
+  {
+    id: "children-reports",
+    label: "تقارير الأطفال",
+    href: "/parents/childReports",
+    allowedRoles: ["parent", "free", "free_customer"],
+  },
+  {
     id: "results",
     label: "نتائجي",
     href: "/results",

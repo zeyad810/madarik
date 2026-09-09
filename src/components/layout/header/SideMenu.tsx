@@ -21,10 +21,10 @@ import {
 } from "lucide-react";
 import { SIDE_MENU_ITEMS } from "./constants";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
-import { RoleGuard } from "@/components/guards";
 import { useChild, useParentChildren } from "@/features/parent/hooks";
 import { clearStoredAuth } from "@/lib/auth";
 import { resolveChildBadgesCount } from "@/lib/children";
+import { hasRoleAccess, isFreeRole } from "@/lib/roles";
 
 // Smooth spring physics — feels like a native drawer
 const DRAWER_SPRING = {
@@ -63,6 +63,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
     createAccountHref,
     resetAccount,
     isStudent,
+    isChild,
     isParentRole,
     isParentActive,
     isChildOrStudent,
@@ -113,6 +114,16 @@ const SideMenu: React.FC<SideMenuProps> = ({
         return false;
       }
 
+      // 2. Child Management & Child Reports: hidden from child & student
+      const isChildManagementItem =
+        item.id === "children-mgmt" ||
+        item.id === "children-reports" ||
+        item.href.startsWith("/parents");
+
+      if (isChildManagementItem && isChildOrStudent) {
+        return false;
+      }
+
       const isResultsItem =
         item.id === "results" ||
         item.id === "attempts-log" ||
@@ -140,13 +151,23 @@ const SideMenu: React.FC<SideMenuProps> = ({
         }
       }
 
+      // 3. Profile item: hidden from child accounts (child has no /profile page)
+      const isProfileItem =
+        item.id === "profile" || item.href.startsWith("/profile");
+      if (
+        isProfileItem &&
+        (isChild || activeAccount?.type === "child" || userRole === "child")
+      ) {
+        return false;
+      }
+
       // Check item.allowedRoles
       if (item.allowedRoles && item.allowedRoles.length > 0) {
         const hasAccess =
+          hasRoleAccess(userRole, item.allowedRoles) ||
           item.allowedRoles.includes(userRole) ||
-          (isChildOrStudent &&
-            (item.allowedRoles.includes("student") ||
-              item.allowedRoles.includes("child"))) ||
+          (isChild && item.allowedRoles.includes("child")) ||
+          (isStudent && item.allowedRoles.includes("student")) ||
           (isFreeCustomer &&
             (item.allowedRoles.includes("free") ||
               item.allowedRoles.includes("free_customer")));
@@ -158,12 +179,13 @@ const SideMenu: React.FC<SideMenuProps> = ({
       if (isChildOrStudent) {
         return (
           item.id === "home" ||
-          item.id === "profile" ||
+          (isStudent &&
+            (item.id === "profile" || item.href.startsWith("/profile"))) ||
           item.id === "available-stories" ||
           item.id === "attempts-log" ||
           item.id === "results" ||
           item.href === "/" ||
-          item.href.startsWith("/profile") ||
+          (isStudent && item.href.startsWith("/profile")) ||
           item.href.startsWith("/stories") ||
           item.href.startsWith("/results") ||
           item.href.startsWith("/attempts")
@@ -175,6 +197,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
     isAuthenticated,
     isFreeCustomer,
     isChildOrStudent,
+    isChild,
+    activeAccount?.type,
+    isStudent,
     isParentActive,
     isParentRole,
     userRole,
@@ -222,7 +247,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
     activeAccount?.rawParent?.status === "active";
   const parentStatusLabel = isParentStatusActive ? "نشط" : "معطل";
 
-  const hasMultipleProfiles = !isStudent && (isParentRole || children.length > 0);
+  const hasMultipleProfiles =
+    !isStudent &&
+    (isParentRole || isFreeCustomer || isFreeRole(userRole) || children.length > 0);
 
   return (
     <AnimatePresence>
@@ -505,17 +532,15 @@ const SideMenu: React.FC<SideMenuProps> = ({
                           );
                         })}
 
-                        {/* 3. Add Child Quick Link — hidden for free users */}
-                        {!isFreeCustomer && (
-                          <Link
-                            href="/parents/childMangement/addChild"
-                            onClick={onClose}
-                            className="w-full py-2 px-3 rounded-xl border border-dashed border-purple-300 hover:border-mad-main hover:bg-purple-50/50 text-mad-main font-bold text-xs flex items-center justify-center gap-1.5 transition-all mt-1 cursor-pointer"
-                          >
-                            <UserPlus className="size-3.5" />
-                            <span>إضافة طفل جديد</span>
-                          </Link>
-                        )}
+                        {/* 3. Add Child Quick Link */}
+                        <Link
+                          href="/parents/childMangement/addChild"
+                          onClick={onClose}
+                          className="w-full py-2 px-3 rounded-xl border border-dashed border-purple-300 hover:border-mad-main hover:bg-purple-50/50 text-mad-main font-bold text-xs flex items-center justify-center gap-1.5 transition-all mt-1 cursor-pointer"
+                        >
+                          <UserPlus className="size-3.5" />
+                          <span>إضافة طفل جديد</span>
+                        </Link>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -581,18 +606,6 @@ const SideMenu: React.FC<SideMenuProps> = ({
                         </Link>
                       </motion.div>
                     );
-
-                    if (isAuthenticated && item.allowedRoles && item.allowedRoles.length > 0) {
-                      return (
-                        <RoleGuard
-                          key={item.id}
-                          allowedRoles={item.allowedRoles}
-                          fallback={null}
-                        >
-                          {itemContent}
-                        </RoleGuard>
-                      );
-                    }
 
                     return itemContent;
                   })}

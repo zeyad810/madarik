@@ -66,6 +66,18 @@ export function RoleGuard({
   }
 
   if (!hasAccess) {
+    if (fallback === null) {
+      return null;
+    }
+    if (
+      fallback !== undefined &&
+      !(
+        React.isValidElement(fallback) &&
+        fallback.type === AccessDeniedFallback
+      )
+    ) {
+      return <>{fallback}</>;
+    }
     if (userIsChildOrStudent) {
       return (
         <div className="w-full min-h-[60vh] flex items-center justify-center">
