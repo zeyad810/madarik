@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { DESKTOP_NAV_LINKS } from "./constants";
 import UserDropdown from "./UserDropdown";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
+import { hasRoleAccess } from "@/lib/roles";
 
 import { Search } from "lucide-react";
 
@@ -21,6 +22,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
     createAccountHref,
     userRole,
     isStudent,
+    isChild,
     isFreeCustomer,
     isAuthenticated,
     activeAccount,
@@ -95,10 +97,13 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
       // 3. Link allowedRoles check
       if (link.allowedRoles && link.allowedRoles.length > 0) {
         const hasAccess =
+          hasRoleAccess(userRole, link.allowedRoles) ||
           link.allowedRoles.includes(userRole) ||
-          (isChildOrStudent &&
-            (link.allowedRoles.includes("student") ||
-              link.allowedRoles.includes("child")));
+          (isChild && link.allowedRoles.includes("child")) ||
+          (isStudent && link.allowedRoles.includes("student")) ||
+          (isFreeCustomer &&
+            (link.allowedRoles.includes("free") ||
+              link.allowedRoles.includes("free_customer")));
         if (!hasAccess) {
           return false;
         }
@@ -110,6 +115,8 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ onOpenSearch }) => {
     isAuthenticated,
     isFreeCustomer,
     isChildOrStudent,
+    isChild,
+    isStudent,
     isParentActive,
     isParentRole,
     userRole,
