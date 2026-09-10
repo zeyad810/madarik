@@ -76,12 +76,19 @@ export function useCheckoutSubscription() {
   const token = (session as unknown as { accessToken?: string })?.accessToken;
 
   return useMutation<CheckoutSubscriptionResponse, Error, CheckoutSubscriptionPayload>({
-    mutationFn: (payload: CheckoutSubscriptionPayload) => checkoutSubscription(payload, token),
-    onSuccess: () => {
+    mutationFn: (payload: CheckoutSubscriptionPayload) => {
+      console.log("[PaymentDebug] useCheckoutSubscription mutation started:", { payload, tokenPresent: Boolean(token) });
+      return checkoutSubscription(payload, token);
+    },
+    onSuccess: (data) => {
+      console.log("[PaymentDebug] useCheckoutSubscription mutation success:", data);
       // Invalidate subscription and packages queries
       queryClient.invalidateQueries({ queryKey: subscriptionKeys.all });
       queryClient.invalidateQueries({ queryKey: ["packages"] });
       queryClient.invalidateQueries({ queryKey: ["packageHistory"] });
+    },
+    onError: (err) => {
+      console.error("[PaymentDebug] useCheckoutSubscription mutation failed:", err);
     },
   });
 }
@@ -112,11 +119,21 @@ export function useVerifySubscriptionPayment(
       ? (streamPayIdOrOptions as VerifyPaymentHookOptions)
       : maybeOptions;
 
+  console.log("[PaymentDebug] useVerifySubscriptionPayment hook state:", {
+    paymentId,
+    streamPayId,
+    sessionStatus,
+    hasToken: Boolean(token),
+    enabled: sessionStatus !== "loading" && Boolean(paymentId) && (options?.enabled ?? true),
+  });
+
   const query = useQuery<VerifyPaymentData>({
     queryKey: subscriptionKeys.verify(paymentId || "", streamPayId),
     queryFn: async () => {
       if (!paymentId) throw new Error("Payment ID is required");
+      console.log("[PaymentDebug] queryFn verifying payment:", { paymentId, streamPayId });
       const response = await verifySubscriptionPayment(paymentId, streamPayId, token);
+      console.log("[PaymentDebug] queryFn verification result:", response);
       return response.data;
     },
     enabled: sessionStatus !== "loading" && Boolean(paymentId) && (options?.enabled ?? true),
@@ -127,6 +144,7 @@ export function useVerifySubscriptionPayment(
   const isSuccess = getPaymentState(query.data) === "success";
   useEffect(() => {
     if (!isSuccess) return;
+    console.log("[PaymentDebug] Payment verified successfully, invalidating caches");
     // Do not invalidate the verification query from inside its own queryFn.
     void queryClient.invalidateQueries({ queryKey: subscriptionKeys.current() });
     void queryClient.invalidateQueries({ queryKey: [...subscriptionKeys.all, "history"] });

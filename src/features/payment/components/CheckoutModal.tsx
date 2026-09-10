@@ -43,10 +43,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const handleCheckout = () => {
     if (isCheckingOut) return;
     if (activePaymentId && streamPaymentUrl) {
+      console.log("[PaymentDebug] handleCheckout reusing existing active checkout:", { activePaymentId, streamPaymentUrl });
       setIsStreamEmbedActive(true);
       return;
     }
     setErrorMessage(null);
+    console.log("[PaymentDebug] handleCheckout starting checkout for pkg:", { id: pkg.id, name: pkg.name, price: effectivePrice });
 
     checkout(
       {
@@ -54,23 +56,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       },
       {
         onSuccess: (res) => {
+          console.log("[PaymentDebug] handleCheckout onSuccess:", res);
           const paymentId = res.data?.payment_id ? String(res.data.payment_id) : null;
           const redirectUrl = res.data?.payment_url || res.data?.transaction_url;
           const state = getPaymentState(res.data);
 
           if (!res.success || state === "failed") {
-            setErrorMessage(res.message || "لم تتم عملية الدفع بنجاح. يرجى المحاولة مرة أخرى.");
+            const msg = res.message || "لم تتم عملية الدفع بنجاح. يرجى المحاولة مرة أخرى.";
+            console.warn("[PaymentDebug] handleCheckout failure state:", { state, message: msg });
+            setErrorMessage(msg);
             return;
           }
 
           if (paymentId) {
+            console.log("[PaymentDebug] handleCheckout activePaymentId set:", paymentId);
             setActivePaymentId(paymentId);
             rememberPayment(paymentId);
           }
 
           if (state === "success") {
             if (paymentId) {
-              router.push(getVerificationUrl(paymentId));
+              const verifyUrl = getVerificationUrl(paymentId);
+              console.log("[PaymentDebug] handleCheckout immediate success, navigating to:", verifyUrl);
+              router.push(verifyUrl);
               return;
             }
             setPaymentSuccess(true);
@@ -80,24 +88,31 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           }
 
           if (!paymentId) {
+            console.error("[PaymentDebug] handleCheckout missing payment_id in response!");
             setErrorMessage("تعذر العثور على رقم عملية الدفع. يرجى مراجعة حالة اشتراكك قبل المحاولة مجدداً.");
             return;
           }
 
           if (redirectUrl) {
             try {
-              setStreamPaymentUrl(getCheckoutUrl(redirectUrl).href);
+              const parsed = getCheckoutUrl(redirectUrl).href;
+              console.log("[PaymentDebug] handleCheckout activating embedded checkout with URL:", parsed);
+              setStreamPaymentUrl(parsed);
               setIsStreamEmbedActive(true);
-            } catch {
+            } catch (err) {
+              console.error("[PaymentDebug] handleCheckout invalid payment URL:", redirectUrl, err);
               setErrorMessage("رابط الدفع غير صالح. يرجى مراجعة الدعم.");
             }
             return;
           }
 
-          router.push(getVerificationUrl(paymentId));
+          const verifyUrl = getVerificationUrl(paymentId);
+          console.log("[PaymentDebug] handleCheckout no redirect URL, routing to verification:", verifyUrl);
+          router.push(verifyUrl);
         },
         onError: (err) => {
           const msg = err?.message || "تعذر بدء عملية الدفع. يرجى المحاولة لاحقاً.";
+          console.error("[PaymentDebug] handleCheckout error:", err);
           setErrorMessage(msg);
           toast.error(msg);
         },
@@ -106,6 +121,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const handleVerifyAndConfirm = (gatewayId?: string | null) => {
+    console.log("[PaymentDebug] handleVerifyAndConfirm triggered:", { activePaymentId, gatewayId });
     if (activePaymentId) router.push(getVerificationUrl(activePaymentId, gatewayId));
   };
 

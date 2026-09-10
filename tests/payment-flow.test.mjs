@@ -272,3 +272,66 @@ test('public packages route reports upstream outages and malformed payloads as J
     assert.equal((await response.json()).success, false);
   }
 });
+
+test('billing.streampay.sa origin and 3DS card auth redirects navigate window instead of declaring success', async () => {
+  let listener, cleanup;
+  const iframe = { src: 'https://streampay.sa/s/xyz?embed=true', contentWindow: {} };
+  const completed = [];
+  const assigned = [];
+  const fakeWindow = {
+    location: {
+      origin: 'https://madarik.test',
+      assign: url => assigned.push(url),
+      href: '',
+    },
+    Stream: { Checkout: () => ({ getIframe: () => iframe, destroy: () => {} }) },
+    addEventListener: (type, callback) => { listener = callback; },
+    removeEventListener: () => {},
+  };
+  const react = {
+    useRef: () => ({ current: {} }),
+    useState: value => [value, () => {}],
+    useEffectEvent: callback => callback,
+    useEffect: callback => { cleanup = callback(); },
+  };
+  const { StreamCheckoutEmbed } = load('src/features/payment/components/StreamCheckoutEmbed.tsx', {
+    react, '../paymentFlow': flow,
+  }, { window: fakeWindow });
+  StreamCheckoutEmbed({ paymentUrl: 'https://streampay.sa/s/xyz', paymentId: 'local', onSuccess: id => completed.push(id) });
+  await Promise.resolve();
+
+  let stopped = 0;
+  const event = {
+    data: { type: 'stream:redirect', url: 'https://api.moyasar.com/v1/card_auth/abc/prepare' },
+    origin: 'https://billing.streampay.sa',
+    source: iframe.contentWindow,
+    stopImmediatePropagation: () => stopped++,
+  };
+  listener(event);
+  assert.equal(completed.length, 0, '3DS challenge must not call onSuccess prematurely');
+  assert.deepEqual(assigned, ['https://api.moyasar.com/v1/card_auth/abc/prepare']);
+  assert.equal(stopped, 1);
+  cleanup();
+});
+
+test('failure query parameters (status=failed, result=failure, message) are preserved in verification URL', () => {
+  const params = new URLSearchParams('payment_id=local&id=gw&status=failed&result=failure&message=3DS+timeout');
+  const resolved = flow.resolvePaymentReturn(params, null);
+  assert.equal(resolved.paymentId, 'local');
+  assert.equal(resolved.gatewayId, 'gw');
+  assert.equal(resolved.status, 'failed');
+  assert.equal(resolved.result, 'failure');
+  assert.equal(resolved.message, '3DS timeout');
+
+  const verificationUrl = flow.getVerificationUrl('local', 'gw', {
+    status: resolved.status,
+    result: resolved.result,
+    message: resolved.message,
+  });
+  assert.ok(verificationUrl.includes('/subscription/payment/local?'));
+  assert.ok(verificationUrl.includes('id=gw'));
+  assert.ok(verificationUrl.includes('status=failed'));
+  assert.ok(verificationUrl.includes('result=failure'));
+  assert.ok(verificationUrl.includes('message=3DS+timeout'));
+});
+

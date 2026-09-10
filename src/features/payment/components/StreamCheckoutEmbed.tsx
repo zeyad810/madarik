@@ -91,35 +91,102 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
     let isComplete = false;
 
     // Capture before the SDK's redirect listener so it cannot navigate to a
-    // configured backend URL instead of the frontend verification page.
+    // configured backend URL instead of the frontend verification page, but ALLOW
+    // navigation for 3D Secure challenges (e.g. Moyasar card_auth prepare URL).
     const handleMessage = (event: MessageEvent) => {
       if (typeof event.data?.type !== "string" || !event.data.type.startsWith("stream:")) return;
+      console.log("[PaymentDebug] StreamCheckoutEmbed postMessage received:", {
+        type: event.data?.type,
+        url: event.data?.url,
+        origin: event.origin,
+        data: event.data,
+      });
+
       const iframe = checkoutInstance?.getIframe() || directIframeRef.current;
+      const isTrustedOrigin = (origin: string, iframeSrc?: string) => {
+        if (!origin) return false;
+        if (iframeSrc) {
+          try {
+            if (origin === new URL(iframeSrc).origin) return true;
+          } catch {
+            // ignore invalid iframe.src
+          }
+        }
+        try {
+          const parsed = new URL(origin);
+          return parsed.hostname === "streampay.sa" || parsed.hostname.endsWith(".streampay.sa");
+        } catch {
+          return false;
+        }
+      };
+
       const trusted = iframe && event.source === iframe.contentWindow &&
-        event.origin === new URL(iframe.src).origin;
+        isTrustedOrigin(event.origin, iframe.src);
+
       if (!trusted) {
+        console.warn("[PaymentDebug] StreamCheckoutEmbed untrusted message source/origin:", {
+          eventOrigin: event.origin,
+          iframeSrcOrigin: iframe ? new URL(iframe.src).origin : null,
+          sourceMatch: iframe && event.source === iframe.contentWindow,
+        });
         event.stopImmediatePropagation();
         return;
       }
+
       if (!["stream:redirect", "stream:success", "stream:paid", "stream:complete"].includes(event.data.type)) return;
+
+      const targetUrl = typeof event.data.url === "string" ? event.data.url : "";
+
+      // 3D Secure challenges (e.g. Moyasar card authentication) require redirecting the top window
+      // so the user can enter their SMS OTP challenge code from their bank.
+      const is3DSChallenge = Boolean(
+        targetUrl && (
+          targetUrl.includes("card_auth") ||
+          targetUrl.includes("moyasar.com") ||
+          targetUrl.includes("3ds") ||
+          targetUrl.includes("/prepare")
+        )
+      );
+
+      if (is3DSChallenge) {
+        console.log("[PaymentDebug] StreamCheckoutEmbed navigating top window to 3DS challenge:", targetUrl);
+        event.stopImmediatePropagation();
+        if (typeof window.location.assign === "function") {
+          window.location.assign(targetUrl);
+        } else {
+          window.location.href = targetUrl;
+        }
+        return;
+      }
+
       event.stopImmediatePropagation();
       if (isComplete) return;
       isComplete = true;
       let gatewayId: string | null = null;
-      if (typeof event.data.url === "string") {
+      if (targetUrl) {
         try {
-          const params = new URL(event.data.url, window.location.origin).searchParams;
+          const params = new URL(targetUrl, window.location.origin).searchParams;
           gatewayId = params.get("id") || params.get("streampay_id");
-        } catch {
+          console.log("[PaymentDebug] StreamCheckoutEmbed extracted redirect params:", {
+            rawUrl: targetUrl,
+            gatewayId,
+            status: params.get("status"),
+            message: params.get("message"),
+            result: params.get("result"),
+          });
+        } catch (err) {
+          console.error("[PaymentDebug] StreamCheckoutEmbed failed to parse redirect URL:", err);
           // Verify with the known backend payment ID even if the return URL is invalid.
         }
       }
+      console.log("[PaymentDebug] StreamCheckoutEmbed calling notifySuccess with gatewayId:", gatewayId);
       notifySuccess(gatewayId);
     };
     window.addEventListener("message", handleMessage, true);
 
     async function initCheckout() {
       try {
+        console.log("[PaymentDebug] StreamCheckoutEmbed initCheckout starting:", { paymentUrl, isStreamDomain });
         if (!isStreamDomain) return;
         await loadStreamScript();
         if (isCancelled) return;
@@ -127,6 +194,7 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
         if (!streamGlobal?.Checkout || !containerRef.current) {
           throw new Error("تعذر تجهيز بوابة الدفع.");
         }
+        console.log("[PaymentDebug] StreamCheckoutEmbed mounting Stream.Checkout...");
         checkoutInstance = streamGlobal.Checkout({
           paymentLink: paymentUrl,
           container: containerRef.current,
@@ -137,6 +205,7 @@ export const StreamCheckoutEmbed: React.FC<StreamCheckoutEmbedProps> = ({
       } catch (error: unknown) {
         if (isCancelled) return;
         const message = error instanceof Error ? error.message : "تعذر تحميل نافذة الدفع";
+        console.error("[PaymentDebug] StreamCheckoutEmbed initCheckout error:", error);
         setLoading(false);
         setLoadError(message);
         notifyError(message);

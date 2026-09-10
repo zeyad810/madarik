@@ -18,10 +18,16 @@ export default async function SubscriptionPaymentVerificationPage({
 }: PaymentPageProps) {
   const [resolvedParams, query] = await Promise.all([params, searchParams]);
   const gatewayId = query.id || query.streampay_id;
+  const status = query.status;
+  const result = query.result;
+  const message = query.message;
   return (
     <PaymentVerificationView
       paymentId={resolvedParams.paymentId}
       streamPayId={Array.isArray(gatewayId) ? gatewayId[0] : gatewayId}
+      status={Array.isArray(status) ? status[0] : status}
+      result={Array.isArray(result) ? result[0] : result}
+      message={Array.isArray(message) ? message[0] : message}
     />
   );
 }

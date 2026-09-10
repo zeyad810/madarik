@@ -30,6 +30,7 @@ export async function checkoutSubscription(
   payload: CheckoutSubscriptionPayload,
   token?: string | null
 ): Promise<CheckoutSubscriptionResponse> {
+  console.log("[PaymentDebug] checkoutSubscription called:", { payload, hasToken: Boolean(token) });
   const body: Record<string, unknown> = {
     package_id: payload.package_id,
   };
@@ -45,6 +46,7 @@ export async function checkoutSubscription(
   });
 
   const result = await handleResponse<CheckoutSubscriptionResponse>(response);
+  console.log("[PaymentDebug] checkoutSubscription response:", { status: response.status, ok: response.ok, result });
 
   if (!result?.success || !result.data) {
     throw new Error(result?.message || "تعذر بدء عملية الدفع. يرجى المحاولة لاحقاً.");
@@ -70,14 +72,29 @@ export async function verifySubscriptionPayment(
   token?: string | null
 ): Promise<VerifyPaymentResponse> {
   const query = streamPayId ? `?id=${encodeURIComponent(streamPayId)}` : "";
-  const response = await fetch(`${API_BASE_URL}/subscription/payment/${encodeURIComponent(paymentId)}${query}`, {
+  const requestUrl = `${API_BASE_URL}/subscription/payment/${encodeURIComponent(paymentId)}${query}`;
+  console.log("[PaymentDebug] verifySubscriptionPayment requesting:", {
+    url: requestUrl,
+    paymentId,
+    streamPayId,
+    hasToken: Boolean(token),
+  });
+
+  const response = await fetch(requestUrl, {
     method: "GET",
     headers: buildHeaders(token),
     cache: "no-store",
   });
 
   const result = await handleResponse<VerifyPaymentResponse>(response);
+  console.log("[PaymentDebug] verifySubscriptionPayment received:", {
+    status: response.status,
+    ok: response.ok,
+    result,
+  });
+
   if (!result?.success || !result.data || typeof result.data.status !== "string") {
+    console.error("[PaymentDebug] verifySubscriptionPayment invalid result:", result);
     throw new Error(result?.message || "تعذر التحقق من حالة الدفع حالياً. أعد فحص العملية دون تكرار الدفع.");
   }
   return result;
