@@ -5,6 +5,7 @@ import {
   CheckoutSubscriptionResponse,
   SubscriptionHistoryResponse,
   SubscriptionResponse,
+  VerifyPaymentData,
   VerifyPaymentResponse,
 } from "./types";
 
@@ -116,7 +117,7 @@ export async function verifySubscriptionPayment(
     throw new Error(result?.message || "تعذر التحقق من حالة الدفع حالياً. أعد فحص العملية دون تكرار الدفع.");
   }
 
-  const rawData = result.data as Record<string, unknown>;
+  const rawData = result.data as unknown as Record<string, unknown>;
   const hasActiveSub =
     rawData.is_subscribed === true ||
     (Array.isArray(rawData.subscriptions) &&
