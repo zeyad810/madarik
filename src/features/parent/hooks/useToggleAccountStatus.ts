@@ -38,7 +38,7 @@ export const useToggleAccountStatus = (
       clearStoredAuth();
 
       if (onSuccess) {
-        onSuccess(data, variables, context);
+        (onSuccess as any)(data, variables, context);
       }
 
       // 2. Log out the user and redirect to home
@@ -52,7 +52,7 @@ export const useToggleAccountStatus = (
       );
       toast.error(errorMessage);
       if (onError) {
-        onError(error, variables, context);
+        (onError as any)(error, variables, context);
       }
     },
     ...restOptions,
