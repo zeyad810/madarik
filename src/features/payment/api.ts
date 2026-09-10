@@ -111,10 +111,38 @@ export async function verifySubscriptionPayment(
     result,
   });
 
-  if (!result?.success || !result.data || typeof result.data.status !== "string") {
+  if (!result?.success || !result.data) {
     console.error("[PaymentDebug] verifySubscriptionPayment invalid result:", result);
     throw new Error(result?.message || "تعذر التحقق من حالة الدفع حالياً. أعد فحص العملية دون تكرار الدفع.");
   }
+
+  const rawData = result.data as Record<string, unknown>;
+  const hasActiveSub =
+    rawData.is_subscribed === true ||
+    (Array.isArray(rawData.subscriptions) &&
+      rawData.subscriptions.some((s: any) => s?.status === "active")) ||
+    (typeof rawData.subscription === "object" &&
+      rawData.subscription !== null &&
+      (rawData.subscription as any)?.status === "active");
+
+  const normalizedStatus =
+    typeof rawData.status === "string"
+      ? rawData.status
+      : hasActiveSub
+      ? "paid"
+      : "initiated";
+
+  const normalizedIsSubscribed =
+    typeof rawData.is_subscribed === "boolean"
+      ? rawData.is_subscribed
+      : hasActiveSub;
+
+  result.data = {
+    ...rawData,
+    status: normalizedStatus,
+    is_subscribed: normalizedIsSubscribed,
+  } as VerifyPaymentData;
+
   return result;
 }
 

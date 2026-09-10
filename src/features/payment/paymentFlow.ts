@@ -7,7 +7,7 @@ export function getPaymentState(data?: Partial<VerifyPaymentData> | CheckoutPaym
   let state: PaymentState = "pending";
   if (["failed", "cancelled", "canceled", "expired", "refunded", "voided"].includes(status || "")) {
     state = "failed";
-  } else if ((status === "paid" || status === "success") && data?.is_subscribed !== false) {
+  } else if ((status === "paid" || status === "success" || status === "active") && data?.is_subscribed !== false) {
     state = "success";
   } else if (!status && data?.is_subscribed === true) {
     state = "success";

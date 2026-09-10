@@ -335,3 +335,91 @@ test('failure query parameters (status=failed, result=failure, message) are pres
   assert.ok(verificationUrl.includes('message=3DS+timeout'));
 });
 
+test('verification normalizes active subscription response missing top-level status to paid and success', async () => {
+  const backendPayload = {
+    success: true,
+    data: {
+      is_subscribed: true,
+      subscriptions: [
+        {
+          subscription_id: "sub-123",
+          status: "active",
+        },
+      ],
+      unlocked_age_categories: [],
+    },
+  };
+  const api = loadApi(backendPayload);
+  const result = await api.verifySubscriptionPayment('payment-123');
+  assert.equal(result.data.status, 'paid');
+  assert.equal(result.data.is_subscribed, true);
+  assert.equal(flow.getPaymentState(result.data), 'success');
+});
+
+test('verification view never shows APPROVED as error description and renders success when subscribed', () => {
+  const { renderToStaticMarkup } = moduleRequire('react-dom/server');
+  const react = moduleRequire('react');
+
+  // Case 1: Subscription data indicates success -> must render success view
+  const { PaymentVerificationView: SuccessView } = load('src/features/payment/components/PaymentVerificationView.tsx', {
+    '../paymentFlow': flow,
+    '../hooks/usePayment': {
+      useVerifySubscriptionPayment: () => ({
+        data: { status: 'paid', is_subscribed: true },
+        isError: false,
+        isPending: false,
+        isFetching: false,
+        isAwaitingSession: false,
+      }),
+    },
+    'next/link': { default: 'a', __esModule: true },
+    'framer-motion': { motion: { div: 'div' } },
+    '@/components/ui/Breadcrumb': {
+      Breadcrumb: Object.assign(() => react.createElement('nav'), {
+        List: 'ol', Item: 'li', Link: 'a', Separator: 'span', Page: 'span',
+      }),
+    },
+  });
+
+  const successHtml = renderToStaticMarkup(
+    react.createElement(SuccessView, {
+      paymentId: 'local',
+      message: 'APPROVED',
+    })
+  );
+  assert.ok(successHtml.includes('تمت عملية الدفع بنجاح!'));
+  assert.ok(!successHtml.includes('تعذر التحقق من حالة الدفع حالياً'));
+
+  // Case 2: Verification network error with APPROVED message from gateway -> must not display APPROVED as error text
+  const { PaymentVerificationView: ErrorView } = load('src/features/payment/components/PaymentVerificationView.tsx', {
+    '../paymentFlow': flow,
+    '../hooks/usePayment': {
+      useVerifySubscriptionPayment: () => ({
+        data: undefined,
+        isError: true,
+        isPending: false,
+        isFetching: false,
+        isAwaitingSession: false,
+      }),
+    },
+    'next/link': { default: 'a', __esModule: true },
+    'framer-motion': { motion: { div: 'div' } },
+    '@/components/ui/Breadcrumb': {
+      Breadcrumb: Object.assign(() => react.createElement('nav'), {
+        List: 'ol', Item: 'li', Link: 'a', Separator: 'span', Page: 'span',
+      }),
+    },
+  });
+
+  const errorHtml = renderToStaticMarkup(
+    react.createElement(ErrorView, {
+      paymentId: 'local',
+      message: 'APPROVED',
+    })
+  );
+  assert.ok(errorHtml.includes('تعذر التحقق من حالة الدفع حالياً'));
+  assert.ok(!errorHtml.includes('<p class="text-sm text-gray-600 max-w-md mx-auto">APPROVED</p>'));
+  assert.ok(errorHtml.includes('تم تأكيد المعاملة من البنك بنجاح'));
+});
+
+
