@@ -68,7 +68,9 @@ export const getFreeStories = async (
   });
 
   const raw = await handleResponse<any>(response);
-  return normalizeStoriesResponse(raw);
+  const normalized = normalizeStoriesResponse(raw);
+  console.log("Stories:", normalized.data);
+  return normalized;
 };
 
 /**
@@ -134,6 +136,8 @@ export const getStoryById = async (
     : raw?.data
     ? raw.data
     : raw;
+
+  console.log("Story:", storyData);
 
   return {
     success: raw?.success ?? true,

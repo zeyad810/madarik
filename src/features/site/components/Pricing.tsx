@@ -49,6 +49,12 @@ export const Pricing: React.FC<PricingProps> = ({
     select: (res) => res.data?.packages_section,
   });
 
+  React.useEffect(() => {
+    if (fetchedPackages && fetchedPackages.length > 0) {
+      console.log("Packages:", fetchedPackages);
+    }
+  }, [fetchedPackages]);
+
   const isChildOrStudent =
     isStudent ||
     userRole === "student" ||

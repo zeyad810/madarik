@@ -30,6 +30,12 @@ export const PackagesSelectionView: React.FC = () => {
     activeAccount?.type === "child";
 
   useEffect(() => {
+    if (packages && packages.length > 0) {
+      console.log("Packages:", packages);
+    }
+  }, [packages]);
+
+  useEffect(() => {
     if (!isAuthLoading && isAuthenticated && isChildOrStudent) {
       router.push("/stories");
     }

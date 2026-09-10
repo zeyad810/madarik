@@ -37,6 +37,12 @@ export const StoryReaderView: React.FC<StoryReaderViewProps> = ({ story }) => {
   );
   const [currentPage, setCurrentPage] = useState(1);
 
+  useEffect(() => {
+    if (story) {
+      console.log("Story:", story);
+    }
+  }, [story]);
+
   const router = useRouter();
 
   // Automatic reading lifecycle tracker (start, idle pause/resume, tab visibility, unload pause, finish)

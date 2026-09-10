@@ -27,7 +27,11 @@ export const packageKeys = {
 export const usePackagesList = () => {
   return useQuery<PackagePlan[]>({
     queryKey: packageKeys.lists(),
-    queryFn: getPackagesList,
+    queryFn: async () => {
+      const data = await getPackagesList();
+      console.log("Packages:", data);
+      return data;
+    },
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -38,7 +42,11 @@ export const useCurrentSubscriptions = () => {
 
   return useQuery<CurrentSubscription[]>({
     queryKey: packageKeys.subscriptions(),
-    queryFn: () => getCurrentSubscriptions(token),
+    queryFn: async () => {
+      const data = await getCurrentSubscriptions(token);
+      console.log("Packages / Subscriptions:", data);
+      return data;
+    },
     staleTime: 2 * 60 * 1000,
   });
 };

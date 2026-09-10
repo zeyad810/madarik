@@ -42,7 +42,8 @@ export const StoryDetailHero: React.FC<StoryDetailHeroProps> = ({ story }) => {
   React.useEffect(() => {
     setBannerSrc(getSafeImageUrl(story.cover_photo_url || story.thumbnail_url));
     setCoverSrc(getSafeImageUrl(story.thumbnail_url || story.cover_photo_url));
-  }, [story.cover_photo_url, story.thumbnail_url]);
+    console.log("Story:", story);
+  }, [story]);
 
   const totalPages =
     story.blocks && story.blocks.length > 0

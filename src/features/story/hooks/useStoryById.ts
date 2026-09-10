@@ -26,7 +26,11 @@ export const useStoryById = <TData = StoryDetailResponse>(
 
   return useQuery({
     queryKey: [...storyQueryKeys.detail(id), role],
-    queryFn: () => getStoryById(id, role, token),
+    queryFn: async () => {
+      const res = await getStoryById(id, role, token);
+      console.log("Story:", res?.data);
+      return res;
+    },
     enabled: Boolean(id) && status !== "loading",
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
