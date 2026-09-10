@@ -37,7 +37,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Non-root user for security
-RUN addgroup --system --gid 1001 nodejs \
+RUN addgroup --system --gid 1001 nextjs \
   && adduser --system --uid 1001 nextjs
 
 # Copy everything needed to run `next start` (no standalone output)
@@ -48,7 +48,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-RUN chown -R nextjs:nodejs /app
+RUN chown -R nextjs:nextjs /app && chmod -R 777 /app
 
 USER nextjs
 
