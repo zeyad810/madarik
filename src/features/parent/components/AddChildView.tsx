@@ -22,17 +22,25 @@ import {
   useParentChildren,
   useChild,
 } from "../hooks";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { ChildStatusConfirmModal } from "./ChildStatusConfirmModal";
 import type { ManagedChild } from "../types";
 
 export const AddChildView: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isFreeCustomer } = useActiveAccount();
 
   // Mode and target child ID from URL search parameters
   const mode = searchParams.get("mode") === "edit" ? "edit" : "add";
   const childId = searchParams.get("id") || searchParams.get("childId");
   const isEditMode = mode === "edit";
+
+  useEffect(() => {
+    if (isFreeCustomer && !isEditMode) {
+      router.replace("/parents/childMangement");
+    }
+  }, [isFreeCustomer, isEditMode, router]);
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [isToggleModalOpen, setIsToggleModalOpen] = useState(false);
@@ -111,7 +119,6 @@ export const AddChildView: React.FC = () => {
         agreedToTerms: true,
       });
     } else if (!isEditMode) {
-      setStatusOverride(null);
       reset({
         name: "",
         birthDate: "",

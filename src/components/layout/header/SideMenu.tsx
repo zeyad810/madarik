@@ -263,7 +263,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
             transition={{ duration: 0.25 }}
             onClick={onClose}
             aria-hidden="true"
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
+            className="fixed inset-0 z-149 bg-black/60 backdrop-blur-xs"
           />
 
           {/* Side Menu Drawer Panel */}
@@ -274,7 +274,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
             animate={{ x: "0%" }}
             exit={{ x: "100%" }}
             transition={isOpen ? DRAWER_SPRING : DRAWER_EXIT}
-            className="fixed top-0 bottom-0 right-0 z-50 flex w-80 sm:w-90 rounded-tl-4xl rounded-bl-4xl flex-col bg-white shadow-[0_0_60px_rgba(0,0,0,0.25)] overflow-hidden will-change-transform"
+            className="fixed top-0 bottom-0 right-0 z-150 flex w-80 sm:w-90 rounded-tl-4xl rounded-bl-4xl flex-col bg-white shadow-[0_0_60px_rgba(0,0,0,0.25)] overflow-hidden will-change-transform"
           >
             {/* Side Menu Header (Purple Card Top) */}
             <div className="relative bg-mad-main px-6 py-5 text-white shrink-0 shadow-md">
@@ -533,14 +533,26 @@ const SideMenu: React.FC<SideMenuProps> = ({
                         })}
 
                         {/* 3. Add Child Quick Link */}
-                        <Link
-                          href="/parents/childMangement/addChild"
-                          onClick={onClose}
-                          className="w-full py-2 px-3 rounded-xl border border-dashed border-purple-300 hover:border-mad-main hover:bg-purple-50/50 text-mad-main font-bold text-xs flex items-center justify-center gap-1.5 transition-all mt-1 cursor-pointer"
-                        >
-                          <UserPlus className="size-3.5" />
-                          <span>إضافة طفل جديد</span>
-                        </Link>
+                        {isFreeCustomer ? (
+                          <button
+                            type="button"
+                            disabled
+                            title="إضافة الأطفال متاحة فقط مع باقات ولي الأمر"
+                            className="w-full py-2 px-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-gray-400 font-bold text-xs flex items-center justify-center gap-1.5 transition-all mt-1 cursor-not-allowed opacity-70"
+                          >
+                            <UserPlus className="size-3.5" />
+                            <span>إضافة طفل جديد</span>
+                          </button>
+                        ) : (
+                          <Link
+                            href="/parents/childMangement/addChild"
+                            onClick={onClose}
+                            className="w-full py-2 px-3 rounded-xl border border-dashed border-purple-300 hover:border-mad-main hover:bg-purple-50/50 text-mad-main font-bold text-xs flex items-center justify-center gap-1.5 transition-all mt-1 cursor-pointer"
+                          >
+                            <UserPlus className="size-3.5" />
+                            <span>إضافة طفل جديد</span>
+                          </Link>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>

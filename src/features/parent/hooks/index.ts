@@ -9,6 +9,7 @@ export * from "./useParentSettings";
 export * from "./useUpdateParentSettings";
 export * from "./useUpdateParentPassword";
 export * from "./useAccountSubscriptionHistory";
+export * from "./useToggleAccountStatus";
 
 
 

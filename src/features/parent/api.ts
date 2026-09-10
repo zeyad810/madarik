@@ -3,6 +3,7 @@ import { getStoredAuthToken } from "@/lib/auth";
 import type { Child } from "@/types/auth";
 import {
   AccountSubscriptionHistoryResponse,
+  AccountToggleResponse,
   AddChildPayload,
   AddChildResponse,
   ChildReportsResponse,
@@ -346,8 +347,17 @@ export const getAccountSubscriptionHistory = async (
   return await handleResponse<AccountSubscriptionHistoryResponse>(response);
 };
 
+/**
+ * PATCH /account/toggle
+ * Disables / toggles the account status for the current authenticated user (parent or free user).
+ */
+export const toggleAccountStatus = async (
+  token?: string | null
+): Promise<AccountToggleResponse> => {
+  const response = await fetch(`${API_BASE_URL}/account/toggle`, {
+    method: "PATCH",
+    headers: buildHeaders(token),
+  });
 
-
-
-
-
+  return await handleResponse<AccountToggleResponse>(response);
+};
