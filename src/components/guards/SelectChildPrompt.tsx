@@ -32,7 +32,7 @@ export const SelectChildPrompt: React.FC<SelectChildPromptProps> = ({
   storyTitle,
   onSelectChild,
 }) => {
-  const { children: sessionChildren, switchAccount } = useActiveAccount();
+  const { children: sessionChildren, switchAccount, isFreeCustomer } = useActiveAccount();
   const { children: parentChildren, isLoading: isChildrenLoading } = useParentChildren();
 
   const children =
@@ -110,13 +110,15 @@ export const SelectChildPrompt: React.FC<SelectChildPromptProps> = ({
                 <Users className="w-4 h-4 text-[#7939E3]" />
                 <span>أطفالك المسجلين ({children.length})</span>
               </span>
-              <Link
-                href="/parents/childMangement/addChild"
-                className="text-xs sm:text-sm font-bold text-[#7939E3] hover:underline flex items-center gap-1"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>إضافة طفل آخر</span>
-              </Link>
+              {!isFreeCustomer && (
+                <Link
+                  href="/parents/childMangement/addChild"
+                  className="text-xs sm:text-sm font-bold text-[#7939E3] hover:underline flex items-center gap-1"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>إضافة طفل آخر</span>
+                </Link>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-8">
@@ -205,13 +207,25 @@ export const SelectChildPrompt: React.FC<SelectChildPromptProps> = ({
             <p className="text-xs sm:text-sm text-slate-600 max-w-md mb-6 leading-relaxed">
               لتتمكن من قراءة القصص وخوض الاختبارات وتتبع النقاط والأوسمة، يرجى إنشاء حساب لطفلك أولاً.
             </p>
-            <Link
-              href="/parents/childMangement/addChild"
-              className="py-3 px-6 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>إضافة طفل جديد الآن</span>
-            </Link>
+            {isFreeCustomer ? (
+              <button
+                type="button"
+                disabled
+                title="إضافة الأطفال متاحة فقط مع باقات ولي الأمر"
+                className="py-3 px-6 rounded-full bg-slate-300 text-slate-500 font-bold text-sm cursor-not-allowed opacity-70 flex items-center gap-2"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>إضافة طفل جديد الآن</span>
+              </button>
+            ) : (
+              <Link
+                href="/parents/childMangement/addChild"
+                className="py-3 px-6 rounded-full bg-[#7939E3] hover:bg-[#6824D6] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>إضافة طفل جديد الآن</span>
+              </Link>
+            )}
           </div>
         )}
 

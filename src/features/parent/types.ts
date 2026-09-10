@@ -110,6 +110,13 @@ export interface UpdateParentPasswordPayload {
 
 
 
+export interface AccountToggleResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+  status?: string;
+}
+
 export interface UpdateParentPasswordResponse {
   success?: boolean;
   message?: string;

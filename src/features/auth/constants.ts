@@ -88,7 +88,7 @@ export const AUTH_TEXTS = {
     usernameRequired: "اسم المستخدم مطلوب",
     phoneRequired: "رقم الهاتف مطلوب",
     passwordRequired: "كلمة المرور مطلوبة",
-    passwordMinLength: "كلمة المرور يجب أن لا تقل عن 6 أحرف",
+    passwordMinLength: "كلمة المرور يجب أن لا تقل عن 8 أحرف",
     passwordMatch: "كلمتا المرور غير متطابقتين",
     otpInvalid: "يرجى إدخال رمز التحقق المكون من 6 أرقام كاملة",
   },

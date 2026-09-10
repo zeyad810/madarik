@@ -5,10 +5,12 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PlusCircle } from "lucide-react";
 import { useChildReports } from "../hooks";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { ChildReportCard, ChildReportCardSkeleton } from "./ChildReportCard";
 
 export const ChildsReports: React.FC = () => {
   const { reports, isLoading } = useChildReports();
+  const { isFreeCustomer } = useActiveAccount();
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16!" dir="rtl">
@@ -72,13 +74,25 @@ export const ChildsReports: React.FC = () => {
             <p className="text-gray-500 font-medium text-base sm:text-lg">
               لا توجد تقارير أطفال متاحة حالياً.
             </p>
-            <Link
-              href="/parents/childMangement/addChild?mode=add"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
-            >
-              <PlusCircle className="size-5 stroke-[2.2]" />
-              <span>إضافة طفل الآن</span>
-            </Link>
+            {isFreeCustomer ? (
+              <button
+                type="button"
+                disabled
+                title="إضافة الأطفال متاحة فقط مع باقات ولي الأمر"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-300 text-gray-500 font-bold text-sm cursor-not-allowed opacity-70"
+              >
+                <PlusCircle className="size-5 stroke-[2.2]" />
+                <span>إضافة طفل الآن</span>
+              </button>
+            ) : (
+              <Link
+                href="/parents/childMangement/addChild?mode=add"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
+              >
+                <PlusCircle className="size-5 stroke-[2.2]" />
+                <span>إضافة طفل الآن</span>
+              </Link>
+            )}
           </div>
         )}
       </div>

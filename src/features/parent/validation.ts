@@ -52,12 +52,12 @@ export const parentSettingsSchema = z
   .refine(
     (data) => {
       if (data.newPassword && data.newPassword.length > 0) {
-        return data.newPassword.length >= 6;
+        return data.newPassword.length >= 8;
       }
       return true;
     },
     {
-      message: "كلمة المرور الجديدة يجب أن لا تقل عن 6 أحرف",
+      message: "كلمة المرور الجديدة يجب أن لا تقل عن 8 أحرف",
       path: ["newPassword"],
     }
   )

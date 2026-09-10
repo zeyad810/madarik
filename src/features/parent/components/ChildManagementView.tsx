@@ -9,11 +9,13 @@ import { ChildStatusConfirmModal } from "./ChildStatusConfirmModal";
 import { ChildDeleteConfirmModal } from "./ChildDeleteConfirmModal";
 import { ManagedChild } from "../types";
 import { useToggleChildStatus, useDeleteChild, useParentChildren } from "../hooks";
+import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { getAgeCategoryFromBirthDate } from "@/lib/utils";
 import Link from "next/link";
 
 export const ChildManagementView: React.FC = () => {
   const router = useRouter();
+  const { isFreeCustomer } = useActiveAccount();
   const { children: parentChildren, isLoading } = useParentChildren();
   const toggleStatusMutation = useToggleChildStatus();
 
@@ -185,13 +187,25 @@ export const ChildManagementView: React.FC = () => {
           </div>
 
           {/* Action Button: Add New Child */}
-          <Link
-            href={"/parents/childMangement/addChild?mode=add"}
-            className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
-          >
-            <PlusCircle className="size-5 stroke-[2.2]" />
-            <span>إضافة طفل جديد</span>
-          </Link>
+          {isFreeCustomer ? (
+            <button
+              type="button"
+              disabled
+              title="إضافة الأطفال متاحة فقط مع باقات ولي الأمر"
+              className="order-2 px-6 py-3 rounded-full bg-gray-300 text-gray-500 font-bold text-sm flex items-center gap-2 cursor-not-allowed opacity-70 shrink-0"
+            >
+              <PlusCircle className="size-5 stroke-[2.2]" />
+              <span>إضافة طفل جديد</span>
+            </button>
+          ) : (
+            <Link
+              href={"/parents/childMangement/addChild?mode=add"}
+              className="order-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
+            >
+              <PlusCircle className="size-5 stroke-[2.2]" />
+              <span>إضافة طفل جديد</span>
+            </Link>
+          )}
         </div>
 
         {/* =========================================================================
@@ -218,13 +232,25 @@ export const ChildManagementView: React.FC = () => {
               <p className="text-gray-500 font-medium text-base sm:text-lg">
                 لا يوجد أطفال مضافين حالياً في حسابك.
               </p>
-              <Link
-                href="/parents/childMangement/addChild?mode=add"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
-              >
-                <PlusCircle className="size-5 stroke-[2.2]" />
-                <span>إضافة طفل الآن</span>
-              </Link>
+              {isFreeCustomer ? (
+                <button
+                  type="button"
+                  disabled
+                  title="إضافة الأطفال متاحة فقط مع باقات ولي الأمر"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-300 text-gray-500 font-bold text-sm cursor-not-allowed opacity-70"
+                >
+                  <PlusCircle className="size-5 stroke-[2.2]" />
+                  <span>إضافة طفل الآن</span>
+                </button>
+              ) : (
+                <Link
+                  href="/parents/childMangement/addChild?mode=add"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mad-main hover:bg-mad-purple-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <PlusCircle className="size-5 stroke-[2.2]" />
+                  <span>إضافة طفل الآن</span>
+                </Link>
+              )}
             </div>
           )}
         </Suspense>

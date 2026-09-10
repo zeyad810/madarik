@@ -9,11 +9,15 @@ import {
   useUpdateParentSettings,
   useUpdateParentPassword,
   useAccountSubscriptionHistory,
+  useToggleAccountStatus,
 } from "../hooks";
 import { type ParentSettingsFormData } from "../validation";
 import { extractAuthErrorMessage } from "@/features/auth/helpers/formatAuthError";
 import { ParentProfileBanner } from "./ParentProfileBanner";
 import { ParentProfileCard } from "./ParentProfileCard";
+import { AccountDeactivateConfirmModal } from "./AccountDeactivateConfirmModal";
+import { Toggle } from "@/components/ui/Toggle";
+import { Trash2 } from "lucide-react";
 
 export const SettingsView: React.FC = () => {
   const { activeAccount, isParentRole } = useActiveAccount();
@@ -24,6 +28,10 @@ export const SettingsView: React.FC = () => {
   const { data: serverSettingsData } = useParentSettings();
   const updateSettingsMutation = useUpdateParentSettings();
   const updatePasswordMutation = useUpdateParentPassword();
+  const toggleAccountMutation = useToggleAccountStatus();
+
+  // State for account deactivation / deletion confirmation modal
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
 
   // Profile data from server / session (strictly for parent)
   const defaultParent = useMemo(() => {
@@ -227,10 +235,62 @@ export const SettingsView: React.FC = () => {
             onCancel={handleCancelEdit}
           />
         </div>
+
+        {/* =========================================================================
+            5. DANGER ZONE / DELETE ACCOUNT SECTION (Parent & Free user)
+           ========================================================================= */}
+        <div className="bg-white rounded-3xl sm:rounded-[32px] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-red-100 transition-all duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1.5 text-right">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-red-50 text-red-600 rounded-lg">
+                  <Trash2 className="size-4.5 stroke-[2.2]" />
+                </div>
+                <h3 className="text-base sm:text-lg font-extrabold text-gray-900">
+                  حذف الحساب
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-xl">
+                تعطيل حسابك بشكل مؤقت وتسجيل الخروج من المنصة. يمكنك استعادة الحساب لاحقاً عند التواصل مع الدعم أو تسجيل الدخول.
+              </p>
+            </div>
+
+            {/* Switch Toggle for Delete / Deactivate Account */}
+            <div className="flex items-center gap-3 self-end sm:self-center shrink-0 bg-red-50/50 p-2.5 sm:px-4 sm:py-2.5 rounded-2xl border border-red-100">
+              <span className="text-xs sm:text-sm font-bold text-gray-700 select-none">
+                حذف الحساب
+              </span>
+              <Toggle
+                checked={false}
+                disabled={toggleAccountMutation.isPending}
+                onChange={() => setIsDeactivateModalOpen(true)}
+                activeColor="bg-red-500"
+                ariaLabel="حذف الحساب"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Account Deactivate / Delete Confirmation Modal */}
+        <AccountDeactivateConfirmModal
+          isOpen={isDeactivateModalOpen}
+          onClose={() => {
+            if (!toggleAccountMutation.isPending) {
+              setIsDeactivateModalOpen(false);
+            }
+          }}
+          onConfirm={() => {
+            toggleAccountMutation.mutate(undefined, {
+              onSettled: () => {
+                setIsDeactivateModalOpen(false);
+              },
+            });
+          }}
+          isLoading={toggleAccountMutation.isPending}
+        />
       </div>
     </div>
   );
 };
-
 
 export default SettingsView;

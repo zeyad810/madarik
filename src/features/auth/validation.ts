@@ -12,7 +12,7 @@ export const loginSchema = z.object({
   password: z
     .string()
     .min(1, { message: AUTH_TEXTS.validation.passwordRequired })
-    .min(6, { message: AUTH_TEXTS.validation.passwordMinLength }),
+    .min(8, { message: AUTH_TEXTS.validation.passwordMinLength }),
 });
 
 export const otpSchema = z.object({
@@ -35,7 +35,7 @@ export const registerSchema = z
     password: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired })
-      .min(6, { message: AUTH_TEXTS.validation.passwordMinLength }),
+      .min(8, { message: AUTH_TEXTS.validation.passwordMinLength }),
     confirmPassword: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired }),
@@ -50,7 +50,7 @@ export const resetFirstPasswordSchema = z
     password: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired })
-      .min(6, { message: AUTH_TEXTS.validation.passwordMinLength }),
+      .min(8, { message: AUTH_TEXTS.validation.passwordMinLength }),
     confirmPassword: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired }),
@@ -71,7 +71,7 @@ export const forgotPasswordSchema = z
     password: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired })
-      .min(6, { message: AUTH_TEXTS.validation.passwordMinLength }),
+      .min(8, { message: AUTH_TEXTS.validation.passwordMinLength }),
     confirmPassword: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired }),
@@ -95,7 +95,7 @@ export const resetPasswordConfirmSchema = z
     password: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired })
-      .min(6, { message: AUTH_TEXTS.validation.passwordMinLength }),
+      .min(8, { message: AUTH_TEXTS.validation.passwordMinLength }),
     confirmPassword: z
       .string()
       .min(1, { message: AUTH_TEXTS.validation.passwordRequired }),
