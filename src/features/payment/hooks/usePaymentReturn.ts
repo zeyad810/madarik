@@ -11,11 +11,31 @@ export function usePaymentReturn() {
   const params = useSearchParams();
   const router = useRouter();
   const pendingId = useSyncExternalStore(subscribe, getPendingPaymentId, serverSnapshot);
-  const { paymentId, gatewayId } = resolvePaymentReturn(params, pendingId);
+  const { paymentId, gatewayId, status, result, message } = resolvePaymentReturn(params, pendingId);
+
+  console.log("[PaymentDebug] usePaymentReturn hook invoked:", {
+    rawSearchParams: params.toString(),
+    paymentId,
+    gatewayId,
+    status,
+    result,
+    message,
+    pendingId,
+  });
 
   useEffect(() => {
-    if (paymentId) router.replace(getVerificationUrl(paymentId, gatewayId));
-  }, [paymentId, gatewayId, router]);
+    if (paymentId) {
+      const destination = getVerificationUrl(paymentId, gatewayId, {
+        status,
+        result,
+        message,
+      });
+      console.log("[PaymentDebug] usePaymentReturn redirecting to verification page:", destination);
+      router.replace(destination);
+    } else {
+      console.warn("[PaymentDebug] usePaymentReturn: No paymentId could be resolved!");
+    }
+  }, [paymentId, gatewayId, status, result, message, router]);
 
-  return { paymentId, streamPayId: gatewayId };
+  return { paymentId, streamPayId: gatewayId, status, result, message };
 }

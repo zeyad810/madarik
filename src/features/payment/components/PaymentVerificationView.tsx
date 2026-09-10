@@ -12,11 +12,16 @@ export interface PaymentVerificationViewProps {
   paymentId: string;
   streamPayId?: string | null;
   result?: string | null;
+  status?: string | null;
+  message?: string | null;
 }
 
 export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = ({
   paymentId,
   streamPayId,
+  result,
+  status,
+  message,
 }) => {
   useEffect(() => {
     if (window.top && window.top !== window.self) {
@@ -46,10 +51,26 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
   });
 
   const state = getPaymentState(data);
+  const isGatewayFailure = result === "failure" && state !== "success";
   const isSuccess = state === "success";
-  const isFailed = !isSuccess && (state === "failed" || isError);
+  const isFailed = !isSuccess && (state === "failed" || isError || isGatewayFailure);
   const isInitiated = !isSuccess && !isFailed;
   const isChecking = isPending || isAwaitingSession || isFetching;
+
+  console.log("[PaymentDebug] PaymentVerificationView rendered state:", {
+    paymentId,
+    streamPayId,
+    result,
+    status,
+    message,
+    backendData: data,
+    state,
+    isSuccess,
+    isFailed,
+    isInitiated,
+    isChecking,
+    flags: { isPending, isAwaitingSession, isError, isFetching },
+  });
 
   return (
     <div className="w-full min-h-screen bg-white section-spacing pb-16" dir="rtl">
@@ -169,9 +190,11 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
                   {isError ? "تعذر التحقق من حالة الدفع حالياً" : "لم تكتمل عملية الدفع"}
                 </h1>
                 <p className="text-sm text-gray-600 max-w-md mx-auto">
-                  {isError
-                    ? "تعذر الاتصال للتحقق من العملية. أعد فحص الدفعة قبل محاولة الدفع مرة أخرى."
-                    : "تعذر إتمام الدفع أو تم رفض العملية من قبل البنك. يرجى التأكد من رصيد البطاقة والمحاولة مرة أخرى."}
+                  {message || (
+                    isError
+                      ? "تعذر الاتصال للتحقق من العملية. أعد فحص الدفعة قبل محاولة الدفع مرة أخرى."
+                      : "تعذر إتمام الدفع أو تم رفض العملية من قبل البنك. يرجى التأكد من رصيد البطاقة والمحاولة مرة أخرى."
+                  )}
                 </p>
               </div>
 
