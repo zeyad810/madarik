@@ -36,6 +36,8 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
     }
   }, [paymentId, streamPayId]);
 
+  const isGatewayFailure = result === "failure" || (status === "failed" && result !== "success");
+
   const {
     data,
     isPending,
@@ -45,13 +47,13 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
     isFetching,
   } = useVerifySubscriptionPayment(paymentId, streamPayId, {
     refetchInterval: (query) => {
+      if (isGatewayFailure) return false;
       if (query.state.status === "error" || query.state.dataUpdateCount >= 40) return false;
       return getPaymentState(query.state.data) === "pending" ? 3000 : false;
     },
   });
 
   const state = getPaymentState(data);
-  const isGatewayFailure = result === "failure" && state !== "success";
   const isSuccess = state === "success";
   const isFailed = !isSuccess && (state === "failed" || isError || isGatewayFailure);
   const isInitiated = !isSuccess && !isFailed;
