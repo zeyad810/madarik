@@ -59,6 +59,19 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
   const isInitiated = !isSuccess && !isFailed;
   const isChecking = isPending || isAwaitingSession || isFetching;
 
+  const isApprovedMessage =
+    typeof message === "string" &&
+    (message.trim().toUpperCase() === "APPROVED" || message.trim().toLowerCase() === "success");
+
+  const failureDescription =
+    !isApprovedMessage && message
+      ? message
+      : isError
+      ? isApprovedMessage
+        ? "تم تأكيد المعاملة من البنك بنجاح، ولكن جاري مزامنة بيانات الاشتراك. أعد فحص الدفعة للتحديث."
+        : "تعذر الاتصال للتحقق من العملية. أعد فحص الدفعة قبل محاولة الدفع مرة أخرى."
+      : "تعذر إتمام الدفع أو تم رفض العملية من قبل البنك. يرجى التأكد من رصيد البطاقة والمحاولة مرة أخرى.";
+
   console.log("[PaymentDebug] PaymentVerificationView rendered state:", {
     paymentId,
     streamPayId,
@@ -192,11 +205,7 @@ export const PaymentVerificationView: React.FC<PaymentVerificationViewProps> = (
                   {isError ? "تعذر التحقق من حالة الدفع حالياً" : "لم تكتمل عملية الدفع"}
                 </h1>
                 <p className="text-sm text-gray-600 max-w-md mx-auto">
-                  {message || (
-                    isError
-                      ? "تعذر الاتصال للتحقق من العملية. أعد فحص الدفعة قبل محاولة الدفع مرة أخرى."
-                      : "تعذر إتمام الدفع أو تم رفض العملية من قبل البنك. يرجى التأكد من رصيد البطاقة والمحاولة مرة أخرى."
-                  )}
+                  {failureDescription}
                 </p>
               </div>
 

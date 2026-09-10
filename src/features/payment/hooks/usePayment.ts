@@ -132,9 +132,39 @@ export function useVerifySubscriptionPayment(
     queryFn: async () => {
       if (!paymentId) throw new Error("Payment ID is required");
       console.log("[PaymentDebug] queryFn verifying payment:", { paymentId, streamPayId });
-      const response = await verifySubscriptionPayment(paymentId, streamPayId, token);
-      console.log("[PaymentDebug] queryFn verification result:", response);
-      return response.data;
+      try {
+        const response = await verifySubscriptionPayment(paymentId, streamPayId, token);
+        console.log("[PaymentDebug] queryFn verification result:", response);
+        return response.data;
+      } catch (err) {
+        console.warn("[PaymentDebug] verifySubscriptionPayment failed, trying fallback:", err);
+        if (typeof getSubscription === "function") {
+          try {
+            const subRes = await getSubscription(token);
+            console.log("[PaymentDebug] getSubscription fallback result:", subRes);
+            const subData = subRes?.data;
+            const hasActive =
+              subData?.is_subscribed === true ||
+              (Array.isArray(subData?.subscriptions) &&
+                subData.subscriptions.some((s) => s?.status === "active")) ||
+              Boolean(
+                subData?.subscription &&
+                  (subData.subscription as { status?: string }).status === "active"
+              );
+
+            if (subRes?.success && hasActive) {
+              return {
+                status: "paid",
+                is_subscribed: true,
+                ...subData,
+              } as VerifyPaymentData;
+            }
+          } catch (subErr) {
+            console.warn("[PaymentDebug] fallback getSubscription failed:", subErr);
+          }
+        }
+        throw err;
+      }
     },
     enabled: sessionStatus !== "loading" && Boolean(paymentId) && (options?.enabled ?? true),
     refetchInterval: options?.refetchInterval,
