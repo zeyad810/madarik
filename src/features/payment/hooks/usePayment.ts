@@ -154,9 +154,9 @@ export function useVerifySubscriptionPayment(
 
             if (subRes?.success && hasActive) {
               return {
+                ...subData,
                 status: "paid",
                 is_subscribed: true,
-                ...subData,
               } as VerifyPaymentData;
             }
           } catch (subErr) {
