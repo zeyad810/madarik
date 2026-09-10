@@ -29,6 +29,12 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
     ? (allStoriesResponse as any).data.data
     : [];
 
+  React.useEffect(() => {
+    if (story) {
+      console.log("Story:", story);
+    }
+  }, [story]);
+
   return (
     <div className="w-full min-h-screen flex flex-col">
       {/* Page Content */}

@@ -31,6 +31,12 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   const subtitle = propSubtitle ?? "المكتبة التفاعلية";
   const description = propDescription ?? "";
 
+  React.useEffect(() => {
+    if (storiesData?.items && storiesData.items.length > 0) {
+      console.log("Stories:", storiesData.items);
+    }
+  }, [storiesData]);
+
   const products: Product[] =
     propProducts ??
     (storiesData?.items?.map((story) => {

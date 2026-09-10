@@ -44,6 +44,12 @@ export const StoriesView: React.FC = () => {
   const totalStories = paginationMeta?.total || allStories.length;
   const storiesPerPage = paginationMeta?.per_page || 20;
 
+  React.useEffect(() => {
+    if (allStories && allStories.length > 0) {
+      console.log("Stories:", allStories);
+    }
+  }, [allStories]);
+
   // Extract unique levels dynamically from API data
   const availableLevels = useMemo(() => {
     const set = new Set<string>();

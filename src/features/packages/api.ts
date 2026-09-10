@@ -41,7 +41,7 @@ export const getPackagesList = async (): Promise<PackagePlan[]> => {
       const result = await handleResponse<ApiResponse<PublicPackagesData>>(response);
       const packages = result?.data?.packages;
       if (Array.isArray(packages) && packages.length > 0) {
-        return packages.map((pkg, idx) => {
+        const mappedPackages = packages.map((pkg, idx) => {
           const isSchool = pkg.audience === "school" || pkg.cta_type === "whatsapp";
           const defaultIcon = isSchool
             ? "/iamges/school-icon.svg"
@@ -106,6 +106,9 @@ export const getPackagesList = async (): Promise<PackagePlan[]> => {
             isFeatured: pkg.display_order === 1 || idx === 0,
           };
         });
+
+        console.log("Packages:", mappedPackages);
+        return mappedPackages;
       }
     }
   } catch (error) {
