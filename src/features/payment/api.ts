@@ -31,8 +31,26 @@ export async function checkoutSubscription(
   token?: string | null
 ): Promise<CheckoutSubscriptionResponse> {
   console.log("[PaymentDebug] checkoutSubscription called:", { payload, hasToken: Boolean(token) });
+
+  const envRedirectUrl =
+    typeof process !== "undefined" ? process.env?.NEXT_PUBLIC_PAYMENT_REDIRECT_URL : undefined;
+
+  const browserOrigin =
+    typeof window !== "undefined" && window.location?.origin ? window.location.origin : null;
+
+  const redirectUrl =
+    payload.redirect_url ||
+    (browserOrigin
+      ? `${browserOrigin}/payment/callback`
+      : (envRedirectUrl || "http://localhost:3000/payment/callback"));
+
   const body: Record<string, unknown> = {
     package_id: payload.package_id,
+    redirect_url: redirectUrl,
+    callback_url: redirectUrl,
+    success_redirect_url: redirectUrl,
+    failure_redirect_url: redirectUrl,
+    return_url: redirectUrl,
   };
 
   if (payload.source && (!Array.isArray(payload.source) || payload.source.length > 0)) {

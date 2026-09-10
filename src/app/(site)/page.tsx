@@ -1,4 +1,5 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import Hero from "@/features/site/components/Hero";
 import CustomerReviews from "@/features/site/components/CustomerReviews";
 import Features from "@/features/site/components/Features";
@@ -16,7 +17,34 @@ import ContactUs from "@/features/site/components/ContactUs";
 import MadVideo from "@/features/site/components/MadVideo";
 import { Bannerslider, HashScroller } from "@/features/site";
 
-export default function HomePage() {
+interface HomePageProps {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const query = searchParams ? await searchParams : {};
+  const hasPaymentParams = Boolean(
+    query.payment_id ||
+    query.paymentId ||
+    query.payment_link_id ||
+    query.streampay_id ||
+    query.invoice_id ||
+    (query.id && query.status)
+  );
+
+  if (hasPaymentParams) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        if (Array.isArray(value)) {
+          value.forEach((v) => params.append(key, v));
+        } else {
+          params.set(key, value);
+        }
+      }
+    }
+    redirect(`/payment/callback?${params.toString()}`);
+  }
   return (
     <div className="w-full flex flex-col">
       <HashScroller />

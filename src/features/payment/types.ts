@@ -28,6 +28,11 @@ export type PaymentSource =
 export interface CheckoutSubscriptionPayload {
   package_id: string;
   source?: PaymentSource;
+  redirect_url?: string;
+  callback_url?: string;
+  success_redirect_url?: string;
+  failure_redirect_url?: string;
+  return_url?: string;
 }
 
 export type PaymentStatus = "initiated" | "paid" | "success" | "failed" | "refunded" | string;
